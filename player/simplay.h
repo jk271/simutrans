@@ -50,12 +50,13 @@ enum accounting_type_vehicles {
 	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
 	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
 	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
-	ATV_TOLL_PAYED,			// toll payed by you to another player, COST_WAY_TOLLS mapped here, ATV_TOLL_PAYED + ATV_TOLL_RECEIVED mapped to COST_WAY_TOLL
+	ATV_TOLL_PAYED,			// toll payed by you to another player
 	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE 
 	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
 	ATV_NEW_VEHICLE,			// New vehicles
 	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here
 	ATV_PROFIT,			// = AT_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), COST_PROFIT
+	ATV_WAY_TOLL,			// = ATV_TOLL_PAYED + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
 	ATV_NON_FINANTIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
 	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
 
@@ -273,6 +274,8 @@ protected:
 	 * @author Jan Korbel
 	 */
 	void translate_cost_to_at();
+
+	int translate_index_cost_to_at(int a);
 
 	/**
 	 * Translates waytype_t to transport_type

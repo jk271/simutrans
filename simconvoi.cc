@@ -182,7 +182,7 @@ convoi_t::convoi_t(karte_t* wl, loadsave_t* file) : fahr(max_vehicle, NULL)
 convoi_t::convoi_t(spieler_t* sp) : fahr(max_vehicle, NULL)
 {
 	self = convoihandle_t(this);
-	sp->buche( 1, COST_ALL_CONVOIS );
+	sp->add_convoi_number(1);
 	init(sp->get_welt(), sp);
 	set_name( "Unnamed" );
 	welt->add_convoi( self );
@@ -192,7 +192,7 @@ convoi_t::convoi_t(spieler_t* sp) : fahr(max_vehicle, NULL)
 
 convoi_t::~convoi_t()
 {
-	besitzer_p->buche( -1, COST_ALL_CONVOIS );
+	besitzer_p->add_convoi_number( -1);
 
 	assert(self.is_bound());
 	assert(anz_vehikel==0);
@@ -635,10 +635,14 @@ void convoi_t::add_running_cost( const weg_t *weg )
 			// now add normal way toll be maintenance
 			toll += (weg->get_besch()->get_wartung()*welt->get_settings().get_way_toll_waycost_percentage())/100l;
 		}
-		weg->get_besitzer()->buche( toll, COST_WAY_TOLLS );
-		get_besitzer()->buche( -toll, COST_WAY_TOLLS );
+		weg->get_besitzer()->add_toll_received( toll, weg->get_waytype() );
+		get_besitzer()->add_toll_payed(        -toll, weg->get_waytype() );
 	}
-	get_besitzer()->buche( sum_running_costs, COST_VEHICLE_RUN);
+	if(fahr[0]){
+		get_besitzer()->add_running_costs( sum_running_costs, fahr[0]->get_waytype());
+	}else{
+		get_besitzer()->add_running_costs( sum_running_costs, ignore_wt);
+	}
 
 	book( sum_running_costs, CONVOI_OPERATIONS );
 	book( sum_running_costs, CONVOI_PROFIT );
@@ -2534,7 +2538,9 @@ void convoi_t::calc_gewinn()
 
 	for(unsigned i=0; i<anz_vehikel; i++) {
 		vehikel_t* v = fahr[i];
-		gewinn += v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+		sint64 tmp;
+		gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+		besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), v->get_waytype(), v->get_fracht_typ()->get_index() );
 		v->last_stop_pos = v->get_pos().get_2d();
 	}
 
@@ -2549,7 +2555,7 @@ void convoi_t::calc_gewinn()
 	sum_speed_limit = 0;
 
 	if(gewinn) {
-		besitzer_p->buche(gewinn, fahr[0]->get_pos().get_2d(), COST_INCOME);
+		besitzer_p->add_money_message(gewinn, fahr[0]->get_pos().get_2d());
 		jahresgewinn += gewinn;
 
 		book(gewinn, CONVOI_PROFIT);
@@ -2611,8 +2617,10 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 
 		// we need not to call this on the same position
 		if(  v->last_stop_pos != v->get_pos().get_2d()  ) {
+			sint64 tmp;
 			// calc_revenue
-			gewinn += v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+			gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+			besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), v->get_waytype(), v->get_fracht_typ()->get_index());
 			v->last_stop_pos = v->get_pos().get_2d();
 		}
 
@@ -2647,7 +2655,7 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 	sum_speed_limit = 0;
 
 	if(gewinn) {
-		besitzer_p->buche(gewinn, fahr[0]->get_pos().get_2d(), COST_INCOME);
+		besitzer_p->add_money_message(gewinn, fahr[0]->get_pos().get_2d());
 		jahresgewinn += gewinn;
 
 		book(gewinn, CONVOI_PROFIT);
@@ -2816,8 +2824,11 @@ void convoi_t::destroy()
 	}
 
 	// pay the current value
-	besitzer_p->buche( calc_restwert(), get_pos().get_2d(), COST_NEW_VEHICLE );
-	besitzer_p->buche( -calc_restwert(), COST_ASSETS );
+	if(fahr[0]){
+		besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), fahr[0]->get_waytype() );
+	} else {
+		besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), ignore_wt ); // this should not happen
+	}
 
 	for(  uint8 i = anz_vehikel;  i-- != 0;  ) {
 		if(  !fahr[i]->get_flag( ding_t::not_on_map )  ) {
@@ -2885,9 +2896,10 @@ void convoi_t::book(sint64 amount, int cost_type)
 	if (line.is_bound()) {
 		line->book( amount, simline_t::convoi_to_line_catgory(cost_type) );
 	}
-	if(cost_type == CONVOI_TRANSPORTED_GOODS) {
-		besitzer_p->buche(amount, COST_ALL_TRANSPORTED);
-	}
+
+//	if(cost_type == CONVOI_TRANSPORTED_GOODS) {
+//		besitzer_p->add_transported(amount);
+//	}
 }
 
 

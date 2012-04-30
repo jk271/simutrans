@@ -88,6 +88,56 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	headquarter_level = 0;
 
 	/**
+	 * initialize finance history arrays
+	 * @author Jan Korbel
+	 */
+	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
+		for (int cost_type=0; cost_type<ATC_MAX; cost_type++) {
+			finance_history_com_year[year][cost_type] = 0;
+			if ((cost_type == ATC_CASH) || (cost_type == ATC_NETWEALTH)) {
+				finance_history_com_year[year][cost_type] = starting_money;
+			}
+		}
+	}
+
+	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
+		for (int cost_type=0; cost_type<ATC_MAX; cost_type++) {
+			finance_history_com_month[month][cost_type] = 0;
+			if ((cost_type == ATC_CASH) || (cost_type == ATC_NETWEALTH)) {
+				finance_history_com_month[month][cost_type] = starting_money;
+			}
+		}
+	}
+
+	for (int transport_type=0; transport_type<TT_MAX_VEH; ++transport_type){
+		for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
+			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
+				finance_history_veh_year[transport_type][year][cost_type] = 0;
+			}
+		}
+	}
+
+	for (int transport_type=0; transport_type<TT_MAX_VEH; ++transport_type){
+		for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
+			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
+				finance_history_veh_month[transport_type][month][cost_type] = 0;
+			}
+		}
+	}
+
+	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
+		for (int cost_type=0; cost_type<ATP_MAX; cost_type++) {
+			finance_history_pow_year[year][cost_type] = 0;
+		}
+	}
+
+	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
+		for (int cost_type=0; cost_type<ATP_MAX; cost_type++) {
+			finance_history_pow_month[month][cost_type] = 0;
+		}
+	}
+
+	/**
 	 * initialize finance history array
 	 * @author hsiegeln
 	 */
@@ -112,7 +162,13 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 
 	haltcount = 0;
 
-	maintenance = 0;
+	for(int i=0; i<TT_MAX; ++i){
+		maintenance[i] = 0;
+	}
+
+	for(int i=0; i<TT_MAX_VEH; ++i){
+		vehicle_maintenance[i] = 0;
+	}
 
 	welt->get_settings().set_default_player_color(this);
 
@@ -127,6 +183,240 @@ spieler_t::~spieler_t()
 		delete messages.remove_first();
 	}
 	destroy_win( (long)this );
+}
+
+
+void spieler_t::add_construction_costs(const sint64 amount, const koord k, const waytype_t wt){
+	const transport_type tt = translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);
+	assert(tt <  TT_MAX);
+
+	if(tt < TT_MAX_VEH){
+		finance_history_veh_year[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+		finance_history_veh_month[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+	}else{
+		if(TT_POWERLINE == tt){
+			finance_history_pow_year[0][ATP_CONSTRUCTION_COST] += (sint64) amount;
+			finance_history_pow_month[0][ATP_CONSTRUCTION_COST] += (sint64) amount;
+		} else {
+			finance_history_veh_year[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+			finance_history_veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+		}
+	}
+	finance_history_veh_year[TT_ALL][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+	finance_history_veh_month[TT_ALL][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+
+	buche(amount, k, COST_CONSTRUCTION);
+}
+
+
+void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt){
+	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
+		sp->add_construction_costs( amount, k, wt );
+	} else {
+		// when making road or stop public, pay to public authority
+		if (sp!=NULL && sp == welt->get_spieler(1) && amount >0) {
+			sp->add_construction_costs( amount, k, wt );
+		}
+	}
+}
+
+
+/**
+ * Adds somme amount to the maintenance costs
+ * @param change the change
+ * @return the new maintenance costs
+ * @author Hj. Malthaner
+ */
+sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
+		transport_type tt = translate_waytype_to_tt(wt);
+		assert(tt!=TT_ALL);
+		maintenance[tt] += change;
+		maintenance[TT_ALL] += change;
+		return maintenance[tt];
+}
+
+
+void spieler_t::add_money_message(const sint64 amount, const koord pos) {
+	if(amount != 0) {
+		if(  koord_distance(welt->get_world_position(),pos)<2*(uint32)(display_get_width()/get_tile_raster_width())+3  ) {
+			// only display, if near the screen ...
+			add_message(pos, amount);
+
+			// and same for sound too ...
+			if(  amount>=10000  &&  !welt->is_fast_forward()  ) {
+				welt->play_sound_area_clipped(pos, SFX_CASH);
+			}
+		}
+	}
+}
+
+
+/**
+ * amount has positive value = buy vehicle, negative value = vehicle sold
+ */
+void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
+	const transport_type tt = translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);
+	assert(tt <  TT_MAX);
+
+	if(tt < TT_MAX_VEH){
+		finance_history_veh_year[ tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
+		finance_history_veh_month[tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
+		finance_history_veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+		finance_history_veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+	}else{
+		finance_history_veh_year[TT_OTHER][0][ATV_NEW_VEHICLE] += (sint64) amount;
+		finance_history_veh_month[TT_OTHER][0][ATV_NEW_VEHICLE] += (sint64) amount;
+		finance_history_veh_year[TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+		finance_history_veh_month[TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+	}
+	finance_history_veh_year[TT_ALL][0][ATV_NEW_VEHICLE] += (sint64) amount;
+	finance_history_veh_month[TT_ALL][0][ATV_NEW_VEHICLE] += (sint64) amount;
+	finance_history_veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+	finance_history_veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+
+	buche( amount, k, COST_NEW_VEHICLE);
+	buche(-amount, k, COST_ASSETS);
+}
+
+
+void spieler_t::add_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
+	const transport_type tt = translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);
+	assert(tt <  TT_MAX);
+
+	index = ((0 <= index) && (index <= 2)? index : 2);
+
+	if(tt < TT_MAX_VEH){
+		finance_history_veh_year[tt][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
+		finance_history_veh_month[tt][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
+	}else{
+		if(TT_POWERLINE == tt){
+			finance_history_pow_year[0][ATP_REVENUE] += (sint64) amount;
+			finance_history_pow_month[0][ATP_REVENUE] += (sint64) amount;
+		} else {
+			finance_history_veh_year[TT_OTHER][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
+			finance_history_veh_month[TT_OTHER][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
+		}
+	}
+	finance_history_veh_year[TT_ALL][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
+	finance_history_veh_month[TT_ALL][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
+
+	if(tt != TT_POWERLINE){
+		buche(amount, COST_INCOME);
+	} else {
+		buche(amount, k, COST_POWERLINES);
+	}
+}
+
+
+void spieler_t::add_running_costs(const sint64 amount, const waytype_t wt){
+	const transport_type tt = translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);
+	assert(tt <  TT_MAX);
+
+	if(tt < TT_MAX_VEH){
+		finance_history_veh_year[tt][0][ATV_RUNNING_COST] += amount;
+		finance_history_veh_month[tt][0][ATV_RUNNING_COST] += amount;
+	} else {
+		// powerlines does not have running costs
+		finance_history_veh_year[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+		finance_history_veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
+	}
+	finance_history_veh_year[TT_ALL][0][ATV_RUNNING_COST] += amount;
+	finance_history_veh_month[TT_ALL][0][ATV_RUNNING_COST] += amount;
+	
+	buche(amount, COST_VEHICLE_RUN);
+}
+
+
+void spieler_t::add_toll_payed(const sint64 amount, const waytype_t wt){
+	const transport_type tt =  translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);
+	assert(tt <  TT_MAX);
+
+	if(tt < TT_MAX_VEH){
+		finance_history_veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
+		finance_history_veh_month[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
+	}else{
+		finance_history_veh_year[TT_OTHER][0][ATV_TOLL_PAYED] += (sint64) amount;
+		finance_history_veh_month[TT_OTHER][0][ATV_TOLL_PAYED] += (sint64) amount;
+	}
+	finance_history_veh_year[TT_ALL][0][ATV_TOLL_PAYED] += (sint64) amount;
+	finance_history_veh_month[TT_ALL][0][ATV_TOLL_PAYED] += (sint64) amount;
+
+	buche(amount, COST_WAY_TOLLS);
+}
+
+
+void spieler_t::add_toll_received(const sint64 amount, const waytype_t wt){
+	const transport_type tt = translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);
+	assert(tt <  TT_MAX);
+
+	if(tt < TT_MAX_VEH){
+		finance_history_veh_year[tt][0][ATV_TOLL_RECEIVED] += (sint64) amount;
+		finance_history_veh_month[tt][0][ATV_TOLL_RECEIVED] += (sint64) amount;
+	}else{
+		finance_history_veh_year[TT_OTHER][0][ATV_TOLL_RECEIVED] += (sint64) amount;
+		finance_history_veh_month[TT_OTHER][0][ATV_TOLL_RECEIVED] += (sint64) amount;
+	}
+	finance_history_veh_year[TT_ALL][0][ATV_TOLL_RECEIVED] += (sint64) amount;
+	finance_history_veh_month[TT_ALL][0][ATV_TOLL_RECEIVED] += (sint64) amount;
+
+	buche(amount, COST_WAY_TOLLS);
+}
+
+
+void spieler_t::add_transported(const sint64 amount, const waytype_t wt, int index){
+	const transport_type tt = translate_waytype_to_tt(wt);
+	assert(tt != TT_ALL);	
+	assert(tt <  TT_MAX_VEH);
+
+	// there are: passenger, mail, goods
+	if( (index < 0) || (index > 2)){
+		index = 2;
+	}
+
+	finance_history_veh_year[ tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
+	finance_history_veh_month[tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
+
+	finance_history_veh_year[ TT_ALL][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
+	finance_history_veh_month[TT_ALL][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
+
+	if( index == 0){
+		buche(amount, COST_TRANSPORTED_PAS);
+	}
+	if( index == 1){
+		buche(amount, COST_TRANSPORTED_MAIL);
+	}
+	if( index == 2 ){
+		buche(amount, COST_TRANSPORTED_GOOD);
+	}
+	buche(amount, COST_ALL_TRANSPORTED);
+}
+
+
+sint64 spieler_t::get_maintenance_with_bits(transport_type tt) const { 
+	assert(tt<TT_MAX); 
+
+	if(  welt->ticks_per_world_month_shift>=18  ) {
+		return ((sint64)maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
+	}else{
+		return ((sint64)maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
+	}
+}
+
+
+sint64 spieler_t::get_vehicle_maintenance_with_bits(transport_type tt) const { 
+	assert(tt<TT_MAX); 
+
+	if(  welt->ticks_per_world_month_shift>=18  ) {
+		return ((sint64)vehicle_maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
+	}else{
+		return ((sint64)vehicle_maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
+	}
 }
 
 
@@ -267,11 +557,18 @@ void spieler_t::neuer_monat()
 
 	// subtract maintenance
 	if(  welt->ticks_per_world_month_shift>=18  ) {
-		buche( -((sint64)maintenance) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
+		buche( -((sint64)maintenance[TT_ALL]) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
 	}
 	else {
-		buche( -((sint64)maintenance) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
+		buche( -((sint64)maintenance[TT_ALL]) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
 	}
+
+	for(int i=0; i<TT_MAX_VEH; ++i){
+		finance_history_veh_month[i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
+		finance_history_veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
+	}
+	finance_history_pow_month[0][ATP_MAINTENANCE] -= get_maintenance_with_bits(TT_POWERLINE);
+	finance_history_pow_year [0][ATP_MAINTENANCE] -= get_maintenance_with_bits(TT_POWERLINE);
 
 	// enough money and scenario finished?
 	if(konto > 0  &&  welt->get_scenario()->active()  &&  finance_history_year[0][COST_SCENARIO_COMPLETED]>=100) {
@@ -308,7 +605,7 @@ void spieler_t::neuer_monat()
 				}
 			}
 			// no assets => nothing to go bankrupt about again
-			else if(  maintenance!=0  ||  finance_history_year[0][COST_ALL_CONVOIS]!=0  ) {
+			else if(  maintenance[TT_ALL]!=0  ||  finance_history_year[0][COST_ALL_CONVOIS]!=0  ) {
 
 				// for AI, we only declare bankrupt, if total assest are below zero
 				if(finance_history_year[0][COST_NETWEALTH]<0) {
@@ -355,6 +652,38 @@ void spieler_t::roll_finance_history_month()
 			finance_history_month[0][i] = 0;
 		}
 	}
+
+	// undistinguishable
+	for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
+		for(int accounting_type=0; accounting_type<ATC_MAX; ++accounting_type){
+			finance_history_com_month[i][accounting_type] = finance_history_com_month[i-1][accounting_type];
+		}
+	}
+	for(int i=0; i<ATC_MAX; ++i){
+		if(i != ATC_ALL_CONVOIS){
+			finance_history_com_month[0][i] = 0;
+		}
+	}
+	// vehicles
+	for(int tt=0; tt<TT_MAX_VEH; ++tt){
+		for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
+			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+				finance_history_veh_month[tt][i][accounting_type] = finance_history_veh_month[tt][i-1][accounting_type];
+			}
+		}
+		for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+			finance_history_veh_month[tt][0][accounting_type] = 0;
+		}
+	}
+	// powerlines
+	for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
+		for(int accounting_type=0; accounting_type<ATP_MAX; ++accounting_type){
+			finance_history_pow_month[i][accounting_type] = finance_history_pow_month[i-1][accounting_type];
+		}
+	}
+	for(int accounting_type=0; accounting_type<ATP_MAX; ++accounting_type){
+		finance_history_pow_month[0][accounting_type] = 0;
+	}
 }
 
 
@@ -371,6 +700,38 @@ void spieler_t::roll_finance_history_year()
 		if (i != COST_ALL_CONVOIS) {
 			finance_history_year[0][i] = 0;
 		}
+	}
+
+	// undistinguishable
+	for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
+		for(int accounting_type=0; accounting_type<ATC_MAX; ++accounting_type){
+			finance_history_com_year[i][accounting_type] = finance_history_com_year[i-1][accounting_type];
+		}
+	}
+	for(int i=0; i<ATC_MAX; ++i){
+		if(i != ATC_ALL_CONVOIS){
+			finance_history_com_year[0][i] = 0;
+		}
+	}
+	// vehicles
+	for(int tt=0; tt<TT_MAX_VEH; ++tt){
+		for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
+			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+				finance_history_veh_year[tt][i][accounting_type] = finance_history_veh_year[tt][i-1][accounting_type];
+			}
+		}
+		for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+			finance_history_veh_year[tt][0][accounting_type] = 0;
+		}
+	}
+	// powerlines
+	for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
+		for(int accounting_type=0; accounting_type<ATP_MAX; ++accounting_type){
+			finance_history_pow_year[i][accounting_type] = finance_history_pow_year[i-1][accounting_type];
+		}
+	}
+	for(int accounting_type=0; accounting_type<ATP_MAX; ++accounting_type){
+		finance_history_pow_year[0][accounting_type] = 0;
 	}
 }
 
@@ -406,16 +767,83 @@ void spieler_t::calc_finance_history()
 	finance_history_month[0][COST_OPERATING_PROFIT] = finance_history_month[0][COST_INCOME] + finance_history_month[0][COST_POWERLINES] + finance_history_month[0][COST_VEHICLE_RUN] + finance_history_month[0][COST_MAINTENANCE] + finance_history_month[0][COST_WAY_TOLLS];
 	finance_history_month[0][COST_MARGIN] = calc_margin(finance_history_month[0][COST_OPERATING_PROFIT], finance_history_month[0][COST_INCOME]);
 	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
+
+	// vehicles
+	for(int tt=0; tt<TT_MAX_VEH; ++tt){
+		// ATV_REVENUE = ATC_REVENUE_* + ATC_TOLL_RECEIVED
+		sint64 revenue, mrevenue;
+		revenue = mrevenue = 0;
+		for(int i=0; i<ATV_REVENUE; ++i){
+			mrevenue += finance_history_veh_month[tt][0][i];
+			revenue  += finance_history_veh_year[ tt][0][i];
+		}
+		finance_history_veh_month[tt][0][ATV_REVENUE] = mrevenue;
+		finance_history_veh_year[ tt][0][ATV_REVENUE] = revenue;
+
+		// ATC_EXPENDITURE = ATC_RUNNIG_COST + ATC_VEH_MAINTENENCE + ATC_INF_MAINTENENCE + ATC_TOLL_PAYED;
+		sint64 expenditure, mexpenditure;
+		expenditure = mexpenditure = 0;
+		for(int i=ATV_RUNNING_COST; i<ATV_EXPENDITURE; ++i){
+			mexpenditure += finance_history_veh_month[tt][0][i];
+			expenditure  += finance_history_veh_year[ tt][0][i];
+		}
+		finance_history_veh_month[tt][0][ATV_EXPENDITURE] = mexpenditure;
+		finance_history_veh_year[ tt][0][ATV_EXPENDITURE] = expenditure;
+		finance_history_veh_month[tt][0][ATV_OPERATING_PROFIT] = mrevenue + mexpenditure;
+		finance_history_veh_year[ tt][0][ATV_OPERATING_PROFIT] =  revenue +  expenditure;
+
+		// PROFIT = OPERATING_PROFIT + NEW_VEHICLES + construction costs 
+		sint64 profit, mprofit;
+		profit = mprofit = 0;
+		for(int i=ATV_OPERATING_PROFIT; i<ATV_PROFIT; ++i){
+			mprofit += finance_history_veh_month[tt][0][i];
+			profit  += finance_history_veh_year[ tt][0][i];
+		}
+		finance_history_veh_month[tt][0][ATV_PROFIT] = mprofit;
+		finance_history_veh_year[ tt][0][ATV_PROFIT] =  profit;
+
+		finance_history_veh_month[tt][0][ATV_PROFIT_MARGIN] = calc_margin(finance_history_veh_month[tt][0][ATV_OPERATING_PROFIT], finance_history_veh_month[tt][0][ATV_REVENUE]);
+		finance_history_veh_year[tt][0][ATV_PROFIT_MARGIN] = calc_margin(finance_history_veh_year[tt][0][ATV_OPERATING_PROFIT], finance_history_veh_year[tt][0][ATV_REVENUE]);
+
+		sint64 transported, mtransported;
+		transported = mtransported = 0;
+		for(int i=ATV_TRANSPORTED_PASSENGER; i<ATV_TRANSPORTED; ++i){
+			mtransported += finance_history_veh_month[tt][0][i];
+			transported  += finance_history_veh_year[ tt][0][i];
+		}
+		finance_history_veh_month[tt][0][ATV_TRANSPORTED] = mtransported;
+		finance_history_veh_year[ tt][0][ATV_TRANSPORTED] =  transported;
+	}
+
+	// undistinguishable by type of transport 
+	finance_history_com_month[0][ATC_CASH] = konto;
+	finance_history_com_year [0][ATC_CASH] = konto;
+	finance_history_com_month[0][ATC_NETWEALTH] = finance_history_veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	finance_history_com_year [0][ATC_NETWEALTH] = finance_history_veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	finance_history_com_month[0][ATC_SCENARIO_COMPLETED] = finance_history_com_year[0][ATC_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
+
+	// powerlines
+	finance_history_pow_month[0][ATP_OPERATING_PROFIT] = finance_history_pow_month[0][ATP_REVENUE] + finance_history_pow_month[0][ATP_MAINTENANCE];
+	finance_history_pow_year[ 0][ATP_OPERATING_PROFIT] = finance_history_pow_year[ 0][ATP_REVENUE] + finance_history_pow_year[ 0][ATP_MAINTENANCE];
+
+	finance_history_pow_month[0][ATP_PROFIT] = finance_history_pow_month[0][ATP_OPERATING_PROFIT] + finance_history_pow_month[0][ATP_CONSTRUCTION_COST];
+	finance_history_pow_year[ 0][ATP_PROFIT] = finance_history_pow_year[ 0][ATP_OPERATING_PROFIT] + finance_history_pow_year[ 0][ATP_CONSTRUCTION_COST];
+
+	finance_history_pow_month[0][ATP_PROFIT_MARGIN] = calc_margin(finance_history_pow_month[0][ATP_OPERATING_PROFIT], finance_history_pow_month[0][ATP_REVENUE]);
+	finance_history_pow_year[ 0][ATP_PROFIT_MARGIN] = calc_margin(finance_history_pow_year[ 0][ATP_OPERATING_PROFIT], finance_history_pow_year[ 0][ATP_REVENUE]);
 }
 
 
 void spieler_t::calc_assets()
 {
-	sint64 assets = 0;
+	sint64 assets[TT_MAX];
+	for(int i=0; i < TT_MAX_VEH; ++i){
+		assets[i] = 0;
+	}
 	// all convois
 	FOR(vector_tpl<convoihandle_t>, const cnv, welt->convoys()) {
 		if(  cnv->get_besitzer() == this  ) {
-			assets += cnv->calc_restwert();
+			assets[TT_ALL] += cnv->calc_restwert();
 		}
 	}
 
@@ -423,13 +851,19 @@ void spieler_t::calc_assets()
 	FOR(slist_tpl<depot_t*>, const depot, depot_t::get_depot_list()) {
 		if(  depot->get_player_nr() == player_nr  ) {
 			FOR(slist_tpl<vehikel_t*>, const veh, depot->get_vehicle_list()) {
-				assets += veh->calc_restwert();
+				assets[TT_ALL] += veh->calc_restwert();
 			}
 		}
 	}
 
-	finance_history_year[0][COST_ASSETS] = finance_history_month[0][COST_ASSETS] = assets;
-	finance_history_year[0][COST_NETWEALTH] = finance_history_month[0][COST_NETWEALTH] = assets+konto;
+	finance_history_year[0][COST_ASSETS] = finance_history_month[0][COST_ASSETS] = assets[TT_ALL];
+	finance_history_year[0][COST_NETWEALTH] = finance_history_month[0][COST_NETWEALTH] = assets[TT_ALL]+konto;
+
+
+	for(int i=0; i < TT_MAX_VEH; ++i){
+		finance_history_veh_year[i][0][ATV_NON_FINANTIAL_ASSETS] = finance_history_veh_month[i][0][ATV_NON_FINANTIAL_ASSETS] = assets[i];
+	}
+	finance_history_com_year[0][ATC_NETWEALTH] = finance_history_com_month[0][ATC_NETWEALTH] = finance_history_veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] +konto;
 }
 
 
@@ -447,18 +881,7 @@ void spieler_t::update_assets(sint64 const delta)
 void spieler_t::buche(sint64 const betrag, koord const pos, player_cost const type)
 {
 	buche(betrag, type);
-
-	if(betrag != 0) {
-		if(  koord_distance(welt->get_world_position(),pos)<2*(uint32)(display_get_width()/get_tile_raster_width())+3  ) {
-			// only display, if near the screen ...
-			add_message(pos, (sint32)betrag);
-
-			// and same for sound too ...
-			if(  betrag>=10000  &&  !welt->is_fast_forward()  ) {
-				welt->play_sound_area_clipped(pos, SFX_CASH);
-			}
-		}
-	}
+	add_money_message(betrag, pos);
 }
 
 
@@ -580,7 +1003,7 @@ void spieler_t::ai_bankrupt()
 					if(  w  &&  w->get_besitzer()==this  ) {
 						// take ownership
 						if (wnr>1  ||  (!gr->ist_bruecke()  &&  !gr->ist_tunnel())) {
-							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung() );
+							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung(), w->get_waytype() );
 						}
 						w->set_besitzer(NULL); // make public
 					}
@@ -638,7 +1061,7 @@ void spieler_t::ai_bankrupt()
 								break;
 							case ding_t::leitung:
 								if (gr->ist_bruecke()) {
-									add_maintenance( -((leitung_t*)dt)->get_besch()->get_wartung() );
+									add_maintenance( -((leitung_t*)dt)->get_besch()->get_wartung(), powerline_wt );
 									// do not remove powerline from bridges
 									dt->set_besitzer( welt->get_spieler(1) );
 								}
@@ -657,7 +1080,7 @@ void spieler_t::ai_bankrupt()
 									w->set_besitzer( NULL );
 								}
 								else if(w->get_waytype()==road_wt  ||  w->get_waytype()==water_wt) {
-									add_maintenance( -w->get_besch()->get_wartung() );
+									add_maintenance( -w->get_besch()->get_wartung(), w->get_waytype() );
 									w->set_besitzer( NULL );
 								}
 								else {
@@ -666,11 +1089,11 @@ void spieler_t::ai_bankrupt()
 								break;
 							}
 							case ding_t::bruecke:
-								add_maintenance( -((bruecke_t*)dt)->get_besch()->get_wartung() );
+								add_maintenance( -((bruecke_t*)dt)->get_besch()->get_wartung(), dt->get_waytype() );
 								dt->set_besitzer( NULL );
 								break;
 							case ding_t::tunnel:
-								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung() );
+								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung(), dt->get_waytype() );
 								dt->set_besitzer( NULL );
 								break;
 
@@ -712,6 +1135,10 @@ void spieler_t::rdwr(loadsave_t *file)
 
 	file->rdwr_longlong(konto);
 	file->rdwr_long(konto_ueberzogen);
+
+	if(file->get_version()<111002){ 
+		translate_at_to_cost();
+	}
 
 	if(file->get_version()<101000) {
 		// ignore steps
@@ -822,8 +1249,8 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	}
-	else {
-		// most recent savegame version: now with toll
+	else if(  file->get_version()<111002){
+		// savegame version: now with toll
 		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<MAX_PLAYER_COST;   cost_type++  ) {
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
@@ -836,6 +1263,42 @@ void spieler_t::rdwr(loadsave_t *file)
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
 					file->rdwr_longlong(finance_history_month[month][cost_type]);
 				}
+			}
+		}
+	} else {
+		// most recent savegame version: now with detailed finance statistics by type of transport
+		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
+			for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type  ) {
+				file->rdwr_longlong(finance_history_com_year[year][cost_type]);
+			}
+		}
+		for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
+			for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type ) {
+				file->rdwr_longlong(finance_history_com_month[month][cost_type]);
+			}
+		}
+		for(int tt=0; tt<TT_MAX_VEH; ++tt){
+			for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
+				for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
+					file->rdwr_longlong(finance_history_veh_year[tt][year][cost_type]);
+				}
+			}
+		} 
+		for(int tt=0; tt<TT_MAX_VEH; ++tt){
+			for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
+				for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
+					file->rdwr_longlong(finance_history_veh_month[tt][month][cost_type]);
+				}
+			}
+		} 
+		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
+			for( int cost_type = 0; cost_type<ATP_MAX;  ++cost_type  ) {
+				file->rdwr_longlong(finance_history_pow_year[year][cost_type]);
+			}
+		}
+		for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
+			for( int cost_type = 0; cost_type<ATP_MAX;  ++cost_type ) {
+				file->rdwr_longlong(finance_history_pow_month[month][cost_type]);
 			}
 		}
 	}
@@ -874,7 +1337,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		dbg->fatal("spieler_t::rdwr()", "Halt count is out of bounds: %d -> corrupt savegame?", halt_count|haltcount);
 	}
 
-	if(file->is_loading()) {
+	if( file->is_loading() && (file->get_version()< 111002)) {
 
 		/* prior versions calculated margin incorrectly.
 		 * we also save only some values and recalculate all dependent ones
@@ -948,6 +1411,11 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 	// save the name too
 	if(file->get_version()>102003) {
 		file->rdwr_str( spieler_name_buf, lengthof(spieler_name_buf) );
+	}
+
+	// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
+	if((file->get_version()<111002) && (file->is_loading())){
+		translate_cost_to_at();
 	}
 }
 
@@ -1125,3 +1593,165 @@ void spieler_t::tell_tool_result(werkzeug_t *tool, koord3d, const char *err, boo
 		}
 	}
 }
+
+
+void spieler_t::translate_at_to_cost(){
+	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
+		finance_history_month[i][COST_CONSTRUCTION] = finance_history_veh_month[TT_ALL][i][ATV_CONSTRUCTION_COST];
+		finance_history_month[i][COST_VEHICLE_RUN]  = finance_history_veh_month[TT_ALL][i][ATV_RUNNING_COST] + finance_history_veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
+		finance_history_month[i][COST_NEW_VEHICLE]   = finance_history_veh_month[TT_ALL][i][ATV_NEW_VEHICLE];
+		finance_history_month[i][COST_INCOME]       = 0;
+		for(int j=ATV_REVENUE_PASSENGER; j<=ATV_REVENUE_7; ++j){
+			finance_history_month[i][COST_INCOME] += finance_history_veh_month[TT_ALL][i][j];
+		}
+		finance_history_month[i][COST_MAINTENANCE]  = finance_history_veh_month[TT_ALL][i][ATV_INFRASTRUCTURE_MAINTENANCE];
+		finance_history_month[i][COST_ASSETS]       = finance_history_veh_month[TT_ALL][i][ATV_NON_FINANTIAL_ASSETS];
+		finance_history_month[i][COST_CASH]         = finance_history_com_month[i][ATC_CASH];
+		finance_history_month[i][COST_NETWEALTH]    = finance_history_com_month[i][ATC_NETWEALTH];
+		finance_history_month[i][COST_PROFIT]       = finance_history_veh_month[TT_ALL][i][ATV_PROFIT];
+		finance_history_month[i][COST_OPERATING_PROFIT] = finance_history_veh_month[TT_ALL][i][ATV_OPERATING_PROFIT];
+		finance_history_month[i][COST_MARGIN]           = finance_history_veh_month[TT_ALL][i][ATV_PROFIT_MARGIN];
+		finance_history_month[i][COST_ALL_TRANSPORTED]  = finance_history_veh_month[TT_ALL][i][ATV_TRANSPORTED];
+		finance_history_month[i][COST_POWERLINES]       = finance_history_pow_month[i][ATP_REVENUE];
+		finance_history_month[i][COST_TRANSPORTED_PAS]  = finance_history_veh_month[TT_ALL][i][ATV_TRANSPORTED_PASSENGER];
+		finance_history_month[i][COST_TRANSPORTED_MAIL] = finance_history_veh_month[TT_ALL][i][ATV_TRANSPORTED_MAIL];
+		finance_history_month[i][COST_TRANSPORTED_GOOD] = 0;
+		for(int j=ATV_TRANSPORTED_0; j<=ATV_TRANSPORTED_7; ++j){
+			finance_history_month[i][COST_TRANSPORTED_GOOD] += finance_history_veh_month[TT_ALL][i][j];
+		}
+		finance_history_month[i][COST_ALL_CONVOIS]      = finance_history_com_month[i][ATC_ALL_CONVOIS];
+		finance_history_month[i][COST_SCENARIO_COMPLETED] = finance_history_com_month[i][ATC_SCENARIO_COMPLETED];
+		finance_history_month[i][COST_WAY_TOLLS]        = finance_history_veh_month[TT_ALL][i][ATV_TOLL_RECEIVED] + finance_history_veh_month[TT_ALL][i][ATV_TOLL_PAYED];
+	}
+
+	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
+		finance_history_year[i][COST_CONSTRUCTION] = finance_history_veh_year[TT_ALL][i][ATV_CONSTRUCTION_COST];
+		finance_history_year[i][COST_VEHICLE_RUN]  = finance_history_veh_year[TT_ALL][i][ATV_RUNNING_COST] + finance_history_veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
+		finance_history_year[i][COST_NEW_VEHICLE]   = finance_history_veh_year[TT_ALL][i][ATV_NEW_VEHICLE];
+		finance_history_year[i][COST_INCOME]       = 0;
+		for(int j=ATV_REVENUE_PASSENGER; j<=ATV_REVENUE_7; ++j){
+			finance_history_year[i][COST_INCOME] += finance_history_veh_year[TT_ALL][i][j];
+		}
+		finance_history_year[i][COST_MAINTENANCE]  = finance_history_veh_year[TT_ALL][i][ATV_INFRASTRUCTURE_MAINTENANCE];
+		finance_history_year[i][COST_ASSETS]       = finance_history_veh_year[TT_ALL][i][ATV_NON_FINANTIAL_ASSETS];
+		finance_history_year[i][COST_CASH]         = finance_history_com_year[i][ATC_CASH];
+		finance_history_year[i][COST_NETWEALTH]    = finance_history_com_year[i][ATC_NETWEALTH];
+		finance_history_year[i][COST_PROFIT]       = finance_history_veh_year[TT_ALL][i][ATV_PROFIT];
+		finance_history_year[i][COST_OPERATING_PROFIT] = finance_history_veh_year[TT_ALL][i][ATV_OPERATING_PROFIT];
+		finance_history_year[i][COST_MARGIN]           = finance_history_veh_year[TT_ALL][i][ATV_PROFIT_MARGIN];
+		finance_history_year[i][COST_ALL_TRANSPORTED]  = finance_history_veh_year[TT_ALL][i][ATV_TRANSPORTED];
+		finance_history_year[i][COST_POWERLINES]       = finance_history_pow_year[i][ATP_REVENUE];
+		finance_history_year[i][COST_TRANSPORTED_PAS]  = finance_history_veh_year[TT_ALL][i][ATV_TRANSPORTED_PASSENGER];
+		finance_history_year[i][COST_TRANSPORTED_MAIL] = finance_history_veh_year[TT_ALL][i][ATV_TRANSPORTED_MAIL];
+		finance_history_year[i][COST_TRANSPORTED_GOOD] = 0;
+		for(int j=ATV_TRANSPORTED_0; j<=ATV_TRANSPORTED_7; ++j){
+			finance_history_year[i][COST_TRANSPORTED_GOOD] += finance_history_veh_year[TT_ALL][i][j];
+		}
+		finance_history_year[i][COST_ALL_CONVOIS]      = finance_history_com_year[i][ATC_ALL_CONVOIS];
+		finance_history_year[i][COST_SCENARIO_COMPLETED] = finance_history_com_year[i][ATC_SCENARIO_COMPLETED];
+		finance_history_year[i][COST_WAY_TOLLS]        = finance_history_veh_year[TT_ALL][i][ATV_TOLL_RECEIVED] + finance_history_veh_year[TT_ALL][i][ATV_TOLL_PAYED];
+	}
+}
+
+
+void spieler_t::translate_cost_to_at(){
+	// does it need initial clean-up ? (= initialization)
+	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
+		finance_history_veh_month[TT_OTHER][i][ATV_CONSTRUCTION_COST] = finance_history_month[i][COST_CONSTRUCTION];
+		finance_history_veh_month[TT_ALL  ][i][ATV_CONSTRUCTION_COST] = finance_history_month[i][COST_CONSTRUCTION];
+		finance_history_veh_month[TT_OTHER][i][ATV_RUNNING_COST]      = finance_history_month[i][COST_VEHICLE_RUN];
+		finance_history_veh_month[TT_ALL  ][i][ATV_RUNNING_COST]      = finance_history_month[i][COST_VEHICLE_RUN];
+		finance_history_veh_month[TT_OTHER][i][ATV_NEW_VEHICLE]       = finance_history_month[i][COST_NEW_VEHICLE];
+		finance_history_veh_month[TT_ALL  ][i][ATV_NEW_VEHICLE]       = finance_history_month[i][COST_NEW_VEHICLE];
+		finance_history_veh_month[TT_OTHER][i][ATV_REVENUE_7]         = finance_history_month[i][COST_INCOME];
+		finance_history_veh_month[TT_ALL  ][i][ATV_REVENUE_7]         = finance_history_month[i][COST_INCOME];
+		finance_history_veh_month[TT_OTHER][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_month[i][COST_MAINTENANCE];
+		finance_history_veh_month[TT_ALL  ][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_month[i][COST_MAINTENANCE];
+		finance_history_veh_month[TT_OTHER][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_month[i][COST_ASSETS];
+		finance_history_veh_month[TT_ALL  ][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_month[i][COST_ASSETS];
+		finance_history_com_month[i][ATC_CASH]                        = finance_history_month[i][COST_CASH];
+		finance_history_com_month[i][ATC_NETWEALTH]                   = finance_history_month[i][COST_NETWEALTH];
+		finance_history_veh_month[TT_OTHER][i][ATV_PROFIT]            = finance_history_month[i][COST_PROFIT];
+		finance_history_veh_month[TT_ALL  ][i][ATV_PROFIT]            = finance_history_month[i][COST_PROFIT];
+		finance_history_veh_month[TT_OTHER][i][ATV_OPERATING_PROFIT]  = finance_history_month[i][COST_OPERATING_PROFIT];
+		finance_history_veh_month[TT_ALL  ][i][ATV_OPERATING_PROFIT]  = finance_history_month[i][COST_OPERATING_PROFIT];
+		finance_history_veh_month[TT_ALL  ][i][ATV_PROFIT_MARGIN]     = finance_history_month[i][COST_MARGIN]; // this needs to be recalculate before usage
+		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED]       = finance_history_month[i][COST_ALL_TRANSPORTED];
+		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED]       = finance_history_month[i][COST_ALL_TRANSPORTED];
+		finance_history_pow_month[i][ATP_REVENUE]                     = finance_history_month[i][COST_POWERLINES];
+		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
+		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
+		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED_MAIL]  = finance_history_month[i][COST_TRANSPORTED_MAIL];
+		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_MAIL]  = finance_history_month[i][COST_TRANSPORTED_MAIL];
+		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED_7]     = finance_history_month[i][COST_TRANSPORTED_GOOD];
+		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_7]     = finance_history_month[i][COST_TRANSPORTED_GOOD];
+		finance_history_com_month[i][ATC_ALL_CONVOIS]                 = finance_history_month[i][COST_ALL_CONVOIS];
+		finance_history_com_month[i][ATC_SCENARIO_COMPLETED]          = finance_history_month[i][COST_SCENARIO_COMPLETED];
+		if(finance_history_month[i][COST_WAY_TOLLS] > 0 ){
+			finance_history_veh_month[TT_OTHER][i][ATV_TOLL_RECEIVED] = finance_history_month[i][COST_WAY_TOLLS];
+			finance_history_veh_month[TT_ALL  ][i][ATV_TOLL_RECEIVED] = finance_history_month[i][COST_WAY_TOLLS];
+		}else{
+			finance_history_veh_month[TT_OTHER][i][ATV_TOLL_PAYED] = finance_history_month[i][COST_WAY_TOLLS];
+			finance_history_veh_month[TT_ALL  ][i][ATV_TOLL_PAYED] = finance_history_month[i][COST_WAY_TOLLS];
+		}
+	}
+
+	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
+		finance_history_veh_year[TT_OTHER][i][ATV_CONSTRUCTION_COST] = finance_history_year[i][COST_CONSTRUCTION];
+		finance_history_veh_year[TT_ALL  ][i][ATV_CONSTRUCTION_COST] = finance_history_year[i][COST_CONSTRUCTION];
+		finance_history_veh_year[TT_OTHER][i][ATV_RUNNING_COST]      = finance_history_year[i][COST_VEHICLE_RUN];
+		finance_history_veh_year[TT_ALL  ][i][ATV_RUNNING_COST]      = finance_history_year[i][COST_VEHICLE_RUN];
+		finance_history_veh_year[TT_OTHER][i][ATV_NEW_VEHICLE]       = finance_history_year[i][COST_NEW_VEHICLE];
+		finance_history_veh_year[TT_ALL  ][i][ATV_NEW_VEHICLE]       = finance_history_year[i][COST_NEW_VEHICLE];
+		finance_history_veh_year[TT_OTHER][i][ATV_REVENUE_7]         = finance_history_year[i][COST_INCOME];
+		finance_history_veh_year[TT_ALL  ][i][ATV_REVENUE_7]         = finance_history_year[i][COST_INCOME];
+		finance_history_veh_year[TT_OTHER][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_year[i][COST_MAINTENANCE];
+		finance_history_veh_year[TT_ALL  ][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_year[i][COST_MAINTENANCE];
+		finance_history_veh_year[TT_OTHER][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_year[i][COST_ASSETS];
+		finance_history_veh_year[TT_ALL  ][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_year[i][COST_ASSETS];
+		finance_history_com_year[i][ATC_CASH]                        = finance_history_year[i][COST_CASH];
+		finance_history_com_year[i][ATC_NETWEALTH]                   = finance_history_year[i][COST_NETWEALTH];
+		finance_history_veh_year[TT_OTHER][i][ATV_PROFIT]            = finance_history_year[i][COST_PROFIT];
+		finance_history_veh_year[TT_ALL  ][i][ATV_PROFIT]            = finance_history_year[i][COST_PROFIT];
+		finance_history_veh_year[TT_OTHER][i][ATV_OPERATING_PROFIT]  = finance_history_year[i][COST_OPERATING_PROFIT];
+		finance_history_veh_year[TT_ALL  ][i][ATV_OPERATING_PROFIT]  = finance_history_year[i][COST_OPERATING_PROFIT];
+		finance_history_veh_year[TT_ALL  ][i][ATV_PROFIT_MARGIN]     = finance_history_year[i][COST_MARGIN]; // this needs to be recalculate before usage
+		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED]       = finance_history_year[i][COST_ALL_TRANSPORTED];
+		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED]       = finance_history_year[i][COST_ALL_TRANSPORTED];
+		finance_history_pow_year[i][ATP_REVENUE]                     = finance_history_year[i][COST_POWERLINES];
+		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
+		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
+		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED_MAIL]  = finance_history_year[i][COST_TRANSPORTED_MAIL];
+		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_MAIL]  = finance_history_year[i][COST_TRANSPORTED_MAIL];
+		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED_7]     = finance_history_year[i][COST_TRANSPORTED_GOOD];
+		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_7]     = finance_history_year[i][COST_TRANSPORTED_GOOD];
+		finance_history_com_year[i][ATC_ALL_CONVOIS]                 = finance_history_year[i][COST_ALL_CONVOIS];
+		finance_history_com_year[i][ATC_SCENARIO_COMPLETED]          = finance_history_year[i][COST_SCENARIO_COMPLETED];
+		if(finance_history_year[i][COST_WAY_TOLLS] > 0 ){
+			finance_history_veh_year[TT_OTHER][i][ATV_TOLL_RECEIVED] = finance_history_year[i][COST_WAY_TOLLS];
+			finance_history_veh_year[TT_ALL  ][i][ATV_TOLL_RECEIVED] = finance_history_year[i][COST_WAY_TOLLS];
+		}else{
+			finance_history_veh_year[TT_OTHER][i][ATV_TOLL_PAYED] = finance_history_year[i][COST_WAY_TOLLS];
+			finance_history_veh_year[TT_ALL  ][i][ATV_TOLL_PAYED] = finance_history_year[i][COST_WAY_TOLLS];
+		}
+	}
+}
+
+
+transport_type spieler_t::translate_waytype_to_tt(const waytype_t wt) const {
+	switch(wt){
+		case road_wt:      return TT_ROAD;
+		case track_wt:     return TT_RAILWAY;
+		case water_wt:     return TT_SHIP;
+		case monorail_wt:  return TT_MONORAIL;
+		case maglev_wt:    return TT_MAGLEV;
+		case tram_wt:      return TT_TRAM;
+		case narrowgauge_wt: return TT_NARROWGAUGE;
+		case air_wt:       return TT_AIR;
+		case powerline_wt: return TT_POWERLINE;
+		case ignore_wt:
+		case overheadlines_wt:
+		default:           return TT_OTHER;
+	}
+}
+

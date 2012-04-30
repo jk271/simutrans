@@ -170,7 +170,7 @@ weg_t::~weg_t()
 	alle_wege.remove(this);
 	spieler_t *sp=get_besitzer();
 	if(sp) {
-		spieler_t::add_maintenance( sp,  -besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  -besch->get_wartung(), besch->get_wtyp() );
 	}
 }
 
@@ -567,7 +567,7 @@ void weg_t::laden_abschliessen()
 {
 	spieler_t *sp = get_besitzer();
 	if(  sp  &&  besch  ) {
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), get_waytype() );
 	}
 }
 

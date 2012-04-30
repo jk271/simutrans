@@ -91,7 +91,7 @@ gebaeude_t::gebaeude_t(karte_t *welt, koord3d pos, spieler_t *sp, const haus_til
 	init();
 	if(t) {
 		set_tile(t);	// this will set init time etc.
-		spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level());
+		spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), get_waytype());
 	}
 
 	grund_t *gr=welt->lookup(pos);
@@ -126,7 +126,7 @@ gebaeude_t::~gebaeude_t()
 	count = 0;
 	anim_time = 0;
 	if(tile) {
-		spieler_t::add_maintenance(get_besitzer(), -welt->get_settings().maint_building*tile->get_besch()->get_level());
+		spieler_t::add_maintenance(get_besitzer(), -welt->get_settings().maint_building*tile->get_besch()->get_level(), get_waytype());
 	}
 }
 
@@ -863,7 +863,7 @@ void gebaeude_t::laden_abschliessen()
 {
 	calc_bild();
 
-	spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level());
+	spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), get_waytype());
 
 	// citybuilding, but no town?
 	if(  tile->get_offset()==koord(0,0)  ) {
@@ -889,7 +889,7 @@ void gebaeude_t::entferne(spieler_t *sp)
 	if (tile->get_besch()->get_utyp() < haus_besch_t::bahnhof) {
 		cost *= tile->get_besch()->get_level() + 1;
 	}
-	spieler_t::accounting(sp, cost, get_pos().get_2d(), COST_CONSTRUCTION);
+	spieler_t::add_construction_costs(sp, cost, get_pos().get_2d(), get_waytype());
 
 	// may need to update next buildings, in the case of start, middle, end buildings
 	if(tile->get_besch()->get_all_layouts()>1  &&  get_haustyp()==unbekannt) {

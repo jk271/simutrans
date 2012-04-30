@@ -20,6 +20,87 @@
 #include "../tpl/vector_tpl.h"
 
 
+/** 
+ * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
+ * - concerning to whole company
+ * @author Jan Korbel
+ */
+enum accounting_type_common {
+	ATC_CASH = 0,		// Cash, COST_CASH
+	ATC_NETWEALTH,		// Total Cash + Assets, COST_NETWEALTH
+	ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS
+	ATC_SCENARIO_COMPLETED, // scenario success (only useful if there is one ... ), COST_SCENARIO_COMPLETED
+	ATC_INTERESTS,		// Experimental has it -> making savegame format a little bit more compatible between standard and experimental, COST_INTERESTS
+	ATC_CREDIT_LIMIT, 	// Experimental, too, COST_CREDIT_LIMITS
+	ATC_MAX
+};
+
+/** 
+ * supersedes COST_ types, that CAN be distinguished by type of transport 
+ * @author Jan Korbel
+ */
+enum accounting_type_vehicles {
+	// revenue by freight type http://simutrans-germany.com/wiki/wiki/tiki-index.php?page=en_GoodsDef
+	ATV_REVENUE_PASSENGER=0, // revenue from passenger transport
+	ATV_REVENUE_MAIL,       // revenue from mail transport
+	ATV_REVENUE_0,          // revenue from special freight transport
+	ATV_REVENUE_1,          // revenue from boxed goods transport
+	ATV_REVENUE_2,          // revenue from bulk goods
+	ATV_REVENUE_3,          // revenue from oil/petrol (mineral oil) transport
+	ATV_REVENUE_4,          // revenue from cooled goods
+	ATV_REVENUE_5,          // revenue from fluid goods
+	ATV_REVENUE_6,          // revenue from lumber
+	ATV_REVENUE_7,          // revenue from farm products (and all other cathegories), COST_INCOME mapped here
+	// there are [0;7] cathegories
+	ATV_TOLL_RECEIVED,	// toll payed to you by another player
+	ATV_REVENUE,            // operating profit = passenger + mail+ goods + toll_received
+
+	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
+	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
+	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
+	ATV_TOLL_PAYED,			// toll payed by you to another player, COST_WAY_TOLLS mapped here, ATV_TOLL_PAYED + ATV_TOLL_RECEIVED mapped to COST_WAY_TOLL
+	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE 
+	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
+	ATV_NEW_VEHICLE,			// New vehicles
+	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here
+	ATV_PROFIT,			// = AT_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), COST_PROFIT
+	ATV_NON_FINANTIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
+	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
+
+	
+	ATV_TRANSPORTED_PASSENGER, // numer of transported passanger, COST_TRANSPORTED_PAS
+	ATV_TRANSPORTED_MAIL,      // COST_TRANSPORTED_MAIL
+	ATV_TRANSPORTED_0,
+	ATV_TRANSPORTED_1,
+	ATV_TRANSPORTED_2,
+	ATV_TRANSPORTED_3,
+	ATV_TRANSPORTED_4,
+	ATV_TRANSPORTED_5,
+	ATV_TRANSPORTED_6,
+	ATV_TRANSPORTED_7,         // COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
+	ATV_TRANSPORTED,           // COST_ALL_TRANSPORTED mapped here
+
+	ATV_MAX
+};
+
+/* 
+ * supersedes COST_ * for powerlines and can be used in future for pipelines 
+ * (for water and crude oil) if desired
+ * @author Jan Korbel
+ */
+enum accounting_type_powerline{
+	ATP_REVENUE,              // COST_POWERLINES mapped here
+	ATP_MAINTENANCE,
+	ATP_OPERATING_PROFIT,
+	ATP_CONSTRUCTION_COST,    // costruction cost
+	ATP_PROFIT,               // = AT_OPERATING_PROFIT - COSTRUCTION_COST
+	ATP_NON_FINANTIAL_ASSETS, // value of vehicles owned by your company
+	ATP_PROFIT_MARGIN,        // AT_OPERATING_PROFIT / AT_REVENUE
+	
+	ATP_MAX
+};
+
+
 enum player_cost {
 	COST_CONSTRUCTION=0,// Construction
 	COST_VEHICLE_RUN,   // Vehicle running costs
@@ -72,6 +153,30 @@ protected:
 	sint32 haltcount;
 
 	/**
+	 * finance history - will supersede the finance_history by hsiegeln 
+	 * from version 111
+	 * containes values having relation with whole company but not with particular
+	 * type of transport (com - common)
+	 * @author Jan Korbel
+	 */
+	sint64 finance_history_com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
+	sint64 finance_history_com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
+
+	/**
+	 * finance history having relation with particular type of service
+	 * @author Jan Korbel
+	 */
+	sint64 finance_history_veh_year[TT_MAX_VEH][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
+	sint64 finance_history_veh_month[TT_MAX_VEH][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
+
+	/**
+	 * finance history for powerlines (and possibly for pipelines in future
+	 * @author Jan Korbel
+	 */
+	sint64 finance_history_pow_year[MAX_PLAYER_HISTORY_YEARS][ATP_MAX];
+	sint64 finance_history_pow_month[MAX_PLAYER_HISTORY_MONTHS][ATP_MAX];
+
+	/**
 	* Finance History - will supercede the finances by Owen Rudge
 	* Will hold finances for the most recent 12 years
 	* @author hsiegeln
@@ -83,7 +188,13 @@ protected:
 	 * Monthly maintenance cost
 	 * @author Hj. Malthaner
 	 */
-	sint32 maintenance;
+	sint32 maintenance[TT_MAX];
+
+	/**
+	 * monthly vehicle maintenance cost
+	 * author Jan Korbel
+	 */
+	sint32 vehicle_maintenance[TT_MAX];
 
 	/**
 	 * Die Welt in der gespielt wird.
@@ -145,11 +256,7 @@ protected:
 	 * @return the new maintenance costs
 	 * @author Hj. Malthaner
 	 */
-	sint32 add_maintenance(sint32 change)
-	{
-		maintenance += change;
-		return maintenance;
-	}
+	sint32 add_maintenance(sint32 change, waytype_t const wt=ignore_wt);
 
 	/**
 	 * Ist dieser Spieler ein automatischer Spieler?
@@ -168,7 +275,110 @@ protected:
 	// contains the password hash for local games
 	pwd_hash_t pwd_hash;
 
+	/**
+	 * Translates finance statistisc from new format to old (version<=111) one.
+	 * Used for saving data in old format
+	 * @author Jan Korbel
+	 */
+	void translate_at_to_cost();
+
+	/**
+	 * Translates finance statistisc from old (version<=111) format to new one.
+	 * Used for loading data from old format
+	 * @author Jan Korbel
+	 */
+	void translate_cost_to_at();
+
+	/**
+	 * Translates waytype_t to transport_type
+	 * @author Jan Korbel
+	 */
+	transport_type translate_waytype_to_tt(const waytype_t wt) const;
+
 public:
+	/**
+	 * sums up "count" with number of convois in statistics, 
+	 * supersedes buche( count, COST_ALL_CONVOIS)
+	 * @author Jan Korbel
+	 */
+	void add_convoi_number(int count){
+		finance_history_com_year[0][ATC_ALL_CONVOIS] += count;
+		finance_history_com_month[0][ATC_ALL_CONVOIS] += count;
+	}
+
+	/**
+	 * Adds construction costs to accounting statistics, 
+	 * @param amount How much does it cost
+	 * @param tt type of transport
+	 * @author Jan Korbel
+	 */
+	void add_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt);
+
+	static void add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt);
+
+	/*
+	 * displayes amount of money when koordinates and on screen
+	 * reworked function buche()
+	 */
+	void add_money_message(const sint64 amount, const koord k);
+
+	/**
+	 * Accounts bought/sold vehicles
+	 * @param price money used for purchase of vehicle,
+	 *              negative value = vehicle bought,
+	 *              negative value = vehicle sold
+	 * @param tt type of transport for accounting purpose
+	 * @author Jan Korbel
+	 */
+	void add_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
+
+	/**
+	 * Adds income to accounting statistics. Cargo with unknown cathegory will be 
+	 * accounted as cathegory 7. 
+	 * @param amount earned money
+	 * @param tt transport type used in accounting statistics
+	 * @param cathegory parameter "catg" of goods [0,7] from pak files, special 
+	 *                  values -2 for passenger and -1 for mail
+	 *                  if parameter tt is TT_POWERLINE, cathegory is ignored
+	 * @author Jan Korbel
+	 */
+	void add_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
+
+	/**
+         * Adds running costs to accounting statistics. 
+         * this function is called very often --> inline
+         * @param amount How much does it cost
+         * @param wt
+	 * @author Jan Korbel
+         */
+        void add_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
+
+	/**
+	 * books toll payed by our company to someone else
+	 * @param amount money payed to our company
+	 * @param tt type of transport used for assounting statistisc
+	 * @author Jan Korbel
+	 */
+	void add_toll_payed(const sint64 amount, const waytype_t wt=ignore_wt);
+
+	/**
+	 * books toll payed to out company by someone else
+	 * @param amount money payed for usage of our roads,railway,channels, ... ; positive sign
+	 * @param tt type of transport used for assounting statistisc
+	 * @author Jan Korbel
+	 */
+	void add_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
+
+	/**
+	 * Add amount of transported passanger, mail, goods to accounting statistics
+	 * @param amount number of transported units
+	 * @papam tt type of transport
+	 * @param cathegory constegory of transported items (-2 passanger, -1 mail, 
+	 *                  other same as in the pak files)
+	 * @author Jan Korbel
+	 */
+	void add_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+
 	virtual bool set_active( bool b ) { return automat = b; }
 
 	bool is_active() const { return automat; }
@@ -227,12 +437,23 @@ public:
 
 	virtual ~spieler_t();
 
-	sint32 get_maintenance() const { return maintenance; }
+	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
+	
+	/**
+	 * returns maintenance with bits_per_month
+	 * @author Jan Korbel
+	 */
+	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
-	static sint32 add_maintenance(spieler_t *sp, sint32 change) {
+	/**
+	 * returns vehicle maintenance with bits_per_month
+	 * @author Jan Korbel
+	 */
+	sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
+
+	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt) {
 		if(sp) {
-			sp->maintenance += change;
-			return sp->maintenance;
+			return sp->add_maintenance(change, wt);
 		}
 		return 0;
 	}
@@ -328,11 +549,54 @@ public:
 	sint64 get_finance_history_month(int month, int type) { return finance_history_month[month][type]; }
 
 	/**
+	* Returns the finance history (indistinguishable part) for player
+	* @author hsiegeln, Jan Korbel
+	*/
+	sint64 get_finance_history_com_year(int year, int type) { return finance_history_com_year[year][type]; }
+	sint64 get_finance_history_com_month(int month, int type) { return finance_history_com_month[month][type]; }
+
+	/**
+	* Returns the finance history (distinguishable by type of transport) for player
+	* @author hsiegeln, Jan Korbel
+	*/
+	sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return finance_history_veh_year[tt][year][type]; }
+	sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return finance_history_veh_month[tt][month][type]; }
+
+	/**
+	 * @return finance history for powerlines
+	 * @author Jan Korbel
+	 */
+	sint64 get_finance_history_pow_year(int year, int type) { return finance_history_pow_year[year][type]; }
+	sint64 get_finance_history_pow_month(int month, int type) { return finance_history_pow_month[month][type]; }
+
+	/**
 	 * Returns pointer to finance history for player
 	 * @author hsiegeln
 	 */
 	sint64* get_finance_history_year() { return *finance_history_year; }
 	sint64* get_finance_history_month() { return *finance_history_month; }
+
+	/**
+	 * @return finance history of indistinguishable (by type of transport) 
+	 * part of finance statistics
+	 * @author Jan Korbel
+	 */
+	sint64* get_finance_history_com_year() { return *finance_history_com_year; }
+	sint64* get_finance_history_com_month() { return *finance_history_com_month; }
+
+	/**
+	 * @return finance history for powerlines
+	 * @author Jan Korbel
+	 */
+	sint64* get_finance_history_pow_year() { return *finance_history_pow_year; }
+	sint64* get_finance_history_pow_month() { return *finance_history_pow_month; }
+
+	/**
+	 * @return finance history for vehicles
+	 * @author Jan Korbel
+	 */
+	sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance_history_veh_year[tt]; }
+	sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance_history_veh_month[tt]; }
 
 	/**
 	* Returns the world the player is in

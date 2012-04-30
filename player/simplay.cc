@@ -1601,7 +1601,7 @@ void spieler_t::translate_at_to_cost(){
 		finance_history_month[i][COST_VEHICLE_RUN]  = finance_history_veh_month[TT_ALL][i][ATV_RUNNING_COST] + finance_history_veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
 		finance_history_month[i][COST_NEW_VEHICLE]   = finance_history_veh_month[TT_ALL][i][ATV_NEW_VEHICLE];
 		finance_history_month[i][COST_INCOME]       = 0;
-		for(int j=ATV_REVENUE_PASSENGER; j<=ATV_REVENUE_7; ++j){
+		for(int j=ATV_REVENUE_PASSENGER; j<=ATV_REVENUE_GOOD; ++j){
 			finance_history_month[i][COST_INCOME] += finance_history_veh_month[TT_ALL][i][j];
 		}
 		finance_history_month[i][COST_MAINTENANCE]  = finance_history_veh_month[TT_ALL][i][ATV_INFRASTRUCTURE_MAINTENANCE];
@@ -1615,10 +1615,7 @@ void spieler_t::translate_at_to_cost(){
 		finance_history_month[i][COST_POWERLINES]       = finance_history_pow_month[i][ATP_REVENUE];
 		finance_history_month[i][COST_TRANSPORTED_PAS]  = finance_history_veh_month[TT_ALL][i][ATV_TRANSPORTED_PASSENGER];
 		finance_history_month[i][COST_TRANSPORTED_MAIL] = finance_history_veh_month[TT_ALL][i][ATV_TRANSPORTED_MAIL];
-		finance_history_month[i][COST_TRANSPORTED_GOOD] = 0;
-		for(int j=ATV_TRANSPORTED_0; j<=ATV_TRANSPORTED_7; ++j){
-			finance_history_month[i][COST_TRANSPORTED_GOOD] += finance_history_veh_month[TT_ALL][i][j];
-		}
+		finance_history_month[i][COST_TRANSPORTED_GOOD] = finance_history_veh_month[TT_ALL][i][ATV_TRANSPORTED_GOOD];
 		finance_history_month[i][COST_ALL_CONVOIS]      = finance_history_com_month[i][ATC_ALL_CONVOIS];
 		finance_history_month[i][COST_SCENARIO_COMPLETED] = finance_history_com_month[i][ATC_SCENARIO_COMPLETED];
 		finance_history_month[i][COST_WAY_TOLLS]        = finance_history_veh_month[TT_ALL][i][ATV_TOLL_RECEIVED] + finance_history_veh_month[TT_ALL][i][ATV_TOLL_PAYED];
@@ -1629,7 +1626,7 @@ void spieler_t::translate_at_to_cost(){
 		finance_history_year[i][COST_VEHICLE_RUN]  = finance_history_veh_year[TT_ALL][i][ATV_RUNNING_COST] + finance_history_veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
 		finance_history_year[i][COST_NEW_VEHICLE]   = finance_history_veh_year[TT_ALL][i][ATV_NEW_VEHICLE];
 		finance_history_year[i][COST_INCOME]       = 0;
-		for(int j=ATV_REVENUE_PASSENGER; j<=ATV_REVENUE_7; ++j){
+		for(int j=ATV_REVENUE_PASSENGER; j<=ATV_REVENUE_GOOD; ++j){
 			finance_history_year[i][COST_INCOME] += finance_history_veh_year[TT_ALL][i][j];
 		}
 		finance_history_year[i][COST_MAINTENANCE]  = finance_history_veh_year[TT_ALL][i][ATV_INFRASTRUCTURE_MAINTENANCE];
@@ -1643,10 +1640,7 @@ void spieler_t::translate_at_to_cost(){
 		finance_history_year[i][COST_POWERLINES]       = finance_history_pow_year[i][ATP_REVENUE];
 		finance_history_year[i][COST_TRANSPORTED_PAS]  = finance_history_veh_year[TT_ALL][i][ATV_TRANSPORTED_PASSENGER];
 		finance_history_year[i][COST_TRANSPORTED_MAIL] = finance_history_veh_year[TT_ALL][i][ATV_TRANSPORTED_MAIL];
-		finance_history_year[i][COST_TRANSPORTED_GOOD] = 0;
-		for(int j=ATV_TRANSPORTED_0; j<=ATV_TRANSPORTED_7; ++j){
-			finance_history_year[i][COST_TRANSPORTED_GOOD] += finance_history_veh_year[TT_ALL][i][j];
-		}
+		finance_history_year[i][COST_TRANSPORTED_GOOD] += finance_history_veh_year[TT_ALL][i][ATV_TRANSPORTED_GOOD];
 		finance_history_year[i][COST_ALL_CONVOIS]      = finance_history_com_year[i][ATC_ALL_CONVOIS];
 		finance_history_year[i][COST_SCENARIO_COMPLETED] = finance_history_com_year[i][ATC_SCENARIO_COMPLETED];
 		finance_history_year[i][COST_WAY_TOLLS]        = finance_history_veh_year[TT_ALL][i][ATV_TOLL_RECEIVED] + finance_history_veh_year[TT_ALL][i][ATV_TOLL_PAYED];
@@ -1663,8 +1657,8 @@ void spieler_t::translate_cost_to_at(){
 		finance_history_veh_month[TT_ALL  ][i][ATV_RUNNING_COST]      = finance_history_month[i][COST_VEHICLE_RUN];
 		finance_history_veh_month[TT_OTHER][i][ATV_NEW_VEHICLE]       = finance_history_month[i][COST_NEW_VEHICLE];
 		finance_history_veh_month[TT_ALL  ][i][ATV_NEW_VEHICLE]       = finance_history_month[i][COST_NEW_VEHICLE];
-		finance_history_veh_month[TT_OTHER][i][ATV_REVENUE_7]         = finance_history_month[i][COST_INCOME];
-		finance_history_veh_month[TT_ALL  ][i][ATV_REVENUE_7]         = finance_history_month[i][COST_INCOME];
+		finance_history_veh_month[TT_OTHER][i][ATV_REVENUE_GOOD]         = finance_history_month[i][COST_INCOME];
+		finance_history_veh_month[TT_ALL  ][i][ATV_REVENUE_GOOD]         = finance_history_month[i][COST_INCOME];
 		finance_history_veh_month[TT_OTHER][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_month[i][COST_MAINTENANCE];
 		finance_history_veh_month[TT_ALL  ][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_month[i][COST_MAINTENANCE];
 		finance_history_veh_month[TT_OTHER][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_month[i][COST_ASSETS];
@@ -1683,8 +1677,8 @@ void spieler_t::translate_cost_to_at(){
 		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
 		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED_MAIL]  = finance_history_month[i][COST_TRANSPORTED_MAIL];
 		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_MAIL]  = finance_history_month[i][COST_TRANSPORTED_MAIL];
-		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED_7]     = finance_history_month[i][COST_TRANSPORTED_GOOD];
-		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_7]     = finance_history_month[i][COST_TRANSPORTED_GOOD];
+		finance_history_veh_month[TT_OTHER][i][ATV_TRANSPORTED_GOOD]     = finance_history_month[i][COST_TRANSPORTED_GOOD];
+		finance_history_veh_month[TT_ALL  ][i][ATV_TRANSPORTED_GOOD]     = finance_history_month[i][COST_TRANSPORTED_GOOD];
 		finance_history_com_month[i][ATC_ALL_CONVOIS]                 = finance_history_month[i][COST_ALL_CONVOIS];
 		finance_history_com_month[i][ATC_SCENARIO_COMPLETED]          = finance_history_month[i][COST_SCENARIO_COMPLETED];
 		if(finance_history_month[i][COST_WAY_TOLLS] > 0 ){
@@ -1703,8 +1697,8 @@ void spieler_t::translate_cost_to_at(){
 		finance_history_veh_year[TT_ALL  ][i][ATV_RUNNING_COST]      = finance_history_year[i][COST_VEHICLE_RUN];
 		finance_history_veh_year[TT_OTHER][i][ATV_NEW_VEHICLE]       = finance_history_year[i][COST_NEW_VEHICLE];
 		finance_history_veh_year[TT_ALL  ][i][ATV_NEW_VEHICLE]       = finance_history_year[i][COST_NEW_VEHICLE];
-		finance_history_veh_year[TT_OTHER][i][ATV_REVENUE_7]         = finance_history_year[i][COST_INCOME];
-		finance_history_veh_year[TT_ALL  ][i][ATV_REVENUE_7]         = finance_history_year[i][COST_INCOME];
+		finance_history_veh_year[TT_OTHER][i][ATV_REVENUE_GOOD]         = finance_history_year[i][COST_INCOME];
+		finance_history_veh_year[TT_ALL  ][i][ATV_REVENUE_GOOD]         = finance_history_year[i][COST_INCOME];
 		finance_history_veh_year[TT_OTHER][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_year[i][COST_MAINTENANCE];
 		finance_history_veh_year[TT_ALL  ][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_year[i][COST_MAINTENANCE];
 		finance_history_veh_year[TT_OTHER][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_year[i][COST_ASSETS];
@@ -1723,8 +1717,8 @@ void spieler_t::translate_cost_to_at(){
 		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
 		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED_MAIL]  = finance_history_year[i][COST_TRANSPORTED_MAIL];
 		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_MAIL]  = finance_history_year[i][COST_TRANSPORTED_MAIL];
-		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED_7]     = finance_history_year[i][COST_TRANSPORTED_GOOD];
-		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_7]     = finance_history_year[i][COST_TRANSPORTED_GOOD];
+		finance_history_veh_year[TT_OTHER][i][ATV_TRANSPORTED_GOOD]     = finance_history_year[i][COST_TRANSPORTED_GOOD];
+		finance_history_veh_year[TT_ALL  ][i][ATV_TRANSPORTED_GOOD]     = finance_history_year[i][COST_TRANSPORTED_GOOD];
 		finance_history_com_year[i][ATC_ALL_CONVOIS]                 = finance_history_year[i][COST_ALL_CONVOIS];
 		finance_history_com_year[i][ATC_SCENARIO_COMPLETED]          = finance_history_year[i][COST_SCENARIO_COMPLETED];
 		if(finance_history_year[i][COST_WAY_TOLLS] > 0 ){

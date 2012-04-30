@@ -43,15 +43,7 @@ enum accounting_type_vehicles {
 	// revenue by freight type http://simutrans-germany.com/wiki/wiki/tiki-index.php?page=en_GoodsDef
 	ATV_REVENUE_PASSENGER=0, // revenue from passenger transport
 	ATV_REVENUE_MAIL,       // revenue from mail transport
-	ATV_REVENUE_0,          // revenue from special freight transport
-	ATV_REVENUE_1,          // revenue from boxed goods transport
-	ATV_REVENUE_2,          // revenue from bulk goods
-	ATV_REVENUE_3,          // revenue from oil/petrol (mineral oil) transport
-	ATV_REVENUE_4,          // revenue from cooled goods
-	ATV_REVENUE_5,          // revenue from fluid goods
-	ATV_REVENUE_6,          // revenue from lumber
-	ATV_REVENUE_7,          // revenue from farm products (and all other cathegories), COST_INCOME mapped here
-	// there are [0;7] cathegories
+	ATV_REVENUE_GOOD,          // revenue from good transport
 	ATV_TOLL_RECEIVED,	// toll payed to you by another player
 	ATV_REVENUE,            // operating profit = passenger + mail+ goods + toll_received
 
@@ -70,14 +62,7 @@ enum accounting_type_vehicles {
 	
 	ATV_TRANSPORTED_PASSENGER, // numer of transported passanger, COST_TRANSPORTED_PAS
 	ATV_TRANSPORTED_MAIL,      // COST_TRANSPORTED_MAIL
-	ATV_TRANSPORTED_0,
-	ATV_TRANSPORTED_1,
-	ATV_TRANSPORTED_2,
-	ATV_TRANSPORTED_3,
-	ATV_TRANSPORTED_4,
-	ATV_TRANSPORTED_5,
-	ATV_TRANSPORTED_6,
-	ATV_TRANSPORTED_7,         // COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
+	ATV_TRANSPORTED_GOOD,         // COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
 	ATV_TRANSPORTED,           // COST_ALL_TRANSPORTED mapped here
 
 	ATV_MAX

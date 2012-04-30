@@ -534,6 +534,15 @@ public:
 	sint64 get_finance_history_month(int month, int type) { return finance_history_month[month][type]; }
 
 	/**
+	* Returns the finance history for player
+	* @author hsiegeln, jk271
+	* 'proxy' for more complicated internal data structures
+	* int tt is COST_ !!!
+	*/
+	sint64 get_finance_history_year(int tt, int year, int type);
+	sint64 get_finance_history_month(int tt, int month, int type);
+
+	/**
 	* Returns the finance history (indistinguishable part) for player
 	* @author hsiegeln, Jan Korbel
 	*/

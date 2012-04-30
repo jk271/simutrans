@@ -1749,3 +1749,28 @@ transport_type spieler_t::translate_waytype_to_tt(const waytype_t wt) const {
 	}
 }
 
+
+/* 
+ * int tt is COST_ !!! 
+*/
+sint64 spieler_t::get_finance_history_year(int tt, int year, int type) { 
+	assert((tt>=0) && (tt<TT_MAX));
+	if( tt ==0 ){
+		return finance_history_year[year][type]; 
+	} else {
+		return finance_history_veh_year[tt][year][type]; 
+	}
+}
+
+
+/* 
+ * int tt is COST_ !!! 
+*/
+sint64 spieler_t::get_finance_history_month(int tt, int month, int type) { 
+	assert((tt>=0) && (tt<TT_MAX));
+	if( tt == 0 ) {
+		return finance_history_month[month][type]; 
+	} else {
+		return finance_history_veh_month[tt][month][type]; 
+	}
+}

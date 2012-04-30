@@ -770,15 +770,19 @@ void spieler_t::calc_finance_history()
 
 	// vehicles
 	for(int tt=0; tt<TT_MAX_VEH; ++tt){
-		// ATV_REVENUE = ATC_REVENUE_* + ATC_TOLL_RECEIVED
+		// ATV_REVENUE_TRANSPORT = ATV_REVENUE_PAS+MAIL+GOOD
 		sint64 revenue, mrevenue;
 		revenue = mrevenue = 0;
-		for(int i=0; i<ATV_REVENUE; ++i){
+		for(int i=0; i<ATV_REVENUE_TRANSPORT; ++i){
 			mrevenue += finance_history_veh_month[tt][0][i];
 			revenue  += finance_history_veh_year[ tt][0][i];
 		}
-		finance_history_veh_month[tt][0][ATV_REVENUE] = mrevenue;
-		finance_history_veh_year[ tt][0][ATV_REVENUE] = revenue;
+		finance_history_veh_month[tt][0][ATV_REVENUE_TRANSPORT] = mrevenue;
+		finance_history_veh_year[ tt][0][ATV_REVENUE_TRANSPORT] = revenue;
+
+		// ATV_REVENUE = ATV_REVENUE_TRANSPORT + ATV_TOLL_RECEIVED
+		finance_history_veh_month[tt][0][ATV_REVENUE] = finance_history_veh_month[tt][0][ATV_REVENUE_TRANSPORT] = finance_history_veh_month[tt][0][ATV_REVENUE_TOLL_RECEIVED];
+		finance_history_veh_year[tt][0][ATV_REVENUE] = finance_history_veh_year[tt][0][ATV_REVENUE_TRANSPORT] = finance_history_veh_year[tt][0][ATV_REVENUE_TOLL_RECEIVED];
 
 		// ATC_EXPENDITURE = ATC_RUNNIG_COST + ATC_VEH_MAINTENENCE + ATC_INF_MAINTENENCE + ATC_TOLL_PAYED;
 		sint64 expenditure, mexpenditure;

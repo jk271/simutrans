@@ -70,23 +70,6 @@ enum accounting_type_vehicles {
 	ATV_MAX
 };
 
-/* 
- * supersedes COST_ * for powerlines and can be used in future for pipelines 
- * (for water and crude oil) if desired
- * @author Jan Korbel
- */
-enum accounting_type_powerline{
-	ATP_REVENUE,              // COST_POWERLINES mapped here
-	ATP_MAINTENANCE,
-	ATP_OPERATING_PROFIT,
-	ATP_CONSTRUCTION_COST,    // costruction cost
-	ATP_PROFIT,               // = AT_OPERATING_PROFIT - COSTRUCTION_COST
-	ATP_NON_FINANTIAL_ASSETS, // value of vehicles owned by your company
-	ATP_PROFIT_MARGIN,        // AT_OPERATING_PROFIT / AT_REVENUE
-	
-	ATP_MAX
-};
-
 
 enum player_cost {
 	COST_CONSTRUCTION=0,// Construction
@@ -153,15 +136,8 @@ protected:
 	 * finance history having relation with particular type of service
 	 * @author Jan Korbel
 	 */
-	sint64 finance_history_veh_year[TT_MAX_VEH][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
-	sint64 finance_history_veh_month[TT_MAX_VEH][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
-
-	/**
-	 * finance history for powerlines (and possibly for pipelines in future
-	 * @author Jan Korbel
-	 */
-	sint64 finance_history_pow_year[MAX_PLAYER_HISTORY_YEARS][ATP_MAX];
-	sint64 finance_history_pow_month[MAX_PLAYER_HISTORY_MONTHS][ATP_MAX];
+	sint64 finance_history_veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
+	sint64 finance_history_veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
 	/**
 	* Finance History - will supercede the finances by Owen Rudge
@@ -561,13 +537,6 @@ public:
 	sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return finance_history_veh_month[tt][month][type]; }
 
 	/**
-	 * @return finance history for powerlines
-	 * @author Jan Korbel
-	 */
-	sint64 get_finance_history_pow_year(int year, int type) { return finance_history_pow_year[year][type]; }
-	sint64 get_finance_history_pow_month(int month, int type) { return finance_history_pow_month[month][type]; }
-
-	/**
 	 * Returns pointer to finance history for player
 	 * @author hsiegeln
 	 */
@@ -581,13 +550,6 @@ public:
 	 */
 	sint64* get_finance_history_com_year() { return *finance_history_com_year; }
 	sint64* get_finance_history_com_month() { return *finance_history_com_month; }
-
-	/**
-	 * @return finance history for powerlines
-	 * @author Jan Korbel
-	 */
-	sint64* get_finance_history_pow_year() { return *finance_history_pow_year; }
-	sint64* get_finance_history_pow_month() { return *finance_history_pow_month; }
 
 	/**
 	 * @return finance history for vehicles

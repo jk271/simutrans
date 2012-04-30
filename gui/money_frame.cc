@@ -91,6 +91,20 @@ const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
 };
 
 
+const char * money_frame_t::transport_type_values[TT_MAX] = {
+	"All",
+	"Maglev",
+	"Monorail",
+	"Train",
+	"Narrowgauge",
+	"Tram",
+	"Truck",
+	"Ship",
+	"Air",
+	"Powerlines",
+};
+
+
 /**
  * fills buffer (char array) with finance info
  * @author Owen Rudge, Hj. Malthaner
@@ -207,7 +221,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	vtmoney.set_pos(koord(left+140+335+55, top+6*BUTTONSPACE));
 	margin.set_pos(koord(left+140+335+55, top+7*BUTTONSPACE));
 	money.set_pos(koord(left+140+335+55, top+8*BUTTONSPACE));
-
+	
 	// return money or else stuff ...
 	warn.set_pos(koord(left+335, top+9*BUTTONSPACE));
 	if(sp->get_player_nr()==0  &&  sp->get_welt()->get_scenario()->active()) {
@@ -347,6 +361,17 @@ money_frame_t::money_frame_t(spieler_t *sp)
 			mchart.hide_curve(i);
 		}
 	}
+
+	transport_type.set_pos(koord(koord(left+335-12, top+9*BUTTONSPACE)));
+	transport_type.set_groesse( koord(146,D_BUTTON_HEIGHT) );
+	for(int i=0; i<TT_MAX; ++i) {
+		transport_type.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
+	}
+	transport_type.set_selection(0);
+	transport_type.set_focusable( false );
+	add_komponente(&transport_type);
+	transport_type.add_listener( this );
+
 
 	set_fenstergroesse(koord(582, 340));
 }

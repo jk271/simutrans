@@ -15,10 +15,13 @@
 #include "components/gui_tab_panel.h"
 #include "components/gui_chart.h"
 #include "components/gui_location_view_t.h"
+#include "components/gui_combobox.h"
 
 #include "../player/simplay.h"
 
 #define MAX_PLAYER_COST_BUTTON (14)
+
+#define TT_MAX (10)
 
 /**
  * Finances dialog
@@ -71,6 +74,8 @@ private:
 
 	gui_container_t month_dummy, year_dummy;
 
+	gui_combobox_t transport_type;
+
 	/**
 	 * fills buffer (char array) with finance info
 	 * @author Owen Rudge, Hj. Malthaner
@@ -99,6 +104,7 @@ private:
 	static const char *cost_type_name[MAX_PLAYER_COST_BUTTON];
 	static const COLOR_VAL cost_type_color[MAX_PLAYER_COST_BUTTON];
 	static const uint8 cost_type[MAX_PLAYER_COST_BUTTON];
+	static const char * transport_type_values[TT_MAX];
 	gui_tab_panel_t year_month_tabs;
 
 	button_t headquarter, goto_headquarter;

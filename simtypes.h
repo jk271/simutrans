@@ -128,7 +128,7 @@ enum transport_type {
 	TT_SHIP,
 	TT_AIR,
 	TT_OTHER, // everything other that can not be differentiated (e.g. houses), not powerlines
-	TT_MAX_VEH, //
+	TT_MAX_VEH = TT_OTHER, //
 	TT_POWERLINE,
 	TT_MAX
 };

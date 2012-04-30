@@ -90,17 +90,18 @@ const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
 	COST_NETWEALTH,     // Total Cash + Assets
 };
 
-
+/* order has to be same as in enum transport_type in file simtypes.h */
 const char * money_frame_t::transport_type_values[TT_MAX] = {
 	"All",
-	"Maglev",
 	"Monorail",
+	"Maglev",
 	"Train",
-	"Narrowgauge",
 	"Tram",
+	"Narrowgauge",
 	"Truck",
 	"Ship",
 	"Air",
+	"Other",
 	"Powerlines",
 };
 

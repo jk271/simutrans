@@ -44,7 +44,7 @@ enum accounting_type_vehicles {
 	ATV_REVENUE_PASSENGER=0, // revenue from passenger transport
 	ATV_REVENUE_MAIL,       // revenue from mail transport
 	ATV_REVENUE_GOOD,          // revenue from good transport
-	AVT_REVENUE_TRANSPORT,	// operating profit = passenger + mail+ goods = COST_INCOME
+	ATV_REVENUE_TRANSPORT,	// operating profit = passenger + mail+ goods = COST_INCOME
 	ATV_TOLL_RECEIVED,	// toll payed to you by another player
 	ATV_REVENUE,            // operating profit = revenue_transport + toll = passenger + mail+ goods + toll_received
 

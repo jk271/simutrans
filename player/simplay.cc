@@ -802,6 +802,9 @@ void spieler_t::calc_finance_history()
 		finance_history_veh_month[tt][0][ATV_PROFIT] = mprofit;
 		finance_history_veh_year[ tt][0][ATV_PROFIT] =  profit;
 
+		finance_history_veh_month[tt][0][ATV_WAY_TOLL] = finance_history_veh_month[tt][0][ATV_TOLL_RECEIVED] + finance_history_veh_month[tt][0][ATV_TOLL_PAYED]; 
+		finance_history_veh_year[ tt][0][ATV_WAY_TOLL] = finance_history_veh_year[tt][0][ATV_TOLL_RECEIVED] + finance_history_veh_year[tt][0][ATV_TOLL_PAYED]; 
+
 		finance_history_veh_month[tt][0][ATV_PROFIT_MARGIN] = calc_margin(finance_history_veh_month[tt][0][ATV_OPERATING_PROFIT], finance_history_veh_month[tt][0][ATV_REVENUE]);
 		finance_history_veh_year[tt][0][ATV_PROFIT_MARGIN] = calc_margin(finance_history_veh_year[tt][0][ATV_OPERATING_PROFIT], finance_history_veh_year[tt][0][ATV_REVENUE]);
 

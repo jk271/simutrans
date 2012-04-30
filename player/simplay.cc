@@ -1096,11 +1096,6 @@ void spieler_t::rdwr(loadsave_t *file)
 	file->rdwr_longlong(konto);
 	file->rdwr_long(konto_ueberzogen);
 
-	if(file->get_version()<111002){ 
-	// jktodo: needs testing
-	//	translate_at_to_cost();
-	}
-
 	if(file->get_version()<101000) {
 		// ignore steps
 		sint32 ldummy=0;
@@ -1365,7 +1360,7 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 	}
 
 	// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
-	if((file->get_version()<111002) && (file->is_loading())){
+	if((file->get_version()<111005) && (file->is_loading())){
 		translate_cost_to_at();
 	}
 }
@@ -1706,7 +1701,7 @@ transport_type spieler_t::translate_waytype_to_tt(const waytype_t wt) const {
 */
 sint64 spieler_t::get_finance_history_year(int tt, int year, int type) { 
 	assert((tt>=0) && (tt<TT_MAX));
-	if( tt ==0 ){
+	if( tt == TT_ALL ){
 		return finance_history_year[year][type]; 
 	} else {
 		int index = translate_index_cost_to_at(type);
@@ -1725,7 +1720,7 @@ sint64 spieler_t::get_finance_history_year(int tt, int year, int type) {
 */
 sint64 spieler_t::get_finance_history_month(int tt, int month, int type) { 
 	assert((tt>=0) && (tt<TT_MAX));
-	if( tt == 0 ) {
+	if( tt == TT_ALL ) {
 		return finance_history_month[month][type]; 
 	} else {
 		int index = translate_index_cost_to_at(type);

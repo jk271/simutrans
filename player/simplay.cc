@@ -781,8 +781,8 @@ void spieler_t::calc_finance_history()
 		finance_history_veh_year[ tt][0][ATV_REVENUE_TRANSPORT] = revenue;
 
 		// ATV_REVENUE = ATV_REVENUE_TRANSPORT + ATV_TOLL_RECEIVED
-		finance_history_veh_month[tt][0][ATV_REVENUE] = finance_history_veh_month[tt][0][ATV_REVENUE_TRANSPORT] = finance_history_veh_month[tt][0][ATV_REVENUE_TOLL_RECEIVED];
-		finance_history_veh_year[tt][0][ATV_REVENUE] = finance_history_veh_year[tt][0][ATV_REVENUE_TRANSPORT] = finance_history_veh_year[tt][0][ATV_REVENUE_TOLL_RECEIVED];
+		finance_history_veh_month[tt][0][ATV_REVENUE] = finance_history_veh_month[tt][0][ATV_REVENUE_TRANSPORT] = finance_history_veh_month[tt][0][ATV_TOLL_RECEIVED];
+		finance_history_veh_year[tt][0][ATV_REVENUE] = finance_history_veh_year[tt][0][ATV_REVENUE_TRANSPORT] = finance_history_veh_year[tt][0][ATV_TOLL_RECEIVED];
 
 		// ATC_EXPENDITURE = ATC_RUNNIG_COST + ATC_VEH_MAINTENENCE + ATC_INF_MAINTENENCE + ATC_TOLL_PAYED;
 		sint64 expenditure, mexpenditure;

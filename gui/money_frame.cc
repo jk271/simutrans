@@ -111,7 +111,7 @@ const char * money_frame_t::transport_type_values[TT_MAX] = {
  */
 const char *money_frame_t::display_money(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(old, type) : sp->get_finance_history_year(old, type)) / 100.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(transport_type_option, old, type) : sp->get_finance_history_year(transport_type_option, old, type)) / 100.0;
 	money_to_string(buf, cost );
 	return(buf);
 }
@@ -119,7 +119,7 @@ const char *money_frame_t::display_money(int type, char *buf, int old)
 
 const char *money_frame_t::display_number(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(old, type) : sp->get_finance_history_year(old, type)) / 1.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(transport_type_option, old, type) : sp->get_finance_history_year(transport_type_option, old, type)) / 1.0;
 	money_to_string(buf, cost );
 	buf[strlen(buf)-4] = 0;	// remove comma
 	return(buf);
@@ -172,6 +172,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		maintenance_money(NULL, COL_RED, gui_label_t::money),
 		warn("", COL_YELLOW, gui_label_t::left),
 		scenario("", COL_BLACK, gui_label_t::left),
+		transport_type_option(0),
 		headquarter_view(sp->get_welt(), koord3d::invalid, koord(120, 64))
 {
 	if(sp->get_welt()->get_spieler(0)!=sp) {
@@ -362,15 +363,15 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		}
 	}
 
-	transport_type.set_pos(koord(koord(left+335-12, top+9*BUTTONSPACE)));
-	transport_type.set_groesse( koord(146,D_BUTTON_HEIGHT) );
+	transport_type_c.set_pos(koord(koord(left+335-12, top+9*BUTTONSPACE)));
+	transport_type_c.set_groesse( koord(146,D_BUTTON_HEIGHT) );
 	for(int i=0; i<TT_MAX; ++i) {
-		transport_type.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
+		transport_type_c.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
 	}
-	transport_type.set_selection(0);
-	transport_type.set_focusable( false );
-	add_komponente(&transport_type);
-	transport_type.add_listener( this );
+	transport_type_c.set_selection(0);
+	transport_type_c.set_focusable( false );
+	add_komponente(&transport_type_c);
+	transport_type_c.add_listener( this );
 
 
 	set_fenstergroesse(koord(582, 340));
@@ -565,6 +566,13 @@ bool money_frame_t::action_triggered( gui_action_creator_t *komp,value_t /* */)
 			}
 			return true;
 		}
+	}
+	if(komp == &transport_type_c) {
+		int tmp = transport_type_c.get_selection();
+		if((0 <= tmp) && (tmp < TT_MAX)) {
+			transport_type_option = tmp;
+		}
+		return true;
 	}
 	return false;
 }

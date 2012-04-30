@@ -21,8 +21,6 @@
 
 #define MAX_PLAYER_COST_BUTTON (14)
 
-#define TT_MAX (10)
-
 /**
  * Finances dialog
  *
@@ -74,7 +72,8 @@ private:
 
 	gui_container_t month_dummy, year_dummy;
 
-	gui_combobox_t transport_type;
+	int transport_type_option;
+	gui_combobox_t transport_type_c;
 
 	/**
 	 * fills buffer (char array) with finance info

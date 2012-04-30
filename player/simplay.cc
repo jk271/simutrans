@@ -1805,8 +1805,8 @@ int spieler_t::translate_index_cost_to_at(int cost_index) {
 		ATV_CONSTRUCTION_COST,  // COST_CONSTRUCTION
 		ATV_RUNNING_COST,       // COST_VEHICLE_RUN
 		ATV_NEW_VEHICLE,        // COST_NEW_VEHICLE
-		ATV_REVENUE,            // COST_INCOME
-		ATV_INFRASTRUCTURE_MAINTENANCE,    // COST_MAINTENANCE
+		ATV_REVENUE_TRANSPORT,  // COST_INCOME
+		ATV_INFRASTRUCTURE_MAINTENANCE, // COST_MAINTENANCE
 		ATV_NON_FINANTIAL_ASSETS,// COST_ASSETS
 		-2,                     // COST_CASH - cash can not be assigned to transport type
 		-2,                     // COST_NETWEALTH -||-

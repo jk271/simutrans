@@ -1097,7 +1097,8 @@ void spieler_t::rdwr(loadsave_t *file)
 	file->rdwr_long(konto_ueberzogen);
 
 	if(file->get_version()<111002){ 
-		translate_at_to_cost();
+	// jktodo: needs testing
+	//	translate_at_to_cost();
 	}
 
 	if(file->get_version()<101000) {

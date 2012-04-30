@@ -109,7 +109,7 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		}
 	}
 
-	for (int transport_type=0; transport_type<TT_MAX_VEH; ++transport_type){
+	for (int transport_type=0; transport_type<TT_MAX; ++transport_type){
 		for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
 			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
 				finance_history_veh_year[transport_type][year][cost_type] = 0;
@@ -117,7 +117,7 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		}
 	}
 
-	for (int transport_type=0; transport_type<TT_MAX_VEH; ++transport_type){
+	for (int transport_type=0; transport_type<TT_MAX; ++transport_type){
 		for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
 			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
 				finance_history_veh_month[transport_type][month][cost_type] = 0;
@@ -641,7 +641,7 @@ void spieler_t::roll_finance_history_month()
 		}
 	}
 	// vehicles
-	for(int tt=0; tt<TT_MAX_VEH; ++tt){
+	for(int tt=0; tt<TT_MAX; ++tt){
 		for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
 			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
 				finance_history_veh_month[tt][i][accounting_type] = finance_history_veh_month[tt][i-1][accounting_type];
@@ -681,7 +681,7 @@ void spieler_t::roll_finance_history_year()
 		}
 	}
 	// vehicles
-	for(int tt=0; tt<TT_MAX_VEH; ++tt){
+	for(int tt=0; tt<TT_MAX; ++tt){
 		for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
 			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
 				finance_history_veh_year[tt][i][accounting_type] = finance_history_veh_year[tt][i-1][accounting_type];
@@ -1237,14 +1237,14 @@ void spieler_t::rdwr(loadsave_t *file)
 				file->rdwr_longlong(finance_history_com_month[month][cost_type]);
 			}
 		}
-		for(int tt=0; tt<TT_MAX_VEH; ++tt){
+		for(int tt=0; tt<TT_MAX; ++tt){
 			for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
 				for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
 					file->rdwr_longlong(finance_history_veh_year[tt][year][cost_type]);
 				}
 			}
 		} 
-		for(int tt=0; tt<TT_MAX_VEH; ++tt){
+		for(int tt=0; tt<TT_MAX; ++tt){
 			for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
 				for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
 					file->rdwr_longlong(finance_history_veh_month[tt][month][cost_type]);

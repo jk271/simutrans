@@ -132,7 +132,7 @@ const char *money_frame_t::display_number(int type, char *buf, int old)
  */
 int money_frame_t::get_money_colour(int type, int old)
 {
-	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(old, type) : sp->get_finance_history_year(old, type));
+	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(transport_type_option, old, type) : sp->get_finance_history_year(transport_type_option, old, type));
 	if (i < 0) return MONEY_MINUS;
 	if (i > 0) return MONEY_PLUS;
 	return COL_YELLOW;
@@ -522,9 +522,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 
 	// Hajo: Money is counted in credit cents (100 cents = 1 Cr)
 	money_to_string(str_buf[16],
-		sp->get_welt()->ticks_per_world_month_shift>=18 ?
-		(double)((sint64)sp->get_maintenance()<<(sp->get_welt()->ticks_per_world_month_shift-18u))/100.0 :
-		(double)((sint64)sp->get_maintenance()>>(18u-sp->get_welt()->ticks_per_world_month_shift))/100.0
+		(double)((sint64)sp->get_maintenance_with_bits((transport_type)transport_type_option))/100.0
 	);
 	maintenance_money.set_text(str_buf[16]);
 	maintenance_money.set_color(sp->get_maintenance()>=0?MONEY_PLUS:MONEY_MINUS);

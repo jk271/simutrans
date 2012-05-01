@@ -122,22 +122,33 @@ protected:
 	 */
 	sint32 haltcount;
 
-	/**
-	 * finance history - will supersede the finance_history by hsiegeln 
-	 * from version 111
-	 * containes values having relation with whole company but not with particular
-	 * type of transport (com - common)
-	 * @author Jan Korbel
-	 */
-	sint64 finance_history_com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
-	sint64 finance_history_com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
+	/*
+	 * finance_history since version around 111.5 
+	 * I hope that having all finance in one (in inner class) is better 
+	 * than having it in more places in spieler_t 
+	 * Another benefit: It leads to shorter variable names. 
+	 **/
+	class Finance {
+	public:
+		/**
+		 * finance history - will supersede the finance_history by hsiegeln 
+		 * from version 111
+		 * containes values having relation with whole company but not with particular
+		 * type of transport (com - common)
+	 	* @author Jan Korbel
+	 	*/
+		sint64 com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
+		sint64 com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
+	
+		/**
+	 	* finance history having relation with particular type of service
+	 	* @author Jan Korbel
+	 	*/
+		sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
+		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
+	};
 
-	/**
-	 * finance history having relation with particular type of service
-	 * @author Jan Korbel
-	 */
-	sint64 finance_history_veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
-	sint64 finance_history_veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
+	Finance finance;
 
 	/**
 	* Finance History - will supercede the finances by Owen Rudge
@@ -267,8 +278,8 @@ public:
 	 * @author Jan Korbel
 	 */
 	void add_convoi_number(int count){
-		finance_history_com_year[0][ATC_ALL_CONVOIS] += count;
-		finance_history_com_month[0][ATC_ALL_CONVOIS] += count;
+		finance.com_year[0][ATC_ALL_CONVOIS] += count;
+		finance.com_month[0][ATC_ALL_CONVOIS] += count;
 	}
 
 	/**
@@ -526,15 +537,15 @@ public:
 	* Returns the finance history (indistinguishable part) for player
 	* @author hsiegeln, Jan Korbel
 	*/
-	sint64 get_finance_history_com_year(int year, int type) { return finance_history_com_year[year][type]; }
-	sint64 get_finance_history_com_month(int month, int type) { return finance_history_com_month[month][type]; }
+	sint64 get_finance_history_com_year(int year, int type) { return finance.com_year[year][type]; }
+	sint64 get_finance_history_com_month(int month, int type) { return finance.com_month[month][type]; }
 
 	/**
 	* Returns the finance history (distinguishable by type of transport) for player
 	* @author hsiegeln, Jan Korbel
 	*/
-	sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return finance_history_veh_year[tt][year][type]; }
-	sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return finance_history_veh_month[tt][month][type]; }
+	sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return finance.veh_year[tt][year][type]; }
+	sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return finance.veh_month[tt][month][type]; }
 
 	/**
 	 * Returns pointer to finance history for player
@@ -548,15 +559,15 @@ public:
 	 * part of finance statistics
 	 * @author Jan Korbel
 	 */
-	sint64* get_finance_history_com_year() { return *finance_history_com_year; }
-	sint64* get_finance_history_com_month() { return *finance_history_com_month; }
+	sint64* get_finance_history_com_year() { return *finance.com_year; }
+	sint64* get_finance_history_com_month() { return *finance.com_month; }
 
 	/**
 	 * @return finance history for vehicles
 	 * @author Jan Korbel
 	 */
-	sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance_history_veh_year[tt]; }
-	sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance_history_veh_month[tt]; }
+	sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance.veh_year[tt]; }
+	sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance.veh_month[tt]; }
 
 	/**
 	* Returns the world the player is in

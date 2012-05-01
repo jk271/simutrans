@@ -240,7 +240,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	chart.set_background(MN_GREY1);
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int type = cost_type[i];
-		chart.add_curve( cost_type_color[i], sp->get_finance_history_year(), MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
+		chart.add_curve( cost_type_color[i], *flat_view_year, MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
 	}
 	//CHART YEAR END
 
@@ -252,7 +252,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	mchart.set_background(MN_GREY1);
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int type = cost_type[i];
-		mchart.add_curve( cost_type_color[i], sp->get_finance_history_month(), MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
+		mchart.add_curve( cost_type_color[i], *flat_view_month, MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
 	}
 	//CHART MONTH END
 
@@ -385,6 +385,8 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	static char str_buf[26][64];
 
 	sp->calc_finance_history();
+	sp->get_finance()->calc_flat_view_month(transport_type_option, flat_view_month);
+	sp->get_finance()->calc_flat_view_year(transport_type_option, flat_view_year);
 
 	chart.set_visible( year_month_tabs.get_active_tab_index()==0 );
 	mchart.set_visible( year_month_tabs.get_active_tab_index()==1 );

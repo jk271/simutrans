@@ -130,7 +130,7 @@ spieler_t::~spieler_t()
 
 
 void spieler_t::add_construction_costs(const sint64 amount, const koord k, const waytype_t wt){
-	const transport_type tt = translate_waytype_to_tt(wt);
+	const transport_type tt = finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -167,7 +167,7 @@ void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount
  * @author Hj. Malthaner
  */
 sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
-		transport_type tt = translate_waytype_to_tt(wt);
+		transport_type tt = finance.translate_waytype_to_tt(wt);
 		assert(tt!=TT_ALL);
 		finance.maintenance[tt] += change;
 		finance.maintenance[TT_ALL] += change;
@@ -194,7 +194,7 @@ void spieler_t::add_money_message(const sint64 amount, const koord pos) {
  * amount has positive value = buy vehicle, negative value = vehicle sold
  */
 void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
-	const transport_type tt = translate_waytype_to_tt(wt);
+	const transport_type tt = finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -220,7 +220,7 @@ void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytyp
 
 
 void spieler_t::add_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
-	const transport_type tt = translate_waytype_to_tt(wt);
+	const transport_type tt = finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -245,7 +245,7 @@ void spieler_t::add_revenue(const sint64 amount, const koord k, const waytype_t 
 
 
 void spieler_t::add_running_costs(const sint64 amount, const waytype_t wt){
-	const transport_type tt = translate_waytype_to_tt(wt);
+	const transport_type tt = finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -265,7 +265,7 @@ void spieler_t::add_running_costs(const sint64 amount, const waytype_t wt){
 
 
 void spieler_t::add_toll_payed(const sint64 amount, const waytype_t wt){
-	const transport_type tt =  translate_waytype_to_tt(wt);
+	const transport_type tt =  finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -284,7 +284,7 @@ void spieler_t::add_toll_payed(const sint64 amount, const waytype_t wt){
 
 
 void spieler_t::add_toll_received(const sint64 amount, const waytype_t wt){
-	const transport_type tt = translate_waytype_to_tt(wt);
+	const transport_type tt = finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -303,7 +303,7 @@ void spieler_t::add_toll_received(const sint64 amount, const waytype_t wt){
 
 
 void spieler_t::add_transported(const sint64 amount, const waytype_t wt, int index){
-	const transport_type tt = translate_waytype_to_tt(wt);
+	const transport_type tt = finance.translate_waytype_to_tt(wt);
 	assert(tt != TT_ALL);	
 	assert(tt <  TT_MAX_VEH);
 
@@ -630,7 +630,7 @@ void spieler_t::calc_assets()
 		if(  cnv->get_besitzer() == this  ) {
 			sint64 restwert = cnv->calc_restwert();
 			assets[TT_ALL] += restwert;
-			assets[translate_waytype_to_tt(cnv->front()->get_waytype())] += restwert;
+			assets[finance.translate_waytype_to_tt(cnv->front()->get_waytype())] += restwert;
 		}
 	}
 
@@ -640,7 +640,7 @@ void spieler_t::calc_assets()
 			FOR(slist_tpl<vehikel_t*>, const veh, depot->get_vehicle_list()) {
 				sint64 restwert = veh->calc_restwert();
 				assets[TT_ALL] += restwert;
-				assets[translate_waytype_to_tt(veh->get_waytype())] += restwert;
+				assets[finance.translate_waytype_to_tt(veh->get_waytype())] += restwert;
 			}
 		}
 	}
@@ -1347,26 +1347,6 @@ void spieler_t::tell_tool_result(werkzeug_t *tool, koord3d, const char *err, boo
 }
 
 
-transport_type spieler_t::translate_waytype_to_tt(const waytype_t wt) const {
-	switch(wt){
-		case road_wt:      return TT_ROAD;
-		case track_wt:     return TT_RAILWAY;
-		case water_wt:     return TT_SHIP;
-		case monorail_wt:  return TT_MONORAIL;
-		case maglev_wt:    return TT_MAGLEV;
-		case tram_wt:      return TT_TRAM;
-		case narrowgauge_wt: return TT_NARROWGAUGE;
-		case air_wt:       return TT_AIR;
-		case powerline_wt: return TT_POWERLINE;
-		case ignore_wt:
-		case overheadlines_wt:
-		default:           return TT_OTHER;
-	}
-}
-
-
-
-
 
 /* inner class */
 spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
@@ -1795,3 +1775,22 @@ int spieler_t::finance_t::translate_index_cost_to_at(int cost_index) {
 
 	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
 }
+
+
+transport_type spieler_t::finance_t::translate_waytype_to_tt(const waytype_t wt) const {
+	switch(wt){
+		case road_wt:      return TT_ROAD;
+		case track_wt:     return TT_RAILWAY;
+		case water_wt:     return TT_SHIP;
+		case monorail_wt:  return TT_MONORAIL;
+		case maglev_wt:    return TT_MAGLEV;
+		case tram_wt:      return TT_TRAM;
+		case narrowgauge_wt: return TT_NARROWGAUGE;
+		case air_wt:       return TT_AIR;
+		case powerline_wt: return TT_POWERLINE;
+		case ignore_wt:
+		case overheadlines_wt:
+		default:           return TT_OTHER;
+	}
+}
+

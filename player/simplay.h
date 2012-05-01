@@ -128,7 +128,7 @@ protected:
 	 * than having it in more places in spieler_t 
 	 * Another benefit: It leads to shorter variable names. 
 	 **/
-	class Finance {
+	class finance_t {
 	public:
 		/**
 		 * finance history - will supersede the finance_history by hsiegeln 
@@ -146,9 +146,17 @@ protected:
 	 	*/
 		sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
 		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
+
+		/**
+		* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
+		* @author hsiegeln
+		*/
+		void roll_history_year();
+		void roll_history_month();
 	};
 
-	Finance finance;
+	/* "new" finance history */
+	finance_t finance;
 
 	/**
 	* Finance History - will supercede the finances by Owen Rudge

@@ -628,29 +628,7 @@ void spieler_t::roll_finance_history_month()
 			finance_history_month[0][i] = 0;
 		}
 	}
-
-	// undistinguishable
-	for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
-		for(int accounting_type=0; accounting_type<ATC_MAX; ++accounting_type){
-			finance.com_month[i][accounting_type] = finance.com_month[i-1][accounting_type];
-		}
-	}
-	for(int i=0; i<ATC_MAX; ++i){
-		if(i != ATC_ALL_CONVOIS){
-			finance.com_month[0][i] = 0;
-		}
-	}
-	// vehicles
-	for(int tt=0; tt<TT_MAX; ++tt){
-		for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
-			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
-				finance.veh_month[tt][i][accounting_type] = finance.veh_month[tt][i-1][accounting_type];
-			}
-		}
-		for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
-			finance.veh_month[tt][0][accounting_type] = 0;
-		}
-	}
+	finance.roll_history_month();
 }
 
 
@@ -668,29 +646,7 @@ void spieler_t::roll_finance_history_year()
 			finance_history_year[0][i] = 0;
 		}
 	}
-
-	// undistinguishable
-	for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
-		for(int accounting_type=0; accounting_type<ATC_MAX; ++accounting_type){
-			finance.com_year[i][accounting_type] = finance.com_year[i-1][accounting_type];
-		}
-	}
-	for(int i=0; i<ATC_MAX; ++i){
-		if(i != ATC_ALL_CONVOIS){
-			finance.com_year[0][i] = 0;
-		}
-	}
-	// vehicles
-	for(int tt=0; tt<TT_MAX; ++tt){
-		for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
-			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
-				finance.veh_year[tt][i][accounting_type] = finance.veh_year[tt][i-1][accounting_type];
-			}
-		}
-		for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
-			finance.veh_year[tt][0][accounting_type] = 0;
-		}
-	}
+	finance.roll_history_year();
 }
 
 
@@ -1761,3 +1717,57 @@ int spieler_t::translate_index_cost_to_at(int cost_index) {
 
 	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
 }
+
+
+
+void spieler_t::finance_t::roll_history_month() {
+	// undistinguishable
+	for (int i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
+		for(int accounting_type=0; accounting_type<ATC_MAX; ++accounting_type){
+			com_month[i][accounting_type] = com_month[i-1][accounting_type];
+		}
+	}
+	for(int i=0; i<ATC_MAX; ++i){
+		if(i != ATC_ALL_CONVOIS){
+			com_month[0][i] = 0;
+		}
+	}
+	// vehicles
+	for(int tt=0; tt<TT_MAX; ++tt){
+		for (int i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
+			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+				veh_month[tt][i][accounting_type] = veh_month[tt][i-1][accounting_type];
+			}
+		}
+		for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+			veh_month[tt][0][accounting_type] = 0;
+		}
+	}
+}
+
+
+void spieler_t::finance_t::roll_history_year() {
+	// undistinguishable
+	for (int i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
+		for(int accounting_type=0; accounting_type<ATC_MAX; ++accounting_type){
+			com_year[i][accounting_type] = com_year[i-1][accounting_type];
+		}
+	}
+	for(int i=0; i<ATC_MAX; ++i){
+		if(i != ATC_ALL_CONVOIS){
+			com_year[0][i] = 0;
+		}
+	}
+	// vehicles
+	for(int tt=0; tt<TT_MAX; ++tt){
+		for (int i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
+			for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+				veh_year[tt][i][accounting_type] = veh_year[tt][i-1][accounting_type];
+			}
+		}
+		for(int accounting_type=0; accounting_type<ATV_MAX; ++accounting_type){
+			veh_year[tt][0][accounting_type] = 0;
+		}
+	}
+}
+

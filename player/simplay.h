@@ -130,6 +130,10 @@ protected:
 	 **/
 	class finance_t {
 	public:
+		karte_t * world;
+
+		spieler_t * player;
+
 		/**
 	 	* Der Kontostand.
 	 	*
@@ -160,7 +164,13 @@ protected:
 	 	*/
 		sint32 vehicle_maintenance[TT_MAX];
 
-		finance_t(karte_t * _world);
+		finance_t(spieler_t * _player, karte_t * _world);
+
+		/**
+		* Calculates the finance history for player
+		* @author hsiegeln
+		*/
+		void calc_finance_history();
 
 		/**
 	 	* Translates finance statistisc from new format to old (version<=111) one.

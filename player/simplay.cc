@@ -71,7 +71,7 @@ static sint64 calc_margin(sint64 operating_profit, sint64 proceeds)
 
 
 spieler_t::spieler_t(karte_t *wl, uint8 nr) :
-	finance(wl),
+	finance(this, wl),
 	simlinemgmt(wl)
 {
 	welt = wl;
@@ -641,67 +641,7 @@ void spieler_t::calc_finance_history()
 	finance_history_month[0][COST_MARGIN] = calc_margin(finance_history_month[0][COST_OPERATING_PROFIT], finance_history_month[0][COST_INCOME]);
 	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
 
-	// vehicles
-	for(int tt=0; tt<TT_MAX; ++tt){
-		// ATV_REVENUE_TRANSPORT = ATV_REVENUE_PAS+MAIL+GOOD
-		sint64 revenue, mrevenue;
-		revenue = mrevenue = 0;
-		for(int i=0; i<ATV_REVENUE_TRANSPORT; ++i){
-			mrevenue += finance.veh_month[tt][0][i];
-			revenue  += finance.veh_year[ tt][0][i];
-		}
-		finance.veh_month[tt][0][ATV_REVENUE_TRANSPORT] = mrevenue;
-		finance.veh_year[ tt][0][ATV_REVENUE_TRANSPORT] = revenue;
-
-		// ATV_REVENUE = ATV_REVENUE_TRANSPORT + ATV_TOLL_RECEIVED
-		finance.veh_month[tt][0][ATV_REVENUE] = finance.veh_month[tt][0][ATV_REVENUE_TRANSPORT] + finance.veh_month[tt][0][ATV_TOLL_RECEIVED];
-		finance.veh_year[tt][0][ATV_REVENUE] = finance.veh_year[tt][0][ATV_REVENUE_TRANSPORT] + finance.veh_year[tt][0][ATV_TOLL_RECEIVED];
-
-		// ATC_EXPENDITURE = ATC_RUNNIG_COST + ATC_VEH_MAINTENENCE + ATC_INF_MAINTENENCE + ATC_TOLL_PAYED;
-		sint64 expenditure, mexpenditure;
-		expenditure = mexpenditure = 0;
-		for(int i=ATV_RUNNING_COST; i<ATV_EXPENDITURE; ++i){
-			mexpenditure += finance.veh_month[tt][0][i];
-			expenditure  += finance.veh_year[ tt][0][i];
-		}
-		finance.veh_month[tt][0][ATV_EXPENDITURE] = mexpenditure;
-		finance.veh_year[ tt][0][ATV_EXPENDITURE] = expenditure;
-		finance.veh_month[tt][0][ATV_OPERATING_PROFIT] = mrevenue + mexpenditure;
-		finance.veh_year[ tt][0][ATV_OPERATING_PROFIT] =  revenue +  expenditure;
-
-		// PROFIT = OPERATING_PROFIT + NEW_VEHICLES + construction costs 
-		sint64 profit, mprofit;
-		profit = mprofit = 0;
-		for(int i=ATV_OPERATING_PROFIT; i<ATV_PROFIT; ++i){
-			mprofit += finance.veh_month[tt][0][i];
-			profit  += finance.veh_year[ tt][0][i];
-		}
-		finance.veh_month[tt][0][ATV_PROFIT] = mprofit;
-		finance.veh_year[ tt][0][ATV_PROFIT] =  profit;
-
-		finance.veh_month[tt][0][ATV_WAY_TOLL] = finance.veh_month[tt][0][ATV_TOLL_RECEIVED] + finance.veh_month[tt][0][ATV_TOLL_PAYED]; 
-		finance.veh_year[ tt][0][ATV_WAY_TOLL] = finance.veh_year[tt][0][ATV_TOLL_RECEIVED] + finance.veh_year[tt][0][ATV_TOLL_PAYED]; 
-
-		finance.veh_month[tt][0][ATV_PROFIT_MARGIN] = calc_margin(finance.veh_month[tt][0][ATV_OPERATING_PROFIT], finance.veh_month[tt][0][ATV_REVENUE]);
-		finance.veh_year[tt][0][ATV_PROFIT_MARGIN] = calc_margin(finance.veh_year[tt][0][ATV_OPERATING_PROFIT], finance.veh_year[tt][0][ATV_REVENUE]);
-
-		sint64 transported, mtransported;
-		transported = mtransported = 0;
-		for(int i=ATV_TRANSPORTED_PASSENGER; i<ATV_TRANSPORTED; ++i){
-			mtransported += finance.veh_month[tt][0][i];
-			transported  += finance.veh_year[ tt][0][i];
-		}
-		finance.veh_month[tt][0][ATV_TRANSPORTED] = mtransported;
-		finance.veh_year[ tt][0][ATV_TRANSPORTED] =  transported;
-	}
-
-	// undistinguishable by type of transport 
-	finance.com_month[0][ATC_CASH] = finance.konto;
-	finance.com_year [0][ATC_CASH] = finance.konto;
-	finance.com_month[0][ATC_NETWEALTH] = finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + finance.konto;
-	finance.com_year [0][ATC_NETWEALTH] = finance.veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + finance.konto;
-	finance.com_month[0][ATC_SCENARIO_COMPLETED] = finance.com_year[0][ATC_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
-
+	finance.calc_finance_history();
 }
 
 
@@ -1602,7 +1542,10 @@ int spieler_t::translate_index_cost_to_at(int cost_index) {
 
 
 /* inner class */
-spieler_t::finance_t::finance_t(karte_t * world) {
+spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
+	player(_player),
+	world(_world)
+{
 	sint64 starting_money = world->get_settings().get_starting_money(welt->get_last_year());
 	/**
 	 * initialize finance history arrays
@@ -1779,3 +1722,67 @@ void spieler_t::finance_t::rdwr(loadsave_t *file) {
 	} 
 }
 
+
+void spieler_t::finance_t::calc_finance_history() {
+	// vehicles
+	for(int tt=0; tt<TT_MAX; ++tt){
+		// ATV_REVENUE_TRANSPORT = ATV_REVENUE_PAS+MAIL+GOOD
+		sint64 revenue, mrevenue;
+		revenue = mrevenue = 0;
+		for(int i=0; i<ATV_REVENUE_TRANSPORT; ++i){
+			mrevenue += veh_month[tt][0][i];
+			revenue  += veh_year[ tt][0][i];
+		}
+		veh_month[tt][0][ATV_REVENUE_TRANSPORT] = mrevenue;
+		veh_year[ tt][0][ATV_REVENUE_TRANSPORT] = revenue;
+
+		// ATV_REVENUE = ATV_REVENUE_TRANSPORT + ATV_TOLL_RECEIVED
+		veh_month[tt][0][ATV_REVENUE] = veh_month[tt][0][ATV_REVENUE_TRANSPORT] + veh_month[tt][0][ATV_TOLL_RECEIVED];
+		veh_year[tt][0][ATV_REVENUE] = veh_year[tt][0][ATV_REVENUE_TRANSPORT] + veh_year[tt][0][ATV_TOLL_RECEIVED];
+
+		// ATC_EXPENDITURE = ATC_RUNNIG_COST + ATC_VEH_MAINTENENCE + ATC_INF_MAINTENENCE + ATC_TOLL_PAYED;
+		sint64 expenditure, mexpenditure;
+		expenditure = mexpenditure = 0;
+		for(int i=ATV_RUNNING_COST; i<ATV_EXPENDITURE; ++i){
+			mexpenditure += veh_month[tt][0][i];
+			expenditure  += veh_year[ tt][0][i];
+		}
+		veh_month[tt][0][ATV_EXPENDITURE] = mexpenditure;
+		veh_year[ tt][0][ATV_EXPENDITURE] = expenditure;
+		veh_month[tt][0][ATV_OPERATING_PROFIT] = mrevenue + mexpenditure;
+		veh_year[ tt][0][ATV_OPERATING_PROFIT] =  revenue +  expenditure;
+
+		// PROFIT = OPERATING_PROFIT + NEW_VEHICLES + construction costs 
+		sint64 profit, mprofit;
+		profit = mprofit = 0;
+		for(int i=ATV_OPERATING_PROFIT; i<ATV_PROFIT; ++i){
+			mprofit += veh_month[tt][0][i];
+			profit  += veh_year[ tt][0][i];
+		}
+		veh_month[tt][0][ATV_PROFIT] = mprofit;
+		veh_year[ tt][0][ATV_PROFIT] =  profit;
+
+		veh_month[tt][0][ATV_WAY_TOLL] = veh_month[tt][0][ATV_TOLL_RECEIVED] + veh_month[tt][0][ATV_TOLL_PAYED]; 
+		veh_year[ tt][0][ATV_WAY_TOLL] = veh_year[tt][0][ATV_TOLL_RECEIVED] + veh_year[tt][0][ATV_TOLL_PAYED]; 
+
+		veh_month[tt][0][ATV_PROFIT_MARGIN] = calc_margin(veh_month[tt][0][ATV_OPERATING_PROFIT], veh_month[tt][0][ATV_REVENUE]);
+		veh_year[tt][0][ATV_PROFIT_MARGIN] = calc_margin(veh_year[tt][0][ATV_OPERATING_PROFIT], veh_year[tt][0][ATV_REVENUE]);
+
+		sint64 transported, mtransported;
+		transported = mtransported = 0;
+		for(int i=ATV_TRANSPORTED_PASSENGER; i<ATV_TRANSPORTED; ++i){
+			mtransported += veh_month[tt][0][i];
+			transported  += veh_year[ tt][0][i];
+		}
+		veh_month[tt][0][ATV_TRANSPORTED] = mtransported;
+		veh_year[ tt][0][ATV_TRANSPORTED] =  transported;
+	}
+
+	// undistinguishable by type of transport 
+	com_month[0][ATC_CASH] = konto;
+	com_year [0][ATC_CASH] = konto;
+	com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	com_year [0][ATC_NETWEALTH] = veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	com_month[0][ATC_SCENARIO_COMPLETED] = com_year[0][ATC_SCENARIO_COMPLETED] = world->get_scenario()->completed(player->get_player_nr());
+
+}

@@ -141,6 +141,9 @@ protected:
 	 	*/
 		sint64 konto;
 
+		// remember the starting money
+		sint64 starting_money;
+
 		/**
 		 * finance history - will supersede the finance_history by hsiegeln 
 		 * from version 111 or 112
@@ -286,9 +289,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	static karte_t *welt;
-
-	// remember the starting money
-	sint64 starting_money;
 
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist

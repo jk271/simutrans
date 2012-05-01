@@ -77,9 +77,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	welt = wl;
 	player_nr = nr;
 
-	finance.konto = welt->get_settings().get_starting_money(welt->get_last_year());
-	starting_money = finance.konto;
-
 	konto_ueberzogen = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
@@ -97,7 +94,7 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
 			finance_history_year[year][cost_type] = 0;
 			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
-				finance_history_year[year][cost_type] = starting_money;
+				finance_history_year[year][cost_type] = finance.starting_money;
 			}
 		}
 	}
@@ -106,7 +103,7 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
 			finance_history_month[month][cost_type] = 0;
 			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
-				finance_history_month[month][cost_type] = starting_money;
+				finance_history_month[month][cost_type] = finance.starting_money;
 			}
 		}
 	}
@@ -1054,7 +1051,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		finance.rdwr(file);
 	}
 	if(  file->get_version()>102002  ) {
-		file->rdwr_longlong(starting_money);
+		file->rdwr_longlong(finance.starting_money);
 	}
 
 	// we have to pay maintenance at the beginning of a month
@@ -1353,7 +1350,8 @@ spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	player(_player),
 	world(_world)
 {
-	sint64 starting_money = world->get_settings().get_starting_money(world->get_last_year());
+	konto = world->get_settings().get_starting_money(world->get_last_year());
+	starting_money = konto;
 	/**
 	 * initialize finance history arrays
 	 * @author Jan Korbel

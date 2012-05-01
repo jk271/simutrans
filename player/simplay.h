@@ -225,6 +225,12 @@ protected:
 		sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
 
 		/**
+		 * returns maintenance 
+		 * @param tt transport type (Truck, Ship Air, ...)
+		 */
+		sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
+	
+		/**
 		 * returns maintenance with bits_per_month
 		 * @author Jan Korbel
 		 */
@@ -490,7 +496,8 @@ public:
 
 	virtual ~spieler_t();
 
-	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return finance.maintenance[tt]; }
+	/* DEPRECATED, use get_maintenance from finance_t instead */
+	sint32 get_maintenance() const { return finance.maintenance[TT_ALL]; }
 	
 	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt) {
 		if(sp) {

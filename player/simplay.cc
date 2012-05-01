@@ -1467,6 +1467,7 @@ void spieler_t::finance_t::calc_finance_history() {
 
 
 void spieler_t::finance_t::calc_flat_view_month(int tt, sint64 (&flat_view_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]){
+	assert((0 <=tt ) && ( tt < TT_MAX ));
 	for(int month=0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
 		for(int i=0; i<MAX_PLAYER_COST; ++i) {
 			int index = translate_index_cost_to_at(i);
@@ -1485,6 +1486,7 @@ void spieler_t::finance_t::calc_flat_view_month(int tt, sint64 (&flat_view_month
 }
 
 void spieler_t::finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST]){
+	assert(( 0<=tt ) && ( tt < TT_MAX ));
 	for(int year=0; year<MAX_PLAYER_HISTORY_YEARS; ++year) {
 		for(int i=0; i<MAX_PLAYER_COST; ++i) {
 			int index = translate_index_cost_to_at(i);

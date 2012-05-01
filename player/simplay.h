@@ -392,6 +392,8 @@ public:
 	 */
 	void add_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
+	finance_t * get_finance() { return &finance; }
+
 	virtual bool set_active( bool b ) { return automat = b; }
 
 	bool is_active() const { return automat; }

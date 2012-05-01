@@ -132,7 +132,7 @@ protected:
 	public:
 		/**
 		 * finance history - will supersede the finance_history by hsiegeln 
-		 * from version 111
+		 * from version 111 or 112
 		 * containes values having relation with whole company but not with particular
 		 * type of transport (com - common)
 	 	* @author Jan Korbel
@@ -154,6 +154,14 @@ protected:
 		sint32 vehicle_maintenance[TT_MAX];
 
 		finance_t(karte_t * _world);
+
+		/**
+	 	* Translates finance statistisc from new format to old (version<=111) one.
+	 	* Used for saving data in old format
+	 	* @author Jan Korbel
+	 	*/
+		void export_to_cost_month(sint64 ** finance_history_month);
+		void export_to_cost_year( sint64 ** finance_history_year);
 
 		/**
 		* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
@@ -261,13 +269,6 @@ protected:
 
 	// contains the password hash for local games
 	pwd_hash_t pwd_hash;
-
-	/**
-	 * Translates finance statistisc from new format to old (version<=111) one.
-	 * Used for saving data in old format
-	 * @author Jan Korbel
-	 */
-	void translate_at_to_cost();
 
 	/**
 	 * Translates finance statistisc from old (version<=111) format to new one.

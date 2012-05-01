@@ -161,6 +161,11 @@ protected:
 		sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
 		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
+		/* workaround, used for charts in money_frame */
+		sint32 flat_view_tt;
+		sint64 flat_view_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
+		sint64 flat_view_year[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST];
+
 		/**
 	 	* Monthly maintenance cost
 	 	* @author Hj. Malthaner
@@ -180,6 +185,8 @@ protected:
 		* @author hsiegeln
 		*/
 		void calc_finance_history();
+
+		void calc_flat_view();
 
 		/**
 	 	* Translates finance statistisc from new format to old (version<=111) one.
@@ -227,6 +234,10 @@ protected:
 		sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
 		sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
 
+		/**/
+		sint64 * get_flat_view_month() { return *flat_view_month; }
+		sint64 * get_flat_view_year()  { return *flat_view_year; }
+
 		/**
 		 * returns maintenance 
 		 * @param tt transport type (Truck, Ship Air, ...)
@@ -262,6 +273,8 @@ protected:
 
 		/* loads or saves finance statistic */
 		void rdwr(loadsave_t *file);
+
+		void set_flat_view_tt(int tt) { flat_view_tt = tt; }
 
 		int translate_index_cost_to_at(int cost_);
 

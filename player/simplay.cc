@@ -1348,7 +1348,8 @@ void spieler_t::tell_tool_result(werkzeug_t *tool, koord3d, const char *err, boo
 /* inner class */
 spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	player(_player),
-	world(_world)
+	world(_world),
+	flat_view_tt(TT_ALL)
 {
 	konto = world->get_settings().get_starting_money(world->get_last_year());
 	starting_money = konto;
@@ -1463,6 +1464,41 @@ void spieler_t::finance_t::calc_finance_history() {
 	com_year [0][ATC_NETWEALTH] = veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
 	com_month[0][ATC_SCENARIO_COMPLETED] = com_year[0][ATC_SCENARIO_COMPLETED] = world->get_scenario()->completed(player->get_player_nr());
 
+}
+
+
+void spieler_t::finance_t::calc_flat_view() { 
+	for(int month=0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
+		for(int i=0; i<MAX_PLAYER_COST; ++i) {
+			int index = translate_index_cost_to_at(i);
+			if(index >=0 ){
+				flat_view_month[month][i] = veh_month[flat_view_tt][i][index];
+			} else {
+				if(i==COST_CASH) {
+					flat_view_month[month][i] = com_month[i][ATC_CASH];
+				}
+				if(i==COST_NETWEALTH ) {
+					flat_view_month[month][i] = com_month[i][ATC_NETWEALTH];
+				}
+			}
+		}
+	}
+
+	for(int year=0; year<MAX_PLAYER_HISTORY_YEARS; ++year) {
+		for(int i=0; i<MAX_PLAYER_COST; ++i) {
+			int index = translate_index_cost_to_at(i);
+			if(index >=0 ){
+				flat_view_year[year][i] = veh_year[flat_view_tt][i][index];
+			} else {
+				if(i==COST_CASH) {
+					flat_view_year[year][i] = com_year[i][ATC_CASH];
+				}
+				if(i==COST_NETWEALTH ) {
+					flat_view_year[year][i] = com_year[i][ATC_NETWEALTH];
+				}
+			}
+		}
+	}
 }
 
 

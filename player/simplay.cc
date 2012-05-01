@@ -117,10 +117,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		maintenance[i] = 0;
 	}
 
-	for(int i=0; i<TT_MAX_VEH; ++i){
-		vehicle_maintenance[i] = 0;
-	}
-
 	welt->get_settings().set_default_player_color(this);
 
 	// we have different AI, try to find out our type:
@@ -354,9 +350,9 @@ sint64 spieler_t::get_vehicle_maintenance_with_bits(transport_type tt) const {
 	assert(tt<TT_MAX); 
 
 	if(  welt->ticks_per_world_month_shift>=18  ) {
-		return ((sint64)vehicle_maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
+		return ((sint64)finance.vehicle_maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
 	}else{
-		return ((sint64)vehicle_maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
+		return ((sint64)finance.vehicle_maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
 	}
 }
 
@@ -1721,6 +1717,10 @@ spieler_t::finance_t::finance_t(karte_t * world) {
 				veh_month[transport_type][month][cost_type] = 0;
 			}
 		}
+	}
+
+	for(int i=0; i<TT_MAX_VEH; ++i){
+		vehicle_maintenance[i] = 0;
 	}
 
 }

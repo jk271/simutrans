@@ -147,6 +147,12 @@ protected:
 		sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
 		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
+		/**
+	 	* monthly vehicle maintenance cost
+	 	* author Jan Korbel
+	 	*/
+		sint32 vehicle_maintenance[TT_MAX];
+
 		finance_t(karte_t * _world);
 
 		/**
@@ -173,12 +179,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	sint32 maintenance[TT_MAX];
-
-	/**
-	 * monthly vehicle maintenance cost
-	 * author Jan Korbel
-	 */
-	sint32 vehicle_maintenance[TT_MAX];
 
 	/**
 	 * Die Welt in der gespielt wird.

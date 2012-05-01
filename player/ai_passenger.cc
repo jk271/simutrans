@@ -939,7 +939,7 @@ void ai_passenger_t::step()
 			 * The second condition may happen due to extensive replacement operations;
 			 * in such a case it is save enough to expand anyway.
 			 */
-			if(!(konto>0  ||  finance_history_month[0][COST_ASSETS]+konto>starting_money)  ) {
+			if(!(finance.konto>0  ||  finance_history_month[0][COST_ASSETS]+finance.konto>starting_money)  ) {
 				return;
 			}
 

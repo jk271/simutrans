@@ -77,8 +77,8 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	welt = wl;
 	player_nr = nr;
 
-	konto = welt->get_settings().get_starting_money(welt->get_last_year());
-	starting_money = konto;
+	finance.konto = welt->get_settings().get_starting_money(welt->get_last_year());
+	starting_money = finance.konto;
 
 	konto_ueberzogen = 0;
 	automat = false;		// Start nicht als automatischer Spieler
@@ -506,7 +506,7 @@ void spieler_t::neuer_monat()
 	}
 
 	// enough money and scenario finished?
-	if(konto > 0  &&  welt->get_scenario()->active()  &&  finance_history_year[0][COST_SCENARIO_COMPLETED]>=100) {
+	if(finance.konto > 0  &&  welt->get_scenario()->active()  &&  finance_history_year[0][COST_SCENARIO_COMPLETED]>=100) {
 		destroy_all_win(true);
 		sint32 const time = welt->get_current_month() - welt->get_settings().get_starting_year() * 12;
 		buf.clear();
@@ -518,7 +518,7 @@ void spieler_t::neuer_monat()
 	}
 
 	// Bankrott ?
-	if(  konto < 0  ) {
+	if(  finance.konto < 0  ) {
 		konto_ueberzogen++;
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
@@ -630,13 +630,13 @@ void spieler_t::calc_finance_history()
 	finance_history_year[0][COST_PROFIT] = profit;
 	finance_history_month[0][COST_PROFIT] = mprofit;
 
-	finance_history_year[0][COST_CASH] = konto;
-	finance_history_year[0][COST_NETWEALTH] = finance_history_year[0][COST_ASSETS] + konto;
+	finance_history_year[0][COST_CASH] = finance.konto;
+	finance_history_year[0][COST_NETWEALTH] = finance_history_year[0][COST_ASSETS] + finance.konto;
 	finance_history_year[0][COST_OPERATING_PROFIT] = finance_history_year[0][COST_INCOME] + finance_history_year[0][COST_POWERLINES] + finance_history_year[0][COST_VEHICLE_RUN] + finance_history_year[0][COST_MAINTENANCE] + finance_history_year[0][COST_WAY_TOLLS];
 	finance_history_year[0][COST_MARGIN] = calc_margin(finance_history_year[0][COST_OPERATING_PROFIT], finance_history_year[0][COST_INCOME]);
 
-	finance_history_month[0][COST_CASH] = konto;
-	finance_history_month[0][COST_NETWEALTH] = finance_history_month[0][COST_ASSETS] + konto;
+	finance_history_month[0][COST_CASH] = finance.konto;
+	finance_history_month[0][COST_NETWEALTH] = finance_history_month[0][COST_ASSETS] + finance.konto;
 	finance_history_month[0][COST_OPERATING_PROFIT] = finance_history_month[0][COST_INCOME] + finance_history_month[0][COST_POWERLINES] + finance_history_month[0][COST_VEHICLE_RUN] + finance_history_month[0][COST_MAINTENANCE] + finance_history_month[0][COST_WAY_TOLLS];
 	finance_history_month[0][COST_MARGIN] = calc_margin(finance_history_month[0][COST_OPERATING_PROFIT], finance_history_month[0][COST_INCOME]);
 	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
@@ -696,10 +696,10 @@ void spieler_t::calc_finance_history()
 	}
 
 	// undistinguishable by type of transport 
-	finance.com_month[0][ATC_CASH] = konto;
-	finance.com_year [0][ATC_CASH] = konto;
-	finance.com_month[0][ATC_NETWEALTH] = finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
-	finance.com_year [0][ATC_NETWEALTH] = finance.veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	finance.com_month[0][ATC_CASH] = finance.konto;
+	finance.com_year [0][ATC_CASH] = finance.konto;
+	finance.com_month[0][ATC_NETWEALTH] = finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + finance.konto;
+	finance.com_year [0][ATC_NETWEALTH] = finance.veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + finance.konto;
 	finance.com_month[0][ATC_SCENARIO_COMPLETED] = finance.com_year[0][ATC_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
 
 }
@@ -732,13 +732,13 @@ void spieler_t::calc_assets()
 	}
 
 	finance_history_year[0][COST_ASSETS] = finance_history_month[0][COST_ASSETS] = assets[TT_ALL];
-	finance_history_year[0][COST_NETWEALTH] = finance_history_month[0][COST_NETWEALTH] = assets[TT_ALL]+konto;
+	finance_history_year[0][COST_NETWEALTH] = finance_history_month[0][COST_NETWEALTH] = assets[TT_ALL]+finance.konto;
 
 
 	for(int i=0; i < TT_MAX_VEH; ++i){
 		finance.veh_year[i][0][ATV_NON_FINANTIAL_ASSETS] = finance.veh_month[i][0][ATV_NON_FINANTIAL_ASSETS] = assets[i];
 	}
-	finance.com_year[0][ATC_NETWEALTH] = finance.com_month[0][ATC_NETWEALTH] = finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] +konto;
+	finance.com_year[0][ATC_NETWEALTH] = finance.com_month[0][ATC_NETWEALTH] = finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] +finance.konto;
 }
 
 
@@ -769,14 +769,14 @@ void spieler_t::buche(sint64 const betrag, player_cost const type)
 	finance_history_month[0][type] += betrag;
 
 	if(  type < COST_ASSETS  ||  type == COST_POWERLINES  ||  type == COST_WAY_TOLLS  ) {
-		konto += betrag;
+		finance.konto += betrag;
 
 		// fill year history
 		finance_history_year[0][COST_PROFIT] += betrag;
-		finance_history_year[0][COST_CASH] = konto;
+		finance_history_year[0][COST_CASH] = finance.konto;
 		// fill month history
 		finance_history_month[0][COST_PROFIT] += betrag;
-		finance_history_month[0][COST_CASH] = konto;
+		finance_history_month[0][COST_CASH] = finance.konto;
 		// the other will be updated only monthly or when a finance window is shown
 	}
 }
@@ -1008,7 +1008,7 @@ void spieler_t::rdwr(loadsave_t *file)
 	xml_tag_t sss( file, "spieler_t" );
 	sint32 halt_count=0;
 
-	file->rdwr_longlong(konto);
+	file->rdwr_longlong(finance.konto);
 	file->rdwr_long(konto_ueberzogen);
 
 	if(file->get_version()<101000) {

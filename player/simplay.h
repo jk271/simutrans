@@ -131,6 +131,13 @@ protected:
 	class finance_t {
 	public:
 		/**
+	 	* Der Kontostand.
+	 	*
+	 	* @author Hj. Malthaner
+	 	*/
+		sint64 konto;
+
+		/**
 		 * finance history - will supersede the finance_history by hsiegeln 
 		 * from version 111 or 112
 		 * containes values having relation with whole company but not with particular
@@ -197,13 +204,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	static karte_t *welt;
-
-	/**
-	 * Der Kontostand.
-	 *
-	 * @author Hj. Malthaner
-	 */
-	sint64 konto;
 
 	// remember the starting money
 	sint64 starting_money;
@@ -461,7 +461,7 @@ public:
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner
 	 */
-	double get_konto_als_double() const { return konto / 100.0; }
+	double get_konto_als_double() const { return finance.konto / 100.0; }
 
 	/**
 	 * @return true wenn Konto Überzogen ist

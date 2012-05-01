@@ -187,6 +187,44 @@ protected:
 		void export_to_cost_year( sint64 ** finance_history_year);
 
 		/**
+		* Returns the finance history for player
+		* @author hsiegeln, jk271
+		* 'proxy' for more complicated internal data structures
+		* int tt is COST_ !!!
+		*/
+		sint64 get_finance_history_year(int tt, int year, int type);
+		sint64 get_finance_history_month(int tt, int month, int type);
+	
+		/**
+		* Returns the finance history (indistinguishable part) for player
+		* @author hsiegeln, Jan Korbel
+		*/
+		sint64 get_finance_history_com_year(int year, int type) { return com_year[year][type]; }
+		sint64 get_finance_history_com_month(int month, int type) { return com_month[month][type]; }
+	
+		/**
+		* Returns the finance history (distinguishable by type of transport) for player
+		* @author hsiegeln, Jan Korbel
+		*/
+		sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return veh_year[tt][year][type]; }
+		sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
+	
+		/**
+	 	* @return finance history of indistinguishable (by type of transport) 
+	 	* part of finance statistics
+	 	* @author Jan Korbel
+	 	*/
+		sint64* get_finance_history_com_year() { return *com_year; }
+		sint64* get_finance_history_com_month() { return *com_month; }
+	
+		/**
+	 	* @return finance history for vehicles
+	 	* @author Jan Korbel
+	 	*/
+		sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
+		sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
+
+		/**
 		 * returns maintenance with bits_per_month
 		 * @author Jan Korbel
 		 */
@@ -552,49 +590,11 @@ public:
 	sint64 get_finance_history_month(int month, int type) { return finance_history_month[month][type]; }
 
 	/**
-	* Returns the finance history for player
-	* @author hsiegeln, jk271
-	* 'proxy' for more complicated internal data structures
-	* int tt is COST_ !!!
-	*/
-	sint64 get_finance_history_year(int tt, int year, int type);
-	sint64 get_finance_history_month(int tt, int month, int type);
-
-	/**
-	* Returns the finance history (indistinguishable part) for player
-	* @author hsiegeln, Jan Korbel
-	*/
-	sint64 get_finance_history_com_year(int year, int type) { return finance.com_year[year][type]; }
-	sint64 get_finance_history_com_month(int month, int type) { return finance.com_month[month][type]; }
-
-	/**
-	* Returns the finance history (distinguishable by type of transport) for player
-	* @author hsiegeln, Jan Korbel
-	*/
-	sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return finance.veh_year[tt][year][type]; }
-	sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return finance.veh_month[tt][month][type]; }
-
-	/**
 	 * Returns pointer to finance history for player
 	 * @author hsiegeln
 	 */
 	sint64* get_finance_history_year() { return *finance_history_year; }
 	sint64* get_finance_history_month() { return *finance_history_month; }
-
-	/**
-	 * @return finance history of indistinguishable (by type of transport) 
-	 * part of finance statistics
-	 * @author Jan Korbel
-	 */
-	sint64* get_finance_history_com_year() { return *finance.com_year; }
-	sint64* get_finance_history_com_month() { return *finance.com_month; }
-
-	/**
-	 * @return finance history for vehicles
-	 * @author Jan Korbel
-	 */
-	sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance.veh_year[tt]; }
-	sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *finance.veh_month[tt]; }
 
 	/**
 	* Returns the world the player is in

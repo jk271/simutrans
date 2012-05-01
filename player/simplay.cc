@@ -1365,42 +1365,6 @@ transport_type spieler_t::translate_waytype_to_tt(const waytype_t wt) const {
 }
 
 
-/* 
- * int tt is COST_ !!! 
-*/
-sint64 spieler_t::get_finance_history_year(int tt, int year, int type) { 
-	assert((tt>=0) && (tt<TT_MAX));
-	if( tt == TT_ALL ){
-		return finance_history_year[year][type]; 
-	} else {
-		int index = finance.translate_index_cost_to_at(type);
-		if( index == -1 ) {
-			return 0;
-		} else {
-			return ( index >= 0 ) ? finance.veh_year[tt][year][index] : finance_history_year[year][type]; 
-			
-		}
-	}
-}
-
-
-/* 
- * int tt is COST_ !!! 
-*/
-sint64 spieler_t::get_finance_history_month(int tt, int month, int type) { 
-	assert((tt>=0) && (tt<TT_MAX));
-	if( tt == TT_ALL ) {
-		return finance_history_month[month][type]; 
-	} else {
-		int index = finance.translate_index_cost_to_at(type);
-		if( index == -1 ) {
-			return 0;
-		} else {
-			return ( index >= 0 ) ? finance.veh_month[tt][month][index] : finance_history_month[month][type]; 
-			
-		}
-	}
-}
 
 
 
@@ -1570,6 +1534,44 @@ void spieler_t::finance_t::export_to_cost_year( sint64 ** finance_history_year) 
 		finance_history_year[i][COST_ALL_CONVOIS]      = com_year[i][ATC_ALL_CONVOIS];
 		finance_history_year[i][COST_SCENARIO_COMPLETED] = com_year[i][ATC_SCENARIO_COMPLETED];
 		finance_history_year[i][COST_WAY_TOLLS]        = veh_year[TT_ALL][i][ATV_WAY_TOLL];
+	}
+}
+
+
+/* 
+ * int tt is COST_ !!! 
+*/
+sint64 spieler_t::finance_t::get_finance_history_year(int tt, int year, int type) { 
+	assert((tt>=0) && (tt<TT_MAX));
+	if( tt == TT_ALL ){
+		return player->get_finance_history_year(year, type); 
+	} else {
+		int index = translate_index_cost_to_at(type);
+		if( index == -1 ) {
+			return 0;
+		} else {
+			return ( index >= 0 ) ? veh_year[tt][year][index] : player->get_finance_history_year(year, type); 
+			
+		}
+	}
+}
+
+
+/* 
+ * int tt is COST_ !!! 
+*/
+sint64 spieler_t::finance_t::get_finance_history_month(int tt, int month, int type) { 
+	assert((tt>=0) && (tt<TT_MAX));
+	if( tt == TT_ALL ) {
+		return player->get_finance_history_month(month, type); 
+	} else {
+		int index = translate_index_cost_to_at(type);
+		if( index == -1 ) {
+			return 0;
+		} else {
+			return ( index >= 0 ) ? veh_month[tt][month][index] : player->get_finance_history_month(month, type); 
+			
+		}
 	}
 }
 

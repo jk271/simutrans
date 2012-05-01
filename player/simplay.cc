@@ -1348,8 +1348,7 @@ void spieler_t::tell_tool_result(werkzeug_t *tool, koord3d, const char *err, boo
 /* inner class */
 spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	player(_player),
-	world(_world),
-	flat_view_tt(TT_ALL)
+	world(_world)
 {
 	konto = world->get_settings().get_starting_money(world->get_last_year());
 	starting_money = konto;
@@ -1467,12 +1466,12 @@ void spieler_t::finance_t::calc_finance_history() {
 }
 
 
-void spieler_t::finance_t::calc_flat_view() { 
+void spieler_t::finance_t::calc_flat_view_month(int tt, sint64 (&flat_view_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]){
 	for(int month=0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
 		for(int i=0; i<MAX_PLAYER_COST; ++i) {
 			int index = translate_index_cost_to_at(i);
 			if(index >=0 ){
-				flat_view_month[month][i] = veh_month[flat_view_tt][i][index];
+				flat_view_month[month][i] = veh_month[tt][i][index];
 			} else {
 				if(i==COST_CASH) {
 					flat_view_month[month][i] = com_month[i][ATC_CASH];
@@ -1483,12 +1482,14 @@ void spieler_t::finance_t::calc_flat_view() {
 			}
 		}
 	}
+}
 
+void spieler_t::finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST]){
 	for(int year=0; year<MAX_PLAYER_HISTORY_YEARS; ++year) {
 		for(int i=0; i<MAX_PLAYER_COST; ++i) {
 			int index = translate_index_cost_to_at(i);
 			if(index >=0 ){
-				flat_view_year[year][i] = veh_year[flat_view_tt][i][index];
+				flat_view_year[year][i] = veh_year[tt][i][index];
 			} else {
 				if(i==COST_CASH) {
 					flat_view_year[year][i] = com_year[i][ATC_CASH];

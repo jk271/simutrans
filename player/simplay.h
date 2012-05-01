@@ -147,6 +147,8 @@ protected:
 		sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
 		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
+		finance_t(karte_t * _world);
+
 		/**
 		* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
 		* @author hsiegeln

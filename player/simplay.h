@@ -215,6 +215,8 @@ protected:
 
 		/* loads or saves finance statistic */
 		void rdwr(loadsave_t *file);
+
+		int translate_index_cost_to_at(int cost_);
 	};
 
 	/* "new" finance history */
@@ -299,8 +301,6 @@ protected:
 
 	// contains the password hash for local games
 	pwd_hash_t pwd_hash;
-
-	int translate_index_cost_to_at(int a);
 
 	/**
 	 * Translates waytype_t to transport_type

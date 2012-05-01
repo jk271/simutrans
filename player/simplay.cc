@@ -1373,7 +1373,7 @@ sint64 spieler_t::get_finance_history_year(int tt, int year, int type) {
 	if( tt == TT_ALL ){
 		return finance_history_year[year][type]; 
 	} else {
-		int index = translate_index_cost_to_at(type);
+		int index = finance.translate_index_cost_to_at(type);
 		if( index == -1 ) {
 			return 0;
 		} else {
@@ -1392,7 +1392,7 @@ sint64 spieler_t::get_finance_history_month(int tt, int month, int type) {
 	if( tt == TT_ALL ) {
 		return finance_history_month[month][type]; 
 	} else {
-		int index = translate_index_cost_to_at(type);
+		int index = finance.translate_index_cost_to_at(type);
 		if( index == -1 ) {
 			return 0;
 		} else {
@@ -1402,34 +1402,6 @@ sint64 spieler_t::get_finance_history_month(int tt, int month, int type) {
 	}
 }
 
-// returns -1 or -2 if not found !!
-// -1 --> set this value to 0, -2 -->use value from old statistic
-int spieler_t::translate_index_cost_to_at(int cost_index) {
-	static int indices[] = {
-		ATV_CONSTRUCTION_COST,  // COST_CONSTRUCTION
-		ATV_RUNNING_COST,       // COST_VEHICLE_RUN
-		ATV_NEW_VEHICLE,        // COST_NEW_VEHICLE
-		ATV_REVENUE_TRANSPORT,  // COST_INCOME
-		ATV_INFRASTRUCTURE_MAINTENANCE, // COST_MAINTENANCE
-		ATV_NON_FINANTIAL_ASSETS,// COST_ASSETS
-		-2,                     // COST_CASH - cash can not be assigned to transport type
-		-2,                     // COST_NETWEALTH -||-
-		ATV_PROFIT,             // COST_PROFIT
-		ATV_OPERATING_PROFIT,   // COST_OPERATING_PROFIT
-		ATV_PROFIT_MARGIN,      // COST_MARGIN
-		ATV_TRANSPORTED,        // COST_ALL_TRANSPORTED
-		-1,                     // ATV_COST_POWERLINES
-		ATV_TRANSPORTED_PASSENGER, // COST_TRANSPORTED_PAS
-		ATV_TRANSPORTED_MAIL,   // COST_TRANSPORTED_MAIL
-		ATV_TRANSPORTED_GOOD,   // COST_TRANSPORTED_GOOD
-		-2,                     // COST_ALL_CONVOIS
-		-2,                     // COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
-		ATV_WAY_TOLL,           // COST_WAY_TOLLS,
-		ATV_MAX                 // MAX_PLAYER_COST
-		};
-
-	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
-}
 
 
 /* inner class */
@@ -1790,4 +1762,34 @@ void spieler_t::finance_t::roll_history_year() {
 			veh_year[tt][0][accounting_type] = 0;
 		}
 	}
+}
+
+
+// returns -1 or -2 if not found !!
+// -1 --> set this value to 0, -2 -->use value from old statistic
+int spieler_t::finance_t::translate_index_cost_to_at(int cost_index) {
+	static int indices[] = {
+		ATV_CONSTRUCTION_COST,  // COST_CONSTRUCTION
+		ATV_RUNNING_COST,       // COST_VEHICLE_RUN
+		ATV_NEW_VEHICLE,        // COST_NEW_VEHICLE
+		ATV_REVENUE_TRANSPORT,  // COST_INCOME
+		ATV_INFRASTRUCTURE_MAINTENANCE, // COST_MAINTENANCE
+		ATV_NON_FINANTIAL_ASSETS,// COST_ASSETS
+		-2,                     // COST_CASH - cash can not be assigned to transport type
+		-2,                     // COST_NETWEALTH -||-
+		ATV_PROFIT,             // COST_PROFIT
+		ATV_OPERATING_PROFIT,   // COST_OPERATING_PROFIT
+		ATV_PROFIT_MARGIN,      // COST_MARGIN
+		ATV_TRANSPORTED,        // COST_ALL_TRANSPORTED
+		-1,                     // ATV_COST_POWERLINES
+		ATV_TRANSPORTED_PASSENGER, // COST_TRANSPORTED_PAS
+		ATV_TRANSPORTED_MAIL,   // COST_TRANSPORTED_MAIL
+		ATV_TRANSPORTED_GOOD,   // COST_TRANSPORTED_GOOD
+		-2,                     // COST_ALL_CONVOIS
+		-2,                     // COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
+		ATV_WAY_TOLL,           // COST_WAY_TOLLS,
+		ATV_MAX                 // MAX_PLAYER_COST
+		};
+
+	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
 }

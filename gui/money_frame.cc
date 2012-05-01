@@ -112,7 +112,7 @@ const char * money_frame_t::transport_type_values[TT_MAX] = {
  */
 const char *money_frame_t::display_money(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(transport_type_option, old, type) : sp->get_finance_history_year(transport_type_option, old, type)) / 100.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_finance_history_month(transport_type_option, old, type) : sp->get_finance()->get_finance_history_year(transport_type_option, old, type)) / 100.0;
 	money_to_string(buf, cost );
 	return(buf);
 }
@@ -120,7 +120,7 @@ const char *money_frame_t::display_money(int type, char *buf, int old)
 
 const char *money_frame_t::display_number(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(transport_type_option, old, type) : sp->get_finance_history_year(transport_type_option, old, type)) / 1.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_finance_history_month(transport_type_option, old, type) : sp->get_finance()->get_finance_history_year(transport_type_option, old, type)) / 1.0;
 	money_to_string(buf, cost );
 	buf[strlen(buf)-4] = 0;	// remove comma
 	return(buf);
@@ -133,7 +133,7 @@ const char *money_frame_t::display_number(int type, char *buf, int old)
  */
 int money_frame_t::get_money_colour(int type, int old)
 {
-	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(transport_type_option, old, type) : sp->get_finance_history_year(transport_type_option, old, type));
+	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_finance_history_month(transport_type_option, old, type) : sp->get_finance()->get_finance_history_year(transport_type_option, old, type));
 	if (i < 0) return MONEY_MINUS;
 	if (i > 0) return MONEY_PLUS;
 	return COL_YELLOW;
@@ -526,7 +526,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 		(double)((sint64)sp->get_finance()->get_maintenance_with_bits((transport_type)transport_type_option))/100.0
 	);
 	maintenance_money.set_text(str_buf[16]);
-	maintenance_money.set_color(sp->get_maintenance()>=0?MONEY_PLUS:MONEY_MINUS);
+	maintenance_money.set_color(sp->get_finance()->get_maintenance((transport_type)transport_type_option)>=0?MONEY_PLUS:MONEY_MINUS);
 
 	for (int i = 0;  i<MAX_PLAYER_COST_BUTTON;  i++) {
 		filterButtons[i].pressed = ( (bFilterStates[sp->get_player_nr()]&(1<<i)) != 0 );

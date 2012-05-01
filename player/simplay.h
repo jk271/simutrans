@@ -130,9 +130,9 @@ protected:
 	 **/
 	class finance_t {
 	public:
-		karte_t * world;
-
 		spieler_t * player;
+
+		karte_t * world;
 
 		/**
 	 	* Der Kontostand.

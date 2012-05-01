@@ -113,10 +113,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 
 	haltcount = 0;
 
-	for(int i=0; i<TT_MAX; ++i){
-		maintenance[i] = 0;
-	}
-
 	welt->get_settings().set_default_player_color(this);
 
 	// we have different AI, try to find out our type:
@@ -173,9 +169,9 @@ void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount
 sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
 		assert(tt!=TT_ALL);
-		maintenance[tt] += change;
-		maintenance[TT_ALL] += change;
-		return maintenance[tt];
+		finance.maintenance[tt] += change;
+		finance.maintenance[TT_ALL] += change;
+		return finance.maintenance[tt];
 }
 
 
@@ -335,28 +331,6 @@ void spieler_t::add_transported(const sint64 amount, const waytype_t wt, int ind
 }
 
 
-sint64 spieler_t::get_maintenance_with_bits(transport_type tt) const { 
-	assert(tt<TT_MAX); 
-
-	if(  welt->ticks_per_world_month_shift>=18  ) {
-		return ((sint64)maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
-	}else{
-		return ((sint64)maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
-	}
-}
-
-
-sint64 spieler_t::get_vehicle_maintenance_with_bits(transport_type tt) const { 
-	assert(tt<TT_MAX); 
-
-	if(  welt->ticks_per_world_month_shift>=18  ) {
-		return ((sint64)finance.vehicle_maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
-	}else{
-		return ((sint64)finance.vehicle_maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
-	}
-}
-
-
 /* returns the name of the player; "player -1" sits in front of the screen
  * @author prissi
  */
@@ -494,15 +468,15 @@ void spieler_t::neuer_monat()
 
 	// subtract maintenance
 	if(  welt->ticks_per_world_month_shift>=18  ) {
-		buche( -((sint64)maintenance[TT_ALL]) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
+		buche( -((sint64)finance.maintenance[TT_ALL]) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
 	}
 	else {
-		buche( -((sint64)maintenance[TT_ALL]) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
+		buche( -((sint64)finance.maintenance[TT_ALL]) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
 	}
 
 	for(int i=0; i<TT_MAX; ++i){
-		finance.veh_month[i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
-		finance.veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
+		finance.veh_month[i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= finance.get_maintenance_with_bits((transport_type)i);
+		finance.veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= finance.get_maintenance_with_bits((transport_type)i);
 	}
 
 	// enough money and scenario finished?
@@ -540,7 +514,7 @@ void spieler_t::neuer_monat()
 				}
 			}
 			// no assets => nothing to go bankrupt about again
-			else if(  maintenance[TT_ALL]!=0  ||  finance_history_year[0][COST_ALL_CONVOIS]!=0  ) {
+			else if(  finance.maintenance[TT_ALL]!=0  ||  finance_history_year[0][COST_ALL_CONVOIS]!=0  ) {
 
 				// for AI, we only declare bankrupt, if total assest are below zero
 				if(finance_history_year[0][COST_NETWEALTH]<0) {
@@ -1502,6 +1476,10 @@ spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 		}
 	}
 
+	for(int i=0; i<TT_MAX; ++i){
+		maintenance[i] = 0;
+	}
+
 	for(int i=0; i<TT_MAX_VEH; ++i){
 		vehicle_maintenance[i] = 0;
 	}
@@ -1622,6 +1600,29 @@ void spieler_t::finance_t::export_to_cost_year( sint64 ** finance_history_year) 
 		finance_history_year[i][COST_WAY_TOLLS]        = veh_year[TT_ALL][i][ATV_WAY_TOLL];
 	}
 }
+
+
+sint64 spieler_t::finance_t::get_maintenance_with_bits(transport_type tt) const { 
+	assert(tt<TT_MAX); 
+
+	if(  welt->ticks_per_world_month_shift>=18  ) {
+		return ((sint64)maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
+	}else{
+		return ((sint64)maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
+	}
+}
+
+
+sint64 spieler_t::finance_t::get_vehicle_maintenance_with_bits(transport_type tt) const { 
+	assert(tt<TT_MAX); 
+
+	if(  welt->ticks_per_world_month_shift>=18  ) {
+		return ((sint64)vehicle_maintenance[tt]) << (welt->ticks_per_world_month_shift-18);
+	}else{
+		return ((sint64)vehicle_maintenance[tt]) >> (18-welt->ticks_per_world_month_shift);
+	}
+}
+
 
 
 void spieler_t::finance_t::import_from_cost_month(sint64 finance_history_month[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {

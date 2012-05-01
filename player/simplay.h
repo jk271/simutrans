@@ -159,6 +159,12 @@ protected:
 		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
 		/**
+	 	* Monthly maintenance cost
+	 	* @author Hj. Malthaner
+	 	*/
+		sint32 maintenance[TT_MAX];
+
+		/**
 	 	* monthly vehicle maintenance cost
 	 	* author Jan Korbel
 	 	*/
@@ -179,6 +185,18 @@ protected:
 	 	*/
 		void export_to_cost_month(sint64 ** finance_history_month);
 		void export_to_cost_year( sint64 ** finance_history_year);
+
+		/**
+		 * returns maintenance with bits_per_month
+		 * @author Jan Korbel
+		 */
+		sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
+
+		/**
+		 * returns vehicle maintenance with bits_per_month
+		 * @author Jan Korbel
+		 */
+		sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
 		/**
 	 	* Translates finance statistisc from old (version<=111) format to new one.
@@ -209,12 +227,6 @@ protected:
 	*/
 	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST];
 	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
-
-	/**
-	 * Monthly maintenance cost
-	 * @author Hj. Malthaner
-	 */
-	sint32 maintenance[TT_MAX];
 
 	/**
 	 * Die Welt in der gespielt wird.
@@ -438,20 +450,8 @@ public:
 
 	virtual ~spieler_t();
 
-	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
+	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return finance.maintenance[tt]; }
 	
-	/**
-	 * returns maintenance with bits_per_month
-	 * @author Jan Korbel
-	 */
-	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
-
-	/**
-	 * returns vehicle maintenance with bits_per_month
-	 * @author Jan Korbel
-	 */
-	sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
-
 	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt) {
 		if(sp) {
 			return sp->add_maintenance(change, wt);

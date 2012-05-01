@@ -157,10 +157,13 @@ protected:
 
 		/**
 		* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
-		* @author hsiegeln
+		* @author hsiegeln, jk271
 		*/
 		void roll_history_year();
 		void roll_history_month();
+
+		/* loads or saves finance statistic */
+		void rdwr(loadsave_t *file);
 	};
 
 	/* "new" finance history */

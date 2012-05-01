@@ -1137,31 +1137,7 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	} else {
-		// most recent savegame version: now with detailed finance statistics by type of transport
-		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
-			for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type  ) {
-				file->rdwr_longlong(finance.com_year[year][cost_type]);
-			}
-		}
-		for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
-			for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type ) {
-				file->rdwr_longlong(finance.com_month[month][cost_type]);
-			}
-		}
-		for(int tt=0; tt<TT_MAX; ++tt){
-			for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
-				for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
-					file->rdwr_longlong(finance.veh_year[tt][year][cost_type]);
-				}
-			}
-		} 
-		for(int tt=0; tt<TT_MAX; ++tt){
-			for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
-				for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
-					file->rdwr_longlong(finance.veh_month[tt][month][cost_type]);
-				}
-			}
-		} 
+		finance.rdwr(file);
 	}
 	if(  file->get_version()>102002  ) {
 		file->rdwr_longlong(starting_money);
@@ -1775,5 +1751,34 @@ void spieler_t::finance_t::roll_history_year() {
 			veh_year[tt][0][accounting_type] = 0;
 		}
 	}
+}
+
+
+void spieler_t::finance_t::rdwr(loadsave_t *file) {
+	// most recent savegame version: now with detailed finance statistics by type of transport
+	for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
+		for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type  ) {
+			file->rdwr_longlong(com_year[year][cost_type]);
+		}
+	}
+	for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
+		for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type ) {
+			file->rdwr_longlong(com_month[month][cost_type]);
+		}
+	}
+	for(int tt=0; tt<TT_MAX; ++tt){
+		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
+			for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
+				file->rdwr_longlong(veh_year[tt][year][cost_type]);
+			}
+		}
+	} 
+	for(int tt=0; tt<TT_MAX; ++tt){
+		for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
+			for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
+				file->rdwr_longlong(veh_month[tt][month][cost_type]);
+			}
+		}
+	} 
 }
 

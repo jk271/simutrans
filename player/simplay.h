@@ -270,6 +270,13 @@ protected:
 		int translate_index_cost_to_at(int cost_);
 
 		/**
+	 	* Translates haus_besch_t to transport_type
+		* Building can be assigned to transport type using utyp
+	 	* @author Jan Korbel
+	 	*/
+		transport_type translate_utyp_to_tt(const int utyp) const;
+
+		/**
 	 	* Translates waytype_t to transport_type
 	 	* @author Jan Korbel
 	 	*/
@@ -337,7 +344,7 @@ protected:
 	 * @return the new maintenance costs
 	 * @author Hj. Malthaner
 	 */
-	sint32 add_maintenance(sint32 change, waytype_t const wt=ignore_wt);
+	sint32 add_maintenance(sint32 change, waytype_t const wt=ignore_wt, const int utyp = 0);
 
 	/**
 	 * Ist dieser Spieler ein automatischer Spieler?
@@ -503,9 +510,9 @@ public:
 	/* DEPRECATED, use get_maintenance from finance_t instead */
 	sint32 get_maintenance() const { return finance.maintenance[TT_ALL]; }
 	
-	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt) {
+	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt, const int utyp = 0) {
 		if(sp) {
-			return sp->add_maintenance(change, wt);
+			return sp->add_maintenance(change, wt, utyp);
 		}
 		return 0;
 	}

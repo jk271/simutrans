@@ -161,8 +161,11 @@ void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount
  * @return the new maintenance costs
  * @author Hj. Malthaner
  */
-sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
+sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt, const int utyp) {
 		transport_type tt = finance.translate_waytype_to_tt(wt);
+		if(( tt ==TT_OTHER ) && ( utyp !=0 ) ) {
+			tt = finance.translate_utyp_to_tt(utyp);
+		}
 		assert(tt!=TT_ALL);
 		finance.maintenance[tt] += change;
 		finance.maintenance[TT_ALL] += change;
@@ -1813,6 +1816,25 @@ int spieler_t::finance_t::translate_index_cost_to_at(int cost_index) {
 		};
 
 	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
+}
+
+
+transport_type spieler_t::finance_t::translate_utyp_to_tt(const int utyp) const {
+	switch(utyp){
+		case haus_besch_t::bahnhof:      return TT_RAILWAY;
+		case haus_besch_t::bushalt:      return TT_ROAD;
+		case haus_besch_t::hafen:        return TT_SHIP;
+		case haus_besch_t::binnenhafen:  return TT_SHIP;
+		case haus_besch_t::airport:      return TT_AIR;
+		case haus_besch_t::monorailstop: return TT_MONORAIL;
+		case haus_besch_t::bahnhof_geb:  return TT_RAILWAY;
+		case haus_besch_t::bushalt_geb:  return TT_ROAD;
+		case haus_besch_t::hafen_geb:    return TT_SHIP;
+		case haus_besch_t::binnenhafen_geb: return TT_SHIP;
+		case haus_besch_t::airport_geb:  return TT_AIR;
+		case haus_besch_t::monorail_geb: return TT_MONORAIL;
+		default: return TT_OTHER;
+	}
 }
 
 

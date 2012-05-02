@@ -91,7 +91,7 @@ gebaeude_t::gebaeude_t(karte_t *welt, koord3d pos, spieler_t *sp, const haus_til
 	init();
 	if(t) {
 		set_tile(t);	// this will set init time etc.
-		spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), get_waytype());
+		spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), get_waytype(), tile->get_besch()->get_utyp());
 	}
 
 	grund_t *gr=welt->lookup(pos);
@@ -126,7 +126,7 @@ gebaeude_t::~gebaeude_t()
 	count = 0;
 	anim_time = 0;
 	if(tile) {
-		spieler_t::add_maintenance(get_besitzer(), -welt->get_settings().maint_building*tile->get_besch()->get_level(), get_waytype());
+		spieler_t::add_maintenance(get_besitzer(), -welt->get_settings().maint_building*tile->get_besch()->get_level(), get_waytype(), tile->get_besch()->get_utyp());
 	}
 }
 
@@ -863,7 +863,7 @@ void gebaeude_t::laden_abschliessen()
 {
 	calc_bild();
 
-	spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), get_waytype());
+	spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), get_waytype(), tile->get_besch()->get_utyp());
 
 	// citybuilding, but no town?
 	if(  tile->get_offset()==koord(0,0)  ) {

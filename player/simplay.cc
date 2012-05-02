@@ -1405,7 +1405,7 @@ spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 
 void spieler_t::finance_t::calc_finance_history() {
 	// vehicles
-	for(int tt=0; tt<TT_MAX; ++tt){
+	for(int tt=1; tt<TT_MAX; ++tt){
 		// ATV_REVENUE_TRANSPORT = ATV_REVENUE_PAS+MAIL+GOOD
 		sint64 revenue, mrevenue;
 		revenue = mrevenue = 0;
@@ -1456,6 +1456,17 @@ void spieler_t::finance_t::calc_finance_history() {
 		}
 		veh_month[tt][0][ATV_TRANSPORTED] = mtransported;
 		veh_year[ tt][0][ATV_TRANSPORTED] =  transported;
+	}
+
+	// sum up statistic for all transport types
+	for( int j=0; j< ATV_MAX; ++j ) {
+		veh_month[TT_ALL][0][j] =0;
+		for( int tt=1; tt<TT_MAX; ++tt ) {
+			// do not add poverline revenue to vehicles revenue
+			if ( ( tt != TT_POWERLINE ) || ( j >= ATV_REVENUE )) {
+				veh_month[TT_ALL][0][j] += veh_month[tt][0][j];
+			}
+		}
 	}
 
 	// undistinguishable by type of transport 

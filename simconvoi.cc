@@ -2540,7 +2540,8 @@ void convoi_t::calc_gewinn()
 		vehikel_t* v = fahr[i];
 		sint64 tmp;
 		gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
-		besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), v->get_waytype(), v->get_fracht_typ()->get_index() );
+		// get_schedule is needed as v->get_waytype() returns track_wt for trams (instead of tram_wt
+		besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_fracht_typ()->get_index() );
 		v->last_stop_pos = v->get_pos().get_2d();
 	}
 
@@ -2620,7 +2621,7 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 			sint64 tmp;
 			// calc_revenue
 			gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
-			besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), v->get_waytype(), v->get_fracht_typ()->get_index());
+			besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_fracht_typ()->get_index());
 			v->last_stop_pos = v->get_pos().get_2d();
 		}
 

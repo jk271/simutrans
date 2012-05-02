@@ -138,8 +138,6 @@ void spieler_t::add_construction_costs(const sint64 amount, const koord k, const
 		finance.veh_year[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 		finance.veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 	}
-	finance.veh_year[TT_ALL][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
-	finance.veh_month[TT_ALL][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 
 	buche(amount, k, COST_CONSTRUCTION);
 }
@@ -206,10 +204,6 @@ void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytyp
 		finance.veh_year[TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
 		finance.veh_month[TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
 	}
-	finance.veh_year[TT_ALL][0][ATV_NEW_VEHICLE] += (sint64) amount;
-	finance.veh_month[TT_ALL][0][ATV_NEW_VEHICLE] += (sint64) amount;
-	finance.veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
-	finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
 
 	buche( amount, k, COST_NEW_VEHICLE);
 	buche(-amount, k, COST_ASSETS);
@@ -230,8 +224,6 @@ void spieler_t::add_revenue(const sint64 amount, const koord k, const waytype_t 
 		finance.veh_year[TT_OTHER][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
 		finance.veh_month[TT_OTHER][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
 	}
-	finance.veh_year[TT_ALL][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
-	finance.veh_month[TT_ALL][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
 
 	if(tt != TT_POWERLINE){
 		buche(amount, COST_INCOME);
@@ -254,8 +246,6 @@ void spieler_t::add_running_costs(const sint64 amount, const waytype_t wt){
 		finance.veh_year[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 		finance.veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 	}
-	finance.veh_year[TT_ALL][0][ATV_RUNNING_COST] += amount;
-	finance.veh_month[TT_ALL][0][ATV_RUNNING_COST] += amount;
 	
 	buche(amount, COST_VEHICLE_RUN);
 }
@@ -273,8 +263,6 @@ void spieler_t::add_toll_payed(const sint64 amount, const waytype_t wt){
 		finance.veh_year[TT_OTHER][0][ATV_TOLL_PAYED] += (sint64) amount;
 		finance.veh_month[TT_OTHER][0][ATV_TOLL_PAYED] += (sint64) amount;
 	}
-	finance.veh_year[TT_ALL][0][ATV_TOLL_PAYED] += (sint64) amount;
-	finance.veh_month[TT_ALL][0][ATV_TOLL_PAYED] += (sint64) amount;
 
 	buche(amount, COST_WAY_TOLLS);
 }
@@ -292,8 +280,6 @@ void spieler_t::add_toll_received(const sint64 amount, const waytype_t wt){
 		finance.veh_year[TT_OTHER][0][ATV_TOLL_RECEIVED] += (sint64) amount;
 		finance.veh_month[TT_OTHER][0][ATV_TOLL_RECEIVED] += (sint64) amount;
 	}
-	finance.veh_year[TT_ALL][0][ATV_TOLL_RECEIVED] += (sint64) amount;
-	finance.veh_month[TT_ALL][0][ATV_TOLL_RECEIVED] += (sint64) amount;
 
 	buche(amount, COST_WAY_TOLLS);
 }
@@ -311,9 +297,6 @@ void spieler_t::add_transported(const sint64 amount, const waytype_t wt, int ind
 
 	finance.veh_year[ tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
 	finance.veh_month[tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
-
-	finance.veh_year[ TT_ALL][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
-	finance.veh_month[TT_ALL][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
 
 	if( index == 0){
 		buche(amount, COST_TRANSPORTED_PAS);

@@ -118,7 +118,7 @@ void bruecke_t::laden_abschliessen()
 			}
 			weg->set_max_speed(besch->get_topspeed());
 			// take ownership of way
-			spieler_t::add_maintenance( weg->get_besitzer(), -weg->get_besch()->get_wartung(), weg->get_waytype());
+			spieler_t::add_maintenance( weg->get_besitzer(), -weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 			weg->set_besitzer(sp);
 		}
 		// jk271
@@ -138,7 +138,7 @@ void bruecke_t::entferne( spieler_t *sp2 )
 			weg_t *weg = gr->get_weg( besch->get_waytype() );
 			if(weg) {
 				weg->set_max_speed( weg->get_besch()->get_topspeed() );
-				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), weg->get_waytype());
+				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 				// reset offsets
 				weg->set_yoff(0);
 				if (gr->get_weg_nr(1)) {

@@ -1982,8 +1982,8 @@ bool wegbauer_t::baue_tunnelboden()
 			weg->set_max_speed(tunnel_besch->get_topspeed());
 			tunnel->calc_bild();
 			cost -= tunnel_besch->get_preis();
-			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), weg->get_waytype());
-			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), weg->get_waytype() );
+			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
+			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype() );
 		}
 		else if(gr->get_typ()==grund_t::tunnelboden) {
 			// check for extension only ...
@@ -1992,8 +1992,8 @@ bool wegbauer_t::baue_tunnelboden()
 			assert( tunnel );
 			// take the faster way
 			if(  !keep_existing_faster_ways  ||  (tunnel->get_besch()->get_topspeed() < tunnel_besch->get_topspeed())  ) {
-				spieler_t::add_maintenance(sp, -tunnel->get_besch()->get_wartung(), tunnel->get_waytype());
-				spieler_t::add_maintenance(sp,  tunnel_besch->get_wartung(), tunnel->get_waytype() );
+				spieler_t::add_maintenance(sp, -tunnel->get_besch()->get_wartung(),( tunnel->get_besch()->get_weg_besch()->get_styp() == weg_t::type_tram) ? tram_wt : tunnel->get_waytype());
+				spieler_t::add_maintenance(sp,  tunnel_besch->get_wartung(), (tunnel->get_besch()->get_weg_besch()->get_styp() == weg_t::type_tram) ? tram_wt : tunnel->get_waytype() );
 
 				tunnel->set_besch(tunnel_besch);
 				weg_t *weg = gr->get_weg(tunnel_besch->get_waytype());
@@ -2079,7 +2079,7 @@ void wegbauer_t::baue_strasse()
 			else {
 				// we take ownership => we take care to maintain the roads completely ...
 				spieler_t *s = weg->get_besitzer();
-				spieler_t::add_maintenance(s, -weg->get_besch()->get_wartung(), weg->get_waytype());
+				spieler_t::add_maintenance(s, -weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 				// cost is the more expensive one, so downgrading is between removing and new buidling
 				cost -= max( weg->get_besch()->get_preis(), besch->get_preis() );
 				weg->set_besch(besch);
@@ -2089,7 +2089,7 @@ void wegbauer_t::baue_strasse()
 					weg->set_max_speed( wo->get_besch()->get_topspeed() );
 				}
 				weg->set_gehweg(add_sidewalk);
-				spieler_t::add_maintenance( sp, weg->get_besch()->get_wartung(), weg->get_waytype());
+				spieler_t::add_maintenance( sp, weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 				weg->set_besitzer(sp);
 			}
 		}
@@ -2171,7 +2171,7 @@ void wegbauer_t::baue_schiene()
 				if(  change_besch  ) {
 					// we take ownership => we take care to maintain the roads completely ...
 					spieler_t *s = weg->get_besitzer();
-					spieler_t::add_maintenance( s, -weg->get_besch()->get_wartung(), weg->get_waytype());
+					spieler_t::add_maintenance( s, -weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 					// cost is the more expensive one, so downgrading is between removing and new buidling
 					cost -= max( weg->get_besch()->get_preis(), besch->get_preis() );
 					weg->set_besch(besch);
@@ -2180,7 +2180,7 @@ void wegbauer_t::baue_schiene()
 					if (wo  &&  wo->get_besch()->get_topspeed() < weg->get_max_speed()) {
 						weg->set_max_speed( wo->get_besch()->get_topspeed() );
 					}
-					spieler_t::add_maintenance( sp, weg->get_besch()->get_wartung(), weg->get_waytype());
+					spieler_t::add_maintenance( sp, weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 					weg->set_besitzer(sp);
 				}
 			}

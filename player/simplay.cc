@@ -772,7 +772,7 @@ void spieler_t::ai_bankrupt()
 					if(  w  &&  w->get_besitzer()==this  ) {
 						// take ownership
 						if (wnr>1  ||  (!gr->ist_bruecke()  &&  !gr->ist_tunnel())) {
-							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung(), w->get_waytype() );
+							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung(), (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
 						}
 						w->set_besitzer(NULL); // make public
 					}
@@ -862,7 +862,7 @@ void spieler_t::ai_bankrupt()
 								dt->set_besitzer( NULL );
 								break;
 							case ding_t::tunnel:
-								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung(), dt->get_waytype() );
+								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung(), (((tunnel_t*)dt)->get_besch()->get_weg_besch()->get_styp() == weg_t::type_tram) ? tram_wt : dt->get_waytype() );
 								dt->set_besitzer( NULL );
 								break;
 

@@ -2796,6 +2796,8 @@ void convoi_t::self_destruct()
  */
 void convoi_t::destroy()
 {
+	// has to be before schedule is deleted
+	waytype_t wt = get_schedule()->get_waytype();
 	// can be only done here, with a valid convoihandle ...
 	if(fahr[0]) {
 		fahr[0]->set_convoi(NULL);
@@ -2821,7 +2823,7 @@ void convoi_t::destroy()
 	}
 
 	// pay the current value
-	besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), get_schedule()->get_waytype() );
+	besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), wt );
 
 	for(  uint8 i = anz_vehikel;  i-- != 0;  ) {
 		if(  !fahr[i]->get_flag( ding_t::not_on_map )  ) {

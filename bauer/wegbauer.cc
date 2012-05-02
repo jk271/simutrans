@@ -2205,7 +2205,7 @@ void wegbauer_t::baue_schiene()
 
 			gr->calc_bild();
 			reliefkarte_t::get_karte()->calc_map_pixel( gr->get_pos().get_2d() );
-			spieler_t::add_construction_costs(sp, cost, gr->get_pos().get_2d(), besch->get_wtyp());
+			spieler_t::add_construction_costs(sp, cost, gr->get_pos().get_2d(), (besch->get_styp() == weg_t::type_tram) ? tram_wt : besch->get_wtyp());
 
 			if((i&3)==0) {
 				INT_CHECK( "wegbauer 1584" );

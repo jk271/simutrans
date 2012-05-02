@@ -2821,11 +2821,7 @@ void convoi_t::destroy()
 	}
 
 	// pay the current value
-	if(fahr[0]){
-		besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), fahr[0]->get_waytype() );
-	} else {
-		besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), ignore_wt ); // this should not happen
-	}
+	besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), get_schedule()->get_waytype() );
 
 	for(  uint8 i = anz_vehikel;  i-- != 0;  ) {
 		if(  !fahr[i]->get_flag( ding_t::not_on_map )  ) {

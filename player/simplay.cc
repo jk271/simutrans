@@ -126,8 +126,11 @@ spieler_t::~spieler_t()
 }
 
 
-void spieler_t::add_construction_costs(const sint64 amount, const koord k, const waytype_t wt){
-	const transport_type tt = finance.translate_waytype_to_tt(wt);
+void spieler_t::add_construction_costs(const sint64 amount, const koord k, const waytype_t wt, const int utyp){
+	transport_type tt = finance.translate_waytype_to_tt(wt);
+	if(( tt ==TT_OTHER ) && ( utyp !=0 ) ) {
+		tt = finance.translate_utyp_to_tt(utyp);
+	}
 	assert(tt != TT_ALL);
 	assert(tt <  TT_MAX);
 
@@ -143,13 +146,13 @@ void spieler_t::add_construction_costs(const sint64 amount, const koord k, const
 }
 
 
-void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt){
+void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt, const int utyp){
 	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
-		sp->add_construction_costs( amount, k, wt );
+		sp->add_construction_costs( amount, k, wt, utyp );
 	} else {
 		// when making road or stop public, pay to public authority
 		if (sp!=NULL && sp == welt->get_spieler(1) && amount >0) {
-			sp->add_construction_costs( amount, k, wt );
+			sp->add_construction_costs( amount, k, wt, utyp );
 		}
 	}
 }

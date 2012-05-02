@@ -380,9 +380,9 @@ public:
 	 * @param tt type of transport
 	 * @author Jan Korbel
 	 */
-	void add_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt);
+	void add_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
-	static void add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt);
+	static void add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
 	/*
 	 * displayes amount of money when koordinates and on screen

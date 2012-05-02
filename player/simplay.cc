@@ -1472,13 +1472,16 @@ void spieler_t::finance_t::calc_flat_view_month(int tt, sint64 (&flat_view_month
 		for(int i=0; i<MAX_PLAYER_COST; ++i) {
 			int index = translate_index_cost_to_at(i);
 			if(index >=0 ){
-				flat_view_month[month][i] = veh_month[tt][i][index];
+				flat_view_month[month][i] = veh_month[tt][month][index];
 			} else {
 				if(i==COST_CASH) {
-					flat_view_month[month][i] = com_month[i][ATC_CASH];
+					flat_view_month[month][i] = com_month[month][ATC_CASH];
 				}
 				if(i==COST_NETWEALTH ) {
-					flat_view_month[month][i] = com_month[i][ATC_NETWEALTH];
+					flat_view_month[month][i] = com_month[month][ATC_NETWEALTH];
+				}
+				if( ( i == COST_POWERLINES ) && ( tt == TT_ALL ) ) {
+					flat_view_month[month][i] = veh_month[TT_POWERLINE][month][ATV_REVENUE];
 				}
 			}
 		}
@@ -1491,13 +1494,16 @@ void spieler_t::finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)
 		for(int i=0; i<MAX_PLAYER_COST; ++i) {
 			int index = translate_index_cost_to_at(i);
 			if(index >=0 ){
-				flat_view_year[year][i] = veh_year[tt][i][index];
+				flat_view_year[year][i] = veh_year[tt][year][index];
 			} else {
 				if(i==COST_CASH) {
-					flat_view_year[year][i] = com_year[i][ATC_CASH];
+					flat_view_year[year][i] = com_year[year][ATC_CASH];
 				}
 				if(i==COST_NETWEALTH ) {
-					flat_view_year[year][i] = com_year[i][ATC_NETWEALTH];
+					flat_view_year[year][i] = com_year[year][ATC_NETWEALTH];
+				}
+				if( ( i == COST_POWERLINES ) && ( tt == TT_ALL ) ) {
+					flat_view_year[year][i] = veh_year[TT_POWERLINE][year][ATV_REVENUE];
 				}
 			}
 		}

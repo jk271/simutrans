@@ -206,7 +206,7 @@ void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytyp
 	}
 
 	buche( amount, k, COST_NEW_VEHICLE);
-	buche(-amount, k, COST_ASSETS);
+	buche(-amount, COST_ASSETS);
 }
 
 

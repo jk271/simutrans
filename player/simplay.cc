@@ -1031,7 +1031,7 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	}
-	else if(  file->get_version()<111002){
+	else {
 		// savegame version: now with toll
 		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<MAX_PLAYER_COST;   cost_type++  ) {
@@ -1047,8 +1047,9 @@ void spieler_t::rdwr(loadsave_t *file)
 				}
 			}
 		}
-	} else {
-		finance.rdwr(file);
+		if( file->get_version() >= 111005 ) {
+			finance.rdwr(file);
+		}
 	}
 	if(  file->get_version()>102002  ) {
 		file->rdwr_longlong(finance.starting_money);
@@ -1085,7 +1086,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		dbg->fatal("spieler_t::rdwr()", "Halt count is out of bounds: %d -> corrupt savegame?", halt_count|haltcount);
 	}
 
-	if( file->is_loading() && (file->get_version()< 111002)) {
+	if( file->is_loading() ) {
 
 		/* prior versions calculated margin incorrectly.
 		 * we also save only some values and recalculate all dependent ones
@@ -1121,6 +1122,13 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);
+
+
+		// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
+		if((file->get_version()<111005) && (file->is_loading())){
+			finance.import_from_cost_month(finance_history_month);
+			finance.import_from_cost_year(finance_history_year);
+		}
 	}
 
 	// headquarter stuff
@@ -1159,12 +1167,6 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 	// save the name too
 	if(file->get_version()>102003) {
 		file->rdwr_str( spieler_name_buf, lengthof(spieler_name_buf) );
-	}
-
-	// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
-	if((file->get_version()<111005) && (file->is_loading())){
-		finance.import_from_cost_month(finance_history_month);
-		finance.import_from_cost_year(finance_history_year);
 	}
 }
 

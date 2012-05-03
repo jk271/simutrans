@@ -1075,7 +1075,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		dbg->fatal("spieler_t::rdwr()", "Halt count is out of bounds: %d -> corrupt savegame?", halt_count|haltcount);
 	}
 
-	if( file->is_loading() ) {
+	if(file->is_loading()) {
 
 		/* prior versions calculated margin incorrectly.
 		 * we also save only some values and recalculate all dependent ones

@@ -3927,7 +3927,7 @@ const char *wkz_depot_t::wkz_depot_aux(karte_t *welt, spieler_t *sp, koord3d pos
 				case ribi_t::west:  layout = 3;    break;
 			}
 			hausbauer_t::neues_gebaeude( welt, sp, bd->get_pos(), layout, besch );
-			sp->add_construction_costs(cost, pos.get_2d(), wegtype);
+			sp->add_construction_costs(cost, pos.get_2d(), (besch->get_extra() == weg_t::type_tram) ? tram_wt : wegtype);
 			if(sp == welt->get_active_player()) {
 				welt->set_werkzeug( general_tool[WKZ_ABFRAGE], sp );
 			}

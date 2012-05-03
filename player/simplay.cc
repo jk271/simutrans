@@ -1513,7 +1513,7 @@ void spieler_t::finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)
 }
 
 
-void spieler_t::finance_t::export_to_cost_month(sint64 ** finance_history_month) {
+void spieler_t::finance_t::export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]) {
 	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
 		finance_history_month[i][COST_CONSTRUCTION] = veh_month[TT_ALL][i][ATV_CONSTRUCTION_COST];
 		finance_history_month[i][COST_VEHICLE_RUN]  = veh_month[TT_ALL][i][ATV_RUNNING_COST] + veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
@@ -1538,7 +1538,7 @@ void spieler_t::finance_t::export_to_cost_month(sint64 ** finance_history_month)
 }
 
 
-void spieler_t::finance_t::export_to_cost_year( sint64 ** finance_history_year) {
+void spieler_t::finance_t::export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {
 	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
 		finance_history_year[i][COST_CONSTRUCTION] = veh_year[TT_ALL][i][ATV_CONSTRUCTION_COST];
 		finance_history_year[i][COST_VEHICLE_RUN]  = veh_year[TT_ALL][i][ATV_RUNNING_COST] + veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
@@ -1624,7 +1624,7 @@ sint64 spieler_t::finance_t::get_vehicle_maintenance_with_bits(transport_type tt
 
 
 
-void spieler_t::finance_t::import_from_cost_month(sint64 finance_history_month[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {
+void spieler_t::finance_t::import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {
 	// does it need initial clean-up ? (= initialization)
 	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
 		veh_month[TT_OTHER][i][ATV_CONSTRUCTION_COST] = finance_history_month[i][COST_CONSTRUCTION];
@@ -1668,7 +1668,7 @@ void spieler_t::finance_t::import_from_cost_month(sint64 finance_history_month[M
 }
 
 
-void spieler_t::finance_t::import_from_cost_year( sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {
+void spieler_t::finance_t::import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {
 	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
 		veh_year[TT_OTHER][i][ATV_CONSTRUCTION_COST] = finance_history_year[i][COST_CONSTRUCTION];
 		veh_year[TT_ALL  ][i][ATV_CONSTRUCTION_COST] = finance_history_year[i][COST_CONSTRUCTION];

@@ -193,8 +193,8 @@ protected:
 	 	* Used for saving data in old format
 	 	* @author Jan Korbel
 	 	*/
-		void export_to_cost_month(sint64 ** finance_history_month);
-		void export_to_cost_year( sint64 ** finance_history_year);
+		void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+		void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 
 		/**
 		* Returns the finance history for player
@@ -257,8 +257,8 @@ protected:
 	 	* Used for loading data from old format
 	 	* @author Jan Korbel
 	 	*/
-		void import_from_cost_month(sint64 finance_history_month[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-		void import_from_cost_year( sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+		void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+		void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 
 		/**
 		* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered

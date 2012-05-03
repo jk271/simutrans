@@ -1711,32 +1711,71 @@ void spieler_t::finance_t::import_from_cost_year( sint64 finance_history_year[MA
 }
 
 
+/* most recent savegame version: now with detailed finance statistics by type of transport */
 void spieler_t::finance_t::rdwr(loadsave_t *file) {
-	// most recent savegame version: now with detailed finance statistics by type of transport
-	for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
-		for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type  ) {
-			file->rdwr_longlong(com_year[year][cost_type]);
-		}
-	}
-	for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
-		for( int cost_type = 0; cost_type<ATC_MAX;  ++cost_type ) {
-			file->rdwr_longlong(com_month[month][cost_type]);
-		}
-	}
-	for(int tt=0; tt<TT_MAX; ++tt){
-		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  ++year  ) {
-			for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
-				file->rdwr_longlong(veh_year[tt][year][cost_type]);
+	/* following lines enables FORWARD compatibility 
+	/ you will be still able to load future versions of games with:
+	* 	longer history
+	*	more transport_types
+	*	and new items in ATC_ or ATV_
+	*/
+	sint8 max_years  = MAX_PLAYER_HISTORY_YEARS;
+	sint8 max_months = MAX_PLAYER_HISTORY_MONTHS;
+	sint8 max_tt     = TT_MAX;
+	sint8 max_atc    = ATC_MAX;
+	sint8 max_atv    = ATV_MAX;
+
+	// used for reading longer history
+	sint64 dummy = 0;
+
+	if( file->get_version() >= 111005 ) { // detailed statistic were introduded in 111005
+		file->rdwr_byte( max_years );
+		file->rdwr_byte( max_months );
+		file->rdwr_byte( max_tt ); // tt = transport type
+		file->rdwr_byte( max_atc ); // atc = accounting type common
+		file->rdwr_byte( max_atv ); // atv = accounting type vehicles
+	
+		for(int year = 0;  year < max_years ; ++year ) {
+			for( int cost_type = 0; cost_type < max_atc ;  ++cost_type  ) {
+				if( ( year < MAX_PLAYER_HISTORY_YEARS ) && ( cost_type < ATC_MAX ) ) {
+					file->rdwr_longlong( com_year[year][cost_type] );
+				} else {
+						file->rdwr_longlong( dummy );
+				}
 			}
 		}
-	} 
-	for(int tt=0; tt<TT_MAX; ++tt){
-		for(int month = 0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
-			for( int cost_type = 0; cost_type<ATV_MAX;  ++cost_type  ) {
-				file->rdwr_longlong(veh_month[tt][month][cost_type]);
+		for(int month = 0; month < max_months; ++month) {
+			for( int cost_type = 0; cost_type < max_atc;  ++cost_type ) {
+				if( ( month < MAX_PLAYER_HISTORY_MONTHS ) && ( cost_type < ATC_MAX ) ) {
+					file->rdwr_longlong( com_month[month][cost_type] );
+				} else {
+						file->rdwr_longlong( dummy );
+				}
 			}
 		}
-	} 
+		for(int tt=0; tt < max_tt; ++tt){
+			for( int year = 0;  year < max_years;  ++year ) {
+				for( int cost_type = 0; cost_type < max_atv;  ++cost_type  ) {
+					if( ( tt < TT_MAX ) && ( year < MAX_PLAYER_HISTORY_YEARS ) && ( cost_type < ATV_MAX ) ) {
+						file->rdwr_longlong( veh_year[tt][year][cost_type] );
+					} else {
+						file->rdwr_longlong( dummy );
+					}
+				}
+			}
+		} 
+		for(int tt=0; tt < max_tt; ++tt){
+			for( int month = 0; month < max_months; ++month ) {
+				for( int cost_type = 0; cost_type < max_atv;  ++cost_type  ) {
+					if( ( tt < TT_MAX ) && ( month < MAX_PLAYER_HISTORY_MONTHS ) && ( cost_type < ATV_MAX ) ) {
+						file->rdwr_longlong( veh_month[tt][month][cost_type] );
+					} else {
+						file->rdwr_longlong( dummy );
+					}
+				}
+			}
+		} 
+	}
 }
 
 

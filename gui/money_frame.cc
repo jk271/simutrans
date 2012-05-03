@@ -101,7 +101,7 @@ const char * money_frame_t::transport_type_values[TT_MAX] = {
 	"Truck",
 	"Ship",
 	"Air",
-	"Other",
+	"tt_Other",
 	"Powerlines",
 };
 

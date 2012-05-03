@@ -121,7 +121,6 @@ void bruecke_t::laden_abschliessen()
 			spieler_t::add_maintenance( weg->get_besitzer(), -weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 			weg->set_besitzer(sp);
 		}
-		// jk271
 		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_waytype() );
 	}
 }

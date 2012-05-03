@@ -364,8 +364,11 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		}
 	}
 
-	transport_type_c.set_pos(koord(koord(left+335-12, top+4*BUTTONSPACE)));
-	transport_type_c.set_groesse( koord(146,D_BUTTON_HEIGHT) );
+//	transport_type_c.set_pos(koord(koord(left+335-12, top+4*BUTTONSPACE)));
+	transport_type_c.set_pos(koord(koord(left+335-12-2, 0)));
+//	transport_type_c.set_groesse( koord(146,D_BUTTON_HEIGHT) );
+	transport_type_c.set_groesse( koord(116,D_BUTTON_HEIGHT) );
+	transport_type_c.set_max_size( koord( 116, 1*BUTTONSPACE ) );
 	for(int i=0; i<TT_MAX; ++i) {
 		transport_type_c.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
 	}

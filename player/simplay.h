@@ -23,7 +23,7 @@
 /** 
  * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
  * - concerning to whole company
- * @author Jan Korbel
+ * @author jk271
  */
 enum accounting_type_common {
 	ATC_CASH = 0,		// Cash, COST_CASH
@@ -40,7 +40,7 @@ enum accounting_type_common {
 
 /** 
  * supersedes COST_ types, that CAN be distinguished by type of transport 
- * @author Jan Korbel
+ * @author jk271
  */
 enum accounting_type_vehicles {
 	// revenue by freight type http://simutrans-germany.com/wiki/wiki/tiki-index.php?page=en_GoodsDef
@@ -152,14 +152,14 @@ protected:
 		 * from version 111 or 112
 		 * containes values having relation with whole company but not with particular
 		 * type of transport (com - common)
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		sint64 com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
 		sint64 com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
 	
 		/**
 	 	* finance history having relation with particular type of service
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
 		sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
@@ -172,7 +172,7 @@ protected:
 
 		/**
 	 	* monthly vehicle maintenance cost
-	 	* author Jan Korbel
+	 	* @author jk271
 	 	*/
 		sint32 vehicle_maintenance[TT_MAX];
 
@@ -191,7 +191,7 @@ protected:
 		/**
 	 	* Translates finance statistisc from new format to old (version<=111) one.
 	 	* Used for saving data in old format
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 		void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
@@ -207,14 +207,14 @@ protected:
 	
 		/**
 		* Returns the finance history (indistinguishable part) for player
-		* @author hsiegeln, Jan Korbel
+		* @author hsiegeln, jk271
 		*/
 		sint64 get_finance_history_com_year(int year, int type) { return com_year[year][type]; }
 		sint64 get_finance_history_com_month(int month, int type) { return com_month[month][type]; }
 	
 		/**
 		* Returns the finance history (distinguishable by type of transport) for player
-		* @author hsiegeln, Jan Korbel
+		* @author hsiegeln, jk271
 		*/
 		sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return veh_year[tt][year][type]; }
 		sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
@@ -222,14 +222,14 @@ protected:
 		/**
 	 	* @return finance history of indistinguishable (by type of transport) 
 	 	* part of finance statistics
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		sint64* get_finance_history_com_year() { return *com_year; }
 		sint64* get_finance_history_com_month() { return *com_month; }
 	
 		/**
 	 	* @return finance history for vehicles
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
 		sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
@@ -242,20 +242,20 @@ protected:
 	
 		/**
 		 * returns maintenance with bits_per_month
-		 * @author Jan Korbel
+		 * @author jk271
 		 */
 		sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
 		/**
 		 * returns vehicle maintenance with bits_per_month
-		 * @author Jan Korbel
+		 * @author jk271
 		 */
 		sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
 		/**
 	 	* Translates finance statistisc from old (version<=111) format to new one.
 	 	* Used for loading data from old format
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 		void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
@@ -275,13 +275,13 @@ protected:
 		/**
 	 	* Translates haus_besch_t to transport_type
 		* Building can be assigned to transport type using utyp
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		transport_type translate_utyp_to_tt(const int utyp) const;
 
 		/**
 	 	* Translates waytype_t to transport_type
-	 	* @author Jan Korbel
+	 	* @author jk271
 	 	*/
 		transport_type translate_waytype_to_tt(const waytype_t wt) const;
 	};
@@ -370,7 +370,7 @@ public:
 	/**
 	 * sums up "count" with number of convois in statistics, 
 	 * supersedes buche( count, COST_ALL_CONVOIS)
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_convoi_number(int count){
 		finance.com_year[0][ATC_ALL_CONVOIS] += count;
@@ -381,7 +381,7 @@ public:
 	 * Adds construction costs to accounting statistics, 
 	 * @param amount How much does it cost
 	 * @param tt type of transport
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
@@ -399,7 +399,7 @@ public:
 	 *              negative value = vehicle bought,
 	 *              negative value = vehicle sold
 	 * @param tt type of transport for accounting purpose
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
 
@@ -411,7 +411,7 @@ public:
 	 * @param cathegory parameter "catg" of goods [0,7] from pak files, special 
 	 *                  values -2 for passenger and -1 for mail
 	 *                  if parameter tt is TT_POWERLINE, cathegory is ignored
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
@@ -420,7 +420,7 @@ public:
          * this function is called very often --> inline
          * @param amount How much does it cost
          * @param wt
-	 * @author Jan Korbel
+	 * @author jk271
          */
         void add_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
@@ -428,7 +428,7 @@ public:
 	 * books toll payed by our company to someone else
 	 * @param amount money payed to our company
 	 * @param tt type of transport used for assounting statistisc
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_toll_payed(const sint64 amount, const waytype_t wt=ignore_wt);
 
@@ -436,7 +436,7 @@ public:
 	 * books toll payed to out company by someone else
 	 * @param amount money payed for usage of our roads,railway,channels, ... ; positive sign
 	 * @param tt type of transport used for assounting statistisc
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
@@ -446,7 +446,7 @@ public:
 	 * @papam tt type of transport
 	 * @param cathegory constegory of transported items (-2 passanger, -1 mail, 
 	 *                  other same as in the pak files)
-	 * @author Jan Korbel
+	 * @author jk271
 	 */
 	void add_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 

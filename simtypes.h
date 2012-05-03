@@ -115,7 +115,7 @@ enum waytype_t {
  * waytype_t was not used because of values assigned to air_wt and powerline_wt. 
  * There are also building like railway station that can be distinguished 
  * by transport_type and can not be distinguished by waytype_t
- * @author Jan Korbel
+ * @author jk271
  */
 enum transport_type {
 	TT_ALL=0,

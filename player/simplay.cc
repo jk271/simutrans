@@ -1457,6 +1457,15 @@ void spieler_t::finance_t::calc_finance_history() {
 			}
 		}
 	}
+	for( int j=0; j< ATV_MAX; ++j ) {
+		veh_year[TT_ALL][0][j] =0;
+		for( int tt=1; tt<TT_MAX; ++tt ) {
+			// do not add poverline revenue to vehicles revenue
+			if ( ( tt != TT_POWERLINE ) || ( j >= ATV_REVENUE )) {
+				veh_year[TT_ALL][0][j] += veh_year[tt][0][j];
+			}
+		}
+	}
 
 	// undistinguishable by type of transport 
 	com_month[0][ATC_CASH] = konto;

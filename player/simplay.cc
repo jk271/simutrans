@@ -1642,8 +1642,11 @@ void spieler_t::finance_t::import_from_cost_month(const sint64 (& finance_histor
 		veh_month[TT_ALL  ][i][ATV_RUNNING_COST]      = finance_history_month[i][COST_VEHICLE_RUN];
 		veh_month[TT_OTHER][i][ATV_NEW_VEHICLE]       = finance_history_month[i][COST_NEW_VEHICLE];
 		veh_month[TT_ALL  ][i][ATV_NEW_VEHICLE]       = finance_history_month[i][COST_NEW_VEHICLE];
+		// he have to store it in _GOOD for not being override in calc_finance history() to 0
 		veh_month[TT_OTHER][i][ATV_REVENUE_GOOD]      = finance_history_month[i][COST_INCOME];
 		veh_month[TT_ALL  ][i][ATV_REVENUE_GOOD]      = finance_history_month[i][COST_INCOME];
+		veh_month[TT_OTHER][i][ATV_REVENUE_TRANSPORT]      = finance_history_month[i][COST_INCOME];
+		veh_month[TT_ALL  ][i][ATV_REVENUE_TRANSPORT]      = finance_history_month[i][COST_INCOME];
 		veh_month[TT_OTHER][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_month[i][COST_MAINTENANCE];
 		veh_month[TT_ALL  ][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_month[i][COST_MAINTENANCE];
 		veh_month[TT_OTHER][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_month[i][COST_ASSETS];
@@ -1673,6 +1676,8 @@ void spieler_t::finance_t::import_from_cost_month(const sint64 (& finance_histor
 			veh_month[TT_OTHER][i][ATV_TOLL_PAYED] = finance_history_month[i][COST_WAY_TOLLS];
 			veh_month[TT_ALL  ][i][ATV_TOLL_PAYED] = finance_history_month[i][COST_WAY_TOLLS];
 		}
+		veh_month[TT_OTHER][i][ATV_WAY_TOLL] = finance_history_month[i][COST_WAY_TOLLS];
+		veh_month[TT_ALL  ][i][ATV_WAY_TOLL] = finance_history_month[i][COST_WAY_TOLLS];
 	}
 }
 
@@ -1685,8 +1690,11 @@ void spieler_t::finance_t::import_from_cost_year( const sint64 (& finance_histor
 		veh_year[TT_ALL  ][i][ATV_RUNNING_COST]      = finance_history_year[i][COST_VEHICLE_RUN];
 		veh_year[TT_OTHER][i][ATV_NEW_VEHICLE]       = finance_history_year[i][COST_NEW_VEHICLE];
 		veh_year[TT_ALL  ][i][ATV_NEW_VEHICLE]       = finance_history_year[i][COST_NEW_VEHICLE];
+		// he have to store it in _GOOD for not being override in calc_finance history() to 0
 		veh_year[TT_OTHER][i][ATV_REVENUE_GOOD]      = finance_history_year[i][COST_INCOME];
 		veh_year[TT_ALL  ][i][ATV_REVENUE_GOOD]      = finance_history_year[i][COST_INCOME];
+		veh_year[TT_OTHER][i][ATV_REVENUE_TRANSPORT]      = finance_history_year[i][COST_INCOME];
+		veh_year[TT_ALL  ][i][ATV_REVENUE_TRANSPORT]      = finance_history_year[i][COST_INCOME];
 		veh_year[TT_OTHER][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_year[i][COST_MAINTENANCE];
 		veh_year[TT_ALL  ][i][ATV_INFRASTRUCTURE_MAINTENANCE] = finance_history_year[i][COST_MAINTENANCE];
 		veh_year[TT_OTHER][i][ATV_NON_FINANTIAL_ASSETS] = finance_history_year[i][COST_ASSETS];
@@ -1716,6 +1724,8 @@ void spieler_t::finance_t::import_from_cost_year( const sint64 (& finance_histor
 			veh_year[TT_OTHER][i][ATV_TOLL_PAYED] = finance_history_year[i][COST_WAY_TOLLS];
 			veh_year[TT_ALL  ][i][ATV_TOLL_PAYED] = finance_history_year[i][COST_WAY_TOLLS];
 		}
+		veh_year[TT_OTHER][i][ATV_WAY_TOLL] = finance_history_year[i][COST_WAY_TOLLS];
+		veh_year[TT_ALL  ][i][ATV_WAY_TOLL] = finance_history_year[i][COST_WAY_TOLLS];
 	}
 }
 

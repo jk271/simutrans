@@ -910,6 +910,11 @@ void spieler_t::rdwr(loadsave_t *file)
 
 	file->rdwr_longlong(finance.konto);
 	file->rdwr_long(konto_ueberzogen);
+	
+	if( ( file->get_version() < 111005 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
+		finance.export_to_cost_month( finance_history_month );
+		finance.export_to_cost_year( finance_history_year );
+	}
 
 	if(file->get_version()<101000) {
 		// ignore steps
@@ -1020,7 +1025,7 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	}
-	else {
+	else if (  file->get_version() < 111005  ) {
 		// savegame version: now with toll
 		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<MAX_PLAYER_COST;   cost_type++  ) {
@@ -1036,9 +1041,9 @@ void spieler_t::rdwr(loadsave_t *file)
 				}
 			}
 		}
-		if( file->get_version() >= 111005 ) {
-			finance.rdwr(file);
-		}
+	}
+	else {
+		finance.rdwr( file );
 	}
 	if(  file->get_version()>102002  ) {
 		file->rdwr_longlong(finance.starting_money);
@@ -1169,6 +1174,9 @@ void spieler_t::laden_abschliessen()
 	display_set_player_color_scheme( player_nr, kennfarbe1, kennfarbe2 );
 	// recalculate vehicle value
 	calc_assets();
+	// enable to use old finance window with new game format
+	finance.export_to_cost_month( finance_history_month );
+	finance.export_to_cost_year( finance_history_year );
 }
 
 
@@ -1523,6 +1531,7 @@ void spieler_t::finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)
 
 
 void spieler_t::finance_t::export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]) {
+	calc_finance_history();
 	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
 		finance_history_month[i][COST_CONSTRUCTION] = veh_month[TT_ALL][i][ATV_CONSTRUCTION_COST];
 		finance_history_month[i][COST_VEHICLE_RUN]  = veh_month[TT_ALL][i][ATV_RUNNING_COST] + veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
@@ -1548,6 +1557,7 @@ void spieler_t::finance_t::export_to_cost_month(sint64 (&finance_history_month)[
 
 
 void spieler_t::finance_t::export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]) {
+	calc_finance_history();
 	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
 		finance_history_year[i][COST_CONSTRUCTION] = veh_year[TT_ALL][i][ATV_CONSTRUCTION_COST];
 		finance_history_year[i][COST_VEHICLE_RUN]  = veh_year[TT_ALL][i][ATV_RUNNING_COST] + veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
@@ -1746,6 +1756,11 @@ void spieler_t::finance_t::rdwr(loadsave_t *file) {
 
 	// used for reading longer history
 	sint64 dummy = 0;
+
+	// calc finance history for TT_ALL to save it correctly
+	if( ! file->is_loading() ) { 
+		calc_finance_history();
+	}
 
 	if( file->get_version() >= 111005 ) { // detailed statistic were introduded in 111005
 		file->rdwr_byte( max_years );

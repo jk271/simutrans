@@ -632,44 +632,6 @@ void spieler_t::update_assets(sint64 const delta)
 }
 
 
-// add and amount, including the display of the message and some other things ...
-void spieler_t::buche(sint64 const betrag, koord const pos, player_cost const type)
-{
-	buche(betrag, type);
-	add_money_message(betrag, pos);
-}
-
-
-// add an amout to a subcategory
-void spieler_t::buche(sint64 const betrag, player_cost const type)
-{
-	assert(type < MAX_PLAYER_COST);
-
-	finance_history_year[0][type] += betrag;
-	finance_history_month[0][type] += betrag;
-
-	if(  type < COST_ASSETS  ||  type == COST_POWERLINES  ||  type == COST_WAY_TOLLS  ) {
-		finance.konto += betrag;
-
-		// fill year history
-		finance_history_year[0][COST_PROFIT] += betrag;
-		finance_history_year[0][COST_CASH] = finance.konto;
-		// fill month history
-		finance_history_month[0][COST_PROFIT] += betrag;
-		finance_history_month[0][COST_CASH] = finance.konto;
-		// the other will be updated only monthly or when a finance window is shown
-	}
-}
-
-
-void spieler_t::accounting(spieler_t* const sp, sint64 const amount, koord const k, player_cost const pc)
-{
-	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
-		sp->buche( amount, k, pc );
-	}
-}
-
-
 bool spieler_t::check_owner( const spieler_t *owner, const spieler_t *test )
 {
 	return owner == test  ||  owner == NULL  ||  test == welt->get_spieler(1);
@@ -1031,7 +993,9 @@ void spieler_t::rdwr(loadsave_t *file)
 
 	// we have to pay maintenance at the beginning of a month
 	if(file->get_version()<99018  &&  file->is_loading()) {
-		buche( -finance_history_month[1][COST_MAINTENANCE], COST_MAINTENANCE );
+		finance_history_month[0][COST_MAINTENANCE] -= finance_history_month[1][COST_MAINTENANCE];
+		finance_history_year [0][COST_MAINTENANCE] -= finance_history_month[1][COST_MAINTENANCE];
+		finance.konto -= finance_history_month[1][COST_MAINTENANCE];
 	}
 
 	file->rdwr_bool(automat);

@@ -525,17 +525,6 @@ public:
 		return 0;
 	}
 
-private:
-	// do not use, 
-	// Owen Rudge, finances
-	void buche(sint64 betrag, koord k, player_cost type);
-
-	// do the internal accounting (currently only used externally for running costs of convois)
-	void buche(sint64 betrag, player_cost type);
-public:
-	// this is also save to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
-	static void accounting(spieler_t* sp, sint64 betrag, koord k, player_cost pc);
-
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner

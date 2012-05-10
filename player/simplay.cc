@@ -493,7 +493,7 @@ void spieler_t::neuer_monat()
 void spieler_t::calc_assets()
 {
 	sint64 assets[TT_MAX];
-	for(int i=0; i < TT_MAX_VEH; ++i){
+	for(int i=0; i < TT_MAX; ++i){
 		assets[i] = 0;
 	}
 	// all convois
@@ -516,7 +516,7 @@ void spieler_t::calc_assets()
 		}
 	}
 
-	for(int i=0; i < TT_MAX_VEH; ++i){
+	for(int i=0; i < TT_MAX; ++i){
 		finance.veh_year[i][0][ATV_NON_FINANTIAL_ASSETS] = finance.veh_month[i][0][ATV_NON_FINANTIAL_ASSETS] = assets[i];
 	}
 	finance.com_year[0][ATC_NETWEALTH] = finance.com_month[0][ATC_NETWEALTH] = finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] +finance.konto;
@@ -1464,7 +1464,7 @@ sint64 spieler_t::finance_t::get_finance_history_year(int tt, int year, int type
 		return veh_year[tt][year][index];
 	}
 	else { 
-		return ( atc_index >= 0 ) ? com_year[year][type] : 0; 
+		return ( atc_index >= 0 ) ? com_year[year][atc_index] : 0; 
 	}
 }
 
@@ -1483,7 +1483,7 @@ sint64 spieler_t::finance_t::get_finance_history_month(int tt, int month, int ty
 		return veh_month[tt][month][index];
 	}
 	else { 
-		return ( atc_index >= 0 ) ? com_month[month][type] : 0; 
+		return ( atc_index >= 0 ) ? com_month[month][atc_index] : 0; 
 	}
 }
 

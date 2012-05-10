@@ -755,7 +755,7 @@ void ai_goods_t::step()
 		return;
 	}
 
-	if(konto_ueberzogen>0) {
+	if(finance.konto_ueberzogen>0) {
 		// nothing to do but to remove unneeded convois to gain some money
 		state = CHECK_CONVOI;
 	}
@@ -1195,7 +1195,7 @@ DBG_MESSAGE("ai_goods_t::step()","remove already constructed rail between %i,%i 
 
 				// apparently we got the toatlly wrong vehicle here ...
 				// (but we will delete it only, if we need, because it may be needed for a chain)
-				bool delete_this = (konto_ueberzogen>0)  &&  (gewinn < -(sint32)cnv->calc_restwert());
+				bool delete_this = (finance.konto_ueberzogen>0)  &&  (gewinn < -(sint32)cnv->calc_restwert());
 
 				// check for empty vehicles (likely stucked) that are making no plus and remove them ...
 				// take care, that the vehicle is old enough ...

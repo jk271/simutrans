@@ -77,7 +77,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	welt = wl;
 	player_nr = nr;
 
-	konto_ueberzogen = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
 	unlock_pending = false;
@@ -459,7 +458,7 @@ void spieler_t::neuer_monat()
 
 	// Bankrott ?
 	if(  finance.konto < 0  ) {
-		konto_ueberzogen++;
+		finance.konto_ueberzogen++;
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
 				if(  finance.com_year[0][ATC_NETWEALTH] < 0 ) {
@@ -475,7 +474,7 @@ void spieler_t::neuer_monat()
 				else {
 					// tell the player (just warning)
 					buf.clear();
-					buf.printf( translator::translate("On loan since %i month(s)"), konto_ueberzogen );
+					buf.printf( translator::translate("On loan since %i month(s)"), finance.konto_ueberzogen );
 					welt->get_message()->add_message( buf, koord::invalid, message_t::ai, player_nr, IMG_LEER );
 				}
 			}
@@ -495,7 +494,7 @@ void spieler_t::neuer_monat()
 					else {
 						// just minus in account (just tell)
 						buf.clear();
-						buf.printf( translator::translate("On loan since %i month(s)"), konto_ueberzogen );
+						buf.printf( translator::translate("On loan since %i month(s)"), finance.konto_ueberzogen );
 						welt->get_message()->add_message( buf, koord::invalid, message_t::ai, player_nr, IMG_LEER );
 					}
 				}
@@ -503,7 +502,7 @@ void spieler_t::neuer_monat()
 		}
 	}
 	else {
-		konto_ueberzogen = 0;
+		finance.konto_ueberzogen = 0;
 	}
 }
 
@@ -851,7 +850,7 @@ void spieler_t::rdwr(loadsave_t *file)
 	sint32 halt_count=0;
 
 	file->rdwr_longlong(finance.konto);
-	file->rdwr_long(konto_ueberzogen);
+	file->rdwr_long(finance.konto_ueberzogen);
 	
 	if( ( file->get_version() < 111005 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
 		finance.export_to_cost_month( finance_history_month );
@@ -1295,6 +1294,8 @@ spieler_t::finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 {
 	konto = world->get_settings().get_starting_money(world->get_last_year());
 	starting_money = konto;
+	konto_ueberzogen = 0;
+
 	/**
 	 * initialize finance history arrays
 	 * @author Jan Korbel

@@ -144,6 +144,13 @@ protected:
 	 	*/
 		sint64 konto;
 
+		/**
+		 * Zählt wie viele Monate das Konto schon ueberzogen ist
+		 *
+		 * @author Hj. Malthaner
+		 */
+		sint32 konto_ueberzogen;
+
 		// remember the starting money
 		sint64 starting_money;
 
@@ -310,13 +317,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	static karte_t *welt;
-
-	/**
-	 * Zählt wie viele Monate das Konto schon ueberzogen ist
-	 *
-	 * @author Hj. Malthaner
-	 */
-	sint32 konto_ueberzogen;
 
 	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
 
@@ -537,7 +537,7 @@ public:
 	 * @return true wenn Konto Überzogen ist
 	 * @author Hj. Malthaner
 	 */
-	int get_konto_ueberzogen() const { return konto_ueberzogen; }
+	int get_konto_ueberzogen() const { return finance.konto_ueberzogen; }
 
 	/**
 	 * Zeigt Meldungen aus der Queue des Spielers auf dem Bildschirm an

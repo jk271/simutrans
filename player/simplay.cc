@@ -407,17 +407,17 @@ void spieler_t::neuer_monat()
 
 
 	// Wartungskosten abziehen
-	calc_finance_history();
-	roll_finance_history_month();
+	finance.calc_finance_history();
+	finance.roll_history_month();
 
 	if(welt->get_last_month()==0) {
-		roll_finance_history_year();
+		finance.roll_history_year();
 	}
 
 	// new month has started => recalculate vehicle value
 	calc_assets();
 
-	calc_finance_history();
+	finance.calc_finance_history();
 
 	simlinemgmt.new_month();
 
@@ -490,29 +490,6 @@ void spieler_t::neuer_monat()
 }
 
 
-/**
-* we need to roll the finance history every year, so that
-* the most recent year is at position 0, etc
-* @author hsiegeln
-*/
-void spieler_t::roll_finance_history_month()
-{
-	finance.roll_history_month();
-}
-
-
-void spieler_t::roll_finance_history_year()
-{
-	finance.roll_history_year();
-}
-
-
-void spieler_t::calc_finance_history()
-{
-	finance.calc_finance_history();
-}
-
-
 void spieler_t::calc_assets()
 {
 	sint64 assets[TT_MAX];
@@ -546,10 +523,11 @@ void spieler_t::calc_assets()
 }
 
 
-void spieler_t::update_assets(sint64 const delta)
+void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 {
-	finance.veh_year[ TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] += delta;
-	finance.veh_month[TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] += delta;
+	transport_type tt = finance.translate_waytype_to_tt(wt);
+	finance.veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] += delta;
+	finance.veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] += delta;
 	finance.veh_year[ TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] += delta;
 	finance.veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] += delta;
 

@@ -600,12 +600,6 @@ public:
 	static karte_t *get_welt() { return welt; }
 
 	/**
-	* Calculates the finance history for player
-	* @author hsiegeln
-	*/
-	void calc_finance_history();
-
-	/**
 	* Calculates the assets of the player
 	*/
 	void calc_assets();
@@ -613,14 +607,7 @@ public:
 	/**
 	* Updates the assets value of the player
 	*/
-	void update_assets(sint64 const delta);
-
-	/**
-	* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
-	* @author hsiegeln
-	*/
-	void roll_finance_history_year();
-	void roll_finance_history_month();
+	void update_assets(sint64 const delta, const waytype_t wt = ignore_wt);
 
 	/**
 	 * Rückruf, um uns zu informieren, dass ein Vehikel ein Problem hat

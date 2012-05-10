@@ -387,7 +387,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	// Hajo: each label needs its own buffer
 	static char str_buf[26][64];
 
-	sp->calc_finance_history();
+	sp->get_finance()->calc_finance_history();
 	sp->get_finance()->calc_flat_view_month(transport_type_option, flat_view_month);
 	sp->get_finance()->calc_flat_view_year(transport_type_option, flat_view_year);
 

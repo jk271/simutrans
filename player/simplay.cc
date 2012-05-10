@@ -142,7 +142,8 @@ void spieler_t::add_construction_costs(const sint64 amount, const koord k, const
 		finance.veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 	}
 
-	buche(amount, k, COST_CONSTRUCTION);
+	add_money_message(amount, k);
+	finance.konto += amount;
 }
 
 
@@ -192,7 +193,7 @@ void spieler_t::add_money_message(const sint64 amount, const koord pos) {
 
 
 /**
- * amount has positive value = buy vehicle, negative value = vehicle sold
+ * amount has negative value = buy vehicle, positive value = vehicle sold
  */
 void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
 	const transport_type tt = finance.translate_waytype_to_tt(wt);
@@ -211,8 +212,8 @@ void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytyp
 		finance.veh_month[TT_OTHER][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
 	}
 
-	buche( amount, k, COST_NEW_VEHICLE);
-	buche(-amount, COST_ASSETS);
+	add_money_message(amount, k);
+	finance.konto += amount;
 }
 
 
@@ -231,11 +232,8 @@ void spieler_t::add_revenue(const sint64 amount, const koord k, const waytype_t 
 		finance.veh_month[TT_OTHER][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
 	}
 
-	if(tt != TT_POWERLINE){
-		buche(amount, COST_INCOME);
-	} else {
-		buche(amount, k, COST_POWERLINES);
-	}
+	add_money_message(amount, k);
+	finance.konto += amount;
 }
 
 
@@ -253,7 +251,7 @@ void spieler_t::add_running_costs(const sint64 amount, const waytype_t wt){
 		finance.veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 	}
 	
-	buche(amount, COST_VEHICLE_RUN);
+	finance.konto += amount;
 }
 
 
@@ -270,7 +268,7 @@ void spieler_t::add_toll_payed(const sint64 amount, const waytype_t wt){
 		finance.veh_month[TT_OTHER][0][ATV_TOLL_PAYED] += (sint64) amount;
 	}
 
-	buche(amount, COST_WAY_TOLLS);
+	finance.konto += amount;
 }
 
 
@@ -287,7 +285,7 @@ void spieler_t::add_toll_received(const sint64 amount, const waytype_t wt){
 		finance.veh_month[TT_OTHER][0][ATV_TOLL_RECEIVED] += (sint64) amount;
 	}
 
-	buche(amount, COST_WAY_TOLLS);
+	finance.konto += amount;
 }
 
 
@@ -303,17 +301,6 @@ void spieler_t::add_transported(const sint64 amount, const waytype_t wt, int ind
 
 	finance.veh_year[ tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
 	finance.veh_month[tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
-
-	if( index == 0){
-		buche(amount, COST_TRANSPORTED_PAS);
-	}
-	if( index == 1){
-		buche(amount, COST_TRANSPORTED_MAIL);
-	}
-	if( index == 2 ){
-		buche(amount, COST_TRANSPORTED_GOOD);
-	}
-	buche(amount, COST_ALL_TRANSPORTED);
 }
 
 
@@ -453,13 +440,6 @@ void spieler_t::neuer_monat()
 	simlinemgmt.new_month();
 
 	// subtract maintenance
-	if(  welt->ticks_per_world_month_shift>=18  ) {
-		buche( -((sint64)finance.maintenance[TT_ALL]) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
-	}
-	else {
-		buche( -((sint64)finance.maintenance[TT_ALL]) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
-	}
-
 	for(int i=0; i<TT_MAX; ++i){
 		finance.veh_month[i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= finance.get_maintenance_with_bits((transport_type)i);
 		finance.veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= finance.get_maintenance_with_bits((transport_type)i);

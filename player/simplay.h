@@ -509,9 +509,6 @@ public:
 
 	virtual ~spieler_t();
 
-	/* DEPRECATED, use get_maintenance from finance_t instead */
-	sint32 get_maintenance() const { return finance.maintenance[TT_ALL]; }
-	
 	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt, const int utyp = 0) {
 		if(sp) {
 			return sp->add_maintenance(change, wt, utyp);

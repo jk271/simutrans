@@ -304,14 +304,6 @@ protected:
 	finance_t finance;
 
 	/**
-	* Finance History - will supercede the finances by Owen Rudge
-	* Will hold finances for the most recent 12 years
-	* @author hsiegeln
-	*/
-	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST];
-	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
-
-	/**
 	 * Die Welt in der gespielt wird.
 	 *
 	 * @author Hj. Malthaner
@@ -600,20 +592,6 @@ public:
 	virtual void laden_abschliessen();
 
 	virtual void rotate90( const sint16 y_size );
-
-	/**
-	* Returns the finance history for player
-	* @author hsiegeln
-	*/
-	sint64 get_finance_history_year(int year, int type) { return finance_history_year[year][type]; }
-	sint64 get_finance_history_month(int month, int type) { return finance_history_month[month][type]; }
-
-	/**
-	 * Returns pointer to finance history for player
-	 * @author hsiegeln
-	 */
-	sint64* get_finance_history_year() { return *finance_history_year; }
-	sint64* get_finance_history_month() { return *finance_history_month; }
 
 	/**
 	* Returns the world the player is in

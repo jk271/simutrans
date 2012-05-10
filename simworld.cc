@@ -3154,11 +3154,7 @@ void karte_t::neuer_monat()
 	if (letzter_monat == 0 && !settings.is_freeplay()) {
 		// remove all player (but first and second) who went bankrupt during last year
 		for(int i=2; i<MAX_PLAYER_COUNT-1; i++) {
-			if(  spieler[i] != NULL  &&
-				spieler[i]->get_finance_history_year(0,COST_NETWEALTH)<=0  &&
-				spieler[i]->get_finance_history_year(0,COST_MAINTENANCE)==0  &&
-				spieler[i]->get_maintenance()==0  &&
-				spieler[i]->get_finance_history_year(0,COST_ALL_CONVOIS)==0  )
+			if(  spieler[i] != NULL  &&  spieler[i]->get_finance()->is_bancrupted()  )
 			{
 				delete spieler[i];
 				spieler[i] = 0;
@@ -3644,7 +3640,7 @@ void karte_t::restore_history()
 		sint64 transported = 0;
 		for(  uint i=0;  i<MAX_PLAYER_COUNT;  i++ ) {
 			if(  spieler[i]!=NULL  ) {
-				transported += spieler[i]->get_finance_history_month( m, COST_ALL_TRANSPORTED );
+				transported += spieler[i]->get_finance()->get_finance_history_veh_month( TT_ALL, m, ATV_TRANSPORTED );
 			}
 		}
 		finance_history_month[m][WORLD_TRANSPORTED_GOODS] = transported;
@@ -3687,7 +3683,7 @@ void karte_t::restore_history()
 		sint64 transported_year = 0;
 		for(  uint i=0;  i<MAX_PLAYER_COUNT;  i++ ) {
 			if(  spieler[i]  ) {
-				transported_year += spieler[i]->get_finance_history_year( y, COST_ALL_TRANSPORTED );
+				transported_year += spieler[i]->get_finance()->get_finance_history_veh_year( TT_ALL, y, ATV_TRANSPORTED );
 			}
 		}
 		finance_history_year[y][WORLD_TRANSPORTED_GOODS] = transported_year;
@@ -3754,8 +3750,8 @@ void karte_t::update_history()
 	sint64 transported_year = 0;
 	for(  uint i=0;  i<MAX_PLAYER_COUNT;  i++ ) {
 		if(  spieler[i]!=NULL  ) {
-			transported += spieler[i]->get_finance_history_month( 0, COST_TRANSPORTED_GOOD );
-			transported_year += spieler[i]->get_finance_history_year( 0, COST_TRANSPORTED_GOOD );
+			transported += spieler[i]->get_finance()->get_finance_history_veh_month( TT_ALL, 0, ATV_TRANSPORTED_GOOD );
+			transported_year += spieler[i]->get_finance()->get_finance_history_veh_year( TT_ALL, 0, ATV_TRANSPORTED_GOOD );
 		}
 	}
 	finance_history_month[0][WORLD_TRANSPORTED_GOODS] = transported;

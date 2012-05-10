@@ -261,6 +261,11 @@ protected:
 		void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 
 		/**
+		* returns true if company bancrupted
+		*/
+		bool is_bancrupted() const;
+
+		/**
 		* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
 		* @author hsiegeln, jk271
 		*/

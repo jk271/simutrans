@@ -176,7 +176,7 @@ int scenario_t::completed(int player_nr)
 
 		case DOUBLE_INCOME:
 		{
-			int pts = (int)( welt->get_spieler(player_nr)->get_finance_history_month(0,COST_CASH)/factor );
+			int pts = (int)( welt->get_spieler(player_nr)->get_finance()->get_finance_history_com_month(0,ATC_CASH)/factor );
 			return min( 100, pts );
 		}
 
@@ -200,7 +200,7 @@ int scenario_t::completed(int player_nr)
 		}
 
 		case TRANSPORT_1000_PAX:
-			return (int)min( 100, (welt->get_spieler(player_nr)->get_finance_history_month(0,COST_TRANSPORTED_PAS)*(sint64)100)/(sint64)factor );
+			return (int)min( 100, (welt->get_spieler(player_nr)->get_finance()->get_finance_history_veh_month(TT_ALL, 0, ATV_TRANSPORTED_PASSENGER)*(sint64)100)/(sint64)factor );
 
 	}
 	return 0;

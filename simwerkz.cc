@@ -4452,7 +4452,7 @@ DBG_MESSAGE("wkz_headquarter()", "building headquarter at (%d,%d)", pos.x, pos.y
 
 	koord size = besch->get_groesse();
 	sint64 const cost = welt->get_settings().cst_multiply_headquarter * besch->get_level() * size.x * size.y;
-	if(  -cost > sp->get_finance_history_month(0,COST_CASH)  ) {
+	if(  -cost > sp->get_finance()->get_finance_history_com_month(0,ATC_CASH)  ) {
 		return "Not enough money!";
 	}
 

@@ -1740,6 +1740,16 @@ void spieler_t::finance_t::import_from_cost_year( const sint64 (& finance_histor
 }
 
 
+bool spieler_t::finance_t::is_bancrupted() const {
+	return (
+		com_year[0][ATC_NETWEALTH] <=0  &&
+		veh_year[TT_ALL][0][ATV_INFRASTRUCTURE_MAINTENANCE] == 0  &&
+		maintenance[TT_ALL] == 0  &&
+		com_year[0][COST_ALL_CONVOIS] == 0
+	);
+}
+
+
 /* most recent savegame version: now with detailed finance statistics by type of transport */
 void spieler_t::finance_t::rdwr(loadsave_t *file) {
 	/* following lines enables FORWARD compatibility 

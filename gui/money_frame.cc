@@ -465,11 +465,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 		warn.set_color( COL_BLACK );
 		sprintf( str_buf[15], translator::translate("Scenario complete: %i%%"), sp->get_welt()->get_scenario()->completed(0) );
 	}
-	else if(sp->get_finance_history_year(0, COST_NETWEALTH)<0) {
+	else if(sp->get_finance()->get_finance_history_com_year(0, ATC_NETWEALTH)<0) {
 		warn.set_color( MONEY_MINUS );
 		tstrncpy(str_buf[15], translator::translate("Company bankrupt"), lengthof(str_buf[15]) );
 	}
-	else if(  sp->get_finance_history_year(0, COST_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
+	else if(  sp->get_finance()->get_finance_history_com_year(0, ATC_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
 		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_konto_ueberzogen() );
 	}

@@ -277,6 +277,8 @@ protected:
 
 		int translate_index_cost_to_at(int cost_);
 
+		int translate_index_cost_to_atc( const int cost_index ) const;
+
 		/**
 	 	* Translates haus_besch_t to transport_type
 		* Building can be assigned to transport type using utyp

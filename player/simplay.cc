@@ -446,7 +446,7 @@ void spieler_t::neuer_monat()
 	}
 
 	// enough money and scenario finished?
-	if(finance.konto > 0  &&  welt->get_scenario()->active()  &&  finance_history_year[0][COST_SCENARIO_COMPLETED]>=100) {
+	if(finance.konto > 0  &&  welt->get_scenario()->active()  &&  finance.com_year[0][ATC_SCENARIO_COMPLETED]>=100) {
 		destroy_all_win(true);
 		sint32 const time = welt->get_current_month() - welt->get_settings().get_starting_year() * 12;
 		buf.clear();
@@ -462,13 +462,13 @@ void spieler_t::neuer_monat()
 		konto_ueberzogen++;
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
-				if(  finance_history_year[0][COST_NETWEALTH] < 0 ) {
+				if(  finance.com_year[0][ATC_NETWEALTH] < 0 ) {
 					destroy_all_win(true);
 					create_win( display_get_width()/2-128, 40, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
 					ticker::add_msg( translator::translate("Bankrott:\n\nDu bist bankrott.\n"), koord::invalid, PLAYER_FLAG + kennfarbe1 + 1 );
 					welt->beenden(false);
 				}
-				else if(  get_finance_history_year(0, COST_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
+				else if(  finance.get_finance_history_com_year(0, ATC_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 					// tell the player (problem!)
 					welt->get_message()->add_message( translator::translate("Net wealth less than 10% of starting capital!"), koord::invalid, message_t::problems, player_nr, IMG_LEER );
 				}
@@ -488,7 +488,7 @@ void spieler_t::neuer_monat()
 				}
 				// tell the current player (even during networkgames)
 				if(  welt->get_active_player_nr()==player_nr  ) {
-					if(  get_finance_history_year(0, COST_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
+					if(  finance.get_finance_history_com_year(0, ATC_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 						// netweath nearly spent (problem!)
 						welt->get_message()->add_message( translator::translate("Net wealth near zero"), koord::invalid, message_t::problems, player_nr, IMG_LEER );
 					}
@@ -1531,16 +1531,16 @@ void spieler_t::finance_t::export_to_cost_year( sint64 (&finance_history_year)[M
 */
 sint64 spieler_t::finance_t::get_finance_history_year(int tt, int year, int type) { 
 	assert((tt>=0) && (tt<TT_MAX));
-	if( tt == TT_ALL ){
-		return player->get_finance_history_year(year, type); 
-	} else {
-		int index = translate_index_cost_to_at(type);
-		if( index == -1 ) {
-			return 0;
-		} else {
-			return ( index >= 0 ) ? veh_year[tt][year][index] : player->get_finance_history_year(year, type); 
-			
-		}
+	int index = translate_index_cost_to_at(type);
+	const int atc_index = translate_index_cost_to_atc(type);
+	assert(index < ATV_MAX);
+	assert(atc_index < ATC_MAX);
+
+	if( index >= 0 ) {
+		return veh_year[tt][year][index];
+	}
+	else { 
+		return ( atc_index >= 0 ) ? com_year[year][type] : 0; 
 	}
 }
 
@@ -1550,16 +1550,16 @@ sint64 spieler_t::finance_t::get_finance_history_year(int tt, int year, int type
 */
 sint64 spieler_t::finance_t::get_finance_history_month(int tt, int month, int type) { 
 	assert((tt>=0) && (tt<TT_MAX));
-	if( tt == TT_ALL ) {
-		return player->get_finance_history_month(month, type); 
-	} else {
-		int index = translate_index_cost_to_at(type);
-		if( index == -1 ) {
-			return 0;
-		} else {
-			return ( index >= 0 ) ? veh_month[tt][month][index] : player->get_finance_history_month(month, type); 
-			
-		}
+	int index = translate_index_cost_to_at(type);
+	const int atc_index = translate_index_cost_to_atc(type);
+	assert( index < ATV_MAX );
+	assert( atc_index < ATC_MAX );
+
+	if( index >= 0 ) {
+		return veh_month[tt][month][index];
+	}
+	else { 
+		return ( atc_index >= 0 ) ? com_month[month][type] : 0; 
 	}
 }
 
@@ -1816,6 +1816,35 @@ void spieler_t::finance_t::roll_history_year() {
 			veh_year[tt][0][accounting_type] = 0;
 		}
 	}
+}
+
+
+int spieler_t::finance_t::translate_index_cost_to_atc(const int cost_index) const
+{
+	static int cost_to_atc_indices[] = {
+		-1,		// COST_CONSTRUCTION
+		-1,		// COST_VEHICLE_RUN
+		-1,		// COST_NEW_VEHICLE
+		-1,		// COST_INCOME
+		-1,		// COST_MAINTENANCE
+		-1,		// COST_ASSETS
+		ATC_CASH,	// COST_CASH - cash can not be assigned to transport type
+		ATC_NETWEALTH,	// COST_NETWEALTH -||-
+		-1,		// COST_PROFIT
+		-1,		// COST_OPERATING_PROFIT
+		-1,		// COST_MARGIN
+		-1,	        // COST_ALL_TRANSPORTED
+		-1,		// ATV_COST_POWERLINES
+		-1,		// COST_TRANSPORTED_PAS
+		-1,		// COST_TRANSPORTED_MAIL
+		-1,		// COST_TRANSPORTED_GOOD
+		ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS
+		ATC_SCENARIO_COMPLETED, // COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
+		-1,		// COST_WAY_TOLLS,
+		ATC_MAX		// MAX_PLAYER_COST
+		};
+
+	return (cost_index < MAX_PLAYER_COST) ? cost_to_atc_indices[cost_index] :  -1;
 }
 
 

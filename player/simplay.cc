@@ -1294,8 +1294,8 @@ void spieler_t::finance_t::calc_finance_history() {
 		}
 		veh_month[tt][0][ATV_EXPENDITURE] = mexpenditure;
 		veh_year[ tt][0][ATV_EXPENDITURE] = expenditure;
-		veh_month[tt][0][ATV_OPERATING_PROFIT] = mrevenue + mexpenditure;
-		veh_year[ tt][0][ATV_OPERATING_PROFIT] =  revenue +  expenditure;
+		veh_month[tt][0][ATV_OPERATING_PROFIT] = veh_month[tt][0][ATV_REVENUE] + mexpenditure;
+		veh_year[ tt][0][ATV_OPERATING_PROFIT] = veh_year[ tt][0][ATV_REVENUE] +  expenditure;
 
 		// PROFIT = OPERATING_PROFIT + NEW_VEHICLES + construction costs 
 		sint64 profit, mprofit;
@@ -1785,7 +1785,7 @@ int spieler_t::finance_t::translate_index_cost_to_at(int cost_index) {
 		ATV_CONSTRUCTION_COST,  // COST_CONSTRUCTION
 		ATV_RUNNING_COST,       // COST_VEHICLE_RUN
 		ATV_NEW_VEHICLE,        // COST_NEW_VEHICLE
-		ATV_REVENUE,            // COST_INCOME
+		ATV_REVENUE_TRANSPORT,  // COST_INCOME
 		ATV_INFRASTRUCTURE_MAINTENANCE, // COST_MAINTENANCE
 		ATV_NON_FINANTIAL_ASSETS,// COST_ASSETS
 		-2,                     // COST_CASH - cash can not be assigned to transport type

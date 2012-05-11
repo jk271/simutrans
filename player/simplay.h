@@ -55,7 +55,7 @@ enum accounting_type_vehicles {
 	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
 	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
 	ATV_TOLL_PAYED,			// toll payed by you to another player
-	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE 
+	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAYED
 	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
 	ATV_NEW_VEHICLE,			// New vehicles
 	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here

@@ -1342,6 +1342,9 @@ void spieler_t::finance_t::calc_finance_history() {
 			}
 		}
 	}
+	// recalc margin for TT_ALL
+	veh_month[TT_ALL][0][ATV_PROFIT_MARGIN] = calc_margin(veh_month[TT_ALL][0][ATV_OPERATING_PROFIT], veh_month[TT_ALL][0][ATV_REVENUE]);
+	veh_year[TT_ALL][0][ATV_PROFIT_MARGIN] = calc_margin(veh_year[TT_ALL][0][ATV_OPERATING_PROFIT], veh_year[TT_ALL][0][ATV_REVENUE]);
 
 	// undistinguishable by type of transport 
 	com_month[0][ATC_CASH] = konto;

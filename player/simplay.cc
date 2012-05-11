@@ -1460,7 +1460,7 @@ sint64 spieler_t::finance_t::get_finance_history_year(int tt, int year, int type
 	assert(index < ATV_MAX);
 	assert(atc_index < ATC_MAX);
 
-	if( ( tt == TT_POWERLINE ) && ( type == COST_POWERLINES ) ) {
+	if( ( tt == TT_ALL ) && ( type == COST_POWERLINES ) ) {
 		return veh_year[TT_POWERLINE][year][ATV_REVENUE];
 	}
 	if( index >= 0 ) {
@@ -1482,7 +1482,7 @@ sint64 spieler_t::finance_t::get_finance_history_month(int tt, int month, int ty
 	assert( index < ATV_MAX );
 	assert( atc_index < ATC_MAX );
 
-	if( ( tt == TT_POWERLINE ) && ( type == COST_POWERLINES ) ) {
+	if( ( tt == TT_ALL ) && ( type == COST_POWERLINES ) ) {
 		return veh_month[TT_POWERLINE][month][ATV_REVENUE];
 	}
 	if( index >= 0 ) {

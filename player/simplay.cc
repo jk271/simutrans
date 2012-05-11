@@ -124,7 +124,9 @@ void spieler_t::add_construction_costs(const sint64 amount, const koord k, const
 		finance.veh_month[TT_OTHER][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 	}
 
-	add_money_message(amount, k);
+	if(k != koord::invalid) {
+		add_money_message(amount, k);
+	}
 	finance.konto += amount;
 }
 

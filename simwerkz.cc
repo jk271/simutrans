@@ -4997,7 +4997,7 @@ const char *wkz_make_stop_public_t::work( karte_t *welt, spieler_t *sp, koord3d 
 				}
 				spieler_t::add_maintenance( w->get_besitzer(), -costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
 				spieler_t::add_construction_costs(   w->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_waytype());
-				spieler_t::add_construction_costs( welt->get_spieler(1), costs*60, gr->get_pos().get_2d(), w->get_waytype());
+				spieler_t::add_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
 				w->set_besitzer( welt->get_spieler(1) );
 				w->set_flag(ding_t::dirty);
 				spieler_t::add_maintenance( welt->get_spieler(1), costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
@@ -5010,7 +5010,7 @@ const char *wkz_make_stop_public_t::work( karte_t *welt, spieler_t *sp, koord3d 
 						wo->set_besitzer( welt->get_spieler(1) );
 						wo->set_flag(ding_t::dirty);
 						spieler_t::add_maintenance( welt->get_spieler(1), costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
-						spieler_t::add_construction_costs( welt->get_spieler(1), costs*60, gr->get_pos().get_2d(), w->get_waytype());
+						spieler_t::add_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
 					}
 				}
 				// and add message

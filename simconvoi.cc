@@ -2617,7 +2617,7 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 			sint64 tmp;
 			// calc_revenue
 			gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
-			besitzer_p->add_revenue(tmp, v->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_fracht_typ()->get_index());
+			besitzer_p->add_revenue(tmp, fahr[0]->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_fracht_typ()->get_index());
 			v->last_stop_pos = v->get_pos().get_2d();
 		}
 

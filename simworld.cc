@@ -130,6 +130,36 @@ typedef struct{
 	y_loop_func function;
 } world_thread_param_t;
 
+// jk valleys
+class coord3d_t {
+public:
+	uint16 x;
+	uint16 y;
+	sint8 z;
+	uint16 z_detailed;
+	uint8 flags;
+	enum flags {
+		WEST=1,
+		NORTH=2,
+		EAST=4,
+		SOUTH=8
+	};
+
+	coord3d_t(const uint16 x, const uint16 y, const sint8 z):
+		x(x), 
+		y(y), 
+		z(z),
+		z_detailed(32000) 
+	{}
+
+	coord3d_t(): 
+		x(0),
+		y(0),
+		z(0),
+		z_detailed(32000)
+	{}
+};
+// jk valleys end
 
 void karte_t::world_y_loop(y_loop_func function)
 {
@@ -1661,6 +1691,68 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			settings.set_origin_x(settings.get_origin_x() - new_groesse_y + old_y);
 			break;
 	}
+
+	// valleys begin
+	display_set_progress_text(translator::translate("creating valleys - copying world"));
+	coord3d_t * tmp_world = new coord3d_t[new_groesse_y*new_groesse_y];
+	sint8 above_sea = get_grundwasser() + 1;
+	const int levels = 64;
+	
+	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
+	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
+	vector_tpl<koord> *  next_level   = new vector_tpl<koord>[levels];
+	int count=0;
+	for(int i=0;  i < new_groesse_y; ++i) {
+		for(int j=0; j < new_groesse_x; ++j) {
+			uint16 x, y;
+			tmp_world[(i*new_groesse_x)+j].x = x = j;
+			tmp_world[(i*new_groesse_x)+j].y = y = i;
+			tmp_world[(i*new_groesse_x)+j].z = lookup_kartenboden(koord(j,i))->get_hoehe();
+
+			if(tmp_world[(i*new_groesse_x)+j].z == above_sea){
+				//left
+				if((x > 1)  && lookup_kartenboden(koord(x-1,y))->get_hoehe() == get_grundwasser()){
+					current_step[0].append(koord(x,y));
+					count++;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					continue;
+				} 
+				//top
+				if((y > 1)  && lookup_kartenboden(koord(x,y-1))->get_hoehe() == get_grundwasser()){
+					current_step[0].append(koord(x,y));
+					count++;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					continue;
+				} 
+				//right
+				if(((x+1)<new_groesse_x )  && lookup_kartenboden(koord(x+1,y))->get_hoehe() == get_grundwasser()){
+					current_step[0].append(koord(x,y));
+					count++;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					continue;
+				} 
+				// bottom
+				if(((y+1)<new_groesse_y )  && lookup_kartenboden(koord(x,y+1))->get_hoehe() == get_grundwasser()){
+					current_step[0].append(koord(x,y));
+					count++;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					continue;
+				} 
+			}
+			tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+		}
+	}
+	printf("valleys ones %i\n", count);
+
+	display_set_progress_text(translator::translate("creating valleys - btffa"));
+
+	display_set_progress_text(translator::translate("creating valleys - 3"));
+
+	delete [] current_step;
+	delete [] next_step;
+	delete [] next_level;
+	delete [] tmp_world;
+	// valleys end
 
 	// Resize marker_t:
 	marker.init(new_groesse_x, new_groesse_y);

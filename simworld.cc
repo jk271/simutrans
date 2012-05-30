@@ -11,6 +11,7 @@
  */
 
 #include <algorithm>
+#include <limits.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -150,14 +151,14 @@ public:
 		x(x), 
 		y(y), 
 		z(z),
-		z_detailed(32000) 
+		z_detailed(SHRT_MAX) 
 	{}
 
 	coord3d_t(): 
 		x(0),
 		y(0),
 		z(0),
-		z_detailed(32000)
+		z_detailed(SHRT_MAX)
 	{}
 };
 // jk valleys end
@@ -1747,27 +1748,56 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			}
 			if(tmp_world[(i*new_groesse_x)+j].z == get_grundwasser()){
 				tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
+				tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
 			}
-			tmp_world[(i*new_groesse_x)+j].z_detailed = 32000; // constant
+			tmp_world[(i*new_groesse_x)+j].z_detailed = SHRT_MAX; // constant
 		}
 	}
 	printf("valleys ones %i\n", count);
 
 	display_set_progress_text(translator::translate("creating valleys - btffa"));
 
+	koord diff_k[4];
+	diff_k[0].x = -1;
+	diff_k[0].y =  0;
+	diff_k[1].x =  0;
+	diff_k[1].y = -1;
+	diff_k[2].x =  1;
+	diff_k[2].y =  0;
+	diff_k[3].x =  0;
+	diff_k[3].y =  1;
 	for(int i=0; i<levels-1;  ++i){
+		int z_detailed = 1;
+		int z_detailed_next = z_detailed + 1;
 		while(current_step[i].get_count() > 0) {
 			FOR(vector_tpl<koord>, const k, current_step[i]) {
-				height = lookup_kartenboden(k)->get_hoehe();
+				sint8 height = lookup_kartenboden(k)->get_hoehe();
+				z_detailed = tmp_world[k.y*new_groesse_x+k.x].z_detailed;
+				z_detailed_next = z_detailed + 1;
 				//left
-				if(lookup_kartenboden(koord(k.x-1,k.y))->get_hoehe() > height){
-					tmp_world[(k.y*new_groesse_x)+k.x].z_detailed = 1;
-					tmp_world[(k.y*new_groesse_x)+k.x].flags |= coord3d_t::FLOODED;
-					next_level[i+1].append(koord(x,y));
-				}
-				else if(lookup_kartenboden(koord(k.x-1, k.y))->get_hoehe() == height 
-					&& !(tmp_world[k.y*new_groesse_x+k.x].flags & coord3d_t::FLOODED)) {
-					//todo
+				for(int direction=0; direction < 4; ++direction) {
+					koord next_k = k+diff_k[direction];
+					// next level; && do not duplicate
+					if(lookup_kartenboden(next_k)->get_hoehe() > height
+					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
+					){
+						tmp_world[(k.y*new_groesse_x)+k.x].z_detailed = 1;
+						tmp_world[(k.y*new_groesse_x)+k.x].flags |= coord3d_t::FLOODED;
+						next_level[i+1].append(next_k);
+					}
+					else if(lookup_kartenboden(next_k)->get_hoehe() == height &&  tmp_world[k.y*new_groesse_x+k.x-1].z_detailed > z_detailed_next) {
+						tmp_world[k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
+						next_step[i].append(next_k);
+					}
+					// dig
+					else if( lookup_kartenboden(next_k)->get_hoehe() < height  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
+						tmp_world[k.y*new_groesse_x+next_k.x].z_detailed = SHRT_MAX;
+						koord dig_k = k;
+//						do {
+							lower_to(dig_k.x, dig_k.y, height-1, false);
+//						}while(lookup_kartenboden(dig_k)->get_hoehe() == height);
+						printf("dig_k %i %i %i\n", dig_k.x, dig_k.y, height-1);
+					}
 				}
 			}
 			current_step[i].clear();

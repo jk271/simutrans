@@ -142,7 +142,8 @@ public:
 		WEST=1,
 		NORTH=2,
 		EAST=4,
-		SOUTH=8
+		SOUTH=8,
+		FLOODED=16
 	};
 
 	coord3d_t(const uint16 x, const uint16 y, const sint8 z):
@@ -1693,6 +1694,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	}
 
 	// valleys begin
+	printf("starting valley correction \n");
 	display_set_progress_text(translator::translate("creating valleys - copying world"));
 	coord3d_t * tmp_world = new coord3d_t[new_groesse_y*new_groesse_y];
 	sint8 above_sea = get_grundwasser() + 1;
@@ -1714,37 +1716,63 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 				if((x > 1)  && lookup_kartenboden(koord(x-1,y))->get_hoehe() == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 				//top
 				if((y > 1)  && lookup_kartenboden(koord(x,y-1))->get_hoehe() == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 				//right
 				if(((x+1)<new_groesse_x )  && lookup_kartenboden(koord(x+1,y))->get_hoehe() == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 				// bottom
 				if(((y+1)<new_groesse_y )  && lookup_kartenboden(koord(x,y+1))->get_hoehe() == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 32000;
+					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 			}
-			tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+			if(tmp_world[(i*new_groesse_x)+j].z == get_grundwasser()){
+				tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
+			}
+			tmp_world[(i*new_groesse_x)+j].z_detailed = 32000; // constant
 		}
 	}
 	printf("valleys ones %i\n", count);
 
 	display_set_progress_text(translator::translate("creating valleys - btffa"));
+
+	for(int i=0; i<levels-1;  ++i){
+		while(current_step[i].get_count() > 0) {
+			FOR(vector_tpl<koord>, const k, current_step[i]) {
+				height = lookup_kartenboden(k)->get_hoehe();
+				//left
+				if(lookup_kartenboden(koord(k.x-1,k.y))->get_hoehe() > height){
+					tmp_world[(k.y*new_groesse_x)+k.x].z_detailed = 1;
+					tmp_world[(k.y*new_groesse_x)+k.x].flags |= coord3d_t::FLOODED;
+					next_level[i+1].append(koord(x,y));
+				}
+				else if(lookup_kartenboden(koord(k.x-1, k.y))->get_hoehe() == height 
+					&& !(tmp_world[k.y*new_groesse_x+k.x].flags & coord3d_t::FLOODED)) {
+					//todo
+				}
+			}
+			current_step[i].clear();
+		}
+	}
 
 	display_set_progress_text(translator::translate("creating valleys - 3"));
 

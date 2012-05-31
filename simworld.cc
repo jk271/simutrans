@@ -1710,11 +1710,11 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			uint16 x, y;
 			tmp_world[(i*new_groesse_x)+j].x = x = j;
 			tmp_world[(i*new_groesse_x)+j].y = y = i;
-			tmp_world[(i*new_groesse_x)+j].z = lookup_kartenboden(koord(j,i))->get_hoehe();
+			tmp_world[(i*new_groesse_x)+j].z = lookup_hgt(koord(j,i));
 
 			if(tmp_world[(i*new_groesse_x)+j].z == above_sea){
 				//left
-				if((x > 1)  && lookup_kartenboden(koord(x-1,y))->get_hoehe() == get_grundwasser()){
+				if((x > 1)  && lookup_hgt(koord(x-1,y)) == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
@@ -1722,7 +1722,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					continue;
 				} 
 				//top
-				if((y > 1)  && lookup_kartenboden(koord(x,y-1))->get_hoehe() == get_grundwasser()){
+				if((y > 1)  && lookup_hgt(koord(x,y-1)) == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
@@ -1730,7 +1730,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					continue;
 				} 
 				//right
-				if(((x+1)<new_groesse_x )  && lookup_kartenboden(koord(x+1,y))->get_hoehe() == get_grundwasser()){
+				if(((x+1)<new_groesse_x )  && lookup_hgt(koord(x+1,y)) == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
@@ -1738,7 +1738,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					continue;
 				} 
 				// bottom
-				if(((y+1)<new_groesse_y )  && lookup_kartenboden(koord(x,y+1))->get_hoehe() == get_grundwasser()){
+				if(((y+1)<new_groesse_y )  && lookup_hgt(koord(x,y+1)) == get_grundwasser()){
 					current_step[0].append(koord(x,y));
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
@@ -1746,9 +1746,10 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					continue;
 				} 
 			}
-			if(tmp_world[(i*new_groesse_x)+j].z == get_grundwasser()){
+			if( lookup_hgt(koord(x,y)) == get_grundwasser()){
 				tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 				tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+				continue;
 			}
 			tmp_world[(i*new_groesse_x)+j].z_detailed = SHRT_MAX; // constant
 		}
@@ -1767,41 +1768,57 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	diff_k[3].x =  0;
 	diff_k[3].y =  1;
 	for(int i=0; i<levels-1;  ++i){
+		printf("level %i\n", i);
 		int z_detailed = 1;
 		int z_detailed_next = z_detailed + 1;
+		int front_count = 0;
 		while(current_step[i].get_count() > 0) {
+			bool dig = false;
+			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
+			
 			FOR(vector_tpl<koord>, const k, current_step[i]) {
-				sint8 height = lookup_kartenboden(k)->get_hoehe();
+				sint8 height = lookup_hgt(k);
 				z_detailed = tmp_world[k.y*new_groesse_x+k.x].z_detailed;
 				z_detailed_next = z_detailed + 1;
 				//left
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+diff_k[direction];
 					// next level; && do not duplicate
-					if(lookup_kartenboden(next_k)->get_hoehe() > height
+					if(lookup_hgt(next_k) > height
 					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
 					){
 						tmp_world[(k.y*new_groesse_x)+k.x].z_detailed = 1;
 						tmp_world[(k.y*new_groesse_x)+k.x].flags |= coord3d_t::FLOODED;
 						next_level[i+1].append(next_k);
 					}
-					else if(lookup_kartenboden(next_k)->get_hoehe() == height &&  tmp_world[k.y*new_groesse_x+k.x-1].z_detailed > z_detailed_next) {
+					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed > z_detailed_next) {
 						tmp_world[k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
 						next_step[i].append(next_k);
 					}
 					// dig
-					else if( lookup_kartenboden(next_k)->get_hoehe() < height  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
-						tmp_world[k.y*new_groesse_x+next_k.x].z_detailed = SHRT_MAX;
+					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
+						dig = true;
+						tmp_world[k.y*new_groesse_x+k.x].z_detailed = SHRT_MAX;
 						koord dig_k = k;
+						printf("dig_k %i %i %i", dig_k.x, dig_k.y, lookup_hgt(k));
 //						do {
 							lower_to(dig_k.x, dig_k.y, height-1, false);
-//						}while(lookup_kartenboden(dig_k)->get_hoehe() == height);
-						printf("dig_k %i %i %i\n", dig_k.x, dig_k.y, height-1);
+//						}while(lookup_hgt(dig_k) == height);
+						printf(" %i\n", lookup_hgt(k));
+						break;
 					}
+				}
+				if(dig) {
+					break;
 				}
 			}
 			current_step[i].clear();
+			swap(current_step[i], next_step[i]);
 		}
+		FOR(vector_tpl<koord>, const k, next_level[i+1]) {
+			current_step[i+1].append(k);
+		}
+		
 	}
 
 	display_set_progress_text(translator::translate("creating valleys - 3"));

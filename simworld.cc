@@ -1772,14 +1772,18 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	diff_k[2].y =  0;
 	diff_k[3].x =  0;
 	diff_k[3].y =  1;
+
+	// height levels
 	for(int i=0; i<levels-1;  ++i){
 		printf("level %i\n", i); // debug
-		int z_detailed = 1;
-		int z_detailed_next = z_detailed + 1;
+		int z_detailed_next = -1;
 		int front_count = 0; // debug
 		bool nobreak2 = true; //escape from cycle
-		while(current_step[i].get_count() > 0  && nobreak2) {
-			bool dig = false;
+
+		// front
+		for(int z_detailed = 1; (current_step[i].get_count() > 0)  &&  nobreak2; ++z_detailed) {
+			z_detailed_next = z_detailed + 1;
+			bool dig = false; // used for escaping fron cycle
 			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
 			
 			FOR(vector_tpl<koord>, const k, current_step[i]) {
@@ -1789,16 +1793,16 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 				//left
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+diff_k[direction];
-					// next level; && do not duplicate
+					// next height level; && do not duplicate
 					if(lookup_hgt(next_k) > height
 					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
 					){
-						tmp_world[(k.y*new_groesse_x)+k.x].z_detailed = 1;
-						tmp_world[(k.y*new_groesse_x)+k.x].flags |= coord3d_t::FLOODED;
+						tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed = 1;
+						tmp_world[(next_k.y*new_groesse_x)+next_k.x].flags |= coord3d_t::FLOODED;
 						next_level[i+1].append(next_k);
 					}
 					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed > z_detailed_next) {
-						tmp_world[k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
+						tmp_world[next_k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
 						next_step[i].append(next_k);
 					}
 					// dig
@@ -1807,9 +1811,9 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 						nobreak2 = false;
 						tmp_world[k.y*new_groesse_x+k.x].z_detailed = SHRT_MAX;
 						koord dig_k = k;
-						printf("dig_k %i %i %i", dig_k.x, dig_k.y, lookup_hgt(k));
+						printf("dig_k %i %i %i (%i %i %i)", dig_k.x, dig_k.y, lookup_hgt(k), next_k.x, next_k.y, lookup_hgt(next_k));
 //						do {
-							lower_to(dig_k.x, dig_k.y, height-1, false);
+					//		lower_to(dig_k.x, dig_k.y, height-1, false);
 //						}while(lookup_hgt(dig_k) == height);
 						printf(" %i\n", lookup_hgt(k));
 						break;
@@ -1818,6 +1822,9 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 				if(dig) {
 					break;
 				}
+			}
+			if(!nobreak2) {
+				break;
 			}
 			current_step[i].clear();
 			swap(current_step[i], next_step[i]);

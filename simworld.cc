@@ -136,10 +136,12 @@ class coord3d_t {
 public:
 	uint16 x;
 	uint16 y;
+private:
 	sint8 z;
+public:
 	uint16 z_detailed;
 	uint8 flags;
-	enum flags {
+	enum flags_e {
 		WEST=1,
 		NORTH=2,
 		EAST=4,
@@ -160,6 +162,9 @@ public:
 		z(0),
 		z_detailed(SHRT_MAX)
 	{}
+	inline bool has_flag(flags_e flag) {
+		return (flags & flag) == flag;
+	}
 };
 // jk valleys end
 
@@ -1707,46 +1712,46 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	int count=0;
 	for(int i=0;  i < new_groesse_y; ++i) {
 		for(int j=0; j < new_groesse_x; ++j) {
-			uint16 x, y;
-			tmp_world[(i*new_groesse_x)+j].x = x = j;
-			tmp_world[(i*new_groesse_x)+j].y = y = i;
-			tmp_world[(i*new_groesse_x)+j].z = lookup_hgt(koord(j,i));
+			koord k;
+			tmp_world[(i*new_groesse_x)+j].x = k.x = j;
+			tmp_world[(i*new_groesse_x)+j].y = k.y = i;
+//			tmp_world[(i*new_groesse_x)+j].z = lookup_hgt(koord(j,i));
 
-			if(tmp_world[(i*new_groesse_x)+j].z == above_sea){
+			if(lookup_hgt(k) == above_sea){
 				//left
-				if((x > 1)  && lookup_hgt(koord(x-1,y)) == get_grundwasser()){
-					current_step[0].append(koord(x,y));
+				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) == get_grundwasser()){
+					current_step[0].append(k);
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
 					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 				//top
-				if((y > 1)  && lookup_hgt(koord(x,y-1)) == get_grundwasser()){
-					current_step[0].append(koord(x,y));
+				if((k.y > 1)  && lookup_hgt(koord(k.x,k.y-1)) == get_grundwasser()){
+					current_step[0].append(k);
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
 					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 				//right
-				if(((x+1)<new_groesse_x )  && lookup_hgt(koord(x+1,y)) == get_grundwasser()){
-					current_step[0].append(koord(x,y));
+				if(((k.x+1)<new_groesse_x )  && lookup_hgt(koord(k.x+1,k.y)) == get_grundwasser()){
+					current_step[0].append(k);
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
 					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 				// bottom
-				if(((y+1)<new_groesse_y )  && lookup_hgt(koord(x,y+1)) == get_grundwasser()){
-					current_step[0].append(koord(x,y));
+				if(((k.y+1)<new_groesse_y )  && lookup_hgt(koord(k.x,k.y+1)) == get_grundwasser()){
+					current_step[0].append(k);
 					count++;
 					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
 					tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 					continue;
 				} 
 			}
-			if( lookup_hgt(koord(x,y)) == get_grundwasser()){
+			if( lookup_hgt(k) == get_grundwasser()){
 				tmp_world[(i*new_groesse_x)+j].flags |= coord3d_t::FLOODED;
 				tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
 				continue;
@@ -1768,11 +1773,12 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	diff_k[3].x =  0;
 	diff_k[3].y =  1;
 	for(int i=0; i<levels-1;  ++i){
-		printf("level %i\n", i);
+		printf("level %i\n", i); // debug
 		int z_detailed = 1;
 		int z_detailed_next = z_detailed + 1;
-		int front_count = 0;
-		while(current_step[i].get_count() > 0) {
+		int front_count = 0; // debug
+		bool nobreak2 = true; //escape from cycle
+		while(current_step[i].get_count() > 0  && nobreak2) {
 			bool dig = false;
 			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
 			
@@ -1798,6 +1804,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					// dig
 					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
 						dig = true;
+						nobreak2 = false;
 						tmp_world[k.y*new_groesse_x+k.x].z_detailed = SHRT_MAX;
 						koord dig_k = k;
 						printf("dig_k %i %i %i", dig_k.x, dig_k.y, lookup_hgt(k));

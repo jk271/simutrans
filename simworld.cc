@@ -1809,13 +1809,28 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
-						tmp_world[k.y*new_groesse_x+k.x].z_detailed = SHRT_MAX;
 						koord dig_k = k;
-						printf("dig_k %i %i %i (%i %i %i)", dig_k.x, dig_k.y, lookup_hgt(k), next_k.x, next_k.y, lookup_hgt(next_k));
-//						do {
-					//		lower_to(dig_k.x, dig_k.y, height-1, false);
-//						}while(lookup_hgt(dig_k) == height);
-						printf(" %i\n", lookup_hgt(k));
+						koord next_dig_k = k;
+						do {
+							tmp_world[dig_k.y*new_groesse_x+dig_k.x].z_detailed = SHRT_MAX;
+							printf("dig_k %i %i %i (%i %i %i)", dig_k.x, dig_k.y, lookup_hgt(dig_k), next_k.x, next_k.y, lookup_hgt(next_k));
+							//lower_to(dig_k.x, dig_k.y, height-1, false);
+							set_grid_hgt(dig_k, height-1);
+							printf(" %i\n", lookup_hgt(dig_k));
+							for(int j=0; j<4; ++j) {
+								koord tmp = dig_k+diff_k[j];
+								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*new_groesse_x+tmp.x].z_detailed != SHRT_MAX  ){ // digging is over
+									next_dig_k = tmp;
+									break;
+								}
+								// hledam smer
+								if( (lookup_hgt(tmp) == height) && tmp_world[(tmp.y*new_groesse_x)+tmp.x].z_detailed < tmp_world[(dig_k.y*new_groesse_x)+dig_k.x].z_detailed){
+									next_dig_k = tmp;
+								}
+							}
+							assert(dig_k != next_dig_k);
+							dig_k = next_dig_k;
+						}while(lookup_hgt(dig_k) == height);
 						break;
 					}
 				}

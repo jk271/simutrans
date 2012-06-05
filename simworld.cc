@@ -1763,16 +1763,6 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 
 	display_set_progress_text(translator::translate("creating valleys - btffa"));
 
-	koord diff_k[4];
-	diff_k[0].x = -1;
-	diff_k[0].y =  0;
-	diff_k[1].x =  0;
-	diff_k[1].y = -1;
-	diff_k[2].x =  1;
-	diff_k[2].y =  0;
-	diff_k[3].x =  0;
-	diff_k[3].y =  1;
-
 	// height levels
 	for(int i=0; i<levels-1;  ++i){
 		printf("level %i\n", i); // debug
@@ -1792,7 +1782,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 				z_detailed_next = z_detailed + 1;
 				//left
 				for(int direction=0; direction < 4; ++direction) {
-					koord next_k = k+diff_k[direction];
+					koord next_k = k+koord::nsow[direction];
 					// next height level; && do not duplicate
 					if(lookup_hgt(next_k) > height
 					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
@@ -1818,7 +1808,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 							set_grid_hgt(dig_k, height-1);
 							printf(" %i\n", lookup_hgt(dig_k));
 							for(int j=0; j<4; ++j) {
-								koord tmp = dig_k+diff_k[j];
+								koord tmp = dig_k+koord::nsow[j];
 								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*new_groesse_x+tmp.x].z_detailed != SHRT_MAX  ){ // digging is over
 									next_dig_k = tmp;
 									break;

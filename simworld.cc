@@ -1759,7 +1759,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	display_set_progress_text(translator::translate("creating valleys - btfffa"));
 
 	// height levels
-	for(int i=0; i<levels-1;  ++i){
+	for(int i=0; i<levels-10;  ++i){
 		printf("level %i\n", i); // debug
 		int z_detailed_next = -1;
 		int front_count = 0; // debug
@@ -1791,7 +1791,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 						tmp_world[next_k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
 						next_step[i].append(next_k);
 						char tmp_string[20];
-						sprintf(tmp_string, "%i,%i %i", next_k.x, next_k.y, z_detailed_next);
+						sprintf(tmp_string, "%i", z_detailed_next);
 						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig
@@ -1800,12 +1800,12 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 						nobreak2 = false;
 						koord dig_k = k;
 						koord next_dig_k = k;
-						printf(" (%i %i %i)\n", 4, 15, lookup_hgt(koord(4,15)));
 						printf("dig_k (%i %i %i)\n", next_k.x, next_k.y, lookup_hgt(next_k));
 //						current_step[i].remove(k);
 						do {
+							printf("dig_k    %i %i %i.%i ", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*new_groesse_x+dig_k.x].z_detailed);
 							tmp_world[dig_k.y*new_groesse_x+dig_k.x].z_detailed = SHRT_MAX;
-							printf("dig_k    %i %i %i ", dig_k.x, dig_k.y, lookup_hgt(dig_k));
+							lookup_kartenboden(next_k)->set_text(NULL);
 							//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
 							int lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
 							//set_grid_hgt(dig_k, height-1);
@@ -1824,7 +1824,11 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 									next_dig_k = tmp;
 								}
 							}
-							assert(dig_k != next_dig_k);
+						//	assert(dig_k != next_dig_k);
+							if(dig_k == next_dig_k) {
+								i= 63;
+								break;
+							}
 							dig_k = next_dig_k;
 						}while(lookup_hgt(dig_k) == height);
 						current_step[i-1].append(next_dig_k);
@@ -1843,8 +1847,10 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			swap(current_step[i], next_step[i]);
 		}
 		if(nobreak2) {
+			printf("l      %i\n",i);
 			FOR(vector_tpl<koord>, const k, next_level[i+1]) {
-				current_step[i+1].append(k);
+//				current_step[i+1].append(k);
+				current_step[i+1].append_unique(k);
 			}
 		}
 		

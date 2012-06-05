@@ -1794,6 +1794,9 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed > z_detailed_next) {
 						tmp_world[next_k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
 						next_step[i].append(next_k);
+						char tmp_string[20];
+						sprintf(tmp_string, "%i,%i %i", next_k.x, next_k.y, z_detailed_next);
+						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig
 					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
@@ -1806,9 +1809,10 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 						do {
 							tmp_world[dig_k.y*new_groesse_x+dig_k.x].z_detailed = SHRT_MAX;
 							printf("dig_k    %i %i %i ", dig_k.x, dig_k.y, lookup_hgt(dig_k));
-							lower_to(dig_k.x, dig_k.y, height-1, false);
+							//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
+							int lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
 							//set_grid_hgt(dig_k, height-1);
-							printf(" %i\n", lookup_hgt(dig_k));
+							printf(" %i (lcount %i)\n", lookup_hgt(dig_k), lower_count);
 							for(int j=0; j<4; ++j) {
 								koord tmp = dig_k+koord::nsow[j];
 								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*new_groesse_x+tmp.x].z_detailed != SHRT_MAX  ){ // digging is over

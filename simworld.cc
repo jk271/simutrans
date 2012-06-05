@@ -137,9 +137,8 @@ public:
 	uint16 x;
 	uint16 y;
 private:
-	sint8 z;
+	uint32 z_detailed;
 public:
-	uint16 z_detailed;
 	uint8 flags;
 	enum flags_e {
 		WEST=1,
@@ -148,23 +147,27 @@ public:
 		SOUTH=8,
 		FLOODED=16
 	};
-
+/*
 	coord3d_t(const uint16 x, const uint16 y, const sint8 z):
 		x(x), 
 		y(y), 
-		z(z),
 		z_detailed(SHRT_MAX) 
 	{}
+*/
 
 	coord3d_t(): 
 		x(0),
 		y(0),
-		z(0),
 		z_detailed(SHRT_MAX)
 	{}
+	inline sint32 getZ() { return z_detailed; }
+	inline uint16 getZDetailed() { return z_detailed&0xFFFF; }
 	inline bool has_flag(flags_e flag) {
 		return (flags & flag) == flag;
 	}
+	inline void setZ(sint32 z_det) { z_detailed = z_det; }
+	inline void setZDetailed(uint16 detailed) { z_detailed = (z_detailed &0xFFFF0000)+detailed; }
+	inline void setZDetailed(sint8 level, uint16 detailed) { z_detailed = (level<<16)+detailed; }
 };
 // jk valleys end
 
@@ -1722,36 +1725,36 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) == get_grundwasser()){
 					current_step[0].append(k);
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].setZDetailed(0,1);
 					continue;
 				} 
 				//top
 				if((k.y > 1)  && lookup_hgt(koord(k.x,k.y-1)) == get_grundwasser()){
 					current_step[0].append(k);
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].setZDetailed(0,1);
 					continue;
 				} 
 				//right
 				if(((k.x+1)<new_groesse_x )  && lookup_hgt(koord(k.x+1,k.y)) == get_grundwasser()){
 					current_step[0].append(k);
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].setZDetailed(0,1);
 					continue;
 				} 
 				// bottom
 				if(((k.y+1)<new_groesse_y )  && lookup_hgt(koord(k.x,k.y+1)) == get_grundwasser()){
 					current_step[0].append(k);
 					count++;
-					tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+					tmp_world[(i*new_groesse_x)+j].setZDetailed(0,1);
 					continue;
 				} 
 			}
 			if( lookup_hgt(k) == get_grundwasser()){
-				tmp_world[(i*new_groesse_x)+j].z_detailed = 1;
+				tmp_world[(i*new_groesse_x)+j].setZDetailed(0,1);
 				continue;
 			}
-			tmp_world[(i*new_groesse_x)+j].z_detailed = SHRT_MAX; // constant
+			tmp_world[(i*new_groesse_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant
 		}
 	}
 	printf("valleys ones %i\n", count);
@@ -1776,7 +1779,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 				if(  lookup_hgt(k) < height ){
 					continue;
 				}
-				z_detailed = tmp_world[k.y*new_groesse_x+k.x].z_detailed;
+				z_detailed = tmp_world[k.y*new_groesse_x+k.x].getZ();
 				z_detailed_next = z_detailed + 1;
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nsow[direction];
@@ -1784,18 +1787,18 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					if(lookup_hgt(next_k) > height
 					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
 					){
-						tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed = 1;
+						tmp_world[(next_k.y*new_groesse_x)+next_k.x].setZDetailed(i, 1);
 						next_level[i+1].append(next_k);
 					}
-					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed > z_detailed_next) {
-						tmp_world[next_k.y*new_groesse_x+next_k.x].z_detailed = z_detailed_next;
+					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZ() > z_detailed_next) {
+						tmp_world[next_k.y*new_groesse_x+next_k.x].setZ(z_detailed_next);
 						next_step[i].append(next_k);
 						char tmp_string[20];
-						sprintf(tmp_string, "%i", z_detailed_next);
+						sprintf(tmp_string, "%x", z_detailed_next);
 						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig
-					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed == SHRT_MAX ) {
+					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
 						koord dig_k = k;
@@ -1803,8 +1806,8 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 						printf("dig_k (%i %i %i)\n", next_k.x, next_k.y, lookup_hgt(next_k));
 //						current_step[i].remove(k);
 						do {
-							printf("dig_k    %i %i %i.%i ", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*new_groesse_x+dig_k.x].z_detailed);
-							tmp_world[dig_k.y*new_groesse_x+dig_k.x].z_detailed = SHRT_MAX;
+							printf("dig_k    %i %i %i.%i ", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*new_groesse_x+dig_k.x].getZDetailed());
+							tmp_world[dig_k.y*new_groesse_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
 							lookup_kartenboden(next_k)->set_text(NULL);
 							//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
 							int lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
@@ -1812,15 +1815,15 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 							printf(" %i (lcount %i)\n", lookup_hgt(dig_k), lower_count);
 							for(int j=0; j<4; ++j) {
 								koord tmp = dig_k+koord::nsow[j];
-								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*new_groesse_x+tmp.x].z_detailed != SHRT_MAX  ){ // digging is over
+								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*new_groesse_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
 									next_dig_k = tmp;
 //									next_level[i].remove(dig_k); // remove nonexisting edge
 									break;
 								}
 								// hledam smer
 								if( (lookup_hgt(tmp) == height) 
-								&&  (tmp_world[(tmp.y*new_groesse_x)+tmp.x].z_detailed < tmp_world[(dig_k.y*new_groesse_x)+dig_k.x].z_detailed)
-								&&  (tmp_world[(tmp.y*new_groesse_x)+tmp.x].z_detailed <= tmp_world[(next_dig_k.y*new_groesse_x)+next_dig_k.x].z_detailed) ){
+								&&  (tmp_world[(tmp.y*new_groesse_x)+tmp.x].getZ() < tmp_world[(dig_k.y*new_groesse_x)+dig_k.x].getZ())
+								&&  (tmp_world[(tmp.y*new_groesse_x)+tmp.x].getZ() <= tmp_world[(next_dig_k.y*new_groesse_x)+next_dig_k.x].getZ()) ){
 									next_dig_k = tmp;
 								}
 							}

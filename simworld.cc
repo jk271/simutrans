@@ -1788,7 +1788,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
 					){
 						tmp_world[(next_k.y*new_groesse_x)+next_k.x].setZDetailed(i, 1);
-						next_level[i+1].append(next_k);
+						next_level[i+1].append_unique(next_k);
 					}
 					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZ() > z_detailed_next) {
 						tmp_world[next_k.y*new_groesse_x+next_k.x].setZ(z_detailed_next);
@@ -1850,7 +1850,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			swap(current_step[i], next_step[i]);
 		}
 		if(nobreak2) {
-			printf("l      %i\n",i);
+			printf("l     %i, len %i\n",i, next_level[i+1].get_count());
 			FOR(vector_tpl<koord>, const k, next_level[i+1]) {
 //				current_step[i+1].append(k);
 				current_step[i+1].append_unique(k);

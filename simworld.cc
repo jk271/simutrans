@@ -1704,6 +1704,9 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 
 	// valleys begin
 	printf("starting valley correction \n");
+	time_t time_valley_begin = time(NULL);
+	time_t time_valley_middle;
+	time_t time_valley_end;
 	display_set_progress_text(translator::translate("creating valleys - copying world"));
 	coord3d_t * tmp_world = new coord3d_t[new_groesse_y*new_groesse_y];
 	sint8 above_sea = get_grundwasser() + 1;
@@ -1757,7 +1760,8 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			tmp_world[(i*new_groesse_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant
 		}
 	}
-	printf("valleys ones %i\n", count);
+	time_valley_middle = time(NULL);
+	printf("valleys ones %i, time: %f\n", count, difftime(time_valley_middle, time_valley_begin));
 
 	display_set_progress_text(translator::translate("creating valleys - btfffa"));
 
@@ -1865,6 +1869,8 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	delete [] next_step;
 	delete [] next_level;
 	delete [] tmp_world;
+	time_valley_end = time(NULL);
+	printf("time: %f s\n", difftime(time_valley_end, time_valley_middle));
 	// valleys end
 
 	// Resize marker_t:

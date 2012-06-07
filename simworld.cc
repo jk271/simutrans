@@ -1779,7 +1779,11 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
 			
 			sint8 height = i + get_grundwasser() + 1;
-			FOR(vector_tpl<koord>, const k, current_step[i]) {
+//			FOR(vector_tpl<koord>, const k, current_step[i]) {
+			// stack simulated by vector
+			while(current_step[i].get_count()>0) {
+				koord k = current_step[i].back();
+				current_step[i].pop_back();
 				if(  lookup_hgt(k) < height ){
 					continue;
 				}

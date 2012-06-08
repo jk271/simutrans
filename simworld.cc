@@ -165,6 +165,8 @@ public:
 	inline bool has_flag(flags_e flag) {
 		return (flags & flag) == flag;
 	}
+	/**returns true if argument is <= than vertex */
+	inline bool isLowerOrEqual(sint8 level, uint16 detailed) { return ((level<<16)+detailed) <= z_detailed; }
 	inline void setZ(sint32 z_det) { z_detailed = z_det; }
 	inline void setZDetailed(uint16 detailed) { z_detailed = (z_detailed &0xFFFF0000)+detailed; }
 	inline void setZDetailed(sint8 level, uint16 detailed) { z_detailed = (level<<16)+detailed; }
@@ -1792,10 +1794,10 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					koord next_k = k+koord::nsow[direction];
 					// next height level; && do not duplicate
 					if(lookup_hgt(next_k) > height
-					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
+					&&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].isLowerOrEqual(i, 1) // dig !!
 					){
 						tmp_world[(next_k.y*new_groesse_x)+next_k.x].setZDetailed(i, 1);
-						current_step[i+1].append_unique(next_k);
+						current_step[i+1].append(next_k);
 					}
 					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZ() > z_detailed_next) {
 						tmp_world[next_k.y*new_groesse_x+next_k.x].setZ(z_detailed_next);

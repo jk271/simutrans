@@ -1802,9 +1802,9 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZ() > z_detailed_next) {
 						tmp_world[next_k.y*new_groesse_x+next_k.x].setZ(z_detailed_next);
 						next_step[i].append(next_k);
-						char tmp_string[20];
-						sprintf(tmp_string, "%x", z_detailed_next);
-						lookup_kartenboden(next_k)->set_text(tmp_string);
+//						char tmp_string[20];
+//						sprintf(tmp_string, "%x", z_detailed_next);
+//						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig
 					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZDetailed() == SHRT_MAX ) {

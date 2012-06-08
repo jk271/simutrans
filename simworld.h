@@ -425,6 +425,11 @@ private:
 	 */
 	void create_rivers(sint16 number);
 
+	/*
+	 * creates valley using current lanscape without any object on it
+	 */
+	void create_valleys();
+
 	/**
 	 * Distribute groundobjs and cities on the map but not
 	 * in the rectangle from (0,0) till (old_x, old_y).

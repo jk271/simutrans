@@ -1714,7 +1714,6 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	
 	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
 	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
-	vector_tpl<koord> *  next_level   = new vector_tpl<koord>[levels];
 	int count=0;
 	for(int i=0;  i < new_groesse_y; ++i) {
 		for(int j=0; j < new_groesse_x; ++j) {
@@ -1796,7 +1795,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 					//  &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].z_detailed != 1 // dig !!
 					){
 						tmp_world[(next_k.y*new_groesse_x)+next_k.x].setZDetailed(i, 1);
-						next_level[i+1].append_unique(next_k);
+						current_step[i+1].append_unique(next_k);
 					}
 					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*new_groesse_x)+next_k.x].getZ() > z_detailed_next) {
 						tmp_world[next_k.y*new_groesse_x+next_k.x].setZ(z_detailed_next);
@@ -1825,7 +1824,6 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 								koord tmp = dig_k+koord::nsow[j];
 								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*new_groesse_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
 									next_dig_k = tmp;
-//									next_level[i].remove(dig_k); // remove nonexisting edge
 									break;
 								}
 								// hledam smer
@@ -1857,21 +1855,12 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			current_step[i].clear();
 			swap(current_step[i], next_step[i]);
 		}
-		if(nobreak2) {
-			printf("l     %i, len %i\n",i, next_level[i+1].get_count());
-			FOR(vector_tpl<koord>, const k, next_level[i+1]) {
-//				current_step[i+1].append(k);
-				current_step[i+1].append_unique(k);
-			}
-		}
-		
 	}
 
 	display_set_progress_text(translator::translate("creating valleys - 3"));
 
 	delete [] current_step;
 	delete [] next_step;
-	delete [] next_level;
 	delete [] tmp_world;
 	time_valley_end = time(NULL);
 	printf("time: %f s\n", difftime(time_valley_end, time_valley_middle));

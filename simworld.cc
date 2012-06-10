@@ -999,15 +999,19 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 		return;
 	}
 
-	for(int x=32; x<size_x; x += 64 ) {
-		for(int y=32; y<size_y; y += 64) {
+	// constant from settings, average distance between two nearest springs on the map (in meters)
+	// so you have to divide it by 1000 to get tiles in sim standard. In experimental meters_per_tile has to be taken in account too
+	int meters_between_springs = 32000;
+	int tiles_between_springs =  meters_between_springs/1000;
+	for(int x=32; x<(size_x-32); x += tiles_between_springs ) {
+		for(int y=32; y<(size_y-32); y += tiles_between_springs) {
 			koord k(x,y);
 			printf("%i , %i\n", lookup_hgt(k), get_grundwasser());
 			if(lookup_hgt(k) <= get_grundwasser()){
 				continue;
 			}
 			vector_tpl<koord> river;
-			river.append(k); // spring
+			river.append_unique(k); // spring
 //			koord last_level_k = k;
 			koord next_k = k; // next_k are coordinates of candidate for next step
 			bool dowhile_cont = true; // for escaping from do{}while(); cycle without goto:
@@ -1019,12 +1023,12 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 					if( ( lookup_hgt(tmp) < lookup_hgt(k) )  ){ // digging is over
 						next_k = tmp;
 						if(!ist_in_kartengrenzen(tmp+koord(2,2))  ||  !ist_in_kartengrenzen(tmp+koord(-2,-2))){
-							river.append(tmp);
+							river.append_unique(tmp);
 							dowhile_cont = false;
 							break;
 						}
 						
-						river.append(tmp);
+						river.append_unique(next_k);
 						break;
 					}
 					if( (lookup_hgt(tmp) == lookup_hgt(k)) 
@@ -1033,16 +1037,23 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 						next_k = tmp;
 					}
 				}
+				river.append_unique(next_k);
 				//	assert(k != next_k);
 				if(k == next_k) {
+					if( tmp_world[(k.y*size_x)+k.x].getZ() == 1 ) {
+						river.append_unique(k);
+					}
 					printf("k == next_k !!\n");
 					break;
 				}
 				k = next_k;
-			}while( dowhile_cont &&  (lookup_hgt(k) >= get_grundwasser()));
+			}while( dowhile_cont &&  (lookup_hgt(k) >= get_grundwasser())
+//  &&  tmp_world[(k.y*size_x)+k.x].getZ() > 1
+		);
 			
 			// river mouth
 			k = river.back();
+			koord mouth_k = river.back();
 			// make a river: begin in sea, continue to it's springs
 			// 1 - start at spring, 2 - start one height level lower
 			while( river.get_count() > 2 ){
@@ -1050,11 +1061,20 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 				riverbuilder.route_fuer(wegbauer_t::river, river_besch);
 				riverbuilder.set_maximum( 500 ); //todo: better limits
 				riverbuilder.calc_route( lookup_kartenboden(k)->get_pos(), lookup_kartenboden(river.back())->get_pos() );
+				riverbuilder.do_terraforming();
 				riverbuilder.baue();
-				printf("river [%i, %i], [%i, %i]\n", k.x, k.y, river.back().x, river.back().y);
+				printf("river [%i, %i, %x], [%i, %i]\n", k.x, k.y, tmp_world[(k.y*size_x)+k.x].getZ(), river.back().x, river.back().y);
 				k = river.back();
 				river.pop_back();
-				
+			}
+
+			if( river.get_count() > 1 ){
+				wegbauer_t riverbuilder(this, spieler[1]);
+				riverbuilder.route_fuer(wegbauer_t::river, river_besch);
+				riverbuilder.set_maximum( 500 ); //todo: better limits
+				riverbuilder.calc_route( lookup_kartenboden(mouth_k)->get_pos(), lookup_kartenboden(k)->get_pos() );
+				riverbuilder.baue();
+				printf("river [%i, %i, %i], [%i, %i]\n", mouth_k.x, mouth_k.y, tmp_world[(mouth_k.y*size_x)+mouth_k.x].getZ(), k.x, k.y);
 			}
 		}
 	}
@@ -1122,8 +1142,13 @@ void karte_t::create_valleys()
 					continue;
 				} 
 			}
-			if( lookup_hgt(k) == get_grundwasser()){
-				tmp_world[(i*size_x)+j].setZDetailed(0,1);
+			else if( lookup_hgt(k) == get_grundwasser()){
+				if( max_hgt(k) == get_grundwasser() ) {
+					tmp_world[(i*size_x)+j].setZDetailed(0,1);
+				}
+				else {
+					tmp_world[(i*size_x)+j].setZDetailed(0,2);
+				}
 				continue;
 			}
 			tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant

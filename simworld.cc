@@ -985,6 +985,82 @@ void karte_t::create_rivers( sint16 number )
 
 
 
+void karte_t::create_rivers(coord3d_t * tmp_world)
+{
+	int size_x = settings.get_groesse_x();
+	int size_y = settings.get_groesse_y();
+	const weg_besch_t* river_besch = wegbauer_t::get_besch( umgebung_t::river_type[umgebung_t::river_types-1], 0 );
+	if(river_besch == NULL) {
+		dbg->warning("karte_t::create_rivers_jk()","There is no river defined!\n");
+		return;
+	}
+	// use only one of river creating algorithms
+	if(settings.get_river_number() != 0){
+		return;
+	}
+
+	for(int x=16; x<size_x; x += 32 ) {
+		for(int y=16; y<size_y; y += 32) {
+			koord k(x,y);
+			printf("%i , %i\n", lookup_hgt(k), get_grundwasser());
+			if(lookup_hgt(k) <= get_grundwasser()){
+				continue;
+			}
+			vector_tpl<koord> river;
+			river.append(k); // spring
+//			koord last_level_k = k;
+			koord next_k = k; // next_k are coordinates of candidate for next step
+			bool dowhile_cont = true; // for escaping from do{}while(); cycle without goto:
+			do {
+//				printf("river from   %i %i %i.%i ", k.x, k.y, lookup_hgt(k), tmp_world[k.y*size_x+k.x].getZDetailed());
+				// looking for next vertex on the way to the sea - trying out all 4 directions
+				for(int j=0; j<4; ++j) {
+					koord tmp = k+koord::nsow[j];
+					if( ( lookup_hgt(tmp) < lookup_hgt(k) )  ){ // digging is over
+						next_k = tmp;
+						if(!ist_in_kartengrenzen(tmp+koord(1,1))  ||  !ist_in_kartengrenzen(tmp+koord(-1,-1))){
+							dowhile_cont = false;
+							break;
+						}
+						
+						river.append(tmp);
+						break;
+					}
+					if( (lookup_hgt(tmp) == lookup_hgt(k)) 
+					&&  (tmp_world[(tmp.y*size_x)+tmp.x].getZ() < tmp_world[(k.y*size_x)+k.x].getZ())
+					&&  (tmp_world[(tmp.y*size_x)+tmp.x].getZ() <= tmp_world[(next_k.y*size_x)+next_k.x].getZ()) ){
+						next_k = tmp;
+					}
+				}
+				//	assert(k != next_k);
+				if(k == next_k) {
+					printf("k == next_k !!\n");
+					break;
+				}
+				k = next_k;
+			}while( dowhile_cont &&  (lookup_hgt(k) >= get_grundwasser()));
+			
+			// river mouth
+			k = river.back();
+			// make a river: begin in sea, continue to it's springs
+			// 1 - start at spring, 2 - start one height level lower
+			while( river.get_count() > 2 ){
+				wegbauer_t riverbuilder(this, spieler[1]);
+				riverbuilder.route_fuer(wegbauer_t::river, river_besch);
+				riverbuilder.set_maximum( 500 ); //todo: better limits
+				riverbuilder.calc_route( lookup_kartenboden(k)->get_pos(), lookup_kartenboden(river.back())->get_pos() );
+				riverbuilder.baue();
+				printf("river [%i, %i], [%i, %i]\n", k.x, k.y, river.back().x, river.back().y);
+				k = river.back();
+				river.pop_back();
+				
+			}
+		}
+	}
+}
+
+
+
 void karte_t::create_valleys()
 {
 	sint16 size_x = settings.get_groesse_x();
@@ -1143,7 +1219,10 @@ void karte_t::create_valleys()
 		}
 	}
 
-	display_set_progress_text(translator::translate("creating valleys - 3"));
+	display_set_progress_text(translator::translate("creating valleys - creating rivers"));
+
+	// crate rivers
+	create_rivers(tmp_world);
 
 	delete [] current_step;
 	delete [] next_step;
@@ -1873,14 +1952,14 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 			break;
 	}
 
+	// Resize marker_t:
+	marker.init(new_groesse_x, new_groesse_y);
+
 	// valleys begin
 	if( (old_x == 0)  &&  (old_y == 0) ) {
 		create_valleys();
 	}
 	// valleys end
-
-	// Resize marker_t:
-	marker.init(new_groesse_x, new_groesse_y);
 
 	distribute_groundobjs_cities(sets->get_anzahl_staedte(), sets->get_mittlere_einwohnerzahl(), old_x, old_y);
 

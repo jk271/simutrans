@@ -50,6 +50,7 @@ class weg_besch_t;
 class network_world_command_t;
 class ware_besch_t;
 class memory_rw_t;
+class coord3d_t;
 
 
 struct checklist_t
@@ -424,6 +425,12 @@ private:
 	 * Will create rivers.
 	 */
 	void create_rivers(sint16 number);
+
+	/*
+	 * Will create rivers in valleys.
+	 * @author jk271
+	 */
+	void create_rivers(coord3d_t * detailed_heights);
 
 	/*
 	 * creates valley using current lanscape without any object on it

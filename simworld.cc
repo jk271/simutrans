@@ -999,8 +999,8 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 		return;
 	}
 
-	for(int x=16; x<size_x; x += 32 ) {
-		for(int y=16; y<size_y; y += 32) {
+	for(int x=32; x<size_x; x += 64 ) {
+		for(int y=32; y<size_y; y += 64) {
 			koord k(x,y);
 			printf("%i , %i\n", lookup_hgt(k), get_grundwasser());
 			if(lookup_hgt(k) <= get_grundwasser()){
@@ -1018,7 +1018,8 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 					koord tmp = k+koord::nsow[j];
 					if( ( lookup_hgt(tmp) < lookup_hgt(k) )  ){ // digging is over
 						next_k = tmp;
-						if(!ist_in_kartengrenzen(tmp+koord(1,1))  ||  !ist_in_kartengrenzen(tmp+koord(-1,-1))){
+						if(!ist_in_kartengrenzen(tmp+koord(2,2))  ||  !ist_in_kartengrenzen(tmp+koord(-2,-2))){
+							river.append(tmp);
 							dowhile_cont = false;
 							break;
 						}
@@ -1057,6 +1058,13 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 			}
 		}
 	}
+				wegbauer_t riverbuilder(this, spieler[1]);
+				riverbuilder.route_fuer(wegbauer_t::river, river_besch);
+				riverbuilder.set_maximum( 500 ); //todo: better limits
+				riverbuilder.calc_route( lookup_kartenboden(koord(145,52))->get_pos(), lookup_kartenboden(koord(150,52))->get_pos() );
+				riverbuilder.baue();
+				riverbuilder.calc_route( lookup_kartenboden(koord(150,52))->get_pos(), lookup_kartenboden(koord(155,52))->get_pos() );
+				riverbuilder.baue();
 }
 
 
@@ -1174,10 +1182,13 @@ void karte_t::create_valleys()
 						koord next_dig_k = k;
 						printf("dig_k (%i %i %i)\n", next_k.x, next_k.y, lookup_hgt(next_k));
 //						current_step[i].remove(k);
+						vector_tpl<koord> valley_coord; // we need wider valley
+						valley_coord.append(next_k);
+						valley_coord.append(k);
 						do {
 							printf("dig_k    %i %i %i.%i ", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
 							tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
-							lookup_kartenboden(next_k)->set_text(NULL);
+//							lookup_kartenboden(next_k)->set_text(NULL);
 							//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
 							int lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
 							//set_grid_hgt(dig_k, height-1);
@@ -1201,8 +1212,12 @@ void karte_t::create_valleys()
 								break;
 							}
 							dig_k = next_dig_k;
+							valley_coord.append(dig_k);
 						}while(lookup_hgt(dig_k) == height);
 						current_step[i-1].append(next_dig_k);
+						FOR(vector_tpl<koord>, const valley_coordinate, valley_coord ){
+							int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
+						}
 						i -=2;
 						break;
 					}

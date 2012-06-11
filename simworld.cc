@@ -1103,7 +1103,7 @@ void karte_t::create_valleys()
 	
 	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
 	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
-	int count=0;
+	int count=0; // debug
 	for(int i=0;  i < size_y; ++i) {
 		for(int j=0; j < size_x; ++j) {
 			koord k;
@@ -1111,6 +1111,7 @@ void karte_t::create_valleys()
 			tmp_world[(i*size_x)+j].y = k.y = i;
 //			tmp_world[(i*size_x)+j].z = lookup_hgt(koord(j,i));
 
+			// detecting land above sea having sea as a neighbour
 			if(lookup_hgt(k) == above_sea){
 				//left
 				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) == get_grundwasser()){
@@ -1141,8 +1142,20 @@ void karte_t::create_valleys()
 					continue;
 				} 
 			}
+			// sea tiles
 			else if( lookup_hgt(k) == get_grundwasser()){
-				if( max_hgt(k) == get_grundwasser() ) {
+				// get rid of single vertex or several vertices holes reaching sea level
+				// valley could lead to it 
+				if((lookup_hgt(k+koord::nord)+lookup_hgt(k+koord::sued)+lookup_hgt(k+koord::west)+lookup_hgt(k+koord::ost)-(get_grundwasser()<<2)) >= 3) {
+					raise_to(k.x, k.y, get_grundwasser(), get_grundwasser(), get_grundwasser(), get_grundwasser()+1);
+					current_step[0].remove(k+koord::nord);
+					current_step[0].remove(k+koord::sued);
+					current_step[0].remove(k+koord::ost);
+					current_step[0].remove(k+koord::west);
+					tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
+					printf("hole was at %i, %i\n", k.x, k.y);
+				}
+				else if( max_hgt(k) == get_grundwasser() ) {
 					tmp_world[(i*size_x)+j].setZDetailed(0,1);
 				}
 				else {
@@ -1150,10 +1163,11 @@ void karte_t::create_valleys()
 				}
 				continue;
 			}
-			tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant
+			// other tiles
+			tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
 		}
 	}
-	time_valley_middle = time(NULL);
+	time_valley_middle = time(NULL); // debug - performance
 	printf("valleys ones %i, time: %f\n", count, difftime(time_valley_middle, time_valley_begin));
 
 	display_set_progress_text(translator::translate("creating valleys - btfffa"));
@@ -1198,7 +1212,7 @@ void karte_t::create_valleys()
 //						sprintf(tmp_string, "%x", z_detailed_next);
 //						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
-					// dig
+					// dig a valley
 					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;

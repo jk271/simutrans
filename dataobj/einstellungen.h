@@ -127,6 +127,7 @@ private:
 	sint16 river_number;
 	sint16 min_river_length;
 	sint16 max_river_length;
+	sint32 meters_between_springs;  // average distance between two nearest springs; 1000 is 1 tile in standard
 
 	// forest stuff
 	uint8 forest_base_size;
@@ -453,6 +454,7 @@ public:
 	sint16 get_river_number() const { return river_number; }
 	sint16 get_min_river_length() const { return min_river_length; }
 	sint16 get_max_river_length() const { return max_river_length; }
+	sint32 get_meters_between_springs() const { return meters_between_springs; }
 
 	// true, if this pak should be used with extensions (default)
 	void set_with_private_paks(bool b ) {with_private_paks = b;}

@@ -1001,8 +1001,7 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 
 	// constant from settings, average distance between two nearest springs on the map (in meters)
 	// so you have to divide it by 1000 to get tiles in sim standard. In experimental meters_per_tile has to be taken in account too
-	int meters_between_springs = 32000;
-	int tiles_between_springs =  meters_between_springs/1000;
+	int tiles_between_springs =  settings.get_meters_between_springs()/1000;
 	for(int x=32; x<(size_x-32); x += tiles_between_springs ) {
 		for(int y=32; y<(size_y-32); y += tiles_between_springs) {
 			koord k(x,y);
@@ -1060,7 +1059,7 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 				wegbauer_t riverbuilder(this, spieler[1]);
 				riverbuilder.route_fuer(wegbauer_t::river, river_besch);
 				riverbuilder.set_maximum( 500 ); //todo: better limits
-				riverbuilder.calc_route( lookup_kartenboden(k)->get_pos(), lookup_kartenboden(river.back())->get_pos() );
+				riverbuilder.calc_straight_route( lookup_kartenboden(k)->get_pos(), lookup_kartenboden(river.back())->get_pos() );
 				riverbuilder.do_terraforming();
 				riverbuilder.baue();
 				printf("river [%i, %i, %x], [%i, %i]\n", k.x, k.y, tmp_world[(k.y*size_x)+k.x].getZ(), river.back().x, river.back().y);

@@ -1181,7 +1181,7 @@ void karte_t::create_valleys()
 
 		// front
 		for(int z_detailed = 1; (current_step[i].get_count() > 0)  &&  nobreak2; ++z_detailed) {
-			z_detailed_next = z_detailed + 1;
+			z_detailed_next = z_detailed + 2;
 			bool dig = false; // used for escaping fron cycle
 			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
 			
@@ -1195,7 +1195,17 @@ void karte_t::create_valleys()
 					continue;
 				}
 				z_detailed = tmp_world[k.y*size_x+k.x].getZ();
-				z_detailed_next = z_detailed + 1;
+				// diagonal
+				z_detailed_next = z_detailed + 3;
+				for(int direction=0; direction < 4; ++direction) {
+					koord next_k = k+koord::nwneswse[direction];
+					if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() < (z_detailed-3)) { // is diagonal better ??
+						tmp_world[k.y*size_x+k.x].setZ(--z_detailed); // correct CURRENT vertex z_detailed
+						break;
+					}
+				}
+				// nswe
+				z_detailed_next = z_detailed + 2;
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nsow[direction];
 					// next height level; && do not duplicate

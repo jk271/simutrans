@@ -68,6 +68,8 @@ public:
 	static const koord west;
 	// die 4 Grundrichtungen als Array
 	static const koord nsow[4];
+	/* 4 coordinates of nearest diagonal tiles: north east, north west, ... */
+	static const koord nwneswse[4];
 	// 8 next neighbours
 	static const koord neighbours[8];
 

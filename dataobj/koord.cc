@@ -19,6 +19,13 @@ const koord koord::nsow[] = {
 	koord(-1,  0)
 };
 
+const koord koord::nwneswse[] = {
+	koord( -1, -1),
+	koord( -1,  1),
+	koord(  1, -1),
+	koord(  1,  1)
+};
+
 const koord koord::neighbours[] = {
 	koord( -1, -1),
 	koord( -1, 0 ),

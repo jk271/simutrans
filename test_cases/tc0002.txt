@@ -1,0 +1,57 @@
+test_case_0002
+test_case_name="Road transport accounting - construction"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open road tools
+: Road tools menu was opened.
+
+2. Build a road on clean tile(s).
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+
+3. Build a road on tile with obstacle (tree, groundobj)
+: Money for road construction is accounted as construction cost of road.
+: Money for tree removal is accounted as construction cost of "other".
+: Money (road construction plus tree removal) is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+
+4. remove road using "remove road" tool
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+
+5. Remove road using "dynamite tool"
+: Same as in step 4.
+
+6. Upgrade road.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased/decreased.
+
+7. Build a bridge.
+8. Build a tunnel.
+9. Build stop
+10. Remove stop
+11. Build depot
+12. Remove depot
+
+13. Build a traffic light
+14. rmove traffic light.
+
+15. Build a gate.
+16. Remove a gate.
+17. Build a choose point.
+

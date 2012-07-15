@@ -637,7 +637,7 @@ bool ai_goods_t::create_simple_rail_transport()
 	bauigel.set_keep_existing_ways(false);
 
 	// first: make plain stations tiles as intended
-	sint8 z1 = max( welt->get_grundwasser()+Z_TILE_STEP, welt->lookup_kartenboden(platz1)->get_hoehe() );
+	sint8 z1 = max( welt->get_grundwasser()+1, welt->lookup_kartenboden(platz1)->get_hoehe() );
 	koord k = platz1;
 	koord diff1( sgn(size1.x), sgn(size1.y) );
 	koord perpend( sgn(size1.y), sgn(size1.x) );
@@ -649,7 +649,7 @@ bool ai_goods_t::create_simple_rail_transport()
 	}
 
 	// make the second ones flat ...
-	sint8 z2 = max( welt->get_grundwasser()+Z_TILE_STEP, welt->lookup_kartenboden(platz2)->get_hoehe() );
+	sint8 z2 = max( welt->get_grundwasser()+1, welt->lookup_kartenboden(platz2)->get_hoehe() );
 	k = platz2;
 	perpend = koord( sgn(size2.y), sgn(size2.x) );
 	koord diff2( sgn(size2.x), sgn(size2.y) );
@@ -881,9 +881,9 @@ DBG_MESSAGE("do_ki()","check railway");
 				// for engine: gues number of cars
 				count_rail = (prod*dist) / (rail_vehicle->get_zuladung()*best_rail_speed)+1;
 				// assume the engine weight 100 tons for power needed calcualtion
-				int total_weight = count_rail*( (rail_vehicle->get_zuladung()*freight->get_weight_per_unit())/1000 + rail_vehicle->get_gewicht());
+				int total_weight = count_rail*( rail_vehicle->get_zuladung()*freight->get_weight_per_unit() + rail_vehicle->get_gewicht() );
 //				long power_needed = (long)(((best_rail_speed*best_rail_speed)/2500.0+1.0)*(100.0+count_rail*(rail_vehicle->get_gewicht()+rail_vehicle->get_zuladung()*freight->get_weight_per_unit()*0.001)));
-				rail_engine = vehikelbauer_t::vehikel_search( track_wt, month_now, total_weight, best_rail_speed, NULL, wayobj_t::default_oberleitung!=NULL, false );
+				rail_engine = vehikelbauer_t::vehikel_search( track_wt, month_now, total_weight/1000, best_rail_speed, NULL, wayobj_t::default_oberleitung!=NULL, false );
 				if(  rail_engine!=NULL  ) {
 					best_rail_speed = min(rail_engine->get_geschw(),rail_vehicle->get_geschw());
 					// find cheapest track with that speed (and no monorail/elevated/tram tracks, please)
@@ -1049,7 +1049,7 @@ DBG_MESSAGE("ai_goods_t::do_ki()","No roadway possible.");
 						// obey timeline
 						uint month_now = (welt->use_timeline() ? welt->get_current_month() : 0);
 						// for engine: gues number of cars
-						long power_needed=(long)(((best_rail_speed*best_rail_speed)/2500.0+1.0)*(100.0+count_rail*(rail_vehicle->get_gewicht()+rail_vehicle->get_zuladung()*freight->get_weight_per_unit()*0.001)));
+						long power_needed=(long)(((best_rail_speed*best_rail_speed)/2500.0+1.0)*(100.0+count_rail*( (rail_vehicle->get_gewicht()+rail_vehicle->get_zuladung()*freight->get_weight_per_unit())*0.001 )));
 						const vehikel_besch_t *v=vehikelbauer_t::vehikel_search( track_wt, month_now, power_needed, best_rail_speed, NULL, false, false );
 						if(v->get_betriebskosten()<rail_engine->get_betriebskosten()) {
 							rail_engine = v;

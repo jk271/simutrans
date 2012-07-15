@@ -16,7 +16,6 @@
 
 #include "simdebug.h"
 #include "simimg.h"
-#include "simmem.h"
 #include "simcolor.h"
 #include "boden/grund.h"
 #include "boden/boden.h"
@@ -24,14 +23,12 @@
 #include "simfab.h"
 #include "simcity.h"
 #include "simhalt.h"
-#include "simskin.h"
 #include "simtools.h"
 #include "simware.h"
 #include "simworld.h"
 #include "besch/haus_besch.h"
 #include "besch/ware_besch.h"
 #include "player/simplay.h"
-
 
 #include "simintr.h"
 
@@ -45,7 +42,6 @@
 #include "dataobj/translator.h"
 #include "dataobj/loadsave.h"
 
-#include "besch/skin_besch.h"
 #include "besch/fabrik_besch.h"
 #include "bauer/hausbauer.h"
 #include "bauer/warenbauer.h"
@@ -525,7 +521,7 @@ void fabrik_t::set_base_production(sint32 p)
 }
 
 
-fabrik_t *fabrik_t::get_fab(const karte_t *welt, const koord pos)
+fabrik_t *fabrik_t::get_fab(const karte_t *welt, const koord &pos)
 {
 	const grund_t *gr = welt->lookup_kartenboden(pos);
 	if(gr) {
@@ -1086,13 +1082,13 @@ DBG_DEBUG("fabrik_t::rdwr()","loading factory '%s'",s);
 		else {
 			uint16 nr=0;
 			koord k;
-			uint16 idx;
 			file->rdwr_short(nr);
 			fields.resize(nr);
 			if(  file->get_version()>102002  ) {
 				// each field stores location and a field class index
 				for(  uint16 i=0  ;  i<nr  ;  ++i  ) {
 					k.rdwr(file);
+					uint16 idx;
 					file->rdwr_short(idx);
 					if(  besch==NULL  ||  idx>=besch->get_field_group()->get_field_class_count()  ) {
 						// set class index to 0 if it is out of range
@@ -1615,11 +1611,9 @@ void fabrik_t::verteile_waren(const uint32 produkt)
 
 			// prissi: this way, the halt, that is tried first, will change. As a result, if all destinations are empty, it will be spread evenly
 			const koord lieferziel = lieferziele[(n + index_offset) % lieferziele.get_count()];
-
 			fabrik_t * ziel_fab = get_fab(welt, lieferziel);
-			int vorrat;
 
-			if(  ziel_fab  &&  (vorrat = ziel_fab->verbraucht(ausgang[produkt].get_typ())) >= 0  ) {
+			if(  ziel_fab  &&  ziel_fab->verbraucht(ausgang[produkt].get_typ()) >= 0  ) {
 				ware_t ware(ausgang[produkt].get_typ());
 				ware.menge = menge;
 				ware.to_factory = 1;

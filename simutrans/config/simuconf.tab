@@ -173,6 +173,9 @@ crossconnect_factories_percentage = 33
 # how much is the total electric power available (in relation to total production) in parts per thousand
 electric_promille = 330
 
+# true if transformers are allowed underground (default)
+allow_underground_transformers = 1
+
 # with this switch on (default), overcrowded factories will not recieve goods any more
 just_in_time = 1
 
@@ -548,9 +551,6 @@ autosave = 0
 toolbar_max_width = 0
 toolbar_max_height = 0
 
-# if 1, print the company name in front of a message
-#add_player_name_to_message = 1
-
 # How many frames per second to use? Display may look pretty until 10 or so
 # (depends very much on computer, game complexity and graphics driver)
 frames_per_second = 25
@@ -558,8 +558,13 @@ frames_per_second = 25
 # during zooming out simutrans may get slow due to the very high number
 # of tiles visible. If the tiles become equal or smaller than the tile size
 # below, a simpler clipping algorithm will be used, which will give some
-# clipping errors, but is faster.
-simple_drawing_tile_size = 24
+# clipping errors, but is faster. (default size = 4)
+# However, during nromal gaming this will be detrimined automatically, so you
+# usually you do not need to set this manually.
+simple_drawing_tile_size = 4
+
+# you can force fast redraw for fast froward by this (default off)
+simple_drawing_fast_forward = 1
 
 # How much faster should the game proceed with fast forward (limited by your computer and size of the map)
 fast_forward = 50

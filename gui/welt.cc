@@ -14,6 +14,7 @@
 #include "../simwin.h"
 #include "../simimg.h"
 #include "../simmesg.h"
+#include "../simskin.h"
 #include "../simtools.h"
 #include "../simversion.h"
 
@@ -336,7 +337,7 @@ void welt_gui_t::update_preview()
 		const int my = sets->get_groesse_y()/karte_size.y;
 		for(  int y=0;  y<karte_size.y;  y++  ) {
 			for(  int x=0;  x<karte_size.x;  x++  ) {
-				karte.at(x,y) = reliefkarte_t::calc_hoehe_farbe(karte_t::perlin_hoehe( sets, koord(x*mx,y*my), koord::invalid ), sets->get_grundwasser()/Z_TILE_STEP);
+				karte.at(x,y) = reliefkarte_t::calc_hoehe_farbe(karte_t::perlin_hoehe( sets, koord(x*mx,y*my), koord::invalid ), sets->get_grundwasser());
 			}
 		}
 		sets->heightfield = "";
@@ -598,7 +599,7 @@ void welt_gui_t::zeichnen(koord pos, koord gr)
 			sizeof(void*) * 4
 		) * sx * sy
 	) / (1024 * 1024);
-	buf.printf( translator::translate("3WORLD_CHOOSE"), memory );
+	buf.printf( translator::translate("Size (%d MB):"), memory );
 	display_proportional_clip(x, y, buf, ALIGN_LEFT, COL_BLACK, true);
 	y += 12;	// x size
 	y += 12+5;	// y size

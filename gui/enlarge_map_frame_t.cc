@@ -17,7 +17,6 @@
 #include "../simwin.h"
 #include "../simimg.h"
 #include "../simtools.h"
-#include "../simskin.h"
 #include "../simintr.h"
 
 #include "../dataobj/einstellungen.h"
@@ -224,14 +223,14 @@ void enlarge_map_frame_t::update_preview()
 					color = COL_WHITE;
 				}
 				else {
-					const sint16 height = welt->lookup_hgt( pos )*Z_TILE_STEP;
-					color = reliefkarte_t::calc_hoehe_farbe(height, sets->get_grundwasser()/Z_TILE_STEP);
+					const sint16 height = welt->lookup_hgt( pos );
+					color = reliefkarte_t::calc_hoehe_farbe(height, sets->get_grundwasser());
 				}
 			}
 			else {
 				// new part
 				const sint16 height = karte_t::perlin_hoehe(sets, pos, koord(old_x,old_y) );
-				color = reliefkarte_t::calc_hoehe_farbe(height*Z_TILE_STEP, sets->get_grundwasser()/Z_TILE_STEP);
+				color = reliefkarte_t::calc_hoehe_farbe(height, sets->get_grundwasser());
 			}
 			karte[j*preview_size+i] = color;
 		}
@@ -267,6 +266,6 @@ void enlarge_map_frame_t::update_preview()
 			sizeof(void*) * 4
 		) * sx * sy
 	) / (1024 * 1024);
-	sprintf(memory_str, translator::translate("3WORLD_CHOOSE"), memory);
+	sprintf(memory_str, translator::translate("Size (%d MB):"), memory);
 
 }

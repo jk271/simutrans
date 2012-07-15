@@ -8,7 +8,6 @@
 #define simwerkz2_h
 
 #include "simtypes.h"
-#include "simskin.h"
 #include "simworld.h"
 #include "simmenu.h"
 #include "simdings.h"
@@ -154,6 +153,7 @@ public:
 	char const* get_tooltip(spieler_t const*) const OVERRIDE;
 	image_id get_icon(spieler_t*) const OVERRIDE;
 	bool init(karte_t*, spieler_t*) OVERRIDE;
+	char const* check_pos(karte_t*, spieler_t*, koord3d) OVERRIDE;
 	char const* work(karte_t*, spieler_t*, koord3d) OVERRIDE;
 	bool is_init_network_save() const OVERRIDE { return true; }
 };
@@ -368,6 +368,9 @@ private:
 	char const* do_work(karte_t*, spieler_t*, koord3d const&, koord3d const&) OVERRIDE;
 	void mark_tiles(karte_t*, spieler_t*, koord3d const&, koord3d const&) OVERRIDE;
 	uint8 is_valid_pos(karte_t*, spieler_t*, koord3d const&, char const*&, koord3d const&) OVERRIDE;
+
+	/// save direction of new signs
+	vector_tpl< ribi_t::ribi > directions;
 
 public:
 	wkz_roadsign_t() : two_click_werkzeug_t(WKZ_ROADSIGN | GENERAL_TOOL), besch() {}
@@ -772,13 +775,7 @@ public:
 	wkz_rotate90_t() : werkzeug_t(WKZ_ROTATE90 | SIMPLE_TOOL) {}
 	image_id get_icon(spieler_t*) const OVERRIDE { return umgebung_t::networkmode ? IMG_LEER : icon; }
 	char const* get_tooltip(spieler_t const*) const OVERRIDE { return umgebung_t::networkmode ? translator::translate("deactivated in online mode") : translator::translate("Rotate map"); }
-	bool init( karte_t *welt, spieler_t * ) {
-		if(  !umgebung_t::networkmode  ) {
-			welt->rotate90();
-			welt->update_map();
-		}
-		return false;
-	}
+	bool init( karte_t *welt, spieler_t * ) OVERRIDE;
 	bool is_init_network_save() const OVERRIDE { return !umgebung_t::networkmode; }
 	bool is_work_network_save() const OVERRIDE { return !umgebung_t::networkmode; }
 };

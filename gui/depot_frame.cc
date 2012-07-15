@@ -19,6 +19,7 @@
 #include "../simline.h"
 #include "../simlinemgmt.h"
 #include "../simmenu.h"
+#include "../simskin.h"
 #include "../simtools.h"
 
 #include "../tpl/slist_tpl.h"
@@ -248,7 +249,7 @@ depot_frame_t::~depot_frame_t()
 
 
 // returns position of depot on the map
-koord3d depot_frame_t::get_weltpos()
+koord3d depot_frame_t::get_weltpos(bool)
 {
 	return depot->get_pos();
 }
@@ -671,7 +672,7 @@ void depot_frame_t::build_vehicle_lists()
 	vehicle_map.clear();
 
 	// we do not allow to built electric vehicle in a depot without electrification
-	const waytype_t wt = depot->get_wegtyp();
+	const waytype_t wt = depot->get_waytype();
 	const weg_t *w = get_welt()->lookup(depot->get_pos())->get_weg(wt!=tram_wt ? wt : track_wt);
 	const bool weg_electrified = w ? w->is_electrified() : false;
 
@@ -1128,10 +1129,6 @@ bool depot_frame_t::infowin_event(const event_t *ev)
 		}
 
 		return true;
-
-	} else if(IS_WINDOW_REZOOM(ev)) {
-		koord gr = get_fenstergroesse();
-		set_fenstergroesse(gr);
 	}
 	else {
 		if(IS_LEFTCLICK(ev) &&  !line_selector.getroffen(ev->cx, ev->cy-16)) {
@@ -1188,9 +1185,12 @@ void depot_frame_t::zeichnen(koord pos, koord groesse)
 						}
 					}
 					total_empty_weight += besch->get_gewicht();
-					total_max_weight += besch->get_gewicht() + (max_weight*besch->get_zuladung()+499)/1000;
-					total_min_weight += besch->get_gewicht() + (min_weight*besch->get_zuladung()+499)/1000;
+					total_max_weight += besch->get_gewicht() + max_weight*besch->get_zuladung();
+					total_min_weight += besch->get_gewicht() + min_weight*besch->get_zuladung();
 				}
+				total_empty_weight /= 1000;
+				total_max_weight /= 1000;
+				total_min_weight /= 1000;
 
 				const sint32 cnv_min_top_kmh = speed_to_kmh( cnv->get_min_top_speed() );
 				empty_kmh = total_power <= total_empty_weight ? 1 : min( cnv_min_top_kmh, sqrt_i32(((total_power<<8)/total_empty_weight-(1<<8))<<8)*50 >>8 );
@@ -1357,18 +1357,18 @@ void depot_frame_t::draw_vehicle_info_text(koord pos)
 			translator::translate(engine_type_names[veh_type->get_engine_type()+1]));
 
 			int n = sprintf(buf,
-				translator::translate("LOCO_INFO"),
+					translator::translate("%s\nCost: %d$ (%1.2f$/km)\nPower: %dkW\nTop speed: %dkm/h\nWeight: %dt\n"), // was LOCO_INFO
 				name,
 				veh_type->get_preis()/100,
 				veh_type->get_betriebskosten()/100.0,
 				veh_type->get_leistung(),
 				veh_type->get_geschw(),
-				veh_type->get_gewicht()
+				veh_type->get_gewicht()/1000
 				);
 
 			if(zuladung>0) {
 				sprintf(buf + n,
-					translator::translate("LOCO_CAP"),
+					translator::translate("Capacity: %d%s %s\n"), // was LOCO_CAP
 					zuladung,
 					translator::translate(veh_type->get_ware()->get_mass()),
 					veh_type->get_ware()->get_catg() == 0 ? translator::translate(veh_type->get_ware()->get_name()) : translator::translate(veh_type->get_ware()->get_catg_name())
@@ -1379,7 +1379,7 @@ void depot_frame_t::draw_vehicle_info_text(koord pos)
 		else {
 			// waggon
 			sprintf(buf,
-				translator::translate("WAGGON_INFO"),
+				translator::translate("%s\nCost:     %d$ (%1.2f$/km)\nCapacity: %d%s %s\nWeight: %dt\nTop speed: %dkm/h\n"),  // was WAGGON_INFO
 				translator::translate(veh_type->get_name(), depot->get_welt()->get_settings().get_name_language_id()),
 				veh_type->get_preis()/100,
 				veh_type->get_betriebskosten()/100.0,
@@ -1388,7 +1388,7 @@ void depot_frame_t::draw_vehicle_info_text(koord pos)
 				veh_type->get_ware()->get_catg() == 0 ?
 				translator::translate(veh_type->get_ware()->get_name()) :
 				translator::translate(veh_type->get_ware()->get_catg_name()),
-				veh_type->get_gewicht(),
+				veh_type->get_gewicht()/1000,
 				veh_type->get_geschw()
 				);
 		}

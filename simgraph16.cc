@@ -2652,30 +2652,86 @@ static void pix_outline25_16(PIXVAL *dest, const PIXVAL *, const PIXVAL colour, 
 	}
 }
 
+
 // will kept the actual values
 static blend_proc blend[3];
 static blend_proc blend_recode[3];
 static blend_proc outline[3];
 
 
-// blends a rectangular region
+/**
+ * blends a rectangular region with a color
+ */
 void display_blend_wh(KOORD_VAL xp, KOORD_VAL yp, KOORD_VAL w, KOORD_VAL h, int color, int percent_blend )
 {
 	if(  clip_lr(&xp, &w, clip_rect.x, clip_rect.xx)  &&  clip_lr(&yp, &h, clip_rect.y, clip_rect.yy)  ) {
 
 		const PIXVAL colval = specialcolormap_all_day[color & 0xFF];
+		const PIXVAL alpha = (percent_blend*64)/100;
 
-		if(  percent_blend>12  &&  percent_blend<88  ) {
-			// actually something to blend
-			blend_proc blend = outline[ ((percent_blend+12)/25) - 1 ];
+		switch( alpha ) {
+			case 0:	// nothing to do ...
+				break;
 
-			for(  KOORD_VAL y=0;  y<h;  y++  ) {
-				blend( textur + xp + (yp+y) * disp_width, NULL, colval, w );
+			case 16:
+			case 32:
+			case 48:
+			{
+				// fast blending with 1/4 | 1/2 | 3/4 percentage
+				blend_proc blend = outline[ (alpha>>4) - 1 ];
+
+				for(  KOORD_VAL y=0;  y<h;  y++  ) {
+					blend( textur + xp + (yp+y) * disp_width, NULL, colval, w );
+				}
 			}
-		}
-		else if(  percent_blend>=88  ) {
-			// opaque ...
-			display_fillbox_wh( xp, yp, w, h, color, false );
+			break;
+
+			case 64:
+				// opaque ...
+				display_fillbox_wh( xp, yp, w, h, color, false );
+				break;
+
+			default:
+				// any percentage blending: SLOW!
+				if(  blend[0] == pix_blend25_15  ) {
+					// 555 BITMAPS
+					const PIXVAL r_src = (colval >> 10) & 0x1F;
+					const PIXVAL g_src = (colval >> 5) & 0x1F;
+					const PIXVAL b_src = colval & 0x1F;
+					for(  ;  h>0;  yp++, h--  ) {
+						PIXVAL *dest = textur + yp*disp_width + xp;
+						const PIXVAL *const end = dest + w;
+						while (dest < end) {
+							const PIXVAL r_dest = (*dest >> 10) & 0x1F;
+							const PIXVAL g_dest = (*dest >> 5) & 0x1F;
+							const PIXVAL b_dest = (*dest & 0x1F);
+							const PIXVAL r = r_dest + ( ( (r_src - r_dest) * alpha ) >> 6 );
+							const PIXVAL g = g_dest + ( ( (g_src - g_dest) * alpha ) >> 6 );
+							const PIXVAL b = b_dest + ( ( (b_src - b_dest) * alpha ) >> 6 );
+							*dest++ = (r << 10) | (g << 5) | b;
+						}
+					}
+				}
+				else {
+					// 565 BITMAPS
+					const PIXVAL r_src = (colval >> 11);
+					const PIXVAL g_src = (colval >> 5) & 0x3F;
+					const PIXVAL b_src = colval & 0x1F;
+					for(  ;  h>0;  yp++, h--  ) {
+						PIXVAL *dest = textur + yp*disp_width + xp;
+						const PIXVAL *const end = dest + w;
+						while (dest < end) {
+							const PIXVAL r_dest = (*dest >> 11);
+							const PIXVAL g_dest = (*dest >> 5) & 0x3F;
+							const PIXVAL b_dest = (*dest & 0x1F);
+							const PIXVAL r = r_dest + ( ( (r_src - r_dest) * alpha ) >> 6 );
+							const PIXVAL g = g_dest + ( ( (g_src - g_dest) * alpha ) >> 6 );
+							const PIXVAL b = b_dest + ( ( (b_src - b_dest) * alpha ) >> 6 );
+							*dest++ = (r << 11) | (g << 5) | b;
+						}
+					}
+				}
+				break;
 		}
 	}
 }
@@ -3199,7 +3255,7 @@ unsigned short get_prev_char_with_metrics(const char* &text, const char *const t
 int display_calc_proportional_string_len_width(const char* text, size_t len)
 {
 	const font_type* const fnt = &large_font;
-	unsigned int c, width = 0;
+	unsigned int width = 0;
 	int w;
 
 #ifdef UNICODE_SUPPORT
@@ -3222,7 +3278,8 @@ int display_calc_proportional_string_len_width(const char* text, size_t len)
 	} else {
 #endif
 		uint8 char_width;
-		while (*text!=0  &&  len>0) {
+		unsigned int c;
+		while(  *text != 0  &&  len > 0  ) {
 			c = (unsigned char)*text;
 			if(  c>=fnt->num_chars  ||  (char_width=fnt->screen_width[c])==0  ) {
 				// default width for missing characters
@@ -3750,17 +3807,17 @@ void draw_bezier(KOORD_VAL Ax, KOORD_VAL Ay, KOORD_VAL Bx, KOORD_VAL By, KOORD_V
 	Dy = By + BDy;
 
 	/*	float a,b,rx,ry,oldx,oldy;
-    for (float t=0.0;t<=1;t+=0.05)
+	for (float t=0.0;t<=1;t+=0.05)
 	{
 		a = t;
-        b = 1.0 - t;
+		b = 1.0 - t;
 		if (t>0.0)
 		{
 			oldx=rx;
 			oldy=ry;
 		}
-        rx = Ax*b*b*b + 3*Cx*b*b*a + 3*Dx*b*a*a + Bx*a*a*a;
-        ry = Ay*b*b*b + 3*Cy*b*b*a + 3*Dy*b*a*a + By*a*a*a;
+		rx = Ax*b*b*b + 3*Cx*b*b*a + 3*Dx*b*a*a + Bx*a*a*a;
+		ry = Ay*b*b*b + 3*Cy*b*b*a + 3*Dy*b*a*a + By*a*a*a;
 		if (t>0.0)
 			if (!draw && !dontDraw)
 				display_direct_line(rx,ry,oldx,oldy,colore);
@@ -3771,15 +3828,15 @@ void draw_bezier(KOORD_VAL Ax, KOORD_VAL Ay, KOORD_VAL Bx, KOORD_VAL By, KOORD_V
 
 	sint32 a, b, rx, ry, oldx, oldy;
 	// fixed point: we cycle between 0 and 32, rather than 0 and 1
-    for(  sint32 t=0;  t<=32;  t++  ) {
+	for(  sint32 t=0;  t<=32;  t++  ) {
 		a = t;
-        b = 32 - t;
+		b = 32 - t;
 		if(  t > 0  ) {
 			oldx = rx;
 			oldy = ry;
 		}
-        rx = Ax*b*b*b + 3*Cx*b*b*a + 3*Dx*b*a*a + Bx*a*a*a;
-        ry = Ay*b*b*b + 3*Cy*b*b*a + 3*Dy*b*a*a + By*a*a*a;
+		rx = Ax*b*b*b + 3*Cx*b*b*a + 3*Dx*b*a*a + Bx*a*a*a;
+		ry = Ay*b*b*b + 3*Cy*b*b*a + 3*Dy*b*a*a + By*a*a*a;
 		//fixed point: due to cycling between 0 and 32 (2<<5), we divide by 32^3=2>>15 because of cubic interpolation
 		if( t > 0  ) {
 			if(  !draw  &&  !dontDraw  ) {

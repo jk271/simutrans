@@ -111,7 +111,7 @@ void haltestelle_t::step_all()
 halthandle_t haltestelle_t::get_halt(const karte_t *welt, const koord pos, const spieler_t *sp )
 {
 	const planquadrat_t *plan = welt->lookup(pos);
-	if(plan) {
+	if(  plan  ) {
 		if(plan->get_halt().is_bound()  &&  spieler_t::check_owner(sp,plan->get_halt()->get_besitzer())  ) {
 			return plan->get_halt();
 		}
@@ -611,7 +611,7 @@ char* haltestelle_t::create_name(koord const k, char const* const typ)
 				int this_distance = 999;
 				FOR(slist_tpl<fabrik_t*>, const f, get_fab_list()) {
 					int distance = koord_distance(f->get_pos().get_2d(), k);
-					if (distance < this_distance) {
+					if(  distance < this_distance  ) {
 						fabs.insert(f);
 						this_distance = distance;
 					}
@@ -690,11 +690,13 @@ char* haltestelle_t::create_name(koord const k, char const* const typ)
 				const uint32 idx = simrand(street_names.get_count());
 
 				buf.clear();
-				buf.printf( street_names[idx], city_name, stop );
-				if(  !all_names.get(buf).is_bound()  ) {
-					return strdup(buf);
+				if (cbuffer_t::check_format_strings("%s %s", street_names[idx])) {
+					buf.printf( street_names[idx], city_name, stop );
+					if(  !all_names.get(buf).is_bound()  ) {
+						return strdup(buf);
+					}
 				}
-				// else remove this entry
+				// remove this entry
 				street_names[idx] = street_names.back();
 				street_names.pop_back();
 			}
@@ -761,14 +763,18 @@ char* haltestelle_t::create_name(koord const k, char const* const typ)
 				// allow for names without direction
 				uint8 count_s = count_printf_param( base_name );
 				if(count_s==3) {
-					// ok, try this name, if free ...
-					buf.printf( base_name, city_name, dirname, stop );
+					if (cbuffer_t::check_format_strings("%s %s %s", base_name) ) {
+						// ok, try this name, if free ...
+						buf.printf( base_name, city_name, dirname, stop );
+					}
 				}
 				else {
-					// ok, try this name, if free ...
-					buf.printf( base_name, city_name, stop );
+					if (cbuffer_t::check_format_strings("%s %s", base_name) ) {
+						// ok, try this name, if free ...
+						buf.printf( base_name, city_name, stop );
+					}
 				}
-				if(  !all_names.get(buf).is_bound()  ) {
+				if(  buf.len()>0  &&  !all_names.get(buf).is_bound()  ) {
 					return strdup(buf);
 				}
 				buf.clear();
@@ -868,7 +874,7 @@ void haltestelle_t::neuer_monat()
 {
 	if(  welt->get_active_player()==besitzer_p  &&  status_color==COL_RED  ) {
 		cbuffer_t buf;
-		buf.printf( translator::translate("!0_STATION_CROWDED"), get_name() );
+		buf.printf( translator::translate("%s\nis crowded."), get_name() );
 		welt->get_message()->add_message(buf, get_basis_pos(),message_t::full, PLAYER_FLAG|besitzer_p->get_player_nr(), IMG_LEER );
 		enables &= (PAX|POST|WARE);
 	}

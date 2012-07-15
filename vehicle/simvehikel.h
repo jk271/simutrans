@@ -171,7 +171,7 @@ private:
 	* since the total weight is needed a lot of times, we save it
 	* @author prissi
 	*/
-	uint16 sum_weight;
+	uint32 sum_weight;
 
 	bool hop_check();
 
@@ -333,12 +333,12 @@ public:
 	/* return friction constant: changes in hill and curves; may even negative downhill *
 	* @author prissi
 	*/
-	inline int get_frictionfactor() const { return current_friction; }
+	inline sint16 get_frictionfactor() const { return current_friction; }
 
-	/* Return total weight including freight*
+	/* Return total weight including freight (in kg!)
 	* @author prissi
 	*/
-	inline int get_gesamtgewicht() const { return sum_weight; }
+	inline uint32 get_gesamtgewicht() const { return sum_weight; }
 
 	// returns speedlimit of ways (and if convoi enters station etc)
 	// the convoi takes care of the max_speed of the vehicle

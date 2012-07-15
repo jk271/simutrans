@@ -271,24 +271,61 @@ private:
 	karte_ansicht_t *view;
 
 	/**
-	 * Raise tile (x,y): height of each corner is given
+	 * Checks whether the heights of the corners of the tile at (@p x, @p y) can be raised.
+	 * If the desired height of a corner is lower than its current height, this corner is ignored.
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param keep_water returns false if water tiles would be raised above water
+	 * @param hsw desired height of sw-corner
+	 * @param hse desired height of se-corner
+	 * @param hse desired height of ne-corner
+	 * @param hnw desired height of nw-corner
+	 * @param ctest which directions should be recursively checked (ribi_t style bitmap)
+	 * @returns whether raise_to operation can be performed
 	 */
 	bool can_raise_to(sint16 x, sint16 y, bool keep_water, sint8 hsw, sint8 hse, sint8 hne, sint8 hnw, uint8 ctest=15) const;
-	int  raise_to(sint16 x, sint16 y, sint8 hsw, sint8 hse, sint8 hne, sint8 hnw);
-	/**
-	 * Raise grid point (x,y), used during map creation/enlargement
-	 */
-	int  raise_to(sint16 x, sint16 y, sint8 h, bool set_slopes);
 
 	/**
-	 * Lower tile (x,y): height of each corner is given
+	 * Raises heights of the corners of the tile at (@p x, @p y).
+	 * @pre can_raise_to should be called before this method.
+	 * @see can_raise_to
+	 * @returns count of full raise operations (4 corners raised one level)
+	 */
+	int  raise_to(sint16 x, sint16 y, sint8 hsw, sint8 hse, sint8 hne, sint8 hnw);
+
+	/**
+	 * Checks whether the heights of the corners of the tile at (@p x, @p y) can be lowered.
+	 * If the desired height of a corner is higher than its current height, this corner is ignored.
+	 * @param x coordinate
+	 * @param y coordinate
+	 * @param hsw desired height of sw-corner
+	 * @param hse desired height of se-corner
+	 * @param hse desired height of ne-corner
+	 * @param hnw desired height of nw-corner
+	 * @param ctest which directions should be recursively checked (ribi_t style bitmap)
+	 * @returns whether lower_to operation can be performed
 	 */
 	bool can_lower_to(sint16 x, sint16 y, sint8 hsw, sint8 hse, sint8 hne, sint8 hnw, uint8 ctest=15) const;
-	int  lower_to(sint16 x, sint16 y, sint8 hsw, sint8 hse, sint8 hne, sint8 hnw);
+
 	/**
-	 * Lower grid point (x,y), used during map creation/enlargement
+	 * Lowers heights of the corners of the tile at (@p x, @p y).
+	 * @pre can_lower_to should be called before this method.
+	 * @see can_lower_to
+	 * @returns count of full lower operations (4 corners lowered one level)
 	 */
-	int  lower_to(sint16 x, sint16 y, sint8 h, bool set_slopes);
+	int  lower_to(sint16 x, sint16 y, sint8 hsw, sint8 hse, sint8 hne, sint8 hnw);
+
+	/**
+	 * Raise grid point (@p x,@p y). Changes grid_hgts only, used during map creation/enlargement.
+	 * @see clean_up
+	 */
+	void raise_grid_to(sint16 x, sint16 y, sint8 h);
+
+	/**
+	 * Lower grid point (@p x,@p y). Changes grid_hgts only, used during map creation/enlargement.
+	 * @see clean_up
+	 */
+	void lower_grid_to(sint16 x, sint16 y, sint8 h);
 
 	/**
 	 * Die fraktale Erzeugung der Karte ist nicht perfekt.
@@ -436,6 +473,17 @@ private:
 	// The last time when a server announce was performed (in ms)
 	uint32 server_last_announce_time;
 
+	// threaded function caller
+	typedef void (karte_t::*y_loop_func)(sint16,sint16);
+	void world_y_loop(y_loop_func);
+	static void *world_y_loop_thread(void *);
+
+	// loops over plans after load
+	void plans_laden_abschliessen(sint16, sint16);
+
+	// updates all images
+	void update_map_intern(sint16, sint16);
+
 public:
 	// Announce server and current state to listserver
 	// Single argument specifies what information should be announced
@@ -521,6 +569,9 @@ public:
 
 	// also take height into account
 	void change_world_position( koord3d ij );
+
+	// converts 3D coord to 2D actually used for main view
+	koord calculate_world_position( koord3d ) const;
 
 	// the koordinates between the screen and a tile may have several offset
 	// this routine caches them
@@ -720,7 +771,7 @@ public:
 	*/
 	climate get_climate(sint16 height) const
 	{
-		const sint16 h=(height-grundwasser)/Z_TILE_STEP;
+		const sint16 h=height-grundwasser;
 		if(h<0) {
 			return water_climate;
 		} else if(h>=32) {
@@ -755,7 +806,7 @@ public:
 //		return x>=0 &&  y>=0  &&  cached_groesse_karte_x>=x  &&  cached_groesse_karte_y>=y;
 	}
 
-	inline bool ist_in_gittergrenzen(koord k) const {
+	inline bool ist_in_gittergrenzen(const koord &k) const {
 	// prissi: since negative values will make the whole result negative, we can use bitwise or
 	// faster, since pentiums and other long pipeline processors do not like jumps
 		return (k.x|k.y|(cached_groesse_gitter_x-k.x)|(cached_groesse_gitter_y-k.y))>=0;
@@ -778,7 +829,7 @@ public:
 	* @return Planquadrat an koordinate pos
 	* @author Hj. Malthaner
 	*/
-	inline const planquadrat_t * lookup(const koord k) const
+	inline const planquadrat_t *lookup(const koord &k) const
 	{
 		return ist_in_kartengrenzen(k.x, k.y) ? &plan[k.x+k.y*cached_groesse_gitter_x] : 0;
 	}
@@ -788,7 +839,7 @@ public:
 	 * @return grund an pos/hoehe
 	 * @author Hj. Malthaner
 	 */
-	inline grund_t * lookup(const koord3d pos) const
+	inline grund_t *lookup(const koord3d &pos) const
 	{
 		const planquadrat_t *plan = lookup(pos.get_2d());
 		return plan ? plan->get_boden_in_hoehe(pos.z) : NULL;
@@ -799,7 +850,7 @@ public:
 	 * @return grund at the bottom (where house will be build)
 	 * @author Hj. Malthaner
 	 */
-	inline grund_t * lookup_kartenboden(const koord pos) const
+	inline grund_t *lookup_kartenboden(const koord &pos) const
 	{
 		const planquadrat_t *plan = lookup(pos);
 		return plan ? plan->get_kartenboden() : NULL;
@@ -885,29 +936,11 @@ public:
 	bool is_plan_height_changeable(sint16 x, sint16 y) const;
 
 	/**
-	 * Prueft, ob die Hoehe an Gitterkoordinate (x,y)
-	 * erhoeht werden kann.
-	 * @param x x-Gitterkoordinate
-	 * @param y y-Gitterkoordinate
-	 * @author Hj. Malthaner
-	 */
-	bool can_raise(sint16 x,sint16 y) const;
-
-	/**
 	 * Erhoeht die Hoehe an Gitterkoordinate (x,y) um eins.
 	 * @param pos Gitterkoordinate
 	 * @author Hj. Malthaner
 	 */
 	int raise(koord pos);
-
-	/**
-	 * Prueft, ob die Hoehe an Gitterkoordinate (x,y)
-	 * erniedrigt werden kann.
-	 * @param x x-Gitterkoordinate
-	 * @param y y-Gitterkoordinate
-	 * @author Hj. Malthaner
-	 */
-	bool can_lower(sint16 x,sint16 y) const;
 
 	/**
 	 * Erniedrigt die Hoehe an Gitterkoordinate (x,y) um eins.
@@ -961,6 +994,9 @@ public:
 	void set_nosave() { nosave = true; }
 	void set_nosave_warning() { nosave_warning = true; }
 
+	// rotate plans by 90 degrees
+	void rotate90_plans(sint16 y_min, sint16 y_max);
+
 	// rotate map view by 90 degrees
 	void rotate90();
 
@@ -993,7 +1029,7 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	inline sint8 lookup_hgt(koord k) const {
-		return ist_in_gittergrenzen(k.x, k.y) ? grid_hgts[k.x + k.y*(cached_groesse_gitter_x+1)]*Z_TILE_STEP : grundwasser;
+		return ist_in_gittergrenzen(k.x, k.y) ? grid_hgts[k.x + k.y*(cached_groesse_gitter_x+1)] : grundwasser;
 	}
 
 	/**
@@ -1001,7 +1037,7 @@ public:
 	 * Never set grid_hgts manually, always use this method!
 	 * @author Hj. Malthaner
 	 */
-	void set_grid_hgt(koord k, sint16 hgt) { grid_hgts[k.x + k.y*(uint32)(cached_groesse_gitter_x+1)] = (hgt/Z_TILE_STEP); }
+	void set_grid_hgt(koord k, sint8 hgt) { grid_hgts[k.x + k.y*(uint32)(cached_groesse_gitter_x+1)] = hgt; }
 
 	/**
 	 * @return Minimale Hoehe des Planquadrates i,j

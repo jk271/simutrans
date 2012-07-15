@@ -66,6 +66,7 @@ ifeq ($(OSTYPE),mingw)
       LDFLAGS += -mwindows
     endif
   endif
+  LDFLAGS += -static-libgcc -static-libstdc++
   LIBS += -lmingw32 -lgdi32 -lwinmm -lwsock32 -lz -lbz2
 endif
 
@@ -122,6 +123,7 @@ ifneq  ($(MULTI_THREAD),)
   CFLAGS += -DMULTI_THREAD=$(MULTI_THREAD)
   ifneq  ($(MULTI_THREAD),1)
     ifeq ($(OSTYPE),mingw)
+#use lpthreadGC2d for debug alternatively
       LDFLAGS += -lpthreadGC2
     else
       LDFLAGS += -lpthread

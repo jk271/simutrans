@@ -708,7 +708,8 @@ void convoi_t::calc_acceleration(long delta_t)
 		 * since akt_speed=10/128 km/h and we want 64*200kW=(100km/h)^2*100t, we must multiply by (128*2)/100
 		 * But since the acceleration was too fast, we just deccelerate 4x more => >>6 instead >>8 */
 		//sint32 deccel = ( ( (akt_speed*sum_friction_weight)>>6 )*(akt_speed>>2) ) / 25 + (sum_gesamtgewicht*64);	// this order is needed to prevent overflows!
-		sint32 deccel = (sint32)(( (sint64)akt_speed * (sint64)sum_friction_weight * (sint64)akt_speed ) / (25ll*256ll)) + sum_gesamtgewicht * 64l; // intermediate still overflows so sint64
+		//sint32 deccel = (sint32)( ( (sint64)akt_speed * (sint64)sum_friction_weight * (sint64)akt_speed ) / (25ll*256ll) + sum_gesamtgewicht * 64ll) / 1000ll; // intermediate still overflows so sint64
+		sint32 deccel = (sint32)( ( (sint64)akt_speed * ( (sum_friction_weight * (sint64)akt_speed ) / 3125ll + 1ll) ) / 2048ll + (sum_gesamtgewicht * 64ll) / 1000ll);
 
 		// prissi: integer sucks with planes => using floats ...
 		// turfit: result can overflow sint32 and double so onto sint64. planes ok.
@@ -716,7 +717,7 @@ void convoi_t::calc_acceleration(long delta_t)
 
 		// we normalize delta_t to 1/64th and check for speed limit */
 		//sint32 delta_v = ( ( (akt_speed>akt_speed_soll?0l:sum_gear_und_leistung) - deccel) * delta_t)/sum_gesamtgewicht;
-		sint64 delta_v = ( (sint64)((akt_speed>akt_speed_soll?0l:sum_gear_und_leistung) - deccel) * (sint64)delta_t ) / (sint64)sum_gesamtgewicht;
+		sint64 delta_v = ( (sint64)((akt_speed>akt_speed_soll?0l:sum_gear_und_leistung) - deccel) * (sint64)delta_t * 1000ll) / (sint64)sum_gesamtgewicht;
 
 		// we need more accurate arithmetic, so we store the previous value
 		delta_v += previous_delta_v;
@@ -1362,7 +1363,7 @@ void convoi_t::ziel_erreicht()
 		calc_gewinn();
 
 		akt_speed = 0;
-		buf.printf( translator::translate("!1_DEPOT_REACHED"), get_name() );
+		buf.printf( translator::translate("%s has entered a depot."), get_name() );
 		welt->get_message()->add_message(buf, v->get_pos().get_2d(),message_t::warnings, PLAYER_FLAG|get_besitzer()->get_player_nr(), IMG_LEER);
 
 		betrete_depot(dp);
@@ -2585,14 +2586,14 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 		const grund_t *grund = welt->lookup(pos);
 		if(  grund->get_weg_yoff()==TILE_HEIGHT_STEP  ) {
 			// start on bridge?
-			pos.z += Z_TILE_STEP;
+			pos.z ++;
 		}
 		while(  grund  &&  grund->get_halt() == halt  ) {
 			station_length += 16;
 			pos += zv;
 			grund = welt->lookup(pos);
 			if(  grund==NULL  ) {
-				grund = welt->lookup(pos-koord3d(0,0,Z_TILE_STEP));
+				grund = welt->lookup(pos-koord3d(0,0,1));
 				if(  grund &&  grund->get_weg_yoff()!=TILE_HEIGHT_STEP  ) {
 					// not end/start of bridge
 					break;
@@ -2737,17 +2738,19 @@ void convoi_t::calc_speedbonus_kmh()
 			}
 			else if(  besch->get_ware()->get_catg() == 0  ) {
 				// use full weight for passengers, post, and special goods
-				total_max_weight += (besch->get_ware()->get_weight_per_unit() * besch->get_zuladung()+499)/1000;
+				total_max_weight += besch->get_ware()->get_weight_per_unit() * besch->get_zuladung();
 			}
 			else {
 				// use actual weight for regular goods
-				total_max_weight += (fahr[i]->get_fracht_gewicht()+499)/1000;
+				total_max_weight += fahr[i]->get_fracht_gewicht();
 			}
 		}
 		// very old vehicles have zero weight ...
 		if(  total_weight>0  ) {
+			total_weight = max( 1, total_weight/1000 );
+			total_max_weight = max( 1, total_max_weight/1000 );
 			// uses weight of full passenger, mail, and special goods cars and current weight of regular goods cars for convoi weight
-			speedbonus_kmh = total_power < total_max_weight ? 1 : min( cnv_min_top_kmh, sint32( sqrt_i32(((total_power<<8)/total_max_weight-(1<<8))<<8)*50 >>8 ) );
+			speedbonus_kmh = total_power < total_max_weight ? 1 : min( cnv_min_top_kmh, sint32( sqrt_i32( ((1000l*total_power<<8)/total_max_weight-(1<<8))<<8)*50 >>8 ) );
 
 			// convoi overtakers use current actual weight for achievable speed
 			if(  front()->get_overtaker()  ) {
@@ -2960,7 +2963,7 @@ DBG_DEBUG("convoi_t::unset_line()", "removing old destinations from line=%d, fpl
 }
 
 
-// matches two halts; if the pos is not identical, maybe the halt still is
+// matches two halts; if the pos is not identical, maybe the halt still is the same
 bool convoi_t::matches_halt( const koord3d pos1, const koord3d pos2 )
 {
 	halthandle_t halt1 = haltestelle_t::get_halt( welt, pos1, besitzer_p );

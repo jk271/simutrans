@@ -212,7 +212,7 @@ void depot_t::remove_vehicle(convoihandle_t cnv, int ipos)
 void depot_t::sell_vehicle(vehikel_t* veh)
 {
 	vehicles.remove(veh);
-	get_besitzer()->add_new_vehicle((sint64)veh->calc_restwert(), get_pos().get_2d(), get_wegtyp() );
+	get_besitzer()->add_new_vehicle((sint64)veh->calc_restwert(), get_pos().get_2d(), get_waytype() );
 	DBG_MESSAGE("depot_t::sell_vehicle()", "this=%p sells %p", this, veh);
 	delete veh;
 }
@@ -251,7 +251,9 @@ convoihandle_t depot_t::add_convoi()
 
 convoihandle_t depot_t::copy_convoi(convoihandle_t old_cnv)
 {
-	if(  old_cnv.is_bound()  &&  !convoihandle_t::is_exhausted()  ) {
+	if(  old_cnv.is_bound()  &&  !convoihandle_t::is_exhausted()  &&
+		old_cnv->get_vehikel_anzahl() > 0  &&  get_waytype() == old_cnv->front()->get_besch()->get_waytype() ) {
+
 		convoihandle_t new_cnv = add_convoi();
 		new_cnv->set_name(old_cnv->get_internal_name());
 		int vehicle_count = old_cnv->get_vehikel_anzahl();
@@ -438,7 +440,7 @@ void depot_t::rdwr_vehikel(slist_tpl<vehikel_t *> &list, loadsave_t *file)
 		// no house definition for this => use a normal hut ...
 		if(  this->get_tile()==NULL  ) {
 			dbg->error( "depot_t::rdwr()", "tile for depot not found!" );
-			set_tile( (*hausbauer_t::get_citybuilding_list( gebaeude_t::wohnung ))[0]->get_tile(0) );
+			set_tile( (*hausbauer_t::get_citybuilding_list( gebaeude_t::wohnung ))[0]->get_tile(0), true );
 		}
 
 		DBG_MESSAGE("depot_t::vehikel_laden()","loading %d vehicles",count);
@@ -507,7 +509,7 @@ const char * depot_t::ist_entfernbar(const spieler_t *sp)
 
 slist_tpl<vehikel_besch_t const*> const& depot_t::get_vehicle_type() const
 {
-	return vehikelbauer_t::get_info(get_wegtyp());
+	return vehikelbauer_t::get_info(get_waytype());
 }
 
 

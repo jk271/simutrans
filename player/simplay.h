@@ -260,6 +260,11 @@ protected:
 		sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
 		/**
+		 * returns TRUE if (account(=konto) + assets )>0
+		 */
+		bool has_money_or_assets() { return (( konto + get_finance_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
+
+		/**
 	 	* Translates finance statistisc from old (version<=111) format to new one.
 	 	* Used for loading data from old format
 	 	* @author jk271
@@ -448,6 +453,8 @@ public:
 	 * @author jk271
 	 */
 	void add_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+
+	inline bool has_money_or_assets() { return finance.has_money_or_assets(); }
 
 	finance_t * get_finance() { return &finance; }
 

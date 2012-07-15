@@ -9,7 +9,12 @@
 #include "../simmesg.h"
 
 sint8 umgebung_t::pak_tile_height_step = 16;
-sint16 umgebung_t::simple_drawing_tile_size = 24;
+
+bool umgebung_t::simple_drawing = false;
+bool umgebung_t::simple_drawing_fast_forward = true;
+sint16 umgebung_t::simple_drawing_normal = 4;
+sint16 umgebung_t::simple_drawing_default = 24;
+
 char umgebung_t::program_dir[1024];
 const char *umgebung_t::user_dir = 0;
 const char *umgebung_t::savegame_version_str = SAVEGAME_VER_NR;
@@ -102,8 +107,6 @@ bool umgebung_t::left_to_right_graphs;
 uint32 umgebung_t::tooltip_delay;
 uint32 umgebung_t::tooltip_duration;
 
-bool umgebung_t::add_player_name_to_message = true;
-
 uint8 umgebung_t::front_window_bar_color;
 uint8 umgebung_t::front_window_text_color;
 uint8 umgebung_t::bottom_window_bar_color;
@@ -131,7 +134,7 @@ void umgebung_t::init()
 
 	/* station stuff */
 	use_transparency_station_coverage = true;
-	station_coverage_show = NOT_SHOWN_COVERAGE;
+	station_coverage_show = 0;
 
 	show_names = 3;
 
@@ -156,16 +159,8 @@ void umgebung_t::init()
 
 	savegame_version_str = SAVEGAME_VER_NR;
 
-	/**
-	 * show month in date?
-	 * @author hsiegeln
-	 */
 	show_month = DATE_FMT_US;
 
-	/**
-	 * Max. Länge für initiale Stadtverbindungen
-	 * @author Hj. Malthaner
-	 */
 	intercity_road_length = 200;
 
 	river_types = 0;
@@ -312,7 +307,8 @@ void umgebung_t::rdwr(loadsave_t *file)
 	}
 
 	if(  file->get_version()>=110000  ) {
-		file->rdwr_bool( add_player_name_to_message );
+		bool dummy = false;
+		file->rdwr_bool(dummy); //was add_player_name_to_message
 		file->rdwr_short( window_snap_distance );
 	}
 	else if(  file->is_loading()  ) {

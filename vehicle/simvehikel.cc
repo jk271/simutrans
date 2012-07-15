@@ -27,6 +27,7 @@
 
 #include "../simworld.h"
 #include "../simdebug.h"
+#include "../simdepot.h"
 #include "../simunits.h"
 
 #include "../player/simplay.h"
@@ -1325,7 +1326,7 @@ bool vehikel_t::beladen(halthandle_t halt)
 	if(halt.is_bound()) {
 		ok = load_freight(halt);
 	}
-	sum_weight =  (get_fracht_gewicht()+499)/1000 + besch->get_gewicht();
+	sum_weight =  get_fracht_gewicht() + besch->get_gewicht();
 	calc_bild();
 	return ok;
 }
@@ -1567,7 +1568,7 @@ DBG_MESSAGE("vehicle_t::rdwr_from_convoi()","bought at %i/%i.",(insta_zeit%12)+1
 		if(besch) {
 			calc_bild();
 			// full weight after loading
-			sum_weight =  (get_fracht_gewicht()+499)/1000 + besch->get_gewicht();
+			sum_weight =  get_fracht_gewicht() + besch->get_gewicht();
 		}
 		// recalc total freight
 		total_freight = 0;
@@ -1841,7 +1842,7 @@ int automobil_t::get_kosten(const grund_t *gr, const sint32 max_speed, koord fro
 	sint32 max_tile_speed = w->get_max_speed();
 
 	// add cost for going (with maximum speed, cost is 1)
-	int costs = (max_speed<=max_tile_speed) ? 1 :  (max_speed*4)/(max_tile_speed*4);
+	int costs = (max_speed<=max_tile_speed) ? 1 : 4-(3*max_tile_speed)/max_speed;
 
 	// assume all traffic is not good ... (otherwise even smoke counts ... )
 	costs += (w->get_statistics(WAY_STAT_CONVOIS)  >  ( 2 << (welt->get_settings().get_bits_per_month()-16) )  );
@@ -2151,7 +2152,7 @@ bool automobil_t::ist_weg_frei(int &restart_speed, bool second_check)
 				if(  test_index == route_index + 1u  ) {
 					// no intersections or crossings, we might be able to overtake this one ...
 					overtaker_t *over = dt->get_overtaker();
-					if(over  &&  !over->is_overtaken()) {
+					if(  over  &&  !over->is_overtaken()  ) {
 						if(  over->is_overtaking()  ) {
 							// otherwise we would stop every time being overtaken
 							return true;
@@ -2162,7 +2163,8 @@ bool automobil_t::ist_weg_frei(int &restart_speed, bool second_check)
 							if(  cnv->can_overtake( ocnv, (ocnv->get_state()==convoi_t::LOADING ? 0 : over->get_max_power_speed()), ocnv->get_length_in_steps()+ocnv->get_vehikel(0)->get_steps())  ) {
 								return true;
 							}
-						} else if (stadtauto_t* const caut = ding_cast<stadtauto_t>(dt)) {
+						}
+						else if(  stadtauto_t* const caut = ding_cast<stadtauto_t>(dt)  ) {
 							if(  cnv->can_overtake(caut, caut->get_besch()->get_geschw(), VEHICLE_STEPS_PER_TILE)  ) {
 								return true;
 							}
@@ -2373,6 +2375,11 @@ bool waggon_t::ist_befahrbar(const grund_t *bd) const
 		return false;
 	}
 
+	if (depot_t *depot = bd->get_depot()) {
+		if (depot->get_waytype() != besch->get_waytype()  ||  depot->get_besitzer() != get_besitzer()) {
+			return false;
+		}
+	}
 	// now check for special signs
 	if(sch->has_sign()) {
 		const roadsign_t* rs = bd->find<roadsign_t>();
@@ -2425,7 +2432,7 @@ int waggon_t::get_kosten(const grund_t *gr, const sint32 max_speed, koord from_p
 
 	// add cost for going (with maximum speed, cost is 1)
 	const sint32 max_tile_speed = w->get_max_speed();
-	int costs = (max_speed<=max_tile_speed) ? 1 :  (max_speed*4)/(max_tile_speed*4);
+	int costs = (max_speed<=max_tile_speed) ? 1 : 4-(3*max_tile_speed)/max_speed;
 
 	// effect of slope
 	if(  gr->get_weg_hang()!=0  ) {
@@ -3483,7 +3490,7 @@ bool aircraft_t::calc_route(koord3d start, koord3d ziel, sint32 max_speed, route
 		}
 		state = taxiing;
 		flughoehe = 0;
-		target_height = ((sint16)get_pos().z*TILE_HEIGHT_STEP)/Z_TILE_STEP;
+		target_height = (sint16)get_pos().z*TILE_HEIGHT_STEP;
 	}
 	else {
 		// init with current pos (in air ... )
@@ -3494,7 +3501,7 @@ bool aircraft_t::calc_route(koord3d start, koord3d ziel, sint32 max_speed, route
 			flughoehe = 3*TILE_HEIGHT_STEP;
 		}
 		takeoff = 0;
-		target_height = (((sint16)get_pos().z+3)*TILE_HEIGHT_STEP)/Z_TILE_STEP;
+		target_height = ((sint16)get_pos().z+3)*TILE_HEIGHT_STEP;
 	}
 
 //DBG_MESSAGE("aircraft_t::calc_route()","take off ok");
@@ -3954,8 +3961,8 @@ void aircraft_t::hop()
 	sint32 new_friction = 0;
 
 	// take care of inflight height ...
-	const sint16 h_cur = height_scaling((sint16)get_pos().z)*TILE_HEIGHT_STEP/Z_TILE_STEP;
-	const sint16 h_next = height_scaling((sint16)pos_next.z)*TILE_HEIGHT_STEP/Z_TILE_STEP;
+	const sint16 h_cur = height_scaling((sint16)get_pos().z)*TILE_HEIGHT_STEP;
+	const sint16 h_next = height_scaling((sint16)pos_next.z)*TILE_HEIGHT_STEP;
 
 	switch(state) {
 		case departing: {
@@ -4035,7 +4042,7 @@ void aircraft_t::hop()
 			else {
 				const sint16 landehoehe = height_scaling(cnv->get_route()->position_bei(touchdown).z) + (touchdown-route_index)*TILE_HEIGHT_STEP;
 				if(landehoehe<=flughoehe) {
-					target_height = height_scaling((sint16)cnv->get_route()->position_bei(touchdown).z)*TILE_HEIGHT_STEP/Z_TILE_STEP;
+					target_height = height_scaling((sint16)cnv->get_route()->position_bei(touchdown).z)*TILE_HEIGHT_STEP;
 				}
 				flughoehe -= h_next;
 			}
@@ -4069,7 +4076,7 @@ void aircraft_t::display_after(int xpos_org, int ypos_org, bool is_global) const
 		if (z + flughoehe/TILE_HEIGHT_STEP - 1 > grund_t::underground_level) {
 			return;
 		}
-		const sint16 target = target_height - ((sint16)z*TILE_HEIGHT_STEP)/Z_TILE_STEP;
+		const sint16 target = target_height - ((sint16)z*TILE_HEIGHT_STEP);
 		sint16 current_flughohe = flughoehe;
 		if(  current_flughohe < target  ) {
 			current_flughohe += (steps*TILE_HEIGHT_STEP) >> 8;

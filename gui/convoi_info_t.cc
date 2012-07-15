@@ -297,9 +297,9 @@ enable_home:
 		info_buf.clear();
 		info_buf.append( translator::translate("Gewicht") );
 		info_buf.append( ": " );
-		info_buf.append( cnv->get_sum_gesamtgewicht(), 0 );
+		info_buf.append( cnv->get_sum_gesamtgewicht()/1000.0, 1 );
 		info_buf.append( "t (" );
-		info_buf.append( cnv->get_sum_gesamtgewicht()-cnv->get_sum_gewicht(), 0 );
+		info_buf.append( (cnv->get_sum_gesamtgewicht()-cnv->get_sum_gewicht())/1000.0, 1 );
 		info_buf.append( "t)" );
 		display_proportional( xpos, ypos, info_buf, ALIGN_LEFT, COL_BLACK, true );
 		ypos += LINESPACE;
@@ -326,6 +326,29 @@ enable_home:
 			display_proportional_clip( xpos+D_BUTTON_HEIGHT+D_H_SPACE+len, ypos, cnv->get_line()->get_name(), ALIGN_LEFT, cnv->get_line()->get_state_color(), true );
 		}
 		POP_CLIP();
+	}
+}
+
+
+bool convoi_info_t::is_weltpos()
+{
+	return (cnv->get_welt()->get_follow_convoi()==cnv);
+}
+
+
+koord3d convoi_info_t::get_weltpos( bool set )
+{
+	if(  set  ) {
+		if(  !is_weltpos()  )  {
+			cnv->get_welt()->set_follow_convoi( cnv );
+		}
+		else {
+			cnv->get_welt()->set_follow_convoi( convoihandle_t() );
+		}
+		return koord3d::invalid;
+	}
+	else {
+		return cnv->get_pos();
 	}
 }
 
@@ -416,7 +439,7 @@ DBG_MESSAGE("convoi_info_t::action_triggered()","convoi state %i => cannot chang
 			koord3d home = koord3d(0,0,0);
 			FOR(slist_tpl<depot_t*>, const depot, depot_t::get_depot_list()) {
 				vehikel_t& v = *cnv->front();
-				if (depot->get_wegtyp()   != v.get_besch()->get_waytype() ||
+				if (depot->get_waytype() != v.get_besch()->get_waytype() ||
 						depot->get_besitzer() != cnv->get_besitzer()) {
 					continue;
 				}

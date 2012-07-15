@@ -165,7 +165,7 @@ static int display_gadget_box(simwin_gadget_et const  code,
 	display_vline_wh_clip(x+16, y+1, 14, color+1, false);
 
 	if(pushed) {
-		display_fillbox_wh_clip(x+1, y+1, 14, 14, color+1, false);
+		display_fillbox_wh_clip(x+1, y+1, 14, 14, (color & 0xF8) + max(7, (color&0x07)+2), false);
 	}
 
 	image_id img = IMG_LEER;
@@ -206,7 +206,8 @@ static int display_gadget_boxes(
 	int const x, int const y,
 	int const color,
 	bool const close_pushed,
-	bool const sticky_pushed
+	bool const sticky_pushed,
+	bool const goto_pushed
 ) {
     int width = 0;
     const int w=(REVERSE_GADGETS?16:-16);
@@ -233,7 +234,7 @@ static int display_gadget_boxes(
 	    width++;
 	}
 	if(  flags->gotopos  ) {
-	    display_gadget_box( GADGET_GOTOPOS, x + w*width, y, color, false );
+	    display_gadget_box( GADGET_GOTOPOS, x + w*width, y, color, goto_pushed );
 	    width++;
 	}
 	if(  flags->sticky  ) {
@@ -314,6 +315,7 @@ static void win_draw_window_title(const koord pos, const koord gr,
 		const koord3d welt_pos,
 		const bool closing,
 		const bool sticky,
+		const bool goto_pushed,
 		simwin_gadget_flags_t &flags )
 {
 	PUSH_CLIP(pos.x, pos.y, gr.x, gr.y);
@@ -324,7 +326,7 @@ static void win_draw_window_title(const koord pos, const koord gr,
 
 	// Draw the gadgets and then move left and draw text.
 	flags.gotopos = (welt_pos != koord3d::invalid);
-	int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:gr.x-20), pos.y, titel_farbe, closing, sticky );
+	int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:gr.x-20), pos.y, titel_farbe, closing, sticky, goto_pushed );
 	int titlewidth = display_proportional_clip( pos.x + (REVERSE_GADGETS?width+4:4), pos.y+(16-LINEASCENT)/2, text, ALIGN_LEFT, text_farbe, false );
 	if(  flags.gotopos  ) {
 		display_proportional_clip( pos.x + (REVERSE_GADGETS?width+4:4)+titlewidth+8, pos.y+(16-LINEASCENT)/2, welt_pos.get_2d().get_fullstr(), ALIGN_LEFT, text_farbe, false );
@@ -684,17 +686,18 @@ static void destroy_framed_win(simwin_t *wins)
 
 
 
-void destroy_win(const long magic)
+bool destroy_win(const long magic)
 {
 	const gui_frame_t *gui = win_get_magic(magic);
 	if(gui) {
-		destroy_win( gui );
+		return destroy_win( gui );
 	}
+	return false;
 }
 
 
 
-void destroy_win(const gui_frame_t *gui)
+bool destroy_win(const gui_frame_t *gui)
 {
 	for(  uint i=0;  i<wins.get_count();  i++  ) {
 		if(wins[i].gui == gui) {
@@ -706,9 +709,11 @@ void destroy_win(const gui_frame_t *gui)
 				wins.remove_at(i);
 				destroy_framed_win(&win);
 			}
+			return true;
 			break;
 		}
 	}
+	return false;
 }
 
 
@@ -794,9 +799,10 @@ void display_win(int win)
 				title_color,
 				komp->get_name(),
 				text_color,
-				komp->get_weltpos(),
+				komp->get_weltpos(false),
 				wins[win].closing,
 				wins[win].sticky,
+				komp->is_weltpos(),
 				wins[win].flags );
 	}
 	// mark top window, if requested
@@ -1151,7 +1157,7 @@ bool check_pos_win(event_t *ev)
 
 	// cursor event only go to top window (but not if rolled up)
 	if(  ev->ev_class == EVENT_KEYBOARD  &&  !wins.empty()  ) {
-		simwin_t&               win  = wins.back();
+		simwin_t &win  = wins.back();
 		if(  !win.rollup  )  {
 			inside_event_handling = win.gui;
 			swallowed = win.gui->infowin_event(ev);
@@ -1258,8 +1264,11 @@ bool check_pos_win(event_t *ev)
 						break;
 					case GADGET_GOTOPOS:
 						if (IS_LEFTCLICK(ev)) {
-							// change position on map
-							spieler_t::get_welt()->change_world_position( wins[i].gui->get_weltpos() );
+							// change position on map (or follow)
+							koord3d k = wins[i].gui->get_weltpos(true);
+							if(  k!=koord3d::invalid  ) {
+								spieler_t::get_welt()->change_world_position( k );
+							}
 						}
 						break;
 					case GADGET_STICKY:
@@ -1356,12 +1365,12 @@ void win_display_flush(double konto)
 	// display main menu
 	werkzeug_waehler_t *main_menu = werkzeug_t::toolbar_tool[0]->get_werkzeug_waehler();
 	display_set_clip_wh( 0, 0, disp_width, menu_height+1 );
-	display_fillbox_wh(0, 0, disp_width, menu_height, MN_GREY2, false);
+	display_fillbox_wh( 0, 0, disp_width, menu_height, MN_GREY2, false );
 	// .. extra logic to enable tooltips
 	tooltip_element = menu_height > get_maus_y() ? main_menu : NULL;
 	void *old_inside_event_handling = inside_event_handling;
 	inside_event_handling = main_menu;
-	main_menu->zeichnen(koord(0,-16), koord(disp_width,menu_height) );
+	main_menu->zeichnen( koord(0,-16), koord(disp_width,menu_height) );
 	inside_event_handling = old_inside_event_handling;
 
 	// redraw all?
@@ -1615,23 +1624,7 @@ void win_set_welt(karte_t *welt)
 
 bool win_change_zoom_factor(bool magnify)
 {
-	bool ok = magnify ? zoom_factor_up() : zoom_factor_down();
-	if(ok) {
-		event_t ev;
-
-		ev.ev_class = WINDOW_REZOOM;
-		ev.ev_code = get_tile_raster_width();
-		ev.mx = 0;
-		ev.my = 0;
-		ev.cx = 0;
-		ev.cy = 0;
-		ev.button_state = 0;
-
-		for(  sint32 i=wins.get_count()-1;  i>=0;  i=min(i,(int)wins.get_count())-1  ) {
-			wins[i].gui->infowin_event(&ev);
-		}
-	}
-	return ok;
+	return magnify ? zoom_factor_up() : zoom_factor_down();
 }
 
 

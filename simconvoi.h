@@ -1,6 +1,6 @@
 /**
- * Header Datei für dir convoi_t Klasse für Fahrzeugverbände
- * von Hansjörg Malthaner
+ * @file
+ * Contains definition of convoi_t class
  */
 
 #ifndef simconvoi_h
@@ -32,9 +32,7 @@ class schedule_t;
 class cbuffer_t;
 
 /**
- * Basisklasse für alle Fahrzeugverbände. Convois könnnen über Zeiger
- * oder Handles angesprochen werden. Zeiger sind viel schneller, dafür
- * können Handles geprüft werden, ob das Ziel noch vorhanden ist.
+ * Base class for all vehicle consists. Convoys can be referenced by handles, see halthandle_t.
  *
  * @author Hj. Malthaner
  */
@@ -218,15 +216,16 @@ private:
 	* errechnet beim beladen/fahren.
 	* @author Hj. Malthaner, prissi
 	*/
-	sint32 sum_gewicht;
-	sint32 sum_gesamtgewicht;
+	sint64 sum_gewicht;
+	sint64 sum_gesamtgewicht;
 
 	// cached values
 	// will be recalculated if
 	// recalc_data is true
 	bool recalc_data_front; // true when front vehicle in convoi hops
 	bool recalc_data; // true when any vehicle in convoi hops
-	sint32 sum_friction_weight;
+
+	sint64 sum_friction_weight;
 	sint32 speed_limit;
 
 	/**
@@ -560,8 +559,12 @@ public:
 	 */
 	const uint32 & get_sum_leistung() const {return sum_leistung;}
 	const sint32 & get_min_top_speed() const {return min_top_speed;}
-	const sint32 & get_sum_gewicht() const {return sum_gewicht;}
-	const sint32 & get_sum_gesamtgewicht() const {return sum_gesamtgewicht;}
+
+	/// @returns weight of the convoy's vehicles (excluding freight)
+	const sint64 & get_sum_gewicht() const {return sum_gewicht;}
+
+	/// @returns weight of convoy including freight
+	const sint64 & get_sum_gesamtgewicht() const {return sum_gesamtgewicht;}
 
 	uint32 get_length() const;
 
@@ -589,12 +592,6 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	void step();
-
-	/**
-	 * Calculates total weight of freight in KG
-	 * @author Hj. Malthaner
-	 */
-	int calc_freight_weight() const;
 
 	/**
 	* setzt einen neuen convoi in fahrt

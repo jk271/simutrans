@@ -19,6 +19,9 @@
 
 #include "../besch/tunnel_besch.h"
 
+#include "leitung2.h"
+#include "../bauer/wegbauer.h"
+
 #include "tunnel.h"
 
 
@@ -130,7 +133,11 @@ void tunnel_t::laden_abschliessen()
 			weg->set_max_speed(besch->get_topspeed());
 			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
 		}
-		spieler_t::add_maintenance( sp,  besch->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : besch->get_waytype());
+		leitung_t *lt = gr->get_leitung();
+		if(lt) {
+			spieler_t::add_maintenance( sp, -lt->get_besch()->get_wartung(), powerline_wt );
+		}
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), powerline_wt );
 	}
 }
 
@@ -149,9 +156,20 @@ void tunnel_t::entferne( spieler_t *sp2 )
 		const grund_t *gr = welt->lookup(get_pos());
 		if(gr) {
 			weg_t *weg = gr->get_weg( besch->get_waytype() );
-			weg->set_max_speed( weg->get_besch()->get_topspeed() );
-			spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
+//<<<<<<< HEAD
+//			weg->set_max_speed( weg->get_besch()->get_topspeed() );
+//			spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
+//			spieler_t::add_maintenance( sp,  -besch->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype() );
+//=======
+			if(weg)	{
+				weg->set_max_speed( weg->get_besch()->get_topspeed() );
+//				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung());
+				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype());
+			}
+//			spieler_t::add_maintenance( sp,  -besch->get_wartung() );
 			spieler_t::add_maintenance( sp,  -besch->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype() );
+// jk todo:
+//>>>>>>> master
 		}
 	}
 	spieler_t::add_construction_costs(sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_waytype() );

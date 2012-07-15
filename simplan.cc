@@ -7,8 +7,11 @@
 
 #include "simdebug.h"
 #include "simdings.h"
+#include "simfab.h"
 #include "simgraph.h"
+#include "simmenu.h"
 #include "simplan.h"
+#include "simwerkz.h"
 #include "simworld.h"
 #include "simhalt.h"
 #include "player/simplay.h"
@@ -195,7 +198,7 @@ void planquadrat_t::kartenboden_setzen(grund_t *bd)
  */
 void planquadrat_t::boden_ersetzen(grund_t *alt, grund_t *neu)
 {
-	assert(alt!=NULL  &&  neu!=NULL);
+	assert(alt!=NULL  &&  neu!=NULL  &&  !alt->is_halt()  );
 
 	if(ground_size<=1) {
 		assert(data.one==alt  ||  ground_size==0);
@@ -222,7 +225,6 @@ void planquadrat_t::boden_ersetzen(grund_t *alt, grund_t *neu)
 		while(  alt->get_top()>0  ) {
 			neu->obj_add( alt->obj_remove_top() );
 		}
-		// delete old ground
 		delete alt;
 	}
 }
@@ -384,7 +386,7 @@ void planquadrat_t::display_dinge(const sint16 xpos, const sint16 ypos, const si
 			}
 			// not too low?
 			if (h >= hmin) {
-				const sint16 yypos = ypos - tile_raster_scale_y( (h-h0)*TILE_HEIGHT_STEP/Z_TILE_STEP, raster_tile_width);
+				const sint16 yypos = ypos - tile_raster_scale_y( (h-h0)*TILE_HEIGHT_STEP, raster_tile_width);
 				gr->display_boden(xpos, yypos, raster_tile_width);
 				gr->display_dinge_all(xpos, yypos, raster_tile_width, is_global);
 			}
@@ -395,7 +397,7 @@ void planquadrat_t::display_dinge(const sint16 xpos, const sint16 ypos, const si
 		gr0->display_boden(xpos, ypos, raster_tile_width);
 	}
 
-	if(  raster_tile_width <= umgebung_t::simple_drawing_tile_size  ) {
+	if(  umgebung_t::simple_drawing  ) {
 		// ignore trees going though bridges
 		gr0->display_dinge_all_quick_and_dirty(xpos, ypos, raster_tile_width, is_global);
 	}
@@ -413,7 +415,7 @@ void planquadrat_t::display_dinge(const sint16 xpos, const sint16 ypos, const si
 				// not too low?
 				if(  h >= hmin  ) {
 					// something on top: clip horizontally to prevent trees etc shining trough bridges
-					const sint16 yh = ypos - tile_raster_scale_y( (h-h0)*TILE_HEIGHT_STEP/Z_TILE_STEP, raster_tile_width) + ((3*raster_tile_width)>>2);
+					const sint16 yh = ypos - tile_raster_scale_y( (h-h0)*TILE_HEIGHT_STEP, raster_tile_width) + ((3*raster_tile_width)>>2);
 					if(  yh >= p_cr.y   &&  yh < p_cr.y+p_cr.h  ) {
 						display_set_clip_wh(p_cr.x, yh, p_cr.w, p_cr.h+p_cr.y-yh);
 					}
@@ -435,7 +437,7 @@ void planquadrat_t::display_dinge(const sint16 xpos, const sint16 ypos, const si
 		if (h > hmax) break;
 		// not too low?
 		if (h >= hmin) {
-			const sint16 yypos = ypos - tile_raster_scale_y( (h-h0)*TILE_HEIGHT_STEP/Z_TILE_STEP, raster_tile_width);
+			const sint16 yypos = ypos - tile_raster_scale_y( (h-h0)*TILE_HEIGHT_STEP, raster_tile_width);
 			gr->display_boden(xpos, yypos, raster_tile_width);
 			gr->display_dinge_all(xpos, yypos, raster_tile_width, is_global);
 		}
@@ -443,9 +445,63 @@ void planquadrat_t::display_dinge(const sint16 xpos, const sint16 ypos, const si
 }
 
 
+image_id overlay_img(grund_t *gr)
+{
+	// only transparent outline
+	image_id img;
+	if(  gr->get_typ()==grund_t::wasser  ) {
+		// water is always flat and does not return proper image_id
+		img = grund_besch_t::ausserhalb->get_bild(0);
+	}
+	else {
+		img = gr->get_bild();
+		if(  img==IMG_LEER  ) {
+			// foundations or underground mode
+			img = grund_besch_t::get_ground_tile( gr->get_disp_slope(), gr->get_disp_height() );
+		}
+	}
+	return img;
+}
+
 void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos, const sint8 /*hmin*/, const sint8 /*hmax*/) const
 {
 	grund_t *gr=get_kartenboden();
+
+	// building transformers - show outlines of factories
+
+/*	alternative method of finding selected tool - may be more useful in future but use simpler method for now
+	karte_t *welt = gr->get_welt();
+	werkzeug_t *wkz = welt->get_werkzeug(welt->get_active_player_nr());
+	int tool_id = wkz->get_id();
+
+	if(tool_id==(WKZ_TRANSFORMER|GENERAL_TOOL)....	*/
+
+	if( (grund_t::underground_mode == grund_t::ugm_all  ||  (grund_t::underground_mode == grund_t::ugm_level  &&  gr->get_hoehe() == grund_t::underground_level+1) )
+		&&  gr->get_typ()==grund_t::fundament
+		&&  werkzeug_t::general_tool[WKZ_TRANSFORMER]->is_selected(gr->get_welt())) {
+		gebaeude_t *gb = gr->find<gebaeude_t>();
+		if(gb) {
+			fabrik_t* fab=gb->get_fabrik();
+			if(fab) {
+				PLAYER_COLOR_VAL status = COL_RED;
+				if(fab->get_besch()->is_electricity_producer()) {
+					status = COL_LIGHT_BLUE;
+					if(fab->is_transformer_connected()) {
+						status = COL_LIGHT_TURQUOISE;
+					}
+				}
+				else {
+					if(fab->is_transformer_connected()) {
+						status = COL_ORANGE;
+					}
+					if(fab->get_prodfactor_electric()>0) {
+						status = COL_GREEN;
+					}
+				}
+				display_img_blend( overlay_img(gr), xpos, ypos, status | OUTLINE_FLAG | TRANSPARENT50_FLAG, 0, true);
+			}
+		}
+	}
 
 	// display station owner boxes
 	if(umgebung_t::station_coverage_show  &&  halt_list_count>0) {
@@ -453,18 +509,7 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos, const 
 		if(umgebung_t::use_transparency_station_coverage) {
 
 			// only transparent outline
-			image_id img;
-			if(  gr->get_typ()==grund_t::wasser  ) {
-				// water is always flat and do not return proper imaga_id
-				img = grund_besch_t::ausserhalb->get_bild(0);
-			}
-			else {
-				img = gr->get_bild();
-				if(  img==IMG_LEER  ) {
-					// foundations or underground mode
-					img = grund_besch_t::get_ground_tile( gr->get_disp_slope(), gr->get_disp_height() );
-				}
-			}
+			image_id img = overlay_img(gr);
 
 			for(int halt_count = 0; halt_count < halt_list_count; halt_count++) {
 				const PLAYER_COLOR_VAL transparent = PLAYER_FLAG | OUTLINE_FLAG | (halt_list[halt_count]->get_besitzer()->get_player_color1() + 4);
@@ -506,7 +551,7 @@ void planquadrat_t::display_overlay(const sint16 xpos, const sint16 ypos, const 
 		for(uint8 i=1;  i<ground_size;  i++) {
 			grund_t* gr=data.some[i];
 			const sint8 h = gr->get_disp_height();
-			const sint16 yypos = ypos - (h-h0)*get_tile_raster_width()/(2*Z_TILE_STEP);
+			const sint16 yypos = ypos - (h-h0)*get_tile_raster_width()/2;
 			gr->display_overlay(xpos, yypos );
 		}
 	}

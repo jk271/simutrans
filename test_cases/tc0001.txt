@@ -1,0 +1,19 @@
+test_case_0001
+test_case_name="Common prerequisities for test of jk money"
+
+Prerequisities:
+Compilled game binary, program files and pak set files.
+
+Test scenario:
+1. Run program
+2. Choose pak set
+3. Choose "New game"
+4. Choose "Settings"
+5. Set bits_per_month (in general tab) to 20.
+6. Set savegame version to "".
+7. Set toll_runningcost_percentage to 10 (in economy tab).
+8. Set toll_waycost_percentage to 5 (in economy_tab).
+9. Close "Settings" window.
+10. Click on "Start game".
+
+Game should be running.

@@ -1,0 +1,11 @@
+Log of tests on money_2012* branch
+
+test result can be:
+PASSED
+FAILED
+- (test not done)
+
+date		| version| test case results
+================================================================================
+YYYYMMDD HHmm	| 	| 1	| 2	| 3	| 4	| 5	| 6	| 7
+20120721 2018	| 

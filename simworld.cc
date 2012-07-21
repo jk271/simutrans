@@ -100,6 +100,7 @@
 #include "besch/grund_besch.h"
 
 #include "player/simplay.h"
+#include "player/finance.h"
 #include "player/ai_passenger.h"
 #include "player/ai_goods.h"
 

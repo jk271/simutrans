@@ -17,6 +17,7 @@
 #include "components/gui_location_view_t.h"
 #include "components/gui_combobox.h"
 
+#include "../player/finance.h"
 #include "../player/simplay.h"
 
 #define MAX_PLAYER_COST_BUTTON (14)

@@ -3,6 +3,7 @@
 #include "../simtypes.h"
 #include "../simdebug.h"
 
+#include "../player/finance.h"
 #include "../player/simplay.h"
 #include "../simfab.h"
 #include "../simcity.h"

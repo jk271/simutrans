@@ -7,6 +7,7 @@
 
 /* Helper routines for AIs */
 
+#include "finance.h"
 #include "ai.h"
 
 #include "../simcity.h"
@@ -336,7 +337,7 @@ bool ai_t::built_update_headquarter()
 	if(besch!=NULL) {
 		// cost is negative!
 		sint64 const cost = welt->get_settings().cst_multiply_headquarter * besch->get_level() * besch->get_b() * besch->get_h();
-		if(  finance.konto+cost > finance.starting_money ) {
+		if(  finance->konto+cost > finance->starting_money ) {
 			// and enough money left ...
 			koord place = get_headquarter_pos();
 			if(place!=koord::invalid) {
@@ -513,7 +514,7 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 	// build with terraforming if shorter and enough money is available
 	bool with_tf = (baumaulwurf.get_count() > 2)  &&  (10*baumaulwurf.get_count() < 9*bauigel.get_count()  ||  bauigel.get_count() <= 2);
 	if (with_tf) {
-		with_tf &= baumaulwurf.calc_costs() < finance.konto;
+		with_tf &= baumaulwurf.calc_costs() < finance->konto;
 	}
 
 	// now build with or without terraforming

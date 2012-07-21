@@ -7,6 +7,7 @@
 #include "../simwerkz.h"
 #include "../simunits.h"
 
+#include "finance.h"
 #include "simplay.h"
 
 #include "../simhalt.h"
@@ -683,7 +684,7 @@ bool ai_goods_t::create_simple_rail_transport()
 	// build with terraforming if shorter and enough money is available
 	bool with_tf = (baumaulwurf.get_count() > 4)  &&  (10*baumaulwurf.get_count() < 9*bauigel.get_count()  ||  bauigel.get_count() <= 4);
 	if (with_tf) {
-		with_tf &= baumaulwurf.calc_costs() < finance.konto;
+		with_tf &= baumaulwurf.calc_costs() < finance->konto;
 	}
 
 	// now build with or without terraforming
@@ -755,7 +756,7 @@ void ai_goods_t::step()
 		return;
 	}
 
-	if(finance.konto_ueberzogen>0) {
+	if(finance->konto_ueberzogen>0) {
 		// nothing to do but to remove unneeded convois to gain some money
 		state = CHECK_CONVOI;
 	}
@@ -1195,7 +1196,7 @@ DBG_MESSAGE("ai_goods_t::step()","remove already constructed rail between %i,%i 
 
 				// apparently we got the toatlly wrong vehicle here ...
 				// (but we will delete it only, if we need, because it may be needed for a chain)
-				bool delete_this = (finance.konto_ueberzogen>0)  &&  (gewinn < -(sint32)cnv->calc_restwert());
+				bool delete_this = (finance->konto_ueberzogen>0)  &&  (gewinn < -(sint32)cnv->calc_restwert());
 
 				// check for empty vehicles (likely stucked) that are making no plus and remove them ...
 				// take care, that the vehicle is old enough ...

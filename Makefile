@@ -336,6 +336,7 @@ SOURCES += old_blockmanager.cc
 SOURCES += player/ai.cc
 SOURCES += player/ai_goods.cc
 SOURCES += player/ai_passenger.cc
+SOURCES += player/finance.cc
 SOURCES += player/simplay.cc
 SOURCES += simcity.cc
 SOURCES += simconvoi.cc

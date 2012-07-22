@@ -442,6 +442,23 @@ bool finance_t::is_bancrupted() const {
 }
 
 
+void finance_t::new_month() {
+	calc_finance_history();
+	roll_history_month();
+
+	if(world->get_last_month()==0) {
+		roll_history_year();
+	}
+
+	// subtract maintenance
+	for(int i=0; i<TT_MAX; ++i){
+		veh_month[i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
+		veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
+	}
+
+}
+
+
 /* most recent savegame version: now with detailed finance statistics by type of transport */
 void finance_t::rdwr(loadsave_t *file) {
 	/* following lines enables FORWARD compatibility 
@@ -662,3 +679,15 @@ transport_type finance_t::translate_waytype_to_tt(const waytype_t wt) const {
 	}
 }
 
+
+void finance_t::update_assets(sint64 const delta, const waytype_t wt)
+{
+	transport_type tt = translate_waytype_to_tt(wt);
+	veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] += delta;
+	veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] += delta;
+	veh_year[ TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] += delta;
+	veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] += delta;
+
+	com_year[ 0][ATC_NETWEALTH] += delta;
+	com_month[0][ATC_NETWEALTH] += delta;
+}

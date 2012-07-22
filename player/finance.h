@@ -298,7 +298,7 @@ public:
 	/**
 	 * Returns amount of money on account (also known as konto)
 	 */
-	sint64 get_account_balance() { return konto; }
+	inline sint64 get_account_balance() { return konto; }
 
 	/**
 	* Returns the finance history for player
@@ -349,6 +349,10 @@ public:
 	 * @author jk271
 	 */
 	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
+	
+	inline sint64 get_netwealth() const { return com_year[0][ATC_NETWEALTH]; }
+
+	inline sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
 
 	/**
 	 * returns vehicle maintenance with bits_per_month
@@ -373,6 +377,8 @@ public:
 	* returns true if company bancrupted
 	*/
 	bool is_bancrupted() const;
+
+	void new_month();
 
 	/**
 	* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
@@ -400,6 +406,8 @@ public:
  	* @author jk271
  	*/
 	transport_type translate_waytype_to_tt(const waytype_t wt) const;
+
+	void update_assets(sint64 const delta, const waytype_t wt);
 };
 
 #endif

@@ -299,15 +299,7 @@ void spieler_t::neuer_monat()
 {
 	// since the messages must remain on the screen longer ...
 	static cbuffer_t buf;
-
-
-	// Wartungskosten abziehen
-	finance->calc_finance_history();
-	finance->roll_history_month();
-
-	if(welt->get_last_month()==0) {
-		finance->roll_history_year();
-	}
+	finance->new_month();
 
 	// new month has started => recalculate vehicle value
 	calc_assets();
@@ -316,14 +308,8 @@ void spieler_t::neuer_monat()
 
 	simlinemgmt.new_month();
 
-	// subtract maintenance
-	for(int i=0; i<TT_MAX; ++i){
-		finance->veh_month[i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= finance->get_maintenance_with_bits((transport_type)i);
-		finance->veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= finance->get_maintenance_with_bits((transport_type)i);
-	}
-
 	// enough money and scenario finished?
-	if(finance->konto > 0  &&  welt->get_scenario()->active()  &&  finance->com_year[0][ATC_SCENARIO_COMPLETED]>=100) {
+	if(finance->get_account_balance() > 0  &&  welt->get_scenario()->active()  &&  finance->get_scenario_completed() >= 100) {
 		destroy_all_win(true);
 		sint32 const time = welt->get_current_month() - welt->get_settings().get_starting_year() * 12;
 		buf.clear();
@@ -335,17 +321,17 @@ void spieler_t::neuer_monat()
 	}
 
 	// Bankrott ?
-	if(  finance->konto < 0  ) {
+	if(  finance->get_account_balance() < 0  ) {
 		finance->konto_ueberzogen++;
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
-				if(  finance->com_year[0][ATC_NETWEALTH] < 0 ) {
+				if(  finance->get_netwealth() < 0 ) {
 					destroy_all_win(true);
 					create_win( display_get_width()/2-128, 40, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
 					ticker::add_msg( translator::translate("Bankrott:\n\nDu bist bankrott.\n"), koord::invalid, PLAYER_FLAG + kennfarbe1 + 1 );
 					welt->beenden(false);
 				}
-				else if(  finance->get_finance_history_com_year(0, ATC_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
+				else if(  finance->get_netwealth()*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 					// tell the player (problem!)
 					welt->get_message()->add_message( translator::translate("Net wealth less than 10% of starting capital!"), koord::invalid, message_t::problems, player_nr, IMG_LEER );
 				}
@@ -360,12 +346,12 @@ void spieler_t::neuer_monat()
 			else if(  finance->maintenance[TT_ALL]!=0  ||  finance->com_year[0][ATC_ALL_CONVOIS]!=0  ) {
 
 				// for AI, we only declare bankrupt, if total assest are below zero
-				if(  finance->com_year[0][ATC_NETWEALTH]<0  ) {
+				if(  finance->get_netwealth() < 0  ) {
 					ai_bankrupt();
 				}
 				// tell the current player (even during networkgames)
 				if(  welt->get_active_player_nr()==player_nr  ) {
-					if(  finance->get_finance_history_com_year(0, ATC_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
+					if(  finance->get_netwealth()*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 						// netweath nearly spent (problem!)
 						welt->get_message()->add_message( translator::translate("Net wealth near zero"), koord::invalid, message_t::problems, player_nr, IMG_LEER );
 					}
@@ -420,14 +406,7 @@ void spieler_t::calc_assets()
 
 void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 {
-	transport_type tt = finance->translate_waytype_to_tt(wt);
-	finance->veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] += delta;
-	finance->veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] += delta;
-	finance->veh_year[ TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] += delta;
-	finance->veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] += delta;
-
-	finance->com_year[ 0][ATC_NETWEALTH] += delta;
-	finance->com_month[0][ATC_NETWEALTH] += delta;
+	finance->update_assets(delta, wt);
 }
 
 
@@ -1112,7 +1091,7 @@ void spieler_t::add_convoi_number(int count)
 
 
 double spieler_t::get_konto_als_double() const { 
-	return finance->konto / 100.0; 
+	return finance->get_account_balance() / 100.0; 
 }
 
 

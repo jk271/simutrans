@@ -133,11 +133,11 @@ inline sint64 calc_margin(sint64 operating_profit, sint64 proceeds)
  * Another benefit: It leads to shorter variable names. 
  **/
 class finance_t {
-public:
 	spieler_t * player;
 
 	karte_t * world;
 
+public:
 	/**
  	* Der Kontostand.
  	*
@@ -155,6 +155,7 @@ public:
 	// remember the starting money
 	sint64 starting_money;
 
+private:
 	/**
 	 * finance history - will supersede the finance_history by hsiegeln 
 	 * from version 111 or 112
@@ -184,6 +185,7 @@ public:
  	*/
 	sint32 vehicle_maintenance[TT_MAX];
 
+public:
 	finance_t(spieler_t * _player, karte_t * _world);
 
 
@@ -389,6 +391,8 @@ public:
 
 	/* loads or saves finance statistic */
 	void rdwr(loadsave_t *file);
+
+	void set_assets(const sint64 (&assets)[TT_MAX]);
 
 	int translate_index_cost_to_at(int cost_);
 

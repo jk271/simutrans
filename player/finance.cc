@@ -584,6 +584,15 @@ void finance_t::roll_history_year() {
 }
 
 
+void finance_t::set_assets(const sint64 (&assets)[TT_MAX])
+{
+	for(int i=0; i < TT_MAX; ++i){
+		veh_year[i][0][ATV_NON_FINANTIAL_ASSETS] = veh_month[i][0][ATV_NON_FINANTIAL_ASSETS] = assets[i];
+	}
+	com_year[0][ATC_NETWEALTH] = com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+}
+
+
 int finance_t::translate_index_cost_to_atc(const int cost_index) const
 {
 	static int cost_to_atc_indices[] = {

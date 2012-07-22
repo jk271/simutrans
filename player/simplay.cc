@@ -343,7 +343,7 @@ void spieler_t::neuer_monat()
 				}
 			}
 			// no assets => nothing to go bankrupt about again
-			else if(  finance->maintenance[TT_ALL]!=0  ||  finance->com_year[0][ATC_ALL_CONVOIS]!=0  ) {
+			else if(  finance->get_maintenance(TT_ALL) != 0  ||  finance->get_finance_history_com_year(0, ATC_ALL_CONVOIS) != 0  ) {
 
 				// for AI, we only declare bankrupt, if total assest are below zero
 				if(  finance->get_netwealth() < 0  ) {
@@ -397,10 +397,7 @@ void spieler_t::calc_assets()
 		}
 	}
 
-	for(int i=0; i < TT_MAX; ++i){
-		finance->veh_year[i][0][ATV_NON_FINANTIAL_ASSETS] = finance->veh_month[i][0][ATV_NON_FINANTIAL_ASSETS] = assets[i];
-	}
-	finance->com_year[0][ATC_NETWEALTH] = finance->com_month[0][ATC_NETWEALTH] = finance->veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] +finance->konto;
+	finance->set_assets(assets);
 }
 
 

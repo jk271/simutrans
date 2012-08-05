@@ -630,10 +630,12 @@ bool dr_download_pakset( const char *path_to_program, bool portable )
 		CloseHandle( shExInfo.hProcess );
 	}
 	return true;
+#else
+	char command[2048];
+	sprintf(command, "%s/get_pak.sh %i", path_to_program, portable);
+	system( command );
+	return true;
 #endif
-	(void) path_to_program;
-	(void) portable;
-	return false;
 }
 
 

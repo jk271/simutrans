@@ -9,6 +9,7 @@
 #include "simunits.h"
 #include "simworld.h"
 #include "simware.h"
+#include "player/finance.h"
 #include "player/simplay.h"
 #include "simconvoi.h"
 #include "simhalt.h"
@@ -1444,7 +1445,7 @@ DBG_MESSAGE("convoi_t::add_vehikel()","extend array_tpl to %i totals.",max_rail_
 		if(v->get_fracht_max() != 0) {
 			const ware_besch_t *ware=v->get_fracht_typ();
 			if(ware!=warenbauer_t::nichts  ) {
-				goods_catg_index.append_unique( ware->get_catg_index(), 1 );
+				goods_catg_index.append_unique( ware->get_catg_index() );
 			}
 		}
 		// check for obsolete
@@ -1536,7 +1537,7 @@ void convoi_t::recalc_catg_index()
 		}
 		const ware_besch_t *ware=get_vehikel(i)->get_fracht_typ();
 		if(ware!=warenbauer_t::nichts  ) {
-			goods_catg_index.append_unique( ware->get_catg_index(), 1 );
+			goods_catg_index.append_unique( ware->get_catg_index() );
 		}
 	}
 	/* since during composition of convois all kinds of composition could happen,
@@ -3452,4 +3453,19 @@ bool convoi_t::can_overtake(overtaker_t *other_overtaker, sint32 other_speed, si
 	set_tiles_overtaking( 1+n_tiles );
 	other_overtaker->set_tiles_overtaking( -1-(n_tiles*(akt_speed-diff_speed))/akt_speed );
 	return true;
+}
+
+
+sint64 convoi_t::get_stat_converted(int month, int cost_type) const
+{
+	sint64 value = financial_history[month][cost_type];
+	switch(cost_type) {
+		case CONVOI_REVENUE:
+		case CONVOI_OPERATIONS:
+		case CONVOI_PROFIT:
+			value = convert_money(value);
+			break;
+		default: ;
+	}
+	return value;
 }

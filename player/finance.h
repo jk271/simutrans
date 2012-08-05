@@ -126,6 +126,12 @@ inline sint64 calc_margin(sint64 operating_profit, sint64 proceeds)
 }
 
 
+/**
+ * convert to displayed value
+ */
+inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
+
+
 /*
  * finance_history since version around 111.5 
  * I hope that having all finance in one class is better 
@@ -310,6 +316,11 @@ public:
 	*/
 	sint64 get_finance_history_year(int tt, int year, int type);
 	sint64 get_finance_history_month(int tt, int month, int type);
+
+	/**
+	 * used in scripted scenario
+	 */
+	sint64 get_finance_history_month_converted( int month, int type);
 
 	/**
 	* Returns the finance history (indistinguishable part) for player

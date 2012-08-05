@@ -268,6 +268,16 @@ void finance_t::export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_H
 }
 
 
+sint64 finance_t::get_finance_history_month_converted(int month, int type)
+{
+	sint64 value = get_finance_history_month(TT_ALL, month, type);
+	if ((COST_CONSTRUCTION <= type  &&  type <= COST_OPERATING_PROFIT)  ||  type == COST_WAY_TOLLS  ||  type ==  COST_POWERLINES) {
+		value = convert_money(value);
+	}
+	return value;
+}
+
+
 /* 
  * int tt is COST_ !!! 
 */

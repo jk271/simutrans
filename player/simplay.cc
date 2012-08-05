@@ -57,6 +57,10 @@
 
 karte_t *spieler_t::welt = NULL;
 
+#if MULTI_THREAD>1
+#include <pthread.h>
+static pthread_mutex_t laden_abschl_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	simlinemgmt(wl)
@@ -127,7 +131,15 @@ void spieler_t::add_construction_costs(spieler_t * const sp, const sint64 amount
  * @author Hj. Malthaner
  */
 sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt, const int utyp) {
-	return finance->book_maintenance(change, wt, utyp);
+	int tmp = 0;
+#if MULTI_THREAD>1
+		pthread_mutex_lock( &laden_abschl_mutex  );
+#endif
+	tmp = finance->book_maintenance(change, wt, utyp);
+#if MULTI_THREAD>1
+		pthread_mutex_unlock( &laden_abschl_mutex  );
+#endif
+	return tmp;
 }
 
 
@@ -552,7 +564,7 @@ void spieler_t::ai_bankrupt()
 								delete dt;
 								break;
 							case ding_t::leitung:
-								if (gr->ist_bruecke()) {
+								if(gr->ist_bruecke()) {
 									add_maintenance( -((leitung_t*)dt)->get_besch()->get_wartung(), powerline_wt );
 									// do not remove powerline from bridges
 									dt->set_besitzer( welt->get_spieler(1) );
@@ -915,6 +927,7 @@ void spieler_t::laden_abschliessen()
 	// recalculate vehicle value
 	calc_assets();
 }
+
 
 
 void spieler_t::rotate90( const sint16 y_size )

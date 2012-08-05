@@ -117,12 +117,12 @@ SectionEnd
 
 
 ; name does not match folder name (pak96.comic) but otherwise always selected for update
-Section /o "pak96 Comic (Freeware) V0.4.10" pak96comic
-  AddSize 29447
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/pak96.comic/pak96.comic%20for%20110-0-1/pak96.comic-0.4.10.zip"
-  StrCpy $archievename "pak96.comic-0.4.10.zip"
+Section /o "pak96 Comic (Freeware) V0.4.10 expansion" pak96comic
+  AddSize 32304
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/pak96.comic/pak96.comic%20for%20111-3/pak96.comic-0.4.10-plus.zip"
+  StrCpy $archievename "pak96.comic-0.4.10-plus.zip"
   StrCpy $downloadname "pak96.Comic"
-  StrCpy $VersionString ""
+  StrCpy $VersionString "pak96.comic V4.1 plus"
   Call DownloadInstallZip
 SectionEnd
 
@@ -182,12 +182,12 @@ SectionEnd
 
 
 
-Section /o "pak128.German V0.3 for 111.2" pak128german
-  AddSize 53397
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_111.2/PAK128.german_0.3_111.2.zip"
-  StrCpy $archievename "PAK128.german_0.3_111.2.zip"
+Section /o "pak128.German V0.4 for 111.3" pak128german
+  AddSize 58309
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/simutrans/PAK128.german/PAK128.german_0.4_111.3/PAK128.german_0.4_111.3.zip"
+  StrCpy $archievename "PAK128.german_0.4_111.3.zip"
   StrCpy $downloadname "pak128.German"
-  StrCpy $VersionString "  PAK128.german V 0.3 (Rev. 1062)"
+  StrCpy $VersionString "  PAK128.german V 0.4 (Rev. 1201)"
   Call DownloadInstallZip
 SectionEnd
 
@@ -215,12 +215,12 @@ SectionEnd
 
 
 
-Section /o "pak48.excentrique V0.17" pak48excentrique
+Section /o "pak48.excentrique V0.18" pak48excentrique
   AddSize 1385
-  StrCpy $downloadlink "http://downloads.sourceforge.net/project/ironsimu/pak48.Excentrique/pak48-excentrique_v017.zip"
-  StrCpy $archievename "pak48-excentrique-v017.zip"
+  StrCpy $downloadlink "http://downloads.sourceforge.net/project/ironsimu/pak48.Excentrique/v018/pak48-excentrique_v018.zip"
+  StrCpy $archievename "pak48-excentrique_v018.zip"
   StrCpy $downloadname "pak48.Excentrique"
-  StrCpy $VersionString "pak48.Excentrique v0.17"
+  StrCpy $VersionString "pak48.Excentrique v0.18"
   Call DownloadInstallZipWithoutSimutrans
 SectionEnd
 

@@ -869,6 +869,14 @@ void karte_t::init_felder()
 }
 
 
+void karte_t::set_scenario(scenario_t *s)
+{
+	if (scenario != s) {
+		delete scenario;
+	}
+	scenario = s;
+}
+
 
 void karte_t::create_rivers( sint16 number )
 {
@@ -916,25 +924,41 @@ void karte_t::create_rivers( sint16 number )
 	}
 
 	// now make rivers
-	uint8 retrys = 0;
-	while (number > 0 && !mountain_tiles.empty() && retrys++ < 100) {
+	sint16 retrys = number*2;
+	while(  number > 0  &&  !mountain_tiles.empty()  &&  retrys>0  ) {
+
+		// start with random coordinates
 		koord const start = pick_any_weighted(mountain_tiles);
-		koord const end   = pick_any(water_tiles);
-		sint16 dist = koord_distance(start,end);
-		if (settings.get_min_river_length() < dist && dist < settings.get_max_river_length()) {
-			// should be at least of decent length
+		mountain_tiles.remove( start );
+
+		// build a list of matchin targets
+		vector_tpl<koord> valid_water_tiles;
+		for(  sint32 i=0;  i<water_tiles.get_count();  i++  ) {
+			sint16 dist = koord_distance(start,water_tiles[i]);
+			if(  settings.get_min_river_length() < dist  &&  dist < settings.get_max_river_length()  ) {
+				valid_water_tiles.append( water_tiles[i] );
+			}
+		}
+
+		// now try 256 random locations
+		for(  sint32 i=0;  i<256  &&  !valid_water_tiles.empty();  i++  ) {
+			koord const end = pick_any(valid_water_tiles);
+			valid_water_tiles.remove( end );
 			wegbauer_t riverbuilder(this, spieler[1]);
 			riverbuilder.route_fuer(wegbauer_t::river, river_besch);
+			sint16 dist = koord_distance(start,end);
 			riverbuilder.set_maximum( dist*50 );
 			riverbuilder.calc_route( lookup_kartenboden(end)->get_pos(), lookup_kartenboden(start)->get_pos() );
-			if (riverbuilder.get_count() >= (uint32)settings.get_min_river_length()) {
+			if(  riverbuilder.get_count() >= (uint32)settings.get_min_river_length()  ) {
 				// do not built too short rivers
 				riverbuilder.baue();
 				number --;
-				retrys = 0;
+				retrys++;
+				break;
 			}
-			mountain_tiles.remove( start );
 		}
+
+		retrys--;
 	}
 	// we gave up => tell te user
 	if(  number>0  ) {
@@ -2424,7 +2448,11 @@ void karte_t::set_werkzeug( werkzeug_t *w, spieler_t *sp )
 		dbg->warning("karte_t::set_werkzeug", "Ignored tool %i during loading.", w->get_id() );
 		return;
 	}
-
+	// check for scenario conditions
+	if(  !scenario->is_tool_allowed(sp, w->get_id(), w->get_waytype())  ) {
+		return;
+	}
+	// check for password-protected players
 	if(  (!w->is_init_network_save()  ||  !w->is_work_network_save())  &&
 		 !(w->get_id()==(WKZ_SET_PLAYER_TOOL|SIMPLE_TOOL)  ||  w->get_id()==(WKZ_ADD_MESSAGE_TOOL|SIMPLE_TOOL))  &&
 		 sp  &&  sp->is_locked()  ) {
@@ -2449,6 +2477,11 @@ void karte_t::local_set_werkzeug( werkzeug_t *w, spieler_t * sp )
 {
 	w->flags |= werkzeug_t::WFL_LOCAL;
 
+	if (get_scenario()->is_scripted()  &&  !get_scenario()->is_tool_allowed(sp, w->get_id()) ) {
+		w->flags = 0;
+		return;
+	}
+	// now call init
 	bool init_result = w->init(this,sp);
 	// for unsafe tools init() must return false
 	assert(w->is_init_network_save()  ||  !init_result);
@@ -2624,6 +2657,8 @@ DBG_MESSAGE( "karte_t::rotate90()", "called" );
 	if(reliefkarte_t::is_visible) {
 		reliefkarte_t::get_karte()->set_mode( reliefkarte_t::get_karte()->get_mode() );
 	}
+
+	get_scenario()->rotate90( cached_groesse_karte_x );
 
 	// finally recalculate schedules for goods in transit ...
 	set_schedule_counter();
@@ -3667,6 +3702,10 @@ void karte_t::step()
 		// since init always returns false, it is save to delete immediately
 		delete w;
 	}
+
+	if(  get_scenario()->is_scripted() ) {
+		get_scenario()->step();
+	}
 	DBG_DEBUG4("karte_t::step", "end");
 }
 
@@ -4580,7 +4619,18 @@ DBG_MESSAGE("karte_t::laden()","Savegame version is %d", file.get_version());
 
 		ok = true;
 		file.close();
-		if(  !umgebung_t::networkmode  ||  !umgebung_t::restore_UI  ) {
+
+		if(  !scenario->rdwr_ok()  ) {
+			// error during loading of savegame of scenario
+			const char* err = scenario->get_error_text();
+			if (err == NULL) {
+				err = "Loading scenario failed.";
+			}
+			create_win( new news_img( err ), w_info, magic_none);
+			delete scenario;
+			scenario = new scenario_t(this);
+		}
+		else if(  !umgebung_t::networkmode  ||  !umgebung_t::restore_UI  ) {
 			// warning message about missing paks
 			if(  !missing_pak_names.empty()  ) {
 
@@ -4775,6 +4825,12 @@ DBG_DEBUG("karte_t::laden", "init felder ok");
 	last_step_ticks = ticks;
 	steps = 0;
 	step_mode = PAUSE_FLAG;
+
+	// initialize sync_step here for scripted scenario
+	if(  umgebung_t::server  ) {
+		network_frame_count = 0;
+		sync_steps = 0;
+	}
 
 DBG_MESSAGE("karte_t::laden()","savegame loading at tick count %i",ticks);
 	recalc_average_speed();	// resets timeline
@@ -5562,11 +5618,22 @@ void karte_t::bewege_zeiger(const event_t *ev)
 					}
 					else if(ev->ev_class==EVENT_DRAG) {
 						if(!is_dragging  &&  wkz->check_pos( this, get_active_player(), prev_pos )==NULL) {
-							wkz->move( this, get_active_player(), 1, prev_pos );
-							is_dragging = true;
+							const char* err = get_scenario()->is_work_allowed_here(get_active_player(), wkz->get_id(), wkz->get_waytype(), prev_pos);
+							if (err == NULL) {
+								wkz->move( this, get_active_player(), 1, prev_pos );
+								is_dragging = true;
+							}
+							else {
+								is_dragging = false;
+							}
 						}
 					}
-					wkz->move( this, get_active_player(), is_dragging, pos );
+					if (is_dragging) {
+						const char* err = get_scenario()->is_work_allowed_here(get_active_player(), wkz->get_id(), wkz->get_waytype(), pos);
+						if (err == NULL) {
+							wkz->move( this, get_active_player(), is_dragging, pos );
+						}
+					}
 				}
 				wkz->flags = 0;
 			}
@@ -5764,7 +5831,19 @@ void karte_t::interactive_event(event_t &ev)
 				if (!umgebung_t::networkmode  ||  wkz->is_work_network_save()  ||  wkz->is_work_here_network_save( this, get_active_player(), zeiger->get_pos() ) ) {
 					// do the work
 					wkz->flags |= werkzeug_t::WFL_LOCAL;
-					err = wkz->work( this, get_active_player(), zeiger->get_pos() );
+					// check allowance by scenario
+					koord3d const& pos = zeiger->get_pos();
+					if (get_scenario()->is_scripted()) {
+						if (!get_scenario()->is_tool_allowed(get_active_player(), wkz->get_id(), wkz->get_waytype()) ) {
+							err = "";
+						}
+						else {
+							err = get_scenario()->is_work_allowed_here(get_active_player(), wkz->get_id(), wkz->get_waytype(), pos);
+						}
+					}
+					if (err == NULL) {
+						err = wkz->work( this, get_active_player(), zeiger->get_pos() );
+					}
 				}
 				else {
 					// queue tool for network
@@ -5899,6 +5978,11 @@ bool karte_t::interactive(uint32 quit_month)
 	network_frame_count = 0;
 	vector_tpl<uint16>hashes_ok;	// bit set: this client can do something with this player
 
+	if(  !scenario->rdwr_ok()  ) {
+		// error during loading of savegame of scenario
+		create_win( new news_img( scenario->get_error_text() ), w_info, magic_none);
+		scenario->stop();
+	}
 	// only needed for network
 	if(  umgebung_t::networkmode  ) {
 		// clear the checklist history

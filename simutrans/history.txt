@@ -1,8 +1,15 @@
+	ADD: (wackdone) screenshots of topmost dialoge window only by CNTRL+screenshot tool click
+	ADD: (wackdone) -pause on command line pauses the loaded game
+	FIX: downgrading of stops using CONTRL works again
+	ADD: scripted scenarios
+
+Release of 111.3.1 (r5843 on 31-Jul-2012):
 	ADD: weight in dat fields are in tons but kg can bei give like 1.350
-	CHG: goto / follow convoi functionality not via window gadget
+	CHG: goto / follow convoi functionality via window gadget
 	CHG: no bridges over runways / taxiways
 	ADD: check whether format specifiers of translated strings match those of the master string, start with -debug 2 to get error messages
 	ADD: customize icon of toolbar separator (taken from menu.BarTools or extra menu object)
+	FIX: crash when changing to other programs while in fullscreen with GDI version
 
 
 Release of 111.3 (r5772 on 10-Jun-2012):

@@ -33,6 +33,7 @@
 
 #include "dataobj/umgebung.h"
 #include "dataobj/tabfile.h"
+#include "dataobj/scenario.h"
 
 #include "dings/roadsign.h"
 #include "dings/wayobj.h"
@@ -113,6 +114,7 @@ werkzeug_t *create_general_tool(int toolnr)
 		case WKZ_SLICED_AND_UNDERGROUND_VIEW: tool = new wkz_show_underground_t(); break;
 		case WKZ_BUY_HOUSE:        tool = new wkz_buy_house_t(); break;
 		case WKZ_CITYROAD:         tool = new wkz_build_cityroad(); break;
+		case WKZ_ERR_MESSAGE_TOOL: tool = new wkz_error_message_t(); break;
 		default:                   dbg->error("create_general_tool()","cannot satisfy request for general_tool[%i]!",toolnr);
 		                           return NULL;
 	}
@@ -426,10 +428,10 @@ void werkzeug_t::read_menu(const std::string &objfilename)
 	// now the toolbar tools
 	DBG_MESSAGE( "werkzeug_t::read_menu()", "Reading toolbars" );
 	// default size
-	koord size( contents.get_int("icon_width",32), contents.get_int("icon_height",32) );
+	umgebung_t::iconsize = koord( contents.get_int("icon_width",32), contents.get_int("icon_height",32) );
 	// first: add main menu
 	toolbar_tool.resize( skinverwaltung_t::werkzeuge_toolbars->get_bild_anzahl() );
-	toolbar_tool.append(new toolbar_t(TOOLBAR_TOOL, "", "", size));
+	toolbar_tool.append(new toolbar_t(TOOLBAR_TOOL, "", "", umgebung_t::iconsize));
 	// now for the rest
 	for(  uint16 i=0;  i<toolbar_tool.get_count();  i++  ) {
 		char id[256];
@@ -488,7 +490,8 @@ void werkzeug_t::read_menu(const std::string &objfilename)
 					}
 					else {
 						if(  icon>=skinverwaltung_t::werkzeuge_toolbars->get_bild_anzahl()  ) {
-							dbg->fatal( "werkzeug_t::read_menu()", "wrong icon (%i) given for toolbar_tool[%i][%i]", icon, i, j );
+							dbg->warning( "werkzeug_t::read_menu()", "wrong icon (%i) given for toolbar_tool[%i][%i]", icon, i, j );
+							icon = 0;
 						}
 						icon = skinverwaltung_t::werkzeuge_toolbars->get_bild_nr(icon);
 					}
@@ -577,13 +580,14 @@ void werkzeug_t::read_menu(const std::string &objfilename)
 				assert(toolnr>0);
 				if(toolbar_tool.get_count()==toolnr) {
 					if(param_str==NULL) {
-						dbg->fatal( "werkzeug_t::read_menu()", "Missing parameter for toolbar" );
+						param_str = "Unnamed toolbar";
+						dbg->warning( "werkzeug_t::read_menu()", "Missing title for toolbar[%d]", toolnr);
 					}
 					char *c = strdup(param_str);
 					const char *title = c;
 					c += strcspn(c, ",");
 					if (*c != '\0') *c++ = '\0';
-					toolbar_t* const tb = new toolbar_t(toolbar_tool.get_count() | TOOLBAR_TOOL, title, c, size);
+					toolbar_t* const tb = new toolbar_t(toolbar_tool.get_count() | TOOLBAR_TOOL, title, c, umgebung_t::iconsize);
 					toolbar_tool.append(tb);
 					addtool = tb;
 				}
@@ -617,8 +621,18 @@ void werkzeug_t::read_menu(const std::string &objfilename)
 void werkzeug_t::update_toolbars(karte_t *welt)
 {
 	// renew toolbar
-	FOR(vector_tpl<toolbar_t*>, const i, toolbar_tool) {
-		i->update(welt, welt->get_active_player());
+	// iterate twice, to get correct icons if a toolbar changes between empty and non-empty
+	for(uint j=0; j<2; j++) {
+		bool change = false;
+		FOR(vector_tpl<toolbar_t*>, const i, toolbar_tool) {
+			bool old_icon_empty = i->get_icon(welt->get_active_player()) == IMG_LEER;
+			i->update(welt, welt->get_active_player());
+			change |= old_icon_empty ^ (i->get_icon(welt->get_active_player()) == IMG_LEER);
+		}
+		if (!change) {
+			// no toolbar changes between empty and non-empty, no need to loop again
+			break;
+		}
 	}
 }
 
@@ -760,6 +774,10 @@ void toolbar_t::update(karte_t *welt, spieler_t *sp)
 			}
 			if(  create  ) {
 				DBG_DEBUG( "toolbar_t::update()", "add tool %i (param=%s)", w->get_id(), w->get_default_param() );
+			}
+			scenario_t *scen = welt->get_scenario();
+			if(  scen->is_scripted()  &&  !scen->is_tool_allowed(sp, w->get_id(), w->get_waytype())) {
+				continue;
 			}
 			// now add it to the toolbar gui
 			wzw->add_werkzeug( w );

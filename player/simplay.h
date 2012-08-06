@@ -149,7 +149,7 @@ public:
 	 * @param tt type of transport for accounting purpose
 	 * @author jk271
 	 */
-	void add_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
+	void book_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
 
 	/**
 	 * Adds income to accounting statistics. Cargo with unknown cathegory will be 

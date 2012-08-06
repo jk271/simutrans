@@ -161,7 +161,7 @@ void spieler_t::add_money_message(const sint64 amount, const koord pos) {
 /**
  * amount has negative value = buy vehicle, positive value = vehicle sold
  */
-void spieler_t::add_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
+void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
 	finance->book_new_vehicle(amount, wt);
 	add_money_message(amount, k);
 }

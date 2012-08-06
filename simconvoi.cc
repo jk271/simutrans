@@ -2826,9 +2826,9 @@ void convoi_t::destroy()
 
 	// pay the current value
 	if( fahr[0] ) {
-		besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), fahr[0]->get_besch()->get_waytype() );
+		besitzer_p->book_new_vehicle( calc_restwert(), get_pos().get_2d(), fahr[0]->get_besch()->get_waytype() );
 	} else {
-		besitzer_p->add_new_vehicle( calc_restwert(), get_pos().get_2d(), ignore_wt );
+		besitzer_p->book_new_vehicle( calc_restwert(), get_pos().get_2d(), ignore_wt );
 	}
 
 	for(  uint8 i = anz_vehikel;  i-- != 0;  ) {

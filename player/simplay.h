@@ -131,9 +131,9 @@ public:
 	 * @param tt type of transport
 	 * @author jk271
 	 */
-	void add_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
+	void book_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
-	static void add_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
+	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
 	/*
 	 * displayes amount of money when koordinates and on screen

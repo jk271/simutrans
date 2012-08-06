@@ -173,7 +173,7 @@ void
 wayobj_t::entferne(spieler_t *sp)
 {
 	if(besch) {
-		spieler_t::add_construction_costs(sp, -besch->get_preis(), get_pos().get_2d(), besch->get_wtyp());
+		spieler_t::book_construction_costs(sp, -besch->get_preis(), get_pos().get_2d(), besch->get_wtyp());
 	}
 }
 
@@ -378,7 +378,7 @@ void wayobj_t::extend_wayobj_t(karte_t *welt, koord3d pos, spieler_t *besitzer, 
 		wo->laden_abschliessen();
 		wo->mark_image_dirty( wo->get_after_bild(), 0 );
 		wo->set_flag(ding_t::dirty);
-		spieler_t::add_construction_costs( besitzer,  -besch->get_preis(), pos.get_2d(), besch->get_wtyp());
+		spieler_t::book_construction_costs( besitzer,  -besch->get_preis(), pos.get_2d(), besch->get_wtyp());
 
 		for( uint8 i = 0; i < 4; i++ ) {
 		// Extend wayobjects around the new one, that aren't already connected.

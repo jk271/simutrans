@@ -617,7 +617,7 @@ void baum_t::info(cbuffer_t & buf) const
 
 void baum_t::entferne(spieler_t *sp)
 {
-	spieler_t::add_construction_costs(sp, welt->get_settings().cst_remove_tree, get_pos().get_2d(), ignore_wt);
+	spieler_t::book_construction_costs(sp, welt->get_settings().cst_remove_tree, get_pos().get_2d(), ignore_wt);
 	mark_image_dirty( get_bild(), 0 );
 }
 

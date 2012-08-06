@@ -389,7 +389,7 @@ DBG_MESSAGE("tunnelbauer_t::baue()","build from (%d,%d,%d) to (%d,%d,%d) ", pos.
 		cost += besch->get_preis();
 	}
 
-	spieler_t::add_construction_costs(sp, -cost, start.get_2d(), besch->get_waytype());
+	spieler_t::book_construction_costs(sp, -cost, start.get_2d(), besch->get_waytype());
 	return true;
 }
 

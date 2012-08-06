@@ -521,7 +521,7 @@ DBG_MESSAGE("wkz_remover_intern()","at (%s)", pos.get_str());
 				cost_sum = -t->get_besch()->get_preis();
 				t->entferne( NULL );
 			}
-			spieler_t::add_construction_costs( sp, cost_sum, pos.get_2d(), powerline_wt );
+			spieler_t::book_construction_costs( sp, cost_sum, pos.get_2d(), powerline_wt );
 			// unmark kartenboden (is marked during underground mode deletion)
 			welt->lookup_kartenboden(pos.get_2d())->clear_flag(grund_t::marked);
 			// remove upper or lower ground
@@ -768,7 +768,7 @@ DBG_MESSAGE("wkz_remover()", "removing way");
 	}
 
 	if(  cost_sum > 0  ) {
-		sp->add_construction_costs(-cost_sum, pos.get_2d(), wt);
+		sp->book_construction_costs(-cost_sum, pos.get_2d(), wt);
 		if(  gr->get_top()>0  ) {
 			return true;
 		}
@@ -926,7 +926,7 @@ const char *wkz_raise_t::work( karte_t *welt, spieler_t *sp, koord3d k )
 				ok = (n!=0);
 			}
 			if(n>0) {
-				spieler_t::add_construction_costs(sp, welt->get_settings().cst_alter_land * n, pos, ignore_wt);
+				spieler_t::book_construction_costs(sp, welt->get_settings().cst_alter_land * n, pos, ignore_wt);
 			}
 			return !ok ? "Tile not empty." : (n ? NULL : "");
 		}
@@ -991,7 +991,7 @@ const char *wkz_lower_t::work( karte_t *welt, spieler_t *sp, koord3d k )
 				ok = (n!=0);
 			}
 			if(n>0) {
-				spieler_t::add_construction_costs(sp, welt->get_settings().cst_alter_land * n, pos, ignore_wt);
+				spieler_t::book_construction_costs(sp, welt->get_settings().cst_alter_land * n, pos, ignore_wt);
 			}
 			return !ok ? "Tile not empty." : (n ? NULL : "");
 		}
@@ -1299,7 +1299,7 @@ const char *wkz_setslope_t::wkz_set_slope_work( karte_t *welt, spieler_t *sp, ko
 				reliefkarte_t::get_karte()->calc_map_pixel(pos.get_2d());
 			}
 			settings_t const& s = welt->get_settings();
-			spieler_t::add_construction_costs(sp, new_slope == RESTORE_SLOPE ? s.cst_alter_land : s.cst_set_slope, pos.get_2d(), ignore_wt);
+			spieler_t::book_construction_costs(sp, new_slope == RESTORE_SLOPE ? s.cst_alter_land : s.cst_set_slope, pos.get_2d(), ignore_wt);
 		}
 
 	}
@@ -1543,7 +1543,7 @@ const char *wkz_add_city_t::work( karte_t *welt, spieler_t *sp, koord3d pos )
 				stadt->laden_abschliessen();
 				stadt->verbinde_fabriken();
 
-				spieler_t::add_construction_costs(sp, welt->get_settings().cst_found_city, pos.get_2d(), ignore_wt);
+				spieler_t::book_construction_costs(sp, welt->get_settings().cst_found_city, pos.get_2d(), ignore_wt);
 				reliefkarte_t::get_karte()->calc_map();
 				return NULL;
 			}
@@ -1594,7 +1594,7 @@ const char *wkz_buy_house_t::work( karte_t *welt, spieler_t *sp, koord3d pos)
 					spieler_t::add_maintenance(old_owner, -maint, gb->get_waytype());
 					spieler_t::add_maintenance(sp,        +maint, gb->get_waytype());
 					gb->set_besitzer(sp);
-					sp->add_construction_costs(-maint, k + pos.get_2d(), gb->get_waytype());
+					sp->book_construction_costs(-maint, k + pos.get_2d(), gb->get_waytype());
 				}
 			}
 		}
@@ -1661,7 +1661,7 @@ const char *wkz_plant_tree_t::work( karte_t *welt, spieler_t *sp, koord3d pos )
 			besch = baum_t::find_tree(default_param+3);
 		}
 		if(besch  &&  baum_t::plant_tree_on_coordinate( welt, pos.get_2d(), besch, check_climates, random_age )  ) {
-			spieler_t::add_construction_costs(sp, welt->get_settings().cst_remove_tree, pos.get_2d(), ignore_wt);
+			spieler_t::book_construction_costs(sp, welt->get_settings().cst_remove_tree, pos.get_2d(), ignore_wt);
 			return NULL;
 		}
 		return "";
@@ -3123,7 +3123,7 @@ DBG_MESSAGE("wkz_station_building_aux()", "building mail office/station building
 		cost -= (s.maint_building * factor * 60);
 	}
 	// difficult to distinguish correctly most suitable waytype
-	sp->add_construction_costs( cost, pos, ignore_wt);
+	sp->book_construction_costs( cost, pos, ignore_wt);
 	halt->recalc_station_type();
 
 	return NULL;
@@ -3277,7 +3277,7 @@ DBG_MESSAGE("wkz_dockbau()","building dock from square (%d,%d) to (%d,%d)", pos.
 	}
 	for(int i=0;  i<=len;  i++ ) {
 		koord p=pos-dx*i;
-		sp->add_construction_costs( costs, p, water_wt);
+		sp->book_construction_costs( costs, p, water_wt);
 	}
 
 	halt->recalc_station_type();
@@ -3484,7 +3484,7 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 		// public stops are expensive!
 		cost -= (welt->get_settings().maint_building * besch->get_level() * besch->get_b() * besch->get_h() * 60);
 	}
-	sp->add_construction_costs( cost, pos, wegtype);
+	sp->book_construction_costs( cost, pos, wegtype);
 	if(umgebung_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==pos) {
 		// since we are larger now ...
 		halt->mark_unmark_coverage( true );
@@ -4120,7 +4120,7 @@ built_sign:
 					gr->obj_add(rs);
 					rs->laden_abschliessen();	// to make them visible
 					weg->count_sign();
-					spieler_t::add_construction_costs(sp, -besch->get_preis(), gr->get_pos().get_2d(), weg->get_waytype());
+					spieler_t::book_construction_costs(sp, -besch->get_preis(), gr->get_pos().get_2d(), weg->get_waytype());
 				}
 			}
 			error = NULL;
@@ -4184,7 +4184,7 @@ const char *wkz_depot_t::wkz_depot_aux(karte_t *welt, spieler_t *sp, koord3d pos
 				case ribi_t::west:  layout = 3;    break;
 			}
 			hausbauer_t::neues_gebaeude( welt, sp, bd->get_pos(), layout, besch );
-			sp->add_construction_costs(cost, pos.get_2d(), (besch->get_extra() == weg_t::type_tram) ? tram_wt : wegtype);
+			sp->book_construction_costs(cost, pos.get_2d(), (besch->get_extra() == weg_t::type_tram) ? tram_wt : wegtype);
 			if(is_local_execution()  &&  sp == welt->get_active_player()) {
 				welt->set_werkzeug( general_tool[WKZ_ABFRAGE], sp );
 			}
@@ -4360,7 +4360,7 @@ const char *wkz_build_haus_t::work( karte_t *welt, spieler_t *sp, koord3d pos )
 					city->add_gebaeude_to_stadt(gb);
 				}
 			}
-			spieler_t::add_construction_costs(sp, welt->get_settings().cst_multiply_remove_haus * besch->get_level() * size.x * size.y, pos.get_2d(), gb->get_waytype());
+			spieler_t::book_construction_costs(sp, welt->get_settings().cst_multiply_remove_haus * besch->get_level() * size.x * size.y, pos.get_2d(), gb->get_waytype());
 			return NULL;
 		}
 	}
@@ -4449,7 +4449,7 @@ const char *wkz_build_industries_land_t::work( karte_t *welt, spieler_t *sp, koo
 		if(anzahl>0) {
 			// at least one factory has been built
 			welt->change_world_position( k );
-			spieler_t::add_construction_costs(sp, anzahl * welt->get_settings().cst_multiply_found_industry, k.get_2d(), ignore_wt);
+			spieler_t::book_construction_costs(sp, anzahl * welt->get_settings().cst_multiply_found_industry, k.get_2d(), ignore_wt);
 
 			// eventually adjust production
 			if (!strempty(default_param)) {
@@ -4531,7 +4531,7 @@ const char *wkz_build_industries_city_t::work( karte_t *welt, spieler_t *sp, koo
 			}
 		}
 		// ain't going to be cheap
-		spieler_t::add_construction_costs(sp, anzahl * welt->get_settings().cst_multiply_found_industry, k.get_2d(), ignore_wt);
+		spieler_t::book_construction_costs(sp, anzahl * welt->get_settings().cst_multiply_found_industry, k.get_2d(), ignore_wt);
 		return NULL;
 	}
 	return "No suitable ground!";
@@ -4611,7 +4611,7 @@ const char *wkz_build_factory_t::work( karte_t *welt, spieler_t *sp, koord3d k )
 		if(f) {
 			// at least one factory has been built
 			welt->change_world_position( k );
-			spieler_t::add_construction_costs(sp, welt->get_settings().cst_multiply_found_industry, k.get_2d(), ignore_wt);
+			spieler_t::book_construction_costs(sp, welt->get_settings().cst_multiply_found_industry, k.get_2d(), ignore_wt);
 
 			// eventually adjust production
 			if (!strempty(default_param)) {
@@ -4809,7 +4809,7 @@ DBG_MESSAGE("wkz_headquarter()", "building headquarter at (%d,%d)", pos.x, pos.y
 		if (built) {
 			// sometimes those are not correct after rotation ...
 			sp->add_headquarter(besch->get_extra()+1, hq->get_pos().get_2d()-hq->get_tile()->get_offset() );
-			sp->add_construction_costs( cost, pos.get_2d(), ignore_wt);
+			sp->book_construction_costs( cost, pos.get_2d(), ignore_wt);
 			// tell the world of it ...
 			cbuffer_t buf;
 			buf.printf( translator::translate("%s s\nheadquarter now\nat (%i,%i)."), sp->get_name(), pos.x, pos.y );
@@ -4900,7 +4900,7 @@ const char *wkz_forest_t::do_work( karte_t *welt, spieler_t *sp, const koord3d &
 	nw.y = min(start.y, end.y)+(wh.y/2);
 
 	sint64 costs = baum_t::create_forest( welt, nw, wh );
-	spieler_t::add_construction_costs(sp, costs * welt->get_settings().cst_remove_tree, end.get_2d(), ignore_wt);
+	spieler_t::book_construction_costs(sp, costs * welt->get_settings().cst_remove_tree, end.get_2d(), ignore_wt);
 
 	return NULL;
 }
@@ -5257,8 +5257,8 @@ const char *wkz_make_stop_public_t::work( karte_t *welt, spieler_t *sp, koord3d 
 					t->set_besitzer( welt->get_spieler(1) );
 				}
 				spieler_t::add_maintenance( w->get_besitzer(), -costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
-				spieler_t::add_construction_costs(   w->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_waytype());
-				spieler_t::add_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
+				spieler_t::book_construction_costs(   w->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_waytype());
+				spieler_t::book_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
 				w->set_besitzer( welt->get_spieler(1) );
 				w->set_flag(ding_t::dirty);
 				spieler_t::add_maintenance( welt->get_spieler(1), costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
@@ -5267,11 +5267,11 @@ const char *wkz_make_stop_public_t::work( karte_t *welt, spieler_t *sp, koord3d 
 					if(  wayobj_t *wo = ding_cast<wayobj_t>(gr->obj_bei(i))  ) {
 						costs = wo->get_besch()->get_wartung();
 						spieler_t::add_maintenance( wo->get_besitzer(), -costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
-						spieler_t::add_construction_costs(wo->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_waytype());
+						spieler_t::book_construction_costs(wo->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_waytype());
 						wo->set_besitzer( welt->get_spieler(1) );
 						wo->set_flag(ding_t::dirty);
 						spieler_t::add_maintenance( welt->get_spieler(1), costs, (w->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : w->get_waytype() );
-						spieler_t::add_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
+						spieler_t::book_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
 					}
 				}
 				// and add message

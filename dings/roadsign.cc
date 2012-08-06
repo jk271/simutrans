@@ -564,7 +564,7 @@ void roadsign_t::rdwr(loadsave_t *file)
 
 void roadsign_t::entferne(spieler_t *sp)
 {
-	spieler_t::add_construction_costs(sp, -besch->get_preis(), get_pos().get_2d(), ignore_wt);
+	spieler_t::book_construction_costs(sp, -besch->get_preis(), get_pos().get_2d(), ignore_wt);
 }
 
 

@@ -167,7 +167,7 @@ void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const wayty
 }
 
 
-void spieler_t::add_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
+void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
 	finance->book_revenue(amount, wt, index);
 	add_money_message(amount, k);
 }

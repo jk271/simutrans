@@ -152,16 +152,16 @@ public:
 	void book_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
 
 	/**
-	 * Adds income to accounting statistics. Cargo with unknown cathegory will be 
-	 * accounted as cathegory 7. 
+	 * Adds income to accounting statistics. 
 	 * @param amount earned money
 	 * @param tt transport type used in accounting statistics
-	 * @param cathegory parameter "catg" of goods [0,7] from pak files, special 
-	 *                  values -2 for passenger and -1 for mail
-	 *                  if parameter tt is TT_POWERLINE, cathegory is ignored
+	 * @param cathegory parameter
+	 * 	0 ... passenger
+	 *	1 ... mail
+	 *	2 ... good (and powerlines revenue)
 	 * @author jk271
 	 */
-	void add_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
+	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	/**
          * Adds running costs to accounting statistics. 

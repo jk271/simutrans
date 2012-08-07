@@ -170,7 +170,7 @@ public:
          * @param wt
 	 * @author jk271
          */
-        void add_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
+        void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
 	 * books toll payed by our company to someone else

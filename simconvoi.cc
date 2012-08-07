@@ -639,7 +639,7 @@ void convoi_t::add_running_cost( const weg_t *weg )
 		weg->get_besitzer()->add_toll_received( toll, get_schedule()->get_waytype() );
 		get_besitzer()->add_toll_payed(        -toll, get_schedule()->get_waytype() );
 	}
-	get_besitzer()->add_running_costs( sum_running_costs, get_schedule()->get_waytype());
+	get_besitzer()->book_running_costs( sum_running_costs, get_schedule()->get_waytype());
 
 	book( sum_running_costs, CONVOI_OPERATIONS );
 	book( sum_running_costs, CONVOI_PROFIT );

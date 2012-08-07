@@ -173,7 +173,7 @@ void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t
 }
 
 
-void spieler_t::add_running_costs(const sint64 amount, const waytype_t wt){
+void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
 	finance->book_running_costs(amount, wt);
 }
 

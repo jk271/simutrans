@@ -1094,7 +1094,7 @@ void spieler_t::tell_tool_result(werkzeug_t *tool, koord3d, const char *err, boo
 }
 
 
-void spieler_t::add_convoi_number(int count)
+void spieler_t::book_convoi_number(int count)
 {
 	finance->book_convoi_number(count);
 }

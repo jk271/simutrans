@@ -123,7 +123,7 @@ public:
 	 * supersedes buche( count, COST_ALL_CONVOIS)
 	 * @author jk271
 	 */
-	void add_convoi_number(int count);
+	void book_convoi_number(int count);
 
 	/**
 	 * Adds construction costs to accounting statistics, 

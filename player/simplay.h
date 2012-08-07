@@ -196,7 +196,7 @@ public:
 	 *                  other same as in the pak files)
 	 * @author jk271
 	 */
-	void add_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
 	bool has_money_or_assets() const;
 

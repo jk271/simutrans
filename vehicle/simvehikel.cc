@@ -741,7 +741,7 @@ uint16 vehikel_t::unload_freight(halthandle_t halt)
 					// book delivered goods to destination
 					if(end_halt==halt) {
 						// passanger .. 0, mail .. 1, other .. 2
-						get_besitzer()->add_transported( menge, get_besch()->get_waytype(), tmp.get_index() );
+						get_besitzer()->book_transported( menge, get_besch()->get_waytype(), tmp.get_index() );
 					}
 
 					i = fracht.erase( i );

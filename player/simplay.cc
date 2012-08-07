@@ -188,7 +188,7 @@ void spieler_t::add_toll_received(const sint64 amount, const waytype_t wt){
 }
 
 
-void spieler_t::add_transported(const sint64 amount, const waytype_t wt, int index){
+void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index){
 	finance->book_transported(amount, wt, index);
 }
 

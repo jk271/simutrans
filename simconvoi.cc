@@ -636,8 +636,8 @@ void convoi_t::add_running_cost( const weg_t *weg )
 			// now add normal way toll be maintenance
 			toll += (weg->get_besch()->get_wartung()*welt->get_settings().get_way_toll_waycost_percentage())/100l;
 		}
-		weg->get_besitzer()->add_toll_received( toll, get_schedule()->get_waytype() );
-		get_besitzer()->add_toll_payed(        -toll, get_schedule()->get_waytype() );
+		weg->get_besitzer()->book_toll_received( toll, get_schedule()->get_waytype() );
+		get_besitzer()->book_toll_payed(        -toll, get_schedule()->get_waytype() );
 	}
 	get_besitzer()->book_running_costs( sum_running_costs, get_schedule()->get_waytype());
 

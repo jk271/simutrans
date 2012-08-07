@@ -178,7 +178,7 @@ public:
 	 * @param tt type of transport used for assounting statistisc
 	 * @author jk271
 	 */
-	void add_toll_payed(const sint64 amount, const waytype_t wt=ignore_wt);
+	void book_toll_payed(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
 	 * books toll payed to out company by someone else
@@ -186,7 +186,7 @@ public:
 	 * @param tt type of transport used for assounting statistisc
 	 * @author jk271
 	 */
-	void add_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
+	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
 	/**
 	 * Add amount of transported passanger, mail, goods to accounting statistics

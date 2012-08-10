@@ -4300,7 +4300,6 @@ DBG_MESSAGE("karte_t::speichern(loadsave_t *file)", "start");
 	}
 
 	// rotate the map until it can be saved completely
-	nosave_warning = nosave = false;
 	for( int i=0;  i<4  &&  nosave_warning;  i++  ) {
 		rotate90();
 		needs_redraw = true;

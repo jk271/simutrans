@@ -145,19 +145,22 @@ class finance_t {
 
 	/**
  	* Der Kontostand.
- 	*
+ 	* Amount of money, previously known as "konto"
  	* @author Hj. Malthaner
  	*/
-	sint64 konto;
+	sint64 account_balance;
 
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
+	 * Shows how many months you have been in red numbers.
 	 *
 	 * @author Hj. Malthaner
 	 */
 	sint32 konto_ueberzogen;
 
-	// remember the starting money
+	/** 
+	 * remember the starting money Used e.g. in scenarios.
+	 */
 	sint64 starting_money;
 
 	/**
@@ -201,7 +204,7 @@ public:
 		veh_year[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 		veh_month[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 
-		konto += amount;
+		account_balance += amount;
 	}
 
 
@@ -236,7 +239,7 @@ public:
 		veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
 		veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
 
-		konto += amount;
+		account_balance += amount;
 	}
 
 	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index){
@@ -247,28 +250,28 @@ public:
 		veh_year[tt][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
 		veh_month[tt][0][ATV_REVENUE_PASSENGER+index] += (sint64) amount;
 
-		konto += amount;
+		account_balance += amount;
 	}
 
 	inline void book_running_costs(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_RUNNING_COST] += amount;
 		veh_month[tt][0][ATV_RUNNING_COST] += amount;
-		konto += amount;
+		account_balance += amount;
 	}
 
 	inline void book_toll_payed(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
 		veh_month[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
-		konto += amount;
+		account_balance += amount;
 	}
 
 	inline void book_toll_received(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_TOLL_RECEIVED] += (sint64) amount;
 		veh_month[tt][0][ATV_TOLL_RECEIVED] += (sint64) amount;
-		konto += amount;
+		account_balance += amount;
 	}
 
 	inline void book_transported(const sint64 amount, const waytype_t wt, int index){
@@ -304,7 +307,7 @@ public:
 	/**
 	 * Returns amount of money on account (also known as konto)
 	 */
-	inline sint64 get_account_balance() { return konto; }
+	inline sint64 get_account_balance() { return account_balance; }
 
 	/**
 	* Returns the finance history for player
@@ -376,7 +379,7 @@ public:
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
-	bool has_money_or_assets() { return (( konto + get_finance_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
+	bool has_money_or_assets() { return (( account_balance + get_finance_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
 
 	/**
  	* Translates finance statistisc from old (version<=111) format to new one.
@@ -404,7 +407,7 @@ public:
 	/* loads or saves finance statistic */
 	void rdwr(loadsave_t *file);
 
-	inline void set_account_balance( const sint64 amount ) { konto = amount; }
+	inline void set_account_balance( const sint64 amount ) { account_balance = amount; }
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
 

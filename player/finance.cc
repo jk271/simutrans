@@ -24,8 +24,8 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	player(_player),
 	world(_world)
 {
-	konto = world->get_settings().get_starting_money(world->get_last_year());
-	starting_money = konto;
+	account_balance = world->get_settings().get_starting_money(world->get_last_year());
+	starting_money = account_balance;
 	konto_ueberzogen = 0;
 
 	/**
@@ -162,10 +162,10 @@ void finance_t::calc_finance_history() {
 	veh_year[TT_ALL][0][ATV_PROFIT_MARGIN] = calc_margin(veh_year[TT_ALL][0][ATV_OPERATING_PROFIT], veh_year[TT_ALL][0][ATV_REVENUE]);
 
 	// undistinguishable by type of transport 
-	com_month[0][ATC_CASH] = konto;
-	com_year [0][ATC_CASH] = konto;
-	com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
-	com_year [0][ATC_NETWEALTH] = veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	com_month[0][ATC_CASH] = account_balance;
+	com_year [0][ATC_CASH] = account_balance;
+	com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + account_balance;
+	com_year [0][ATC_NETWEALTH] = veh_year[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + account_balance;
 	com_month[0][ATC_SCENARIO_COMPLETED] = com_year[0][ATC_SCENARIO_COMPLETED] = world->get_scenario()->completed(player->get_player_nr());
 
 }
@@ -599,7 +599,7 @@ void finance_t::set_assets(const sint64 (&assets)[TT_MAX])
 	for(int i=0; i < TT_MAX; ++i){
 		veh_year[i][0][ATV_NON_FINANTIAL_ASSETS] = veh_month[i][0][ATV_NON_FINANTIAL_ASSETS] = assets[i];
 	}
-	com_year[0][ATC_NETWEALTH] = com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + konto;
+	com_year[0][ATC_NETWEALTH] = com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANTIAL_ASSETS] + account_balance;
 }
 
 

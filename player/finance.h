@@ -158,10 +158,10 @@ public:
 	 */
 	sint32 konto_ueberzogen;
 
+private:
 	// remember the starting money
 	sint64 starting_money;
 
-private:
 	/**
 	 * finance history - will supersede the finance_history by hsiegeln 
 	 * from version 111 or 112
@@ -367,6 +367,7 @@ public:
 
 	inline sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
 
+	inline sint64 get_starting_money() { return starting_money; }
 	/**
 	 * returns vehicle maintenance with bits_per_month
 	 * @author jk271
@@ -404,6 +405,8 @@ public:
 	void rdwr(loadsave_t *file);
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
+
+	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
 
 	int translate_index_cost_to_at(int cost_);
 

@@ -641,7 +641,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
 			finance_history_year[year][cost_type] = 0;
 			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
-				finance_history_year[year][cost_type] = finance->starting_money;
+				finance_history_year[year][cost_type] = finance->get_starting_money();
 			}
 		}
 	}
@@ -650,7 +650,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
 			finance_history_month[month][cost_type] = 0;
 			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
-				finance_history_month[month][cost_type] = finance->starting_money;
+				finance_history_month[month][cost_type] = finance->get_starting_money();
 			}
 		}
 	}
@@ -796,7 +796,11 @@ void spieler_t::rdwr(loadsave_t *file)
 		finance->rdwr( file );
 	}
 	if(  file->get_version()>102002  ) {
-		file->rdwr_longlong(finance->starting_money);
+		sint64 starting_money = finance->get_starting_money();
+		file->rdwr_longlong(starting_money);
+		if(  file->is_loading()  ) {
+			finance->set_starting_money(starting_money);
+		}
 	}
 
 	// we have to pay maintenance at the beginning of a month

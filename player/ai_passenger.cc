@@ -1217,7 +1217,7 @@ DBG_MESSAGE("ai_passenger_t::do_passenger_ki()","using %s on %s",road_vehicle->g
 		// despite its name: try airplane
 		case NR_BAUE_AIRPORT_ROUTE:
 			// try airline (if we are wealthy enough) ...
-			if(  !air_transport  ||  finance->get_finance_history_com_month(1, ATC_CASH) < finance->starting_money  ||
+			if(  !air_transport  ||  finance->get_finance_history_com_month(1, ATC_CASH) < finance->get_starting_money()  ||
 			     !end_stadt  ||  !create_air_transport_vehikel( start_stadt, end_stadt )  ) {
 				state = NR_BAUE_CLEAN_UP;
 			}

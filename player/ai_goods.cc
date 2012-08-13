@@ -684,7 +684,7 @@ bool ai_goods_t::create_simple_rail_transport()
 	// build with terraforming if shorter and enough money is available
 	bool with_tf = (baumaulwurf.get_count() > 4)  &&  (10*baumaulwurf.get_count() < 9*bauigel.get_count()  ||  bauigel.get_count() <= 4);
 	if (with_tf) {
-		with_tf &= baumaulwurf.calc_costs() < finance->konto;
+		with_tf &= baumaulwurf.calc_costs() < finance->get_account_balance();
 	}
 
 	// now build with or without terraforming

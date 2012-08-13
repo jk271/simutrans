@@ -143,7 +143,6 @@ class finance_t {
 
 	karte_t * world;
 
-public:
 	/**
  	* Der Kontostand.
  	*
@@ -151,7 +150,6 @@ public:
  	*/
 	sint64 konto;
 
-private:
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 *
@@ -405,6 +403,8 @@ public:
 
 	/* loads or saves finance statistic */
 	void rdwr(loadsave_t *file);
+
+	inline void set_account_balance( const sint64 amount ) { konto = amount; }
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
 

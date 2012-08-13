@@ -940,7 +940,7 @@ void ai_passenger_t::step()
 			 * The second condition may happen due to extensive replacement operations;
 			 * in such a case it is save enough to expand anyway.
 			 */
-			if(!(finance->konto>0  ||  finance->has_money_or_assets())  ) {
+			if(!(finance->get_account_balance()>0  ||  finance->has_money_or_assets())  ) {
 				return;
 			}
 

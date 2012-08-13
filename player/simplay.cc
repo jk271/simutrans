@@ -658,7 +658,10 @@ void spieler_t::rdwr(loadsave_t *file)
 	xml_tag_t sss( file, "spieler_t" );
 	sint32 halt_count=0;
 
-	file->rdwr_longlong(finance->konto);
+	sint64 konto = finance->get_account_balance();
+	file->rdwr_longlong(konto);
+	finance->set_account_balance(konto);
+
 	sint32 konto_ueberzogen = finance->get_konto_ueberzogen();
 	file->rdwr_long(konto_ueberzogen);
 	finance->set_konto_ueberzogen( konto_ueberzogen );
@@ -809,7 +812,7 @@ void spieler_t::rdwr(loadsave_t *file)
 	if(file->get_version()<99018  &&  file->is_loading()) {
 		finance_history_month[0][COST_MAINTENANCE] -= finance_history_month[1][COST_MAINTENANCE];
 		finance_history_year [0][COST_MAINTENANCE] -= finance_history_month[1][COST_MAINTENANCE];
-		finance->konto -= finance_history_month[1][COST_MAINTENANCE];
+		finance->set_account_balance(finance->get_account_balance() - finance_history_month[1][COST_MAINTENANCE]);
 	}
 
 	file->rdwr_bool(automat);

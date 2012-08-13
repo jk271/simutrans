@@ -334,7 +334,7 @@ void spieler_t::neuer_monat()
 
 	// Bankrott ?
 	if(  finance->get_account_balance() < 0  ) {
-		finance->konto_ueberzogen++;
+		finance->increase_konto_ueberzogen();
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
 				if(  finance->get_netwealth() < 0 ) {
@@ -350,7 +350,7 @@ void spieler_t::neuer_monat()
 				else {
 					// tell the player (just warning)
 					buf.clear();
-					buf.printf( translator::translate("On loan since %i month(s)"), finance->konto_ueberzogen );
+					buf.printf( translator::translate("On loan since %i month(s)"), finance->get_konto_ueberzogen() );
 					welt->get_message()->add_message( buf, koord::invalid, message_t::ai, player_nr, IMG_LEER );
 				}
 			}
@@ -370,7 +370,7 @@ void spieler_t::neuer_monat()
 					else {
 						// just minus in account (just tell)
 						buf.clear();
-						buf.printf( translator::translate("On loan since %i month(s)"), finance->konto_ueberzogen );
+						buf.printf( translator::translate("On loan since %i month(s)"), finance->get_konto_ueberzogen() );
 						welt->get_message()->add_message( buf, koord::invalid, message_t::ai, player_nr, IMG_LEER );
 					}
 				}
@@ -378,7 +378,7 @@ void spieler_t::neuer_monat()
 		}
 	}
 	else {
-		finance->konto_ueberzogen = 0;
+		finance->set_konto_ueberzogen( 0 );
 	}
 }
 
@@ -659,7 +659,9 @@ void spieler_t::rdwr(loadsave_t *file)
 	sint32 halt_count=0;
 
 	file->rdwr_longlong(finance->konto);
-	file->rdwr_long(finance->konto_ueberzogen);
+	sint32 konto_ueberzogen = finance->get_konto_ueberzogen();
+	file->rdwr_long(konto_ueberzogen);
+	finance->set_konto_ueberzogen( konto_ueberzogen );
 	
 	if( ( file->get_version() < 111005 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
 		finance->export_to_cost_month( finance_history_month );
@@ -1110,7 +1112,7 @@ double spieler_t::get_konto_als_double() const {
 
 
 int spieler_t::get_konto_ueberzogen() const {
-	return finance->konto_ueberzogen;
+	return finance->get_konto_ueberzogen();
 }
 
 

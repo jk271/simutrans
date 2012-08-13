@@ -151,6 +151,7 @@ public:
  	*/
 	sint64 konto;
 
+private:
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 *
@@ -158,7 +159,6 @@ public:
 	 */
 	sint32 konto_ueberzogen;
 
-private:
 	// remember the starting money
 	sint64 starting_money;
 
@@ -351,6 +351,7 @@ public:
 	sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
 	sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
 
+	inline sint32 get_konto_ueberzogen() { return konto_ueberzogen; }
 	/**
 	 * returns maintenance 
 	 * @param tt transport type (Truck, Ship Air, ...)
@@ -387,6 +388,7 @@ public:
 	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 
+	inline void increase_konto_ueberzogen() { konto_ueberzogen++; }
 	/**
 	* returns true if company bancrupted
 	*/
@@ -405,6 +407,8 @@ public:
 	void rdwr(loadsave_t *file);
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
+
+	inline void set_konto_ueberzogen( const sint32 num ) { konto_ueberzogen = num; }
 
 	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
 

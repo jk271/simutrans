@@ -153,6 +153,7 @@ class finance_t {
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 * Shows how many months you have been in red numbers.
+	 * todo: English translation of variable
 	 *
 	 * @author Hj. Malthaner
 	 */

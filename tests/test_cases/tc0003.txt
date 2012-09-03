@@ -29,4 +29,4 @@ Account ballance (konto) is affected.
 Running cost is correctly subracted in finance window.
 Cash flow is affected.
 Account ballance (konto) is afected.
-
+Toll is being correctly accounted for both participants (vehicle owner and way owner)

@@ -1,0 +1,6 @@
+list of known bugs, might be merged from trunk
+jk001: 20120809 open Remove bridge costs more than build it. Detected in master too.	tc0002,step 7, pak128.cz
+	Solution: discussed in forum, it is feature.
+jk002: 20120809 open Remove tunnel costs more than build it. Detected in master too.	tc0002,step 11, pak128.cz
+	Solution: discussed in forum, it is feature.
+jk003: 20120809 open Maintenance not subtracted correctly when tunnel was build and than deleted. Maintenance is accounted to TT_OTHER! 	tc0002,step 11, pak128.cz

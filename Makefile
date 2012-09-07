@@ -1,4 +1,4 @@
-CFG ?= default
+CFG ?= jkclean
 -include config.$(CFG)
 
 

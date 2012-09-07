@@ -137,10 +137,50 @@ Test scenario:
 : Maitenance is correctly decreased.
 : Money message was displayed.
 
-13. Build a traffic light
-14. rmove traffic light.
+19. Build a traffic light
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
 
-15. Build a gate.
-16. Remove a gate.
-17. Build a choose point.
+20. Remove traffic light.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
 
+21. Build a gate.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+22. Remove a gate.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+23. Build a choose point.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+24. Remove a choose point.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.

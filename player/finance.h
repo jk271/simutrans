@@ -55,6 +55,7 @@ enum transport_type {
 /** 
  * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
  * - concerning to whole company
+ * ATC = accounting type commmon (common means data common for all transport types)
  * @author jk271
  */
 enum accounting_type_common {
@@ -73,6 +74,7 @@ enum accounting_type_common {
 
 /** 
  * supersedes COST_ types, that CAN be distinguished by type of transport 
+ * ATV = accounting type vehicles
  * @author jk271
  */
 enum accounting_type_vehicles {

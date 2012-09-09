@@ -28,6 +28,30 @@
 #define MAX_PLAYER_HISTORY_MONTHS2  (25) // number of months to keep history
 
 
+/**
+ * type of transport used in accounting statistics
+ * waytype_t was not used because of values assigned to air_wt and powerline_wt. 
+ * There are also building like railway station that can be distinguished 
+ * by transport_type and can not be distinguished by waytype_t
+ * @author jk271
+ */
+enum transport_type {
+	TT_ALL=0,
+	TT_MONORAIL,
+	TT_MAGLEV,
+	TT_RAILWAY,
+	TT_TRAM,
+	TT_NARROWGAUGE,
+	TT_ROAD,
+	TT_SHIP,
+	TT_AIR,
+	TT_OTHER, // everything other that can not be differentiated (e.g. houses), not powerlines
+	TT_MAX_VEH = TT_OTHER, //
+	TT_POWERLINE,
+	TT_MAX
+};
+
+
 /** 
  * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
  * - concerning to whole company

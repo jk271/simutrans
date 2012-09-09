@@ -1995,9 +1995,7 @@ bool wegbauer_t::baue_tunnelboden()
 			}
 			tunnel->calc_bild();
 			cost -= tunnel_besch->get_preis();
-// jk todo: fix merge
-//			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype() ); 
-			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), tunnel_besch->get_waytype() );
+			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), (tunnel_besch->get_weg_besch()->get_styp() == weg_t::type_tram) ? tram_wt : tunnel_besch->get_waytype() ); 
 		}
 		else if(gr->get_typ()==grund_t::tunnelboden) {
 			// check for extension only ...

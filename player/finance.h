@@ -231,7 +231,12 @@ class finance_t {
 public:
 	finance_t(spieler_t * _player, karte_t * _world);
 
-
+	/**
+	* Adds construction cost to finance stats.
+	* @param amount sum of money
+	* @param wt way type, e.g. tram_wt
+	* @utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
+	*/
 	inline void book_construction_costs(const sint64 amount, const waytype_t wt, const int utyp){
 		transport_type tt = translate_waytype_to_tt(wt);
 		if(( tt == TT_OTHER ) && ( utyp !=0 ) ) {
@@ -243,7 +248,6 @@ public:
 		account_balance += amount;
 	}
 
-
 	/**
 	 * sums up "count" with number of convois in statistics, 
 	 * supersedes buche( count, COST_ALL_CONVOIS)
@@ -254,7 +258,12 @@ public:
 		com_month[0][ATC_ALL_CONVOIS] += count;
 	}
 
-
+	/** 
+	* Adds/subracts maintenance into/from finance stats.
+	* @param change monthly maintenance cost difference
+	* @param wt - waytype for accounting purposes
+	* @param utyp - used for distinguishing of transport type of buildings. Used with buildings only.
+	*/
 	inline sint32 book_maintenance(sint32 change, waytype_t const wt, const int utyp) {
 		transport_type tt = translate_waytype_to_tt(wt);
 		if(( tt ==TT_OTHER ) && ( utyp !=0 ) ) {
@@ -266,7 +275,11 @@ public:
 		return maintenance[tt];
 	}
 
-
+	/**
+	* Account purchase of new vehicle: Subracts money, increases assets.
+	* @param amount money paid for vehicle
+	* @param wt - waytype of vehicle
+	*/
 	inline void book_new_vehicle(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
@@ -278,6 +291,12 @@ public:
 		account_balance += amount;
 	}
 
+	/**
+	* Accounts income from transport of passenger, mail, goods or electricity supply
+	* @param amount earned money
+	* @param wt waytype of vehicle
+	* @param index 0 = passenger, 1 = mail, 2 = goods 
+	*/
 	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
@@ -289,6 +308,11 @@ public:
 		account_balance += amount;
 	}
 
+	/**
+	* Accounts distance-based running costs
+	* @param amount sum of money
+	* @param wt way type 
+	*/
 	inline void book_running_costs(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_RUNNING_COST] += amount;
@@ -296,6 +320,11 @@ public:
 		account_balance += amount;
 	}
 
+	/**
+	* Account toll we have paid to any other company.
+	* @param amount sum of money
+	* @param wt way type 
+	*/
 	inline void book_toll_payed(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
@@ -303,6 +332,11 @@ public:
 		account_balance += amount;
 	}
 
+	/**
+	* Account toll we have received from another company.
+	* @param amount sum of money
+	* @param wt way type
+	*/
 	inline void book_toll_received(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_TOLL_RECEIVED] += (sint64) amount;
@@ -310,6 +344,12 @@ public:
 		account_balance += amount;
 	}
 
+	/**
+	* Makes stats of amount of transported passenger, mail and goods
+	* @param amount sum of money
+	* @param wt way type
+	* @param index 0 = passenger, 1 = mail, 2 = goods
+	*/
 	inline void book_transported(const sint64 amount, const waytype_t wt, int index){
 		const transport_type tt = translate_waytype_to_tt(wt);
 

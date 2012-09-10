@@ -54,9 +54,14 @@ enum transport_type {
 
 /** 
  * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
- * - concerning to whole company
+ * - the data are concerning to whole company
+ *
  * ATC = accounting type commmon (common means data common for all transport types)
- * @author jk271
+ *
+ * These constants are intended for use in class finance_t (and in money_frame_t 
+ * or in scriped scenarios). 
+ * If you need to use it in another place consider addition of new method like
+ * has_money() or has_convoi()
  */
 enum accounting_type_common {
 	ATC_CASH = 0,		// Cash, COST_CASH
@@ -405,11 +410,17 @@ public:
 	inline sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
 
 	inline sint64 get_starting_money() { return starting_money; }
+
 	/**
 	 * returns vehicle maintenance with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
+
+	/**
+	* @returns TRUE if there is at least one convoi, otherwise returns false
+	*/
+	bool has_convoi() const { return (com_year[0][ATC_ALL_CONVOIS] > 0); }
 
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0

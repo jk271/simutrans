@@ -88,13 +88,13 @@ enum accounting_type_vehicles {
 	ATV_REVENUE_MAIL,       // revenue from mail transport
 	ATV_REVENUE_GOOD,          // revenue from good transport
 	ATV_REVENUE_TRANSPORT,	// operating profit = passenger + mail+ goods = COST_INCOME
-	ATV_TOLL_RECEIVED,	// toll payed to you by another player
+	ATV_TOLL_RECEIVED,	// toll paid to you by another player
 	ATV_REVENUE,            // operating profit = revenue_transport + toll = passenger + mail+ goods + toll_received
 
 	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
 	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
 	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
-	ATV_TOLL_PAYED,			// toll payed by you to another player
+	ATV_TOLL_PAYED,			// toll paid by you to another player
 	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAYED
 	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
 	ATV_NEW_VEHICLE,			// New vehicles
@@ -325,7 +325,7 @@ public:
 	* @param amount sum of money
 	* @param wt way type 
 	*/
-	inline void book_toll_payed(const sint64 amount, const waytype_t wt){
+	inline void book_toll_paid(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
 		veh_month[tt][0][ATV_TOLL_PAYED] += (sint64) amount;

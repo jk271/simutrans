@@ -178,8 +178,8 @@ void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
 }
 
 
-void spieler_t::book_toll_payed(const sint64 amount, const waytype_t wt){
-	finance->book_toll_payed(amount, wt);
+void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt){
+	finance->book_toll_paid(amount, wt);
 }
 
 

@@ -173,16 +173,16 @@ public:
         void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
-	 * books toll payed by our company to someone else
-	 * @param amount money payed to our company
+	 * books toll paid by our company to someone else
+	 * @param amount money paid to our company
 	 * @param tt type of transport used for assounting statistisc
 	 * @author jk271
 	 */
-	void book_toll_payed(const sint64 amount, const waytype_t wt=ignore_wt);
+	void book_toll_paid(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
-	 * books toll payed to out company by someone else
-	 * @param amount money payed for usage of our roads,railway,channels, ... ; positive sign
+	 * books toll paid to out company by someone else
+	 * @param amount money paid for usage of our roads,railway,channels, ... ; positive sign
 	 * @param tt type of transport used for assounting statistisc
 	 * @author jk271
 	 */

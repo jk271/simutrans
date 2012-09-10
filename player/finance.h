@@ -165,6 +165,7 @@ inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
  * Another benefit: It leads to shorter variable names. 
  **/
 class finance_t {
+	/** transport company */
 	spieler_t * player;
 
 	karte_t * world;
@@ -179,11 +180,10 @@ class finance_t {
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 * Shows how many months you have been in red numbers.
-	 * todo: English translation of variable
 	 *
 	 * @author Hj. Malthaner
 	 */
-	sint32 konto_ueberzogen;
+	sint32 account_overdrawn;
 
 	/** 
 	 * remember the starting money Used e.g. in scenarios.
@@ -198,6 +198,10 @@ class finance_t {
  	* @author jk271
  	*/
 	sint64 com_year[MAX_PLAYER_HISTORY_YEARS2][ATC_MAX];
+
+	/**
+	* monthly finance history, data not distinguishable by transport type
+	*/
 	sint64 com_month[MAX_PLAYER_HISTORY_MONTHS2][ATC_MAX];
 
 	/**
@@ -379,7 +383,11 @@ public:
 	sint64* get_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
 	sint64* get_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
 
-	inline sint32 get_konto_ueberzogen() { return konto_ueberzogen; }
+	/**
+	* @return how much month we have been in red numbers (= we had negative account balance)
+	*/
+	inline sint32 get_account_overdrawn() { return account_overdrawn; }
+
 	/**
 	 * returns maintenance 
 	 * @param tt transport type (Truck, Ship Air, ...)
@@ -416,7 +424,11 @@ public:
 	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 
-	inline void increase_konto_ueberzogen() { konto_ueberzogen++; }
+	/**
+	* increases number of month for which the company is in red numbers
+	*/
+	inline void increase_account_overdrawn() { account_overdrawn++; }
+
 	/**
 	* returns true if company bancrupted
 	*/
@@ -434,11 +446,19 @@ public:
 	/* loads or saves finance statistic */
 	void rdwr(loadsave_t *file);
 
+	/**
+	* Sets account balance. This method enables to load old game format.
+	* Do NOT use it in any other places!
+	*/
 	inline void set_account_balance( const sint64 amount ) { account_balance = amount; }
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
 
-	inline void set_konto_ueberzogen( const sint32 num ) { konto_ueberzogen = num; }
+	/**
+	* Sets number of months for that the account balance is below zero. This method enables to load old game format.
+	* Do NOT use it in any other places for any other purpose!
+	*/
+	inline void set_account_overdrawn( const sint32 num ) { account_overdrawn = num; }
 
 	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
 

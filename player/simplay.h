@@ -277,7 +277,7 @@ public:
 	 * @return true wenn Konto Überzogen ist
 	 * @author Hj. Malthaner
 	 */
-	int get_konto_ueberzogen() const;
+	int get_account_overdrawn() const;
 
 	/**
 	 * Zeigt Meldungen aus der Queue des Spielers auf dem Bildschirm an

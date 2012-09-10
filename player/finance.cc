@@ -26,7 +26,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 {
 	account_balance = world->get_settings().get_starting_money(world->get_last_year());
 	starting_money = account_balance;
-	konto_ueberzogen = 0;
+	account_overdrawn = 0;
 
 	/**
 	 * initialize finance history arrays

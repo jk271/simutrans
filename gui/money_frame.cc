@@ -477,11 +477,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	}
 	else if(  sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
-		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_konto_ueberzogen() );
+		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_account_overdrawn() );
 	}
-	else if(  sp->get_konto_ueberzogen()  ) {
+	else if(  sp->get_account_overdrawn()  ) {
 		warn.set_color( COL_YELLOW );
-		sprintf( str_buf[15], translator::translate("On loan since %i month(s)"), sp->get_konto_ueberzogen() );
+		sprintf( str_buf[15], translator::translate("On loan since %i month(s)"), sp->get_account_overdrawn() );
 	}
 	else {
 		str_buf[15][0] = '\0';

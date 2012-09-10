@@ -342,42 +342,42 @@ public:
 	* 'proxy' for more complicated internal data structures
 	* int tt is COST_ !!!
 	*/
-	sint64 get_finance_history_year(int tt, int year, int type);
-	sint64 get_finance_history_month(int tt, int month, int type);
+	sint64 get_history_year(int tt, int year, int type);
+	sint64 get_history_month(int tt, int month, int type);
 
 	/**
 	 * used in scripted scenario
 	 */
-	sint64 get_finance_history_month_converted( int month, int type);
+	sint64 get_history_month_converted( int month, int type);
 
 	/**
 	* Returns the finance history (indistinguishable part) for player
 	* @author hsiegeln, jk271
 	*/
-	sint64 get_finance_history_com_year(int year, int type) { return com_year[year][type]; }
-	sint64 get_finance_history_com_month(int month, int type) { return com_month[month][type]; }
+	sint64 get_history_com_year(int year, int type) { return com_year[year][type]; }
+	sint64 get_history_com_month(int month, int type) { return com_month[month][type]; }
 
 	/**
 	* Returns the finance history (distinguishable by type of transport) for player
 	* @author hsiegeln, jk271
 	*/
-	sint64 get_finance_history_veh_year(transport_type tt, int year, int type) { return veh_year[tt][year][type]; }
-	sint64 get_finance_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
+	sint64 get_history_veh_year(transport_type tt, int year, int type) { return veh_year[tt][year][type]; }
+	sint64 get_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
 
 	/**
  	* @return finance history of indistinguishable (by type of transport) 
  	* part of finance statistics
  	* @author jk271
  	*/
-	sint64* get_finance_history_com_year() { return *com_year; }
-	sint64* get_finance_history_com_month() { return *com_month; }
+	sint64* get_history_com_year() { return *com_year; }
+	sint64* get_history_com_month() { return *com_month; }
 
 	/**
  	* @return finance history for vehicles
  	* @author jk271
  	*/
-	sint64* get_finance_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
-	sint64* get_finance_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
+	sint64* get_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
+	sint64* get_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
 
 	inline sint32 get_konto_ueberzogen() { return konto_ueberzogen; }
 	/**
@@ -406,7 +406,7 @@ public:
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
-	bool has_money_or_assets() { return (( account_balance + get_finance_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
+	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
 
 	/**
  	* Translates finance statistisc from old (version<=111) format to new one.

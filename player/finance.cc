@@ -268,9 +268,9 @@ void finance_t::export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_H
 }
 
 
-sint64 finance_t::get_finance_history_month_converted(int month, int type)
+sint64 finance_t::get_history_month_converted(int month, int type)
 {
-	sint64 value = get_finance_history_month(TT_ALL, month, type);
+	sint64 value = get_history_month(TT_ALL, month, type);
 	if ((COST_CONSTRUCTION <= type  &&  type <= COST_OPERATING_PROFIT)  ||  type == COST_WAY_TOLLS  ||  type ==  COST_POWERLINES) {
 		value = convert_money(value);
 	}
@@ -281,7 +281,7 @@ sint64 finance_t::get_finance_history_month_converted(int month, int type)
 /* 
  * int tt is COST_ !!! 
 */
-sint64 finance_t::get_finance_history_year(int tt, int year, int type) { 
+sint64 finance_t::get_history_year(int tt, int year, int type) { 
 	assert((tt>=0) && (tt<TT_MAX));
 	int index = translate_index_cost_to_at(type);
 	const int atc_index = translate_index_cost_to_atc(type);
@@ -303,7 +303,7 @@ sint64 finance_t::get_finance_history_year(int tt, int year, int type) {
 /* 
  * int tt is COST_ !!! 
 */
-sint64 finance_t::get_finance_history_month(int tt, int month, int type) { 
+sint64 finance_t::get_history_month(int tt, int month, int type) { 
 	assert((tt>=0) && (tt<TT_MAX));
 	int index = translate_index_cost_to_at(type);
 	const int atc_index = translate_index_cost_to_atc(type);

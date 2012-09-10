@@ -3785,7 +3785,7 @@ void karte_t::restore_history()
 		sint64 transported = 0;
 		for(  uint i=0;  i<MAX_PLAYER_COUNT;  i++ ) {
 			if(  spieler[i]!=NULL  ) {
-				transported += spieler[i]->get_finance()->get_finance_history_veh_month( TT_ALL, m, ATV_TRANSPORTED );
+				transported += spieler[i]->get_finance()->get_history_veh_month( TT_ALL, m, ATV_TRANSPORTED );
 			}
 		}
 		finance_history_month[m][WORLD_TRANSPORTED_GOODS] = transported;
@@ -3828,7 +3828,7 @@ void karte_t::restore_history()
 		sint64 transported_year = 0;
 		for(  uint i=0;  i<MAX_PLAYER_COUNT;  i++ ) {
 			if(  spieler[i]  ) {
-				transported_year += spieler[i]->get_finance()->get_finance_history_veh_year( TT_ALL, y, ATV_TRANSPORTED );
+				transported_year += spieler[i]->get_finance()->get_history_veh_year( TT_ALL, y, ATV_TRANSPORTED );
 			}
 		}
 		finance_history_year[y][WORLD_TRANSPORTED_GOODS] = transported_year;
@@ -3895,8 +3895,8 @@ void karte_t::update_history()
 	sint64 transported_year = 0;
 	for(  uint i=0;  i<MAX_PLAYER_COUNT;  i++ ) {
 		if(  spieler[i]!=NULL  ) {
-			transported += spieler[i]->get_finance()->get_finance_history_veh_month( TT_ALL, 0, ATV_TRANSPORTED_GOOD );
-			transported_year += spieler[i]->get_finance()->get_finance_history_veh_year( TT_ALL, 0, ATV_TRANSPORTED_GOOD );
+			transported += spieler[i]->get_finance()->get_history_veh_month( TT_ALL, 0, ATV_TRANSPORTED_GOOD );
+			transported_year += spieler[i]->get_finance()->get_history_veh_year( TT_ALL, 0, ATV_TRANSPORTED_GOOD );
 		}
 	}
 	finance_history_month[0][WORLD_TRANSPORTED_GOODS] = transported;

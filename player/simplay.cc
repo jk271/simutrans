@@ -355,7 +355,7 @@ void spieler_t::neuer_monat()
 				}
 			}
 			// no assets => nothing to go bankrupt about again
-			else if(  finance->get_maintenance(TT_ALL) != 0  ||  finance->get_finance_history_com_year(0, ATC_ALL_CONVOIS) != 0  ) {
+			else if(  finance->get_maintenance(TT_ALL) != 0  ||  finance->get_history_com_year(0, ATC_ALL_CONVOIS) != 0  ) {
 
 				// for AI, we only declare bankrupt, if total assest are below zero
 				if(  finance->get_netwealth() < 0  ) {

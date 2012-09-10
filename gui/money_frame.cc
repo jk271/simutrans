@@ -111,7 +111,7 @@ const char * money_frame_t::transport_type_values[TT_MAX] = {
  */
 const char *money_frame_t::display_money(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_finance_history_month(transport_type_option, old, type) : sp->get_finance()->get_finance_history_year(transport_type_option, old, type)) / 100.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type)) / 100.0;
 	money_to_string(buf, cost );
 	return(buf);
 }
@@ -119,7 +119,7 @@ const char *money_frame_t::display_money(int type, char *buf, int old)
 
 const char *money_frame_t::display_number(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_finance_history_month(transport_type_option, old, type) : sp->get_finance()->get_finance_history_year(transport_type_option, old, type)) / 1.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type)) / 1.0;
 	money_to_string(buf, cost );
 	buf[strlen(buf)-4] = 0;	// remove comma
 	return(buf);
@@ -132,7 +132,7 @@ const char *money_frame_t::display_number(int type, char *buf, int old)
  */
 int money_frame_t::get_money_colour(int type, int old)
 {
-	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_finance_history_month(transport_type_option, old, type) : sp->get_finance()->get_finance_history_year(transport_type_option, old, type));
+	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type));
 	if (i < 0) return MONEY_MINUS;
 	if (i > 0) return MONEY_PLUS;
 	return COL_YELLOW;
@@ -471,11 +471,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 			sprintf( str_buf[15], translator::translate("Scenario lost!") );
 		}
 	}
-	else if(sp->get_finance()->get_finance_history_com_year(0, ATC_NETWEALTH)<0) {
+	else if(sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)<0) {
 		warn.set_color( MONEY_MINUS );
 		tstrncpy(str_buf[15], translator::translate("Company bankrupt"), lengthof(str_buf[15]) );
 	}
-	else if(  sp->get_finance()->get_finance_history_com_year(0, ATC_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
+	else if(  sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
 		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_konto_ueberzogen() );
 	}

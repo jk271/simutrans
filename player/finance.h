@@ -37,13 +37,13 @@
  */
 enum transport_type {
 	TT_ALL=0,
+	TT_ROAD,
+	TT_RAILWAY,
+	TT_SHIP,
 	TT_MONORAIL,
 	TT_MAGLEV,
-	TT_RAILWAY,
 	TT_TRAM,
 	TT_NARROWGAUGE,
-	TT_ROAD,
-	TT_SHIP,
 	TT_AIR,
 	TT_OTHER, // everything other that can not be differentiated (e.g. houses), not powerlines
 	TT_MAX_VEH = TT_OTHER, //

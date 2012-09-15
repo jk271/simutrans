@@ -572,7 +572,7 @@ void weg_t::laden_abschliessen()
 {
 	spieler_t *sp = get_besitzer();
 	if(  sp  &&  besch  ) {
-		spieler_t::add_maintenance( sp,  besch->get_wartung(), get_finance_waytype() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_finance_waytype() );
 	}
 }
 

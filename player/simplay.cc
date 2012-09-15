@@ -507,7 +507,7 @@ void spieler_t::ai_bankrupt()
 					if(  w  &&  w->get_besitzer()==this  ) {
 						// take ownership
 						if (wnr>1  ||  (!gr->ist_bruecke()  &&  !gr->ist_tunnel())) {
-							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung(), w->get_finance_waytype() );
+							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung(), w->get_besch()->get_finance_waytype() );
 						}
 						w->set_besitzer(NULL); // make public
 					}

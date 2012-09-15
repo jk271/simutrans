@@ -160,7 +160,7 @@ void tunnel_t::entferne( spieler_t *sp2 )
 				weg->set_max_speed( weg->get_besch()->get_topspeed() );
 				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype());
 			}
-			spieler_t::add_maintenance( sp,  -besch->get_wartung(), weg->get_besch()->get_finance_waytype() );
+			spieler_t::add_maintenance( sp,  -besch->get_wartung(), besch->get_finance_waytype() );
 		}
 	}
 	spieler_t::book_construction_costs(sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_finance_waytype() );

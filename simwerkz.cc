@@ -1466,7 +1466,7 @@ const char *wkz_transformer_t::work( karte_t *welt, spieler_t *sp, koord3d k )
 		tunnelboden_t* tunnel = new tunnelboden_t(welt, k, 0);
 		welt->access(k.get_2d())->boden_hinzufuegen(tunnel);
 		tunnel->obj_add(new tunnel_t(welt, k, sp, tunnel_besch));
-		spieler_t::add_maintenance( sp, tunnel_besch->get_wartung() );
+		spieler_t::add_maintenance( sp, tunnel_besch->get_wartung(), tunnel_besch->get_finance_waytype() );
 		gr = tunnel;
 	}
 	else {

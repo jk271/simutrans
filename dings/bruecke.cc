@@ -125,7 +125,7 @@ void bruecke_t::laden_abschliessen()
 			spieler_t::add_maintenance( weg->get_besitzer(), -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype());
 			weg->set_besitzer(sp);
 		}
-		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_waytype() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_finance_waytype() );
 	}
 }
 
@@ -149,7 +149,7 @@ void bruecke_t::entferne( spieler_t *sp2 )
 				}
 			}
 		}
-		spieler_t::add_maintenance( sp,  -besch->get_wartung(), besch->get_waytype() );
+		spieler_t::add_maintenance( sp,  -besch->get_wartung(), besch->get_finance_waytype() );
 	}
 	spieler_t::book_construction_costs( sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_waytype() );
 }

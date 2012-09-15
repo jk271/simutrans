@@ -176,3 +176,11 @@ void schiene_t::rdwr(loadsave_t *file)
 		//DBG_MESSAGE("schiene_t::rdwr","track %s at (%i,%i) max_speed %i",bname,get_pos().x,get_pos().y,old_max_speed);
 	}
 }
+
+
+waytype_t schiene_t::get_finance_waytype() const {
+	if (  get_besch()->get_styp() == weg_t::type_tram  ) {
+		return tram_wt;
+	}
+	return track_wt;
+}

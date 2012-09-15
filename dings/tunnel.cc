@@ -53,6 +53,12 @@ waytype_t tunnel_t::get_waytype() const
 }
 
 
+waytype_t tunnel_t::get_finance_waytype() const
+{
+	return besch ? besch->get_finance_waytype() : invalid_wt; 
+}
+
+
 void tunnel_t::calc_bild()
 {
 	const grund_t *gr = welt->lookup(get_pos());

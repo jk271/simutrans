@@ -92,13 +92,13 @@ const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
 /* order has to be same as in enum transport_type in file simtypes.h */
 const char * money_frame_t::transport_type_values[TT_MAX] = {
 	"All",
+	"Truck",
+	"Train",
+	"Ship",
 	"Monorail",
 	"Maglev",
-	"Train",
 	"Tram",
 	"Narrowgauge",
-	"Truck",
-	"Ship",
 	"Air",
 	"tt_Other",
 	"Powerlines",

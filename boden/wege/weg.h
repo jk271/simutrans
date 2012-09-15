@@ -195,7 +195,7 @@ public:
 	* @return waytype used in finance stats (needed to distinguish \
 	* between train track and tram track
 	*/
-	virtual waytype_t get_finance_waytype() const { return get_waytype(); }
+	virtual waytype_t get_finance_waytype() const { return besch->get_finance_waytype(); }
 
 	/**
 	* 'Jedes Ding braucht einen Typ.'

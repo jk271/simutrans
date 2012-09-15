@@ -192,12 +192,6 @@ public:
 	virtual waytype_t get_waytype() const = 0;
 
 	/**
-	* @return waytype used in finance stats (needed to distinguish \
-	* between train track and tram track
-	*/
-	virtual waytype_t get_finance_waytype() const { return besch->get_finance_waytype(); }
-
-	/**
 	* 'Jedes Ding braucht einen Typ.'
 	* @return Gibt den typ des Objekts zurück.
 	* @author Hj. Malthaner

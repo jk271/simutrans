@@ -45,8 +45,6 @@ public:
 
 	virtual waytype_t get_waytype() const {return track_wt;}
 
-	virtual waytype_t get_finance_waytype() const;
-
 	/**
 	* @return additional info is reservation!
 	* @author prissi

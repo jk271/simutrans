@@ -138,14 +138,13 @@ gebaeude_t::~gebaeude_t()
 }
 
 
-
 void gebaeude_t::rotate90()
 {
 	ding_t::rotate90();
 
 	// must or can rotate?
 	const haus_besch_t* const haus_besch = tile->get_besch();
-	if (is_factory || haus_besch->get_all_layouts() > 1 || haus_besch->get_b() * haus_besch->get_h() > 1) {
+	if (haus_besch->get_all_layouts() > 1  ||  haus_besch->get_b() * haus_besch->get_h() > 1) {
 		uint8 layout = tile->get_layout();
 		koord new_offset = tile->get_offset();
 
@@ -169,11 +168,6 @@ void gebaeude_t::rotate90()
 			new_offset = koord(haus_besch->get_h(tile->get_layout()) - 1 - new_offset.y, new_offset.x);
 		}
 
-		// correct factory zero pos
-		if(is_factory  &&  new_offset==koord(0,0)) {
-			ptr.fab->set_pos( get_pos() );
-		}
-
 		// suche a tile exist?
 		if(  haus_besch->get_b(layout) > new_offset.x  &&  haus_besch->get_h(layout) > new_offset.y  ) {
 			const haus_tile_besch_t* const new_tile = haus_besch->get_tile(layout, new_offset.x, new_offset.y);
@@ -186,8 +180,8 @@ void gebaeude_t::rotate90()
 				if(  !is_factory  &&  new_offset!=koord(0,0)  ) {
 					welt->set_nosave_warning();
 				}
-				if(  is_factory  &&  (new_offset!=koord(0,0)  ||  ptr.fab->get_besch()->get_haus()->get_tile(layout,0,0)==NULL)  ) {
-					// there are factories without a valid zero tile
+				if(  is_factory  ) {
+					// there are factories with a broken tile
 					// => this map rotation cannot be reloaded!
 					welt->set_nosave();
 				}
@@ -574,25 +568,31 @@ void gebaeude_t::zeige_info()
 
 	if(!special  ||  (umgebung_t::townhall_info  &&  old_count==win_get_open_count()) ) {
 		// open info window for the first tile of our building (not relying on presence of (0,0) tile)
-		const haus_besch_t* const haus_besch = tile->get_besch();
-		const uint8 layout = tile->get_layout();
-		koord k;
-		for(k.x=0; k.x<haus_besch->get_b(layout); k.x++) {
-			for(k.y=0; k.y<haus_besch->get_h(layout); k.y++) {
-				const haus_tile_besch_t *tile = haus_besch->get_tile(layout, k.x, k.y);
-				if (tile==NULL  ||  !tile->has_image()) {
-					continue;
-				}
-				if (grund_t *gr = welt->lookup( get_pos() - get_tile()->get_offset() + k)) {
-					gebaeude_t *gb = gr->find<gebaeude_t>();
-					if (gb  &&  gb->get_tile() == tile) {
-						gb->ding_t::zeige_info();
-						return;
-					}
+		get_first_tile()->ding_t::zeige_info();
+	}
+}
+
+
+gebaeude_t* gebaeude_t::get_first_tile()
+{
+	const haus_besch_t* const haus_besch = tile->get_besch();
+	const uint8 layout = tile->get_layout();
+	koord k;
+	for(k.x=0; k.x<haus_besch->get_b(layout); k.x++) {
+		for(k.y=0; k.y<haus_besch->get_h(layout); k.y++) {
+			const haus_tile_besch_t *tile = haus_besch->get_tile(layout, k.x, k.y);
+			if (tile==NULL  ||  !tile->has_image()) {
+				continue;
+			}
+			if (grund_t *gr = welt->lookup( get_pos() - get_tile()->get_offset() + k)) {
+				gebaeude_t *gb = gr->find<gebaeude_t>();
+				if (gb  &&  gb->get_tile() == tile) {
+					return gb;
 				}
 			}
 		}
 	}
+	return this;
 }
 
 

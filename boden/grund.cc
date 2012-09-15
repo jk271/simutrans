@@ -1453,7 +1453,7 @@ sint64 grund_t::neuen_weg_bauen(weg_t *weg, ribi_t::ribi ribi, spieler_t *sp)
 
 		// just add the maintenance
 		if(sp && !ist_wasser()) {
-			spieler_t::add_maintenance( sp, weg->get_besch()->get_wartung(), (weg->get_besch()->get_styp() == weg_t::type_tram) ? tram_wt : weg->get_waytype() );
+			spieler_t::add_maintenance( sp, weg->get_besch()->get_wartung(), weg->get_finance_waytype() );
 			weg->set_besitzer( sp );
 		}
 

@@ -144,6 +144,8 @@ public:
 	 */
 	waytype_t get_wtyp() const { return (waytype_t)wtyp; }
 
+	waytype_t get_finance_waytype() const;
+
 	/**
 	* returns the system type of this way (mostly used with rails)
 	* @see weg_t::styp

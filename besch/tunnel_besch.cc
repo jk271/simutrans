@@ -44,5 +44,5 @@ void tunnel_besch_t::calc_checksum(checksum_t *chk) const
 
 waytype_t tunnel_besch_t::get_finance_waytype() const
 {
-	return ((get_weg_besch()->get_styp() == weg_t::type_tram) ? tram_wt : get_waytype()) ; 
+	return ((get_weg_besch() && (get_weg_besch()->get_styp() == weg_t::type_tram)) ? tram_wt : get_waytype()) ; 
 }

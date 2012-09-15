@@ -598,7 +598,7 @@ void spieler_t::ai_bankrupt()
 								dt->set_besitzer( NULL );
 								break;
 							case ding_t::tunnel:
-								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung(), ((tunnel_t*)dt)->get_finance_waytype() );
+								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung(), ((tunnel_t*)dt)->get_besch()->get_finance_waytype() );
 								dt->set_besitzer( NULL );
 								break;
 

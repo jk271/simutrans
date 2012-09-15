@@ -26,8 +26,6 @@ public:
 	 */
 	waytype_t get_waytype() const;
 
-	waytype_t get_finance_waytype() const;
-
 	void calc_bild();
 
 	void set_bild( image_id b );

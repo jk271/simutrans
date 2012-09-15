@@ -183,6 +183,7 @@ SOURCES += besch/sound_besch.cc
 SOURCES += besch/tunnel_besch.cc
 SOURCES += besch/vehikel_besch.cc
 SOURCES += besch/ware_besch.cc
+SOURCES += besch/weg_besch.cc
 SOURCES += boden/boden.cc
 SOURCES += boden/brueckenboden.cc
 SOURCES += boden/fundament.cc

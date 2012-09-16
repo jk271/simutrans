@@ -9,9 +9,9 @@ jk004: 20120916 r5924-rc2 Deletion of tunnel causes crash. Caused by NULL pointe
 	FIXED in r5924-rc3
 jk005: 20120916 r5924-rc3 Tunnel mount connected to road cost less to destroy than unconnected. --> try it with current trunk (master) branch to see if it is a bug or feature.
 	NOT A BUG Binary compilled from current trunk code (r5927) has the same behavior.
-jk006: 20120916 r5923-rc3 Maintenance in not being subracted from current account when new nonth comes.		tc???, pak128.cz
+jk006: 20120916 r5923-rc3 Maintenance in not being subracted from current account when new month comes.		tc???, pak128.cz
 	FIXED
 jk007: 20120916 r2924-rc3 Construction costs of road depot are being accounted to TT_OTHER instead of TT_ROAD		tc0002, step17, pak128.cz
 	FIXED - ding/gebauede.cc:902 (book_construction_costs params) 
 jk008: 20120916 r2924-rc3 Removal costs of road gate and choose point are being accounted to TT_ALL.		tc0002, step 22 and 24, pak128.cz
-	OPEN
+	FIXED

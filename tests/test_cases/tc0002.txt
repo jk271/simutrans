@@ -184,3 +184,35 @@ Test scenario:
 : Money is subtracted from account (konto).
 : Maitenance is not affected.
 : Money message was displayed.
+
+25. Build a traffic light.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+26. Remove a traffic light.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+27. Build a trolleybus electrification.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance has been increased correctly.
+: Money message was displayed.
+
+28. Remove a trolleybus electrification.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance has been decreased correctly.
+: Money message was displayed.

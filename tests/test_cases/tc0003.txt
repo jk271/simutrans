@@ -6,9 +6,10 @@ Prerequisities:
 tc0002 succesfully completed
 
 1. Buy Vehicle.
-New vehicle in finance window is affected.
-Assets in finance window are affected.
-Account ballance (konto) is affected.
+: "New vehicle" in finance window is affected.
+: Assets in finance window are affected.
+: Account ballance (konto) is affected.
+: Cash in finance windo is affected.
 
 2. Sell vehicle using "" button
 

@@ -43,7 +43,7 @@ settings_t::settings_t() :
 	/* new setting since version 0.85.01
 	 * @author prissi
 	 */
-	land_industry_chains = 4;
+	factory_count = 12;
 	tourist_attractions = 16;
 
 	anzahl_staedte = 16;
@@ -111,6 +111,8 @@ settings_t::settings_t() :
 
 	minimum_city_distance = 16;
 	industry_increase = 2000;
+
+	special_building_distance = 3;
 
 	factory_worker_percentage = 33;
 	tourist_percentage = 16;
@@ -292,7 +294,7 @@ void settings_t::rdwr(loadsave_t *file)
 		// to be compatible with previous savegames
 		dummy = 0;
 		file->rdwr_long(dummy );	//dummy!
-		land_industry_chains = 6;
+		factory_count = 12;
 		tourist_attractions = 12;
 
 		// now towns
@@ -325,7 +327,7 @@ void settings_t::rdwr(loadsave_t *file)
 		file->rdwr_long(nummer );
 
 		// industries
-		file->rdwr_long(land_industry_chains );
+		file->rdwr_long(factory_count );
 		if(file->get_version()<99018) {
 			uint32 dummy;	// was city chains
 			file->rdwr_long(dummy );
@@ -712,6 +714,10 @@ void settings_t::rdwr(loadsave_t *file)
 			file->rdwr_bool( allow_underground_transformers );
 		}
 
+		if(  file->get_version()>=111005  ) {
+			file->rdwr_short( special_building_distance );
+		}
+
 		// otherwise the default values of the last one will be used
 	}
 }
@@ -976,6 +982,7 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	max_transfers = contents.get_int("max_transfers", max_transfers );
 	bonus_basefactor = contents.get_int("bonus_basefactor", bonus_basefactor );
 
+	special_building_distance = contents.get_int("special_building_distance", special_building_distance );
 	minimum_city_distance = contents.get_int("minimum_city_distance", minimum_city_distance );
 	industry_increase = contents.get_int("industry_increase_every", industry_increase );
 	passenger_factor = contents.get_int("passenger_factor", passenger_factor ); /* this can manipulate the passenger generation */

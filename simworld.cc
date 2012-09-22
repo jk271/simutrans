@@ -983,7 +983,7 @@ DBG_DEBUG("karte_t::distribute_groundobjs_cities()","prepare cities");
 		// prissi if we could not generate enough positions ...
 		settings.set_anzahl_staedte(old_anzahl_staedte);
 		int old_progress = 16;
-		int const max_display_progress = 16 + 2 * (old_anzahl_staedte + new_anzahl_staedte) + 2 * new_anzahl_staedte + (old_x == 0 ? settings.get_land_industry_chains() : 0);
+		int const max_display_progress = 16 + 2 * (old_anzahl_staedte + new_anzahl_staedte) + 2 * new_anzahl_staedte + (old_x == 0 ? settings.get_factory_count() : 0);
 
 		// Ansicht auf erste Stadt zentrieren
 		if (old_x+old_y == 0)
@@ -1456,22 +1456,19 @@ DBG_DEBUG("karte_t::init()","built timeline");
 
 	fabrikbauer_t::neue_karte(this);
 	// new system ...
-	int const max_display_progress = 16 + settings.get_anzahl_staedte() * 4 + settings.get_land_industry_chains();
-	int chains=0;
-	for (sint32 i = 0; i < settings.get_land_industry_chains(); ++i) {
-		if (fabrikbauer_t::increase_industry_density( this, false )==0) {
+	int const max_display_progress = 16 + settings.get_anzahl_staedte() * 4 + settings.get_factory_count();
+	int chains_retry = 1 + settings.get_factory_count()/4;
+	while(  fab_list.get_count() < settings.get_factory_count()  ) {
+		if(  !fabrikbauer_t::increase_industry_density( this, false )  ) {
 			// building industry chain should fail max 10 times
-			if (i-chains > 10) {
+			if(  chains_retry-- > 0  ) {
 				break;
 			}
 		}
-		else {
-			chains++;
-		}
-		int const progress_count = 16 + settings.get_anzahl_staedte() * 4 + i;
+		int const progress_count = 16 + settings.get_anzahl_staedte() * 4 + min(fab_list.get_count(),settings.get_factory_count());
 		display_progress(progress_count, max_display_progress );
 	}
-	settings.set_land_industry_chains(chains);
+	settings.set_factory_count( fab_list.get_count() );
 	finance_history_year[0][WORLD_FACTORIES] = finance_history_month[0][WORLD_FACTORIES] = fab_list.get_count();
 
 	// tourist attractions
@@ -1572,7 +1569,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 		max_display_progress = 16 + sets->get_anzahl_staedte()*2 + stadt.get_count()*4;
 	}
 	else {
-		max_display_progress = 16 + sets->get_anzahl_staedte() * 4 + settings.get_land_industry_chains();
+		max_display_progress = 16 + sets->get_anzahl_staedte() * 4 + settings.get_factory_count();
 	}
 
 	delete [] plan;
@@ -1587,7 +1584,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 
 	if (old_x == 0  &&  !settings.heightfield.empty()) {
 		// init from file
-		int const display_total = 16 + settings.get_anzahl_staedte()*4 + settings.get_land_industry_chains();
+		int const display_total = 16 + settings.get_anzahl_staedte()*4 + settings.get_factory_count();
 
 		for(int y=0; y<cached_groesse_gitter_y; y++) {
 			for(int x=0; x<cached_groesse_gitter_x; x++) {
@@ -2995,6 +2992,10 @@ void karte_t::sync_step(long delta_t, bool sync, bool display )
 		// only omitted, when called to display a new frame during fast forward
 
 		// just for progress
+		if(  delta_t > 10000  ) {
+			dbg->error( "karte_t::sync_step()", "delta_t too large: %li", delta_t );
+			delta_t = 10000;
+		}
 		ticks += delta_t;
 
 		set_random_mode( INTERACTIVE_RANDOM );
@@ -3562,15 +3563,14 @@ void karte_t::step()
 	// first: check for new month
 	if(ticks > next_month_ticks) {
 
-		next_month_ticks += karte_t::ticks_per_world_month;
-
-		// avoid overflow here ...
-		if(ticks>next_month_ticks) {
+		if(  next_month_ticks > next_month_ticks+karte_t::ticks_per_world_month  ) {
+			// avoid overflow here ...
+			dbg->warning( "karte_t::step()", "Ticks were overflowing => resetted" );
 			ticks %= karte_t::ticks_per_world_month;
-			ticks += karte_t::ticks_per_world_month;
-			next_month_ticks = ticks+karte_t::ticks_per_world_month;
+			next_month_ticks %= karte_t::ticks_per_world_month;
 			last_step_ticks %= karte_t::ticks_per_world_month;
 		}
+		next_month_ticks += karte_t::ticks_per_world_month;
 
 		DBG_DEBUG4("karte_t::step", "calling neuer_monat");
 		neuer_monat();
@@ -3585,6 +3585,7 @@ void karte_t::step()
 
 		// needs plausibility check?!?
 		if(delta_t>10000  || delta_t<0) {
+			dbg->error( "karte_t::step()", "delta_t (%li) out of bounds!", delta_t );
 			last_step_ticks = ticks;
 			next_step_time = time+10;
 			return;

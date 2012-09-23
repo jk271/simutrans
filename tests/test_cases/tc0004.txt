@@ -185,3 +185,19 @@ Test scenario:
 : Money is subtracted from account (konto).
 : Maitenance is not affected.
 : Money message was displayed.
+
+25. Build a station building
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is increased.
+: Money message was displayed.
+
+26. Remove a station building.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is decreased.
+: Money message was displayed.

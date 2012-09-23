@@ -22,3 +22,6 @@ jk009: 20120916 r5927-rc1 (and current master) "Profit" of vehicle or line does 
 jk010: 20120916 r5927-rc1 Charts in vehicle stats and in line stats shows rounded values of proceeds, operation costs and profit.
 	OPEN - merged from master
 	--> needs to be reported
+jk011: 20120922 r5935-rc1 Construction cost of railway station building accounted to TT_OTHER, maintenance accounted correctly. Removal costs accounted correctly. (tc0004, 25) 
+	Bug is in simwerk.cc in function wkz_station_building_aux
+	OPEN

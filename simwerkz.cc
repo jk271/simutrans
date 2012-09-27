@@ -3115,7 +3115,7 @@ DBG_MESSAGE("wkz_station_building_aux()", "building mail office/station building
 		cost -= (s.maint_building * factor * 60);
 	}
 	// difficult to distinguish correctly most suitable waytype
-	sp->book_construction_costs( cost, pos, ignore_wt);
+	sp->book_construction_costs( cost, pos, besch->get_finance_waytype());
 	halt->recalc_station_type();
 
 	return NULL;

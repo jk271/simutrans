@@ -58,6 +58,10 @@ waytype_t haus_besch_t::get_finance_waytype() const
                 case haus_besch_t::binnenhafen_geb: return water_wt;
                 case haus_besch_t::airport_geb:  return air_wt;
                 case haus_besch_t::monorail_geb: return monorail_wt;
+		case haus_besch_t::depot:
+		case haus_besch_t::generic_stop:
+		case haus_besch_t::generic_extension:
+			return (waytype_t) get_extra();
                 default: return ignore_wt;
         }
 }

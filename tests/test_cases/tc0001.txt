@@ -11,7 +11,7 @@ Test scenario:
 3. Choose "New game"
 4. Choose "Settings"
 5. Set bits_per_month (in general tab) to 20.
-6. Set savegame version to "111.5". It is the latest available.
+6. Set savegame version to "111.6". It is the latest available.
 7. Set toll_runningcost_percentage to 10 (in economy tab).
 8. Set toll_waycost_percentage to 5 (in economy_tab).
 9. Increase starting money to 1 000 000. (Testing includes many construction operations so we need to have enough money to complete it.)

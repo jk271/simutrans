@@ -667,7 +667,7 @@ void spieler_t::rdwr(loadsave_t *file)
 	file->rdwr_long(account_overdrawn);
 	finance->set_account_overdrawn( account_overdrawn );
 	
-	if( ( file->get_version() < 111005 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
+	if( ( file->get_version() < 111006 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
 		finance->export_to_cost_month( finance_history_month );
 		finance->export_to_cost_year( finance_history_year );
 	}
@@ -781,7 +781,7 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	}
-	else if (  file->get_version() < 111005  ) {
+	else if (  file->get_version() < 111006  ) {
 		// savegame version: now with toll
 		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<MAX_PLAYER_COST;   cost_type++  ) {
@@ -881,7 +881,7 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 
 
 		// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
-		if((file->get_version()<111005) && (file->is_loading())){
+		if((file->get_version()<111006) && (file->is_loading())){
 			finance->import_from_cost_month(finance_history_month);
 			finance->import_from_cost_year(finance_history_year);
 		}

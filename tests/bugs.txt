@@ -26,3 +26,4 @@ jk011: 20120922 r5935-rc1 Construction cost of railway station building accounte
 	Bug is in simwerk.cc in function wkz_station_building_aux
 	FIXED (r5935-rc2)
 jk012: 20120928 r5935-rc2 Game crashes when shipyard is being placed.
+	FIXED

@@ -1,0 +1,59 @@
+test_case_0022
+test_case_name="Railway transport accounting - construction of signals and rail gates"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open railway tools
+: Railway tools menu was opened.
+
+2. Build signals 
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+3. Remove signals.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+4. Build a choose point.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+5. Remove a choose point.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+6. Build a gate.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+7. Remove a gate.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+

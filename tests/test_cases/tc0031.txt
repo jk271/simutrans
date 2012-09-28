@@ -1,0 +1,53 @@
+test_case_0031
+test_case_name="Ship transport accounting - construction"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open ship tools
+: Ship tools menu was opened.
+
+2. Build a channel on clean tile(s).
+: Money is accounted as construction cost of ship.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+3. Build a channel on tile with obstacle (tree, groundobj)
+: Money for channel construction is accounted as construction cost of ship transport.
+: Money for tree removal is accounted as construction cost of "ship transport".
+: Money (channel construction plus tree removal) is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+4. remove channel using "remove channels" tool
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+5. Remove channel using "dynamite tool/buldozer tool"
+: (Result should be same as in step 4.)
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+6. Upgrade channel. (Upgrade river to channel)
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased/decreased. (Maintenance has to be increased/decreased only by difference between previousstate and current state values.)
+: Money message was displayed.
+

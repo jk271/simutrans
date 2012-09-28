@@ -1,0 +1,27 @@
+test_case_0034
+test_case_name="Ship transport accounting - construction of shipyard"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open ship tools
+: Ship tools menu was opened.
+
+17. Build shipyard
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+18. Remove shipyard
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+

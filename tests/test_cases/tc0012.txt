@@ -1,0 +1,59 @@
+test_case_0012
+test_case_name="Road transport accounting - construction traffic lights"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open road tools
+: Road tools menu was opened.
+
+2. Build a traffic light
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+3. Remove traffic light.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+4. Build a gate.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+5. Remove a gate.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+6. Build a choose point.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+
+7. Remove a choose point.
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+

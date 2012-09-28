@@ -1,0 +1,27 @@
+test_case_0014
+test_case_name="Road transport accounting - construction of depots"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open road tools
+: Road tools menu was opened.
+
+2. Build depot
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+3. Remove depot
+: Money is accounted as construction cost of road.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+

@@ -1,0 +1,67 @@
+test_case_0033
+test_case_name="Ship transport accounting - construction of bridges and tunnels"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open ship tools
+: Ship tools menu was opened.
+
+7. Build a bridge.
+   (Yes, it exists. At least in pak.128.)
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+8. Remove a bridge using "remove channels" tool.
+* Notice write down removal costs, needed for comparison in step 10.
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+9. Build a bridge.
+
+10. Remove a bridge using "dynamite/buldozer tool"
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+: Amount of subtracted money has to be same as in step 8.
+
+11. Build a channel in tunnel. 
+    (Yes, it exists. At least pak128.Britain has ability to build channels in tunnel.)
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+12. Remove the tunnel using "channels removal" tool
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+13. Build a channel in tunnel.
+
+14. Remove the tunnel using "dynamite/budozer tool"
+: Money is accounted as construction cost of ship transport.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+

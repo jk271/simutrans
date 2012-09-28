@@ -1,0 +1,65 @@
+test_case_0023
+test_case_name="Railway transport accounting - construction bridges and tunnels"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open railway tools
+: Railway tools menu was opened.
+
+2. Build a bridge.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+3. Remove a bridge using "remove railway" tool.
+* Notice write down removal costs, needed for comparison in step 5.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+4. Build a bridge.
+
+5. Remove a bridge using "dynamite/buldozer tool"
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+: Amount of subtracted money has to be same as in step 8.
+
+6. Build a railway tunnel.
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+7. Remove the tunnel using "railway removal" tool
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+8. Build a railway tunnel.
+
+9. Remove the railway tunnel using "dynamite/budozer tool"
+: Money is accounted as construction cost of railway.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+

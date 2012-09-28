@@ -1,9 +1,9 @@
-test_case_0003
-test_case_name="Road transport accounting - vehicles"
+test_case_0036
+test_case_name="Railway transport accounting - vehicles"
 description=""
 
 Prerequisities:
-tc0002 succesfully completed
+tc0001 succesfully completed
 
 1. Buy Vehicle.
 : "New vehicle" field in finance window is affected.

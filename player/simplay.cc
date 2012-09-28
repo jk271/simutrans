@@ -96,7 +96,7 @@ spieler_t::~spieler_t()
 	while(  !messages.empty()  ) {
 		delete messages.remove_first();
 	}
-	destroy_win( (long)this );
+	destroy_win((ptrdiff_t)this);
 	if( finance !=NULL) {
 		delete finance;
 		finance = NULL;
@@ -937,7 +937,6 @@ void spieler_t::laden_abschliessen()
 	// recalculate vehicle value
 	calc_assets();
 }
-
 
 
 void spieler_t::rotate90( const sint16 y_size )

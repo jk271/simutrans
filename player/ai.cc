@@ -470,7 +470,7 @@ bool ai_t::create_simple_road_transport(koord platz1, koord size1, koord platz2,
 	clean_marker(platz1,size1);
 	clean_marker(platz2,size2);
 
-	if(!(welt->ebne_planquadrat( this, platz1, welt->lookup_kartenboden(platz1)->get_hoehe() )  &&  welt->ebne_planquadrat( this, platz2, welt->lookup_kartenboden(platz2)->get_hoehe() ))  ) {
+	if(  !(welt->ebne_planquadrat( this, platz1, welt->lookup_kartenboden(platz1)->get_hoehe() )  &&  welt->ebne_planquadrat( this, platz2, welt->lookup_kartenboden(platz2)->get_hoehe() ))  ) {
 		// no flat land here?!?
 		return false;
 	}
@@ -499,9 +499,13 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 	bauigel.set_keep_city_roads(true);
 	bauigel.set_maximum(10000);
 
-	INT_CHECK("ai 499");
 	bauigel.calc_route(welt->lookup_kartenboden(platz1)->get_pos(),welt->lookup_kartenboden(platz2)->get_pos());
 	INT_CHECK("ai 501");
+
+	if(  bauigel.calc_costs() > finance->get_netwealth()  ) {
+		// too expensive
+		return false;
+	}
 
 	// now try route with terraforming
 	wegbauer_t baumaulwurf(welt, this);
@@ -513,8 +517,9 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 
 	// build with terraforming if shorter and enough money is available
 	bool with_tf = (baumaulwurf.get_count() > 2)  &&  (10*baumaulwurf.get_count() < 9*bauigel.get_count()  ||  bauigel.get_count() <= 2);
-	if (with_tf) {
-		with_tf &= baumaulwurf.calc_costs() < finance->get_account_balance();
+	if(  with_tf  &&  baumaulwurf.calc_costs() > finance->get_netwealth()  ) {
+		// too expensive
+		with_tf = false;
 	}
 
 	// now build with or without terraforming

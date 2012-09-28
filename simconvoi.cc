@@ -219,7 +219,7 @@ DBG_MESSAGE("convoi_t::~convoi_t()", "destroying %d, %p", self.get_id(), this);
 	// force asynchronous recalculation
 	if(fpl) {
 		if(!fpl->ist_abgeschlossen()) {
-			destroy_win((long)fpl);
+			destroy_win((ptrdiff_t)fpl);
 		}
 		if (!fpl->empty() && !line.is_bound()) {
 			welt->set_schedule_counter();
@@ -525,7 +525,7 @@ void convoi_t::rotate90( const sint16 y_size )
 		fpl->rotate90( y_size );
 	}
 	for(  int i=0;  i<anz_vehikel;  i++  ) {
-		fahr[i]->rotate90_freight_destinations();
+		fahr[i]->rotate90_freight_destinations( y_size );
 	}
 	// eventually correct freight destinations (and remove all stale freight)
 	for(  int i=0;  i<anz_vehikel;  i++  ) {
@@ -588,7 +588,7 @@ void convoi_t::set_name(const char *name, bool with_new_id)
 		if(  ground  ) {
 			const depot_t *const depot = ground->get_depot();
 			if(  depot  ) {
-				depot_frame_t *const frame = dynamic_cast<depot_frame_t *>( win_get_magic( (long)depot ) );
+				depot_frame_t *const frame = dynamic_cast<depot_frame_t *>( win_get_magic( (ptrdiff_t)depot ) );
 				if(  frame  ) {
 					frame->reset_convoy_name( self );
 				}
@@ -1601,7 +1601,7 @@ bool convoi_t::set_schedule(schedule_t * f)
 		}
 		// destroy a possibly open schedule window
 		if(  fpl  &&  !fpl->ist_abgeschlossen()  ) {
-			destroy_win((long)fpl);
+			destroy_win((ptrdiff_t)fpl);
 			delete fpl;
 		}
 		fpl = f;
@@ -2325,7 +2325,7 @@ void convoi_t::zeige_info()
 				if(  depot  ) {
 					depot->zeige_info();
 					// try to activate this particular convoy in the depot
-					depot_frame_t *const frame = dynamic_cast<depot_frame_t *>( win_get_magic( (long)depot ) );
+					depot_frame_t *const frame = dynamic_cast<depot_frame_t *>( win_get_magic( (ptrdiff_t)depot ) );
 					if(  frame  ) {
 						frame->activate_convoi(self);
 					}
@@ -2469,7 +2469,7 @@ void convoi_t::open_schedule_window( bool show )
 
 	if(  show  ) {
 		// Fahrplandialog oeffnen
-		create_win( new fahrplan_gui_t(fpl,get_besitzer(),self), w_info, (long)fpl );
+		create_win( new fahrplan_gui_t(fpl,get_besitzer(),self), w_info, (ptrdiff_t)fpl );
 		// TODO: what happens if no client opens the window??
 	}
 	fpl->eingabe_beginnen();
@@ -2754,7 +2754,7 @@ void convoi_t::calc_speedbonus_kmh()
 			total_weight = max( 1, total_weight/1000 );
 			total_max_weight = max( 1, total_max_weight/1000 );
 			// uses weight of full passenger, mail, and special goods cars and current weight of regular goods cars for convoi weight
-			speedbonus_kmh = total_power < total_max_weight ? 1 : min( cnv_min_top_kmh, sint32( sqrt_i32( ((1000l*total_power<<8)/total_max_weight-(1<<8))<<8)*50 >>8 ) );
+			speedbonus_kmh = total_power < total_max_weight ? 1 : min( cnv_min_top_kmh, sint32( sqrt_i32( ((total_power<<8)/total_max_weight-(1<<8))<<8)*50 >>8 ) );
 
 			// convoi overtakers use current actual weight for achievable speed
 			if(  front()->get_overtaker()  ) {
@@ -2817,7 +2817,7 @@ void convoi_t::destroy()
 	state = SELF_DESTRUCT;
 
 	if(fpl!=NULL  &&  !fpl->ist_abgeschlossen()) {
-		destroy_win((long)fpl);
+		destroy_win((ptrdiff_t)fpl);
 	}
 
 	if(  line.is_bound()  ) {

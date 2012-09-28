@@ -9,6 +9,9 @@
 #if MULTI_THREAD>1
 #include <pthread.h>
 static pthread_mutex_t verbinde_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t calc_bild_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t pumpe_list_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t senke_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #include "leitung2.h"
@@ -32,17 +35,6 @@ static pthread_mutex_t verbinde_mutex = PTHREAD_MUTEX_INITIALIZER;
 #include "../boden/grund.h"
 #include "../bauer/wegbauer.h"
 
-#define PROD 1000
-
-/*
-static const char * measures[] =
-{
-	"fail",
-	"weak",
-	"good",
-	"strong",
-};
-*/
 
 /**
  * returns possible directions for powerline on this tile
@@ -369,18 +361,23 @@ void leitung_t::info(cbuffer_t & buf) const
 void leitung_t::laden_abschliessen()
 {
 #if MULTI_THREAD>1
-	pthread_mutex_lock( &verbinde_mutex  );
+	pthread_mutex_lock( &verbinde_mutex );
 #endif
 	verbinde();
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &verbinde_mutex );
+#endif
+#if MULTI_THREAD>1
+	pthread_mutex_lock( &calc_bild_mutex );
+#endif
 	calc_neighbourhood();
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &calc_bild_mutex );
+#endif
 	grund_t *gr = welt->lookup(get_pos());
 	assert(gr);
 
 	spieler_t::add_maintenance(get_besitzer(), besch->get_wartung());
-
-#if MULTI_THREAD>1
-	pthread_mutex_unlock( &verbinde_mutex  );
-#endif
 }
 
 
@@ -523,7 +520,9 @@ void pumpe_t::laden_abschliessen()
 	leitung_t::laden_abschliessen();
 	spieler_t::add_maintenance(get_besitzer(), (sint32)-welt->get_settings().cst_maintain_transformer);
 
-	if(fab==NULL  &&  get_net()) {
+	assert(get_net());
+
+	if(  fab==NULL  ) {
 		if(welt->lookup(get_pos())->ist_karten_boden()) {
 			// on surface, check around
 			fab = leitung_t::suche_fab_4(get_pos().get_2d());
@@ -537,10 +536,21 @@ void pumpe_t::laden_abschliessen()
 			fab->set_transformer_connected( true );
 		}
 	}
+#if MULTI_THREAD>1
+	pthread_mutex_lock( &pumpe_list_mutex );
+#endif
 	pumpe_list.insert( this );
-
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &pumpe_list_mutex );
+#endif
+#if MULTI_THREAD>1
+	pthread_mutex_lock( &calc_bild_mutex );
+#endif
 	set_bild(skinverwaltung_t::pumpe->get_bild_nr(0));
 	is_crossing = false;
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &calc_bild_mutex );
+#endif
 }
 
 
@@ -719,7 +729,9 @@ void senke_t::laden_abschliessen()
 	leitung_t::laden_abschliessen();
 	spieler_t::add_maintenance(get_besitzer(), (sint32)-welt->get_settings().cst_maintain_transformer);
 
-	if(fab==NULL  &&  get_net()) {
+	assert(get_net());
+
+	if(  fab==NULL  ) {
 		if(welt->lookup(get_pos())->ist_karten_boden()) {
 			// on surface, check around
 			fab = leitung_t::suche_fab_4(get_pos().get_2d());
@@ -732,11 +744,23 @@ void senke_t::laden_abschliessen()
 			fab->set_transformer_connected( true );
 		}
 	}
+#if MULTI_THREAD>1
+	pthread_mutex_lock( &senke_list_mutex );
+#endif
 	senke_list.insert( this );
-	welt->sync_add(this);
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &senke_list_mutex );
+#endif
+	welt->sync_add_ts(this);
 
+#if MULTI_THREAD>1
+	pthread_mutex_lock( &calc_bild_mutex );
+#endif
 	set_bild(skinverwaltung_t::senke->get_bild_nr(0));
 	is_crossing = false;
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &calc_bild_mutex );
+#endif
 }
 
 

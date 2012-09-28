@@ -19,6 +19,7 @@
 
 #if MULTI_THREAD>1
 #include <pthread.h>
+static pthread_mutex_t sync_list_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
 #include "simcity.h"
@@ -153,6 +154,7 @@ void karte_t::world_y_loop(y_loop_func function)
 			// here some more sophicsticated error handling would be fine ...
 		}
 	}
+	pthread_attr_destroy(&attr);
 
 	// the last we do alone ...
 	(this->*function)( ((MULTI_THREAD-1)*cached_groesse_gitter_y)/MULTI_THREAD, cached_groesse_gitter_y );
@@ -930,7 +932,7 @@ void karte_t::create_rivers( sint16 number )
 
 		// build a list of matchin targets
 		vector_tpl<koord> valid_water_tiles;
-		for(  sint32 i=0;  i<water_tiles.get_count();  i++  ) {
+		for(  uint32 i=0;  i<water_tiles.get_count();  i++  ) {
 			sint16 dist = koord_distance(start,water_tiles[i]);
 			if(  settings.get_min_river_length() < dist  &&  dist < settings.get_max_river_length()  ) {
 				valid_water_tiles.append( water_tiles[i] );
@@ -1457,7 +1459,7 @@ DBG_DEBUG("karte_t::init()","built timeline");
 	// new system ...
 	int const max_display_progress = 16 + settings.get_anzahl_staedte() * 4 + settings.get_factory_count();
 	int chains_retry = 1 + settings.get_factory_count()/4;
-	while(  fab_list.get_count() < settings.get_factory_count()  ) {
+	while(  fab_list.get_count() < (uint32)settings.get_factory_count()  ) {
 		if(  !fabrikbauer_t::increase_industry_density( this, false )  ) {
 			// building industry chain should fail max 10 times
 			if(  chains_retry-- > 0  ) {
@@ -2959,6 +2961,24 @@ bool karte_t::sync_add(sync_steppable *obj)
 	else {
 		sync_list.append( obj );
 	}
+	return true;
+}
+
+
+bool karte_t::sync_add_ts(sync_steppable *obj)
+{
+#if MULTI_THREAD>1
+			pthread_mutex_lock( &sync_list_mutex );
+#endif
+	if(  sync_step_running  ) {
+		sync_add_list.insert( obj );
+	}
+	else {
+		sync_list.append( obj );
+	}
+#if MULTI_THREAD>1
+			pthread_mutex_unlock( &sync_list_mutex );
+#endif
 	return true;
 }
 
@@ -5672,7 +5692,6 @@ void karte_t::bewege_zeiger(const event_t *ev)
 						if(!is_dragging  &&  wkz->check_pos( this, get_active_player(), prev_pos )==NULL) {
 							const char* err = get_scenario()->is_work_allowed_here(get_active_player(), wkz->get_id(), wkz->get_waytype(), prev_pos);
 							if (err == NULL) {
-								wkz->move( this, get_active_player(), 1, prev_pos );
 								is_dragging = true;
 							}
 							else {

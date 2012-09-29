@@ -741,14 +741,14 @@ DBG_MESSAGE("wkz_remover()", "removing way");
 				return false;
 			}
 		}
-		wt = w->get_waytype();
+		wt = w->get_besch()->get_finance_waytype();
 		cost_sum = gr->weg_entfernen(w->get_waytype(), true);
 	}
 	else {
 		// remove ways
 		if(  gr->get_weg_nr(0)  ) {
 			cost_sum = gr->weg_entfernen( gr->get_weg_nr(0)->get_waytype(), true );
-			wt = gr->get_weg_nr(0)->get_waytype();
+			wt = gr->get_weg_nr(0)->get_besch()->get_finance_waytype();
 		}
 		// delete tunnel here ...
 		if(  gr->get_top()==1  ) {

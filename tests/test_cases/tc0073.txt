@@ -1,0 +1,65 @@
+test_case_0073
+test_case_name="Narrow gauge transport accounting - construction bridges and tunnels"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open narrow gauge tools
+: Narrow gauge tools menu was opened.
+
+2. Build a bridge.
+: Money is accounted as construction cost of narrow gauge.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+3. Remove a bridge using "remove narrow gauge" tool.
+* Notice write down removal costs, needed for comparison in step 5.
+: Money is accounted as construction cost of narrow gauge.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+4. Build a bridge.
+
+5. Remove a bridge using "dynamite/buldozer tool"
+: Money is accounted as construction cost of narrow gauge.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+: Amount of subtracted money has to be same as in step 8.
+
+6. Build a narrow gauge tunnel.
+: Money is accounted as construction cost of narrow gauge.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+7. Remove the tunnel using "narrow gauge removal" tool
+: Money is accounted as construction cost of narrow gauge.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+8. Build a narrow gauge tunnel.
+
+9. Remove the narrow gauge tunnel using "dynamite/budozer tool"
+: Money is accounted as construction cost of narrow gauge.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+

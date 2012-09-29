@@ -88,4 +88,8 @@ jk013: 20120928 r5954-rc2, r5954 (master) Game stops (does not crash) during cre
 	status FIXED (in master)
 
 jk014: 20120929 r5955-rc1: Tram removal costs accounted to train transport.
+	Incorrect removal is for track removal tool and for dynamite tool.
+	dynamite tool FIXED, track removal tool FIXED
+
+jk015: 20120929 r5955-rc2: Construction costs for making tram track public accounted to train transport. (simwerkz.cc:5293)
 	OPEN

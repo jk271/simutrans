@@ -6,7 +6,7 @@ r5955-rc3
 
 The version r5955-rc3 does not include any new functionality. It incorporates only new code from trunk and several bug fixes. This version should be ready for playing or merge to trunk.
 
-Savegame format of this revision is INCOMPATIBLE with previos versions. 
+Savegame format of this revision is INCOMPATIBLE with previos versions of the detailed money stats. 
 Incompatibility is caused by changes merged from trunk branch: Some new settings
 parameter has been added. Ability to read older (older than 111.5 excl.) game 
 version was not affected.

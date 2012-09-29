@@ -1,0 +1,27 @@
+test_case_0085
+test_case_name="aircraft transport accounting - construction of aircraft stops"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open airport tools
+: Airport tools menu was opened.
+
+2. Build an aircraft stop
+: Money is accounted as construction cost of "aircraft".
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+3. Remove the aircraft stop using "dynamite/buldozer tool"
+: Money is accounted as construction cost of "aircraft".
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+

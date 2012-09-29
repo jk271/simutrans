@@ -1,0 +1,27 @@
+test_case_0082
+test_case_name="aircraft transport accounting - construction of No entry sign"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+Test scenario:
+1. Open airport tools
+: Airport tools menu was opened.
+
+2. Build a "No entry" sign.
+: Money is accounted as construction cost of "airplanes"
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected. 
+: Money message was displayed.
+
+3. Remove "No entry" sign.
+: Money is accounted as construction cost of "airplanes".
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is not affected.
+: Money message was displayed.
+

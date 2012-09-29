@@ -92,4 +92,4 @@ jk014: 20120929 r5955-rc1: Tram removal costs accounted to train transport.
 	dynamite tool FIXED, track removal tool FIXED
 
 jk015: 20120929 r5955-rc2: Construction costs for making tram track public accounted to train transport. (simwerkz.cc:5293)
-	OPEN
+	FIXED in r5955-rc3

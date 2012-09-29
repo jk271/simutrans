@@ -27,3 +27,62 @@ jk011: 20120922 r5935-rc1 Construction cost of railway station building accounte
 	FIXED (r5935-rc2)
 jk012: 20120928 r5935-rc2 Game crashes when shipyard is being placed.
 	FIXED
+jk013: 20120928 r5954-rc2, r5954 (master) Game stops (does not crash) during creationg new game with pak128.cz in (or after) phase "Creating cities". Probably deadlock. Map 3445, size 320 x 256
+
+	Dear simutrans development team, I would like to report that a deadlock present in game.
+	I have been testing new simutrans functionality, when the game stuck. I have recompiled game using code of current master branch ( = trunk, revision 5954) and saw the same behavior. 
+	So I ran simutrans in gdb. When the game had stuck, I printed back trace.
+
+	How to reproduce it:
+	1) Start simutrans with pak128.cz. I have tested it with pak64, pak64.german, pak128 and pak128.Britain but I have no clue why it happens only with pak128.cz and other pak sets are not affected.
+	2) click on "new game" button.
+	3) set map number to "3445"
+	4) set size to 320 x 256.
+	5) Click on start game.
+	6) Program print "Creating cities" in command line and than stops on deadlock.
+	
+	program version: revision 5954
+	Operating system: 32bit GNU/Linux (Debian)
+	Hardware: 32-bit dual core CPU
+	pakset pak128.cz
+
+
+	stack trace from gdb: 
+	0xb7fe2424 in __kernel_vsyscall ()
+	(gdb) bt
+	#0  0xb7fe2424 in __kernel_vsyscall ()
+	#1  0xb7fafc89 in __lll_lock_wait () at ../nptl/sysdeps/unix/sysv/linux/i386/i686/../i486/lowlevellock.S:142
+	#2  0xb7fab08b in _L_lock_748 () from /lib/i686/cmov/libpthread.so.0
+	#3  0xb7faaeb1 in __pthread_mutex_lock (mutex=0x833b8e4) at pthread_mutex_lock.c:61
+	#4  0x080b1f2a in crossing_t::calc_bild (this=0xdbde738) at dings/crossing.cc:92
+	#5  0x080b230a in crossing_t::state_changed (this=0xdbde738) at dings/crossing.cc:80
+	#6  0x08086be0 in crossing_logic_t::set_state (this=0xcda6f78, new_state=crossing_logic_t::CROSSING_OPEN)
+    	at dataobj/crossing_logic.cc:175
+	#7  0x080872dd in crossing_logic_t::recalc_state (this=0xcda6f78) at dataobj/crossing_logic.cc:78
+	#8  0x0808807a in crossing_logic_t::add (w=0x89b7aa8, start_cr=0xdbde738, zustand=crossing_logic_t::CROSSING_INVALID)
+    	at dataobj/crossing_logic.cc:347
+	#9  0x080b29dc in crossing_t::laden_abschliessen (this=0xdbde738) at dings/crossing.cc:194
+	#10 0x0807d5ab in grund_t::neuen_weg_bauen (this=0xe35bcc8, weg=0xcdba050, ribi=5 '\005', sp=0x89bbb98)
+    	at boden/grund.cc:1450
+	#11 0x08065578 in wegbauer_t::baue_strasse (this=0xbfffd570) at bauer/wegbauer.cc:2126
+	#12 0x08067286 in wegbauer_t::baue (this=0xbfffd570) at bauer/wegbauer.cc:2446
+	#13 0x08277e90 in karte_t::distribute_groundobjs_cities (this=0x89b7aa8, new_anzahl_staedte=16, 
+    	new_mittlere_einwohnerzahl=1600, old_x=0, old_y=0) at simworld.cc:1262
+	#14 0x082795d4 in karte_t::enlarge_map (this=0x89b7aa8, sets=0x89b7aa8, h_field=0x0) at simworld.cc:1687
+	#15 0x0827a504 in karte_t::init (this=0x89b7aa8, sets=0x83378e0, h_field=0x0) at simworld.cc:1446
+	#16 0x08187056 in welt_gui_t::action_triggered (this=0xe504bf0, komp=0xe50571c, v=...) at gui/welt.cc:496
+	#17 0x080da178 in gui_action_creator_t::call_listeners (this=0xe50571c, v=...) at gui/components/gui_action_creator.h:36
+	#18 0x080d8336 in button_t::infowin_event (this=0xe50570c, ev=0xbfffd8b0) at gui/components/gui_button.cc:441
+	#19 0x0811f1bf in gui_container_t::infowin_event (this=0xe504bf4, ev=0xbfffd900) at gui/gui_container.cc:168
+	#20 0x081201dd in gui_frame_t::infowin_event (this=0xe504bf0, ev=0xbfffd9a8) at gui/gui_frame.cc:124
+	#21 0x08185b4e in welt_gui_t::infowin_event (this=0xe504bf0, ev=0xbfffd9a8) at gui/welt.cc:526
+	#22 0x08264e79 in check_pos_win (ev=0xbfffda20) at simwin.cc:1323
+	#23 0x08238d78 in modal_dialogue (gui=0xe504bf0, magic=3, welt=0x89b7aa8, quit=0x8238ac0 <never_quit>) at simmain.cc:234
+	#24 0x0823bf27 in simu_main (argc=1, argv=0xbffff534) at simmain.cc:1108
+	#25 0x0824799f in sysmain (argc=1, argv=0xbffff534) at simsys.cc:668
+	#26 0x082a95ba in main (argc=1, argv=0xbffff534) at simsys_s.cc:603
+
+	Deadlock is on crossing_logic_mutex in functions crossing_t::calc_bild() and  crossing_t::laden_abschliessen().
+
+	Regards 
+	status OPEN (merged from master)

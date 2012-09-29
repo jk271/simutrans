@@ -86,3 +86,6 @@ jk013: 20120928 r5954-rc2, r5954 (master) Game stops (does not crash) during cre
 
 	Regards 
 	status FIXED (in master)
+
+jk014: 20120929 r5955-rc1: Tram removal costs accounted to train transport.
+	OPEN

@@ -1,0 +1,8 @@
+test_case_0041
+test_case_name="Monorail transport accounting - construction"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+use tc0011 for monorail

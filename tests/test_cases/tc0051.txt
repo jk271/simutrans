@@ -1,0 +1,57 @@
+test_case_0051
+test_case_name="Maglev transport accounting - construction"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+paks with maglev (not all): pak128.Britain
+
+Test scenario:
+1. Open maglev tools
+: Maglev tools menu was opened.
+
+2. Build a track on clean tile(s).
+: Money is accounted as construction cost of maglev.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance of railway is correctly increased.
+: Maitenance of all is correctly increased.
+: Money message was displayed.
+
+3. Build a track on tile with obstacle (tree, groundobj)
+: Money for track construction is accounted as construction cost of maglev.
+: Money for tree removal is accounted as construction cost of "maglev".
+: Money (track construction plus tree removal) is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased.
+: Money message was displayed.
+
+4. Remove maglev using "remove maglev" tool
+: Money is accounted as construction cost of maglev.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+5. Remove maglev using "dynamite tool/buldozer tool"
+: (Result should be same as in step 4.)
+: Money is accounted as construction cost of maglev.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+
+6. Upgrade maglev track.
+: Money is accounted as construction cost of maglev.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased/decreased. (Maintenance has to be increased/decreased only by difference between previous state and current state values.)
+: Money message was displayed.
+
+Additional maglev electrification not found --> it can not be tested.

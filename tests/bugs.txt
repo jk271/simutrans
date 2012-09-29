@@ -85,4 +85,4 @@ jk013: 20120928 r5954-rc2, r5954 (master) Game stops (does not crash) during cre
 	Deadlock is on crossing_logic_mutex in functions crossing_t::calc_bild() and  crossing_t::laden_abschliessen().
 
 	Regards 
-	status OPEN (merged from master)
+	status FIXED (in master)

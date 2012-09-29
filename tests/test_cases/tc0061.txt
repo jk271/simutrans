@@ -52,3 +52,19 @@ Test scenario:
 : Maitenance is correctly increased/decreased. (Maintenance has to be increased/decreased only by difference between previous state and current state values.)
 : Money message was displayed.
 
+7. Build tram electrification.
+: Money is accounted as construction cost of tram.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly increased. 
+: Money message was displayed.
+
+8. Remove the electrification.
+: Money is accounted as construction cost of tram.
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Money message was displayed.
+

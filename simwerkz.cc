@@ -5290,8 +5290,8 @@ const char *wkz_make_stop_public_t::work( karte_t *welt, spieler_t *sp, koord3d 
 					t->set_besitzer( welt->get_spieler(1) );
 				}
 				spieler_t::add_maintenance( w->get_besitzer(), -costs, w->get_besch()->get_finance_waytype() );
-				spieler_t::book_construction_costs(   w->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_waytype());
-				spieler_t::book_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_waytype());
+				spieler_t::book_construction_costs(   w->get_besitzer(), -costs*60, gr->get_pos().get_2d(), w->get_besch()->get_finance_waytype());
+				spieler_t::book_construction_costs( welt->get_spieler(1), costs*60, koord::invalid, w->get_besch()->get_finance_waytype());
 				w->set_besitzer( welt->get_spieler(1) );
 				w->set_flag(ding_t::dirty);
 				spieler_t::add_maintenance( welt->get_spieler(1), costs, w->get_besch()->get_finance_waytype() );

@@ -27,3 +27,15 @@ Test scenario:
 : Maitenance is correctly increased.
 : Money message was displayed.
 
+4. Build tram stop
+
+5. Make tram stop public.
+: Money is accounted as construction cost of tram.
+: Money is accounted as construction cost of tram of public player (money is added, not subracted).
+: Money is accounted as construction cost of all types.
+: Money is subtracted from cash flow.
+: Money is subtracted from account (konto).
+: Maitenance is correctly decreased.
+: Maitenance of public player for tram track is correctly increased.
+: Money message was displayed.
+

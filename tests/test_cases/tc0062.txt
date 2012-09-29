@@ -1,0 +1,11 @@
+test_case_0062
+test_case_name="Tram transport accounting - construction of signals and rail gates"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+I am unable to test it.
+(*) Pak64 does not have tram signals, it has only train signals.
+(*) No other pak set (pak128, pak128.Britain, pak128.cz, pak64.german) has any type of tram signals.
+

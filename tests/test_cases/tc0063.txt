@@ -1,0 +1,11 @@
+test_case_0063
+test_case_name="Tram transport accounting - construction bridges and tunnels"
+description=""
+
+Prerequisities:
+tc0001 succesfully completed
+
+There is no known pak containing tram bridge or tunnel. (No one from pak64, pak64.german, pak128, pak128.Britain, pak128.cz).
+Pak64 contains train bridge and train tunnel in tram tools menu.
+I am not able to test tram bridge or tunnels as no such a thing exists in the game.
+

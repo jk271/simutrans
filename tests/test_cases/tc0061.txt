@@ -53,6 +53,8 @@ Test scenario:
 : Money message was displayed.
 
 7. Build tram electrification.
+   Notice: Pak64 does not have real tram track electrification, it has train track electrification only.
+   Following paks have correct tram track electrification: pak64.german pak128, pak128.Britain, pak128.cz; other pak set not tested.
 : Money is accounted as construction cost of tram.
 : Money is accounted as construction cost of all types.
 : Money is subtracted from cash flow.

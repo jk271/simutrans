@@ -4,7 +4,7 @@ test result can be:
 OK  = PASSED
 F?? = FAILED (?? is number describing part of test, when it failed)
 -   = SKIPPED (test not done)
-part. =  tested partially, some objects (bridges, tunnels) does not exist
+P | part. =  tested partially, some objects (bridges, tunnels) does not exist
 NA  = unable to test - no pak set has such a feature.
 
 date		| version	| test case results
@@ -32,3 +32,4 @@ YYYYMMDD HHmm	| 		| 1	| 11	| 12	| 13	| 14	| 15	| 16	| 21 	| 22	| 23	| 24	| 25	| 
 20120928 1900	| r5954-rc2	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| OK	| OK	| OK	| OK	| OK	| part.	| OK	| OK	| OK	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	|
 20120929 1140	| r5955-rc1	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| OK	| OK	| OK	| OK	| OK	| OK	| F4,5	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| OK	| OK	| OK	| OK	| OK	| -	| -	|
 20120929 1600	| r5955-rc2	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| OK	| NA	| NA	| OK	| OK	| OK	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	|
+20120929 2100	| r5955-rc3	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| -	| OK	| -	| -	| -	| OK	| -	| OK	| P6,7	| OK	| OK	| OK	| OK	| -	| -	| -	| -	| -	| -	| -	|

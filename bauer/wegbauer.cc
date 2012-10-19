@@ -1995,7 +1995,7 @@ bool wegbauer_t::baue_tunnelboden()
 			}
 			tunnel->calc_bild();
 			cost -= tunnel_besch->get_preis();
-			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), tunnel_besch->get_finance_waytype() ); 
+			spieler_t::add_maintenance( sp,  tunnel_besch->get_wartung(), tunnel_besch->get_finance_waytype() );
 		}
 		else if(gr->get_typ()==grund_t::tunnelboden) {
 			// check for extension only ...

@@ -18,13 +18,6 @@
 
 #include "../tpl/slist_tpl.h"
 #include "../tpl/vector_tpl.h"
-//#include "finance.h"
-
-
-// synchronize it with finance.h !!
-#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
-#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
-
 
 
 class karte_t;

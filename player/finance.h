@@ -15,15 +15,15 @@
 
 #include "../simtypes.h"
 
-// synchronize it with finance.h !!
+// for compatibility with old versions
 #define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
 #define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HIRSTORY_YEARS in file simplay.h !!!!!
+/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_YEARS
 */
 #define MAX_PLAYER_HISTORY_YEARS2  (25) // number of years to keep history
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HIRSTORY_MONTHS in file simplay.h !!!!!
+/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_MONTHS
 */
 #define MAX_PLAYER_HISTORY_MONTHS2  (25) // number of months to keep history
 

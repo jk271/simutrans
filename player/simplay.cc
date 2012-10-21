@@ -1109,8 +1109,8 @@ void spieler_t::book_convoi_number(int count)
 }
 
 
-double spieler_t::get_konto_als_double() const { 
-	return finance->get_account_balance() / 100.0; 
+double spieler_t::get_konto_als_double() const {
+	return finance->get_account_balance() / 100.0;
 }
 
 
@@ -1120,6 +1120,6 @@ int spieler_t::get_account_overdrawn() const {
 
 
 bool spieler_t::has_money_or_assets() const {
-	return finance->has_money_or_assets(); 
+	return finance->has_money_or_assets();
 }
 

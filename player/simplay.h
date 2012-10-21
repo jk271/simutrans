@@ -18,13 +18,6 @@
 
 #include "../tpl/slist_tpl.h"
 #include "../tpl/vector_tpl.h"
-//#include "finance.h"
-
-
-// synchronize it with finance.h !!
-#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
-#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
-
 
 
 class karte_t;
@@ -119,14 +112,14 @@ protected:
 
 public:
 	/**
-	 * sums up "count" with number of convois in statistics, 
+	 * sums up "count" with number of convois in statistics,
 	 * supersedes buche( count, COST_ALL_CONVOIS)
 	 * @author jk271
 	 */
 	void book_convoi_number(int count);
 
 	/**
-	 * Adds construction costs to accounting statistics, 
+	 * Adds construction costs to accounting statistics,
 	 * @param amount How much does it cost
 	 * @param tt type of transport
 	 * @author jk271
@@ -152,7 +145,7 @@ public:
 	void book_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
 
 	/**
-	 * Adds income to accounting statistics. 
+	 * Adds income to accounting statistics.
 	 * @param amount earned money
 	 * @param tt transport type used in accounting statistics
 	 * @param cathegory parameter
@@ -164,7 +157,7 @@ public:
 	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	/**
-         * Adds running costs to accounting statistics. 
+         * Adds running costs to accounting statistics.
          * this function is called very often --> inline
          * @param amount How much does it cost
          * @param wt
@@ -192,7 +185,7 @@ public:
 	 * Add amount of transported passanger, mail, goods to accounting statistics
 	 * @param amount number of transported units
 	 * @papam tt type of transport
-	 * @param cathegory constegory of transported items (-2 passanger, -1 mail, 
+	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
 	 *                  other same as in the pak files)
 	 * @author jk271
 	 */

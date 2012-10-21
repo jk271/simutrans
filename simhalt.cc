@@ -2158,7 +2158,7 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 				spieler_t::add_maintenance(public_owner, costs, gb->get_waytype() );
 				// it is not real construction cost, it is fee payed for public authority for future maintenance. So money are transferred to public authority
 				spieler_t::book_construction_costs( sp,          -costs*60, get_basis_pos(), gb->get_waytype());
-				spieler_t::book_construction_costs( public_owner, costs*60, koord::invalid, gb->get_waytype()); 
+				spieler_t::book_construction_costs( public_owner, costs*60, koord::invalid, gb->get_waytype());
 			}
 			// ok, valid start, now we can join them
 			for( uint8 i=0;  i<8;  i++  ) {

@@ -222,7 +222,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	vtmoney.set_pos(koord(left+140+335+55, top+6*BUTTONSPACE));
 	margin.set_pos(koord(left+140+335+55, top+7*BUTTONSPACE));
 	money.set_pos(koord(left+140+335+55, top+8*BUTTONSPACE));
-	
+
 	// return money or else stuff ...
 	warn.set_pos(koord(left+335, top+9*BUTTONSPACE));
 	if(sp->get_player_nr()!=1  &&  sp->get_welt()->get_scenario()->active()) {
@@ -364,9 +364,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		}
 	}
 
-//	transport_type_c.set_pos(koord(koord(left+335-12, top+4*BUTTONSPACE)));
 	transport_type_c.set_pos(koord(koord(left+335-12-2, 0)));
-//	transport_type_c.set_groesse( koord(146,D_BUTTON_HEIGHT) );
 	transport_type_c.set_groesse( koord(116,D_BUTTON_HEIGHT) );
 	transport_type_c.set_max_size( koord( 116, 1*BUTTONSPACE ) );
 	for(int i=0; i<TT_MAX; ++i) {

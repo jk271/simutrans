@@ -507,7 +507,7 @@ void finance_t::rdwr(loadsave_t *file) {
 				if( ( year < MAX_PLAYER_HISTORY_YEARS ) && ( cost_type < ATC_MAX ) ) {
 					file->rdwr_longlong( com_year[year][cost_type] );
 				} else {
-						file->rdwr_longlong( dummy );
+					file->rdwr_longlong( dummy );
 				}
 			}
 		}
@@ -516,7 +516,7 @@ void finance_t::rdwr(loadsave_t *file) {
 				if( ( month < MAX_PLAYER_HISTORY_MONTHS ) && ( cost_type < ATC_MAX ) ) {
 					file->rdwr_longlong( com_month[month][cost_type] );
 				} else {
-						file->rdwr_longlong( dummy );
+					file->rdwr_longlong( dummy );
 				}
 			}
 		}

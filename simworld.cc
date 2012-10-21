@@ -1456,16 +1456,20 @@ DBG_DEBUG("karte_t::init()","built timeline");
 
 	nosave_warning = nosave = false;
 
+	printf("Creating factories ...\n");
 	fabrikbauer_t::neue_karte(this);
 	// new system ...
 	int const max_display_progress = 16 + settings.get_anzahl_staedte() * 4 + settings.get_factory_count();
-	int chains_retry = 1 + settings.get_factory_count()/4;
+	int consecutive_build_failures = 0;
 	while(  fab_list.get_count() < (uint32)settings.get_factory_count()  ) {
 		if(  !fabrikbauer_t::increase_industry_density( this, false )  ) {
-			// building industry chain should fail max 10 times
-			if(  chains_retry-- > 0  ) {
+			if(  ++consecutive_build_failures > 3  ) {
+				// Industry chain building starts failing consecutively as map approaches full.
 				break;
 			}
+		}
+		else {
+			consecutive_build_failures = 0;
 		}
 		int const progress_count = 16 + settings.get_anzahl_staedte() * 4 + min(fab_list.get_count(),settings.get_factory_count());
 		display_progress(progress_count, max_display_progress );
@@ -3352,7 +3356,7 @@ void karte_t::neuer_monat()
 	if(  !umgebung_t::networkmode  &&  umgebung_t::autosave>0  &&  letzter_monat%umgebung_t::autosave==0  ) {
 		char buf[128];
 		sprintf( buf, "save/autosave%02i.sve", letzter_monat+1 );
-		speichern( buf, umgebung_t::savegame_version_str, true );
+		speichern( buf, loadsave_t::autosave_mode, umgebung_t::savegame_version_str, true );
 	}
 }
 
@@ -4280,7 +4284,7 @@ bool karte_t::play_sound_area_clipped(koord const pos, uint16 const idx) const
 }
 
 
-void karte_t::speichern(const char *filename, const char *version_str, bool silent )
+void karte_t::speichern(const char *filename, loadsave_t::mode_t savemode, const char *version_str, bool silent )
 {
 DBG_MESSAGE("karte_t::speichern()", "saving game to '%s'", filename);
 	loadsave_t  file;
@@ -4288,7 +4292,7 @@ DBG_MESSAGE("karte_t::speichern()", "saving game to '%s'", filename);
 	const char *savename = save_temp ? "save/_temp.sve" : filename;
 
 	display_show_load_pointer( true );
-	if(!file.wr_open( savename, loadsave_t::save_mode, umgebung_t::objfilename.c_str(), version_str )) {
+	if(!file.wr_open( savename, savemode, umgebung_t::objfilename.c_str(), version_str )) {
 		create_win(new news_img("Kann Spielstand\nnicht speichern.\n"), w_info, magic_none);
 		dbg->error("karte_t::speichern()","cannot open file for writing! check permissions!");
 	}
@@ -4600,13 +4604,16 @@ bool karte_t::laden(const char *filename)
 	if(!file.rd_open(name)) {
 
 		if(  (sint32)file.get_version()==-1  ||  file.get_version()>loadsave_t::int_version(SAVEGAME_VER_NR, NULL, NULL )  ) {
+			dbg->warning("karte_t::laden()", translator::translate("WRONGSAVE") );
 			create_win( new news_img("WRONGSAVE"), w_info, magic_none );
 		}
 		else {
+			dbg->warning("karte_t::laden()", translator::translate("Kann Spielstand\nnicht laden.\n") );
 			create_win(new news_img("Kann Spielstand\nnicht laden.\n"), w_info, magic_none);
 		}
 	} else if(file.get_version() < 84006) {
 		// too old
+		dbg->warning("karte_t::laden()", translator::translate("WRONGSAVE") );
 		create_win(new news_img("WRONGSAVE"), w_info, magic_none);
 	}
 	else {

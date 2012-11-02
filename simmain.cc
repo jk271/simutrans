@@ -196,6 +196,7 @@ void modal_dialogue( gui_frame_t *gui, ptrdiff_t magic, karte_t *welt, bool (*qu
 {
 	if(  display_get_width()==0  ) {
 		dbg->error( "modal_dialogue()", "called without a display driver => nothing will be shown!" );
+		umgebung_t::quit_simutrans = true;
 		// cannot handle this!
 		return;
 	}
@@ -1087,7 +1088,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 
 		if(  !umgebung_t::networkmode  &&  new_world  ) {
 			printf( "Show banner ... \n" );
-			ticker::add_msg("Welcome to Simutrans, a game created by Hj. Malthaner and the Simutrans community.", koord::invalid, PLAYER_FLAG + 1);
+			ticker::add_msg("Welcome to Simutrans", koord::invalid, PLAYER_FLAG + 1);
 			modal_dialogue( new banner_t(welt), magic_none, welt, never_quit );
 			// only show new world, if no other dialoge is active ...
 			new_world = win_get_open_count()==0;

@@ -328,7 +328,7 @@ void spieler_t::neuer_monat()
 		buf.printf( translator::translate("Congratulation\nScenario was complete in\n%i months %i years."), time%12, time/12 );
 		create_win(280, 40, new news_img(buf), w_info, magic_none);
 		// disable further messages
-		welt->get_scenario()->init("",welt);
+//		welt->get_scenario()->init("",welt); // make it compilable again
 		return;
 	}
 

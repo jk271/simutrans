@@ -15,23 +15,23 @@
 
 #include "../simtypes.h"
 
-// synchronize it with finance.h !!
+// for compatibility with old versions
 #define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
 #define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HIRSTORY_YEARS in file simplay.h !!!!! 
+/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_YEARS
 */
 #define MAX_PLAYER_HISTORY_YEARS2  (25) // number of years to keep history
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HIRSTORY_MONTHS in file simplay.h !!!!! 
+/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_MONTHS
 */
 #define MAX_PLAYER_HISTORY_MONTHS2  (25) // number of months to keep history
 
 
 /**
  * type of transport used in accounting statistics
- * waytype_t was not used because of values assigned to air_wt and powerline_wt. 
- * There are also building like railway station that can be distinguished 
+ * waytype_t was not used because of values assigned to air_wt and powerline_wt.
+ * There are also building like railway station that can be distinguished
  * by transport_type and can not be distinguished by waytype_t
  * @author jk271
  */
@@ -52,14 +52,14 @@ enum transport_type {
 };
 
 
-/** 
+/**
  * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
  * - the data are concerning to whole company
  *
  * ATC = accounting type commmon (common means data common for all transport types)
  *
- * These constants are intended for use in class finance_t (and in money_frame_t 
- * or in scriped scenarios). 
+ * These constants are intended for use in class finance_t (and in money_frame_t
+ * or in scriped scenarios).
  * If you need to use it in another place consider addition of new method like
  * has_money() or has_convoi()
  */
@@ -77,8 +77,8 @@ enum accounting_type_common {
 };
 
 
-/** 
- * supersedes COST_ types, that CAN be distinguished by type of transport 
+/**
+ * supersedes COST_ types, that CAN be distinguished by type of transport
  * ATV = accounting type vehicles
  * @author jk271
  */
@@ -104,7 +104,7 @@ enum accounting_type_vehicles {
 	ATV_NON_FINANTIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
 	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
 
-	
+
 	ATV_TRANSPORTED_PASSENGER, // numer of transported passanger, COST_TRANSPORTED_PAS
 	ATV_TRANSPORTED_MAIL,      // COST_TRANSPORTED_MAIL
 	ATV_TRANSPORTED_GOOD,         // COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
@@ -163,12 +163,12 @@ inline sint64 calc_margin(sint64 operating_profit, sint64 proceeds)
 inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
 
 
-/*
- * finance_history since version around 111.5 
- * I hope that having all finance in one class is better 
- * than having it in more places in spieler_t 
- * Another benefit: It leads to shorter variable names. 
- **/
+/**
+ * Finance_history since version around 111.5.
+ * Having all finance in one class is better
+ * than having it in more places in spieler_t.
+ * Another benefit: It leads to shorter variable names.
+ */
 class finance_t {
 	/** transport company */
 	spieler_t * player;
@@ -190,13 +190,13 @@ class finance_t {
 	 */
 	sint32 account_overdrawn;
 
-	/** 
+	/**
 	 * remember the starting money Used e.g. in scenarios.
 	 */
 	sint64 starting_money;
 
 	/**
-	 * finance history - will supersede the finance_history by hsiegeln 
+	 * finance history - will supersede the finance_history by hsiegeln
 	 * from version 111 or 112
 	 * containes values having relation with whole company but not with particular
 	 * type of transport (com - common)
@@ -249,7 +249,7 @@ public:
 	}
 
 	/**
-	 * sums up "count" with number of convois in statistics, 
+	 * sums up "count" with number of convois in statistics,
 	 * supersedes buche( count, COST_ALL_CONVOIS)
 	 * @author jk271
 	 */
@@ -258,7 +258,7 @@ public:
 		com_month[0][ATC_ALL_CONVOIS] += count;
 	}
 
-	/** 
+	/**
 	* Adds/subracts maintenance into/from finance stats.
 	* @param change monthly maintenance cost difference
 	* @param wt - waytype for accounting purposes
@@ -295,7 +295,7 @@ public:
 	* Accounts income from transport of passenger, mail, goods or electricity supply
 	* @param amount earned money
 	* @param wt waytype of vehicle
-	* @param index 0 = passenger, 1 = mail, 2 = goods 
+	* @param index 0 = passenger, 1 = mail, 2 = goods
 	*/
 	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index){
 		const transport_type tt = translate_waytype_to_tt(wt);
@@ -311,7 +311,7 @@ public:
 	/**
 	* Accounts distance-based running costs
 	* @param amount sum of money
-	* @param wt way type 
+	* @param wt way type
 	*/
 	inline void book_running_costs(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
@@ -323,7 +323,7 @@ public:
 	/**
 	* Account toll we have paid to any other company.
 	* @param amount sum of money
-	* @param wt way type 
+	* @param wt way type
 	*/
 	inline void book_toll_paid(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
@@ -414,7 +414,7 @@ public:
 	sint64 get_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
 
 	/**
- 	* @return finance history of indistinguishable (by type of transport) 
+ 	* @return finance history of indistinguishable (by type of transport)
  	* part of finance statistics
  	* @author jk271
  	*/
@@ -434,7 +434,7 @@ public:
 	inline sint32 get_account_overdrawn() { return account_overdrawn; }
 
 	/**
-	 * returns maintenance 
+	 * returns maintenance
 	 * @param tt transport type (Truck, Ship Air, ...)
 	 */
 	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
@@ -444,7 +444,7 @@ public:
 	 * @author jk271
 	 */
 	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
-	
+
 	inline sint64 get_netwealth() const { return com_year[0][ATC_NETWEALTH]; }
 
 	inline sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }

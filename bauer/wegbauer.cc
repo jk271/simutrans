@@ -909,7 +909,7 @@ void wegbauer_t::do_terraforming()
 			changed = true;
 			if (last_terraformed != i) {
 				// charge player
-				spieler_t::accounting(sp, welt->get_settings().cst_set_slope, from->get_pos().get_2d(), COST_CONSTRUCTION);
+				spieler_t::book_construction_costs(sp, welt->get_settings().cst_set_slope, from->get_pos().get_2d(), ignore_wt);
 			}
 		}
 		// change slope of to
@@ -924,7 +924,7 @@ void wegbauer_t::do_terraforming()
 			}
 			changed = true;
 			// charge player
-			spieler_t::accounting(sp, welt->get_settings().cst_set_slope, to->get_pos().get_2d(), COST_CONSTRUCTION);
+			spieler_t::book_construction_costs(sp, welt->get_settings().cst_set_slope, to->get_pos().get_2d(), ignore_wt);
 			last_terraformed = i+1; // do not pay twice for terraforming one tile
 		}
 		// recalc slope image of neighbors
@@ -2034,7 +2034,7 @@ bool wegbauer_t::baue_tunnelboden()
 			}
 		}
 	}
-	spieler_t::accounting(sp, cost, route[0].get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs(sp, cost, route[0].get_2d(), tunnel_besch->get_waytype());
 	return true;
 }
 
@@ -2133,7 +2133,7 @@ void wegbauer_t::baue_strasse()
 		}
 		gr->calc_bild();	// because it may be a crossing ...
 		reliefkarte_t::get_karte()->calc_map_pixel(k);
-		spieler_t::accounting(sp, cost, k, COST_CONSTRUCTION);
+		spieler_t::book_construction_costs(sp, cost, k, road_wt);
 	} // for
 }
 
@@ -2229,7 +2229,7 @@ void wegbauer_t::baue_schiene()
 
 			gr->calc_bild();
 			reliefkarte_t::get_karte()->calc_map_pixel( gr->get_pos().get_2d() );
-			spieler_t::accounting(sp, cost, gr->get_pos().get_2d(), COST_CONSTRUCTION);
+			spieler_t::book_construction_costs(sp, cost, gr->get_pos().get_2d(), besch->get_finance_waytype());
 
 			if((i&3)==0) {
 				INT_CHECK( "wegbauer 1584" );
@@ -2259,7 +2259,7 @@ void wegbauer_t::baue_leitung()
 			if(gr->ist_natur()) {
 				// remove trees etc.
 				sint64 cost = gr->remove_trees();
-				spieler_t::accounting(sp, -cost, gr->get_pos().get_2d(), COST_CONSTRUCTION);
+				spieler_t::book_construction_costs(sp, -cost, gr->get_pos().get_2d(), powerline_wt);
 			}
 			lt = new leitung_t( welt, route[i], sp );
 			gr->obj_add(lt);
@@ -2277,7 +2277,7 @@ void wegbauer_t::baue_leitung()
 		}
 		if (build_powerline) {
 			lt->set_besch(besch);
-			spieler_t::accounting(sp, -besch->get_preis(), gr->get_pos().get_2d(), COST_CONSTRUCTION);
+			spieler_t::book_construction_costs(sp, -besch->get_preis(), gr->get_pos().get_2d(), powerline_wt);
 			// this adds maintenance
 			lt->leitung_t::laden_abschliessen();
 			reliefkarte_t::get_karte()->calc_map_pixel( gr->get_pos().get_2d() );

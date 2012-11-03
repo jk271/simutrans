@@ -162,6 +162,16 @@ protected:
 	pwd_hash_t pwd_hash;
 
 public:
+	/**
+	 * Adds construction costs to accounting statistics,
+	 * @param amount How much does it cost
+	 * @param tt type of transport
+	 * @author jk271
+	 */
+	void book_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
+
+	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
+
 	virtual bool set_active( bool b ) { return automat = b; }
 
 	bool is_active() const { return automat; }

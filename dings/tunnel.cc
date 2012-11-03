@@ -170,7 +170,7 @@ void tunnel_t::entferne( spieler_t *sp2 )
 			spieler_t::add_maintenance( sp,  -besch->get_wartung() );
 		}
 	}
-	spieler_t::accounting(sp2, -besch->get_preis(), get_pos().get_2d(), COST_CONSTRUCTION );
+	spieler_t::book_construction_costs(sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_finance_waytype() );
 }
 
 

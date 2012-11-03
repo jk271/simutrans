@@ -31,7 +31,7 @@ bruecke_t::bruecke_t(karte_t *welt, koord3d pos, spieler_t *sp, const bruecke_be
 	this->besch = besch;
 	this->img = img;
 	set_besitzer( sp );
-	spieler_t::accounting( get_besitzer(), -besch->get_preis(), get_pos().get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs( get_besitzer(), -besch->get_preis(), get_pos().get_2d(), besch->get_waytype());
 }
 
 
@@ -163,7 +163,7 @@ void bruecke_t::entferne( spieler_t *sp2 )
 		}
 		spieler_t::add_maintenance( sp,  -besch->get_wartung() );
 	}
-	spieler_t::accounting( sp2, -besch->get_preis(), get_pos().get_2d(), COST_CONSTRUCTION );
+	spieler_t::book_construction_costs( sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_waytype() );
 }
 
 

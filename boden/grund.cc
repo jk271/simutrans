@@ -1714,7 +1714,7 @@ DBG_MESSAGE("wkz_wayremover()","change remaining way to ribi %d",add);
 		}
 		// we have to pay?
 		if(costs) {
-			spieler_t::accounting(sp, costs, here, COST_CONSTRUCTION);
+			spieler_t::book_construction_costs(sp, costs, here, weg->get_besch()->get_finance_waytype());
 		}
 	}
 	return true;

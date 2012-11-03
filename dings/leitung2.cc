@@ -158,7 +158,7 @@ leitung_t::~leitung_t()
 
 void leitung_t::entferne(spieler_t *sp)
 {
-	spieler_t::accounting(sp, -besch->get_preis()/2, get_pos().get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs(sp, -besch->get_preis()/2, get_pos().get_2d(), powerline_wt);
 	mark_image_dirty( bild, 0 );
 }
 
@@ -462,7 +462,7 @@ pumpe_t::pumpe_t(karte_t *welt, koord3d pos, spieler_t *sp) : leitung_t(welt , p
 {
 	fab = NULL;
 	supply = 0;
-	sp->buche(welt->get_settings().cst_transformer, get_pos().get_2d(), COST_CONSTRUCTION);
+	sp->book_construction_costs(welt->get_settings().cst_transformer, get_pos().get_2d(), powerline_wt);
 }
 
 
@@ -599,7 +599,7 @@ senke_t::senke_t(karte_t *welt, koord3d pos, spieler_t *sp) : leitung_t(welt , p
 	delta_sum = 0;
 	last_power_demand = 0;
 	power_load = 0;
-	sp->buche(welt->get_settings().cst_transformer, get_pos().get_2d(), COST_CONSTRUCTION);
+	sp->book_construction_costs(welt->get_settings().cst_transformer, get_pos().get_2d(), powerline_wt);
 	welt->sync_add(this);
 }
 

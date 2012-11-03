@@ -737,13 +737,13 @@ DBG_MESSAGE("ai_goods_t::create_simple_rail_transport()","building simple track 
 		k = platz1;
 		while(k!=size1+platz1) {
 			int cost = -welt->lookup_kartenboden(k)->weg_entfernen( track_wt, true );
-			buche(cost, k, COST_CONSTRUCTION);
+			book_construction_costs(cost, k, track_wt);
 			k += diff1;
 		}
 		k = platz2;
 		while(k!=size2+platz2) {
 			int cost = -welt->lookup_kartenboden(k)->weg_entfernen( track_wt, true );
-			buche(cost, k, COST_CONSTRUCTION);
+			book_construction_costs(cost, k, track_wt);
 			k += diff2;
 		}
 	}

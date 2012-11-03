@@ -134,6 +134,23 @@ spieler_t::~spieler_t()
 }
 
 
+void spieler_t::book_construction_costs(const sint64 amount, const koord k, const waytype_t wt, const int utyp){
+	buche(amount, k, COST_CONSTRUCTION);  // This will be superseded
+}
+
+
+void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt, const int utyp){
+	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
+		sp->book_construction_costs( amount, k, wt, utyp );
+	} else {
+		// when making road or stop public, pay to public authority
+		if (sp!=NULL && sp == welt->get_spieler(1) && amount >0) {
+			sp->book_construction_costs( amount, k, wt, utyp );
+		}
+	}
+}
+
+
 /* returns the name of the player; "player -1" sits in front of the screen
  * @author prissi
  */

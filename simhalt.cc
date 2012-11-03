@@ -2158,6 +2158,12 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 				gb->set_besitzer(public_owner);
 				gb->set_flag(ding_t::dirty);
 				spieler_t::add_maintenance(public_owner, (sint32)costs );
+				if (( sp != NULL) && (sp != welt->get_spieler(1))) // do not allow to public authority to gain money by making public station public
+				{
+					spieler_t::book_construction_costs( sp,          -costs*60, get_basis_pos(), gb->get_waytype());
+					// it is not real construction cost, it is fee payed for public authority for future maintenance. So money are transferred to public authority
+					spieler_t::book_construction_costs( public_owner, costs*60, koord::invalid, gb->get_waytype());
+				}
 			}
 			// ok, valid start, now we can join them
 			for( uint8 i=0;  i<8;  i++  ) {
@@ -2171,7 +2177,6 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 			}
 		}
 		// transfer ownership
-		spieler_t::accounting( sp, -total_costs*60, get_basis_pos(), COST_CONSTRUCTION);
 		besitzer_p->halt_remove(self);
 		besitzer_p = public_owner;
 		public_owner->halt_add(self);
@@ -2207,7 +2212,12 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 					spieler_t *gb_sp=gb->get_besitzer();
 					sint64 const costs = welt->get_settings().maint_building * gb->get_tile()->get_besch()->get_level();
 					spieler_t::add_maintenance( gb_sp, (sint32)-costs );
-					spieler_t::accounting(gb_sp, costs*60, gr->get_pos().get_2d(), COST_CONSTRUCTION);
+					if (( gb_sp != NULL) && ( gb_sp != welt->get_spieler(1)) ) // do not allow to public authority to gain money by making public station public
+					{
+						// it is not real construction cost, it is fee payed for public authority for future maintenance. So money are transferred to public authority
+						spieler_t::book_construction_costs( gb_sp,       -costs*60, gr->get_pos().get_2d(), gb->get_waytype());
+						spieler_t::book_construction_costs( public_owner, costs*60, koord::invalid, gb->get_waytype());
+					}
 					gb->set_besitzer(public_owner);
 					gb->set_flag(ding_t::dirty);
 					spieler_t::add_maintenance( public_owner, (sint32)costs );

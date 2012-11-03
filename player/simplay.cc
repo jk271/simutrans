@@ -380,6 +380,13 @@ void spieler_t::neuer_monat()
 	else {
 		finance->set_account_overdrawn( 0 );
 	}
+
+
+	// new month has started => recalculate vehicle value
+	calc_assets();
+
+
+	simlinemgmt.new_month();
 }
 
 

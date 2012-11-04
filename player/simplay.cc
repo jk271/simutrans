@@ -156,6 +156,16 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
 }
 
 
+
+/**
+ * amount has negative value = buy vehicle, positive value = vehicle sold
+ */
+void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
+	buche( amount, k, COST_NEW_VEHICLE);
+	buche(-amount, COST_ASSETS);
+}
+
+
 /* returns the name of the player; "player -1" sits in front of the screen
  * @author prissi
  */

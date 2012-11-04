@@ -191,6 +191,16 @@ public:
 
 	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
+	/**
+	 * Accounts bought/sold vehicles
+	 * @param price money used for purchase of vehicle,
+	 *              negative value = vehicle bought,
+	 *              negative value = vehicle sold
+	 * @param wt waytype for accounting purpose
+	 * @author jk271
+	 */
+	void book_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
+
 	virtual bool set_active( bool b ) { return automat = b; }
 
 	bool is_active() const { return automat; }

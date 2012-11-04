@@ -336,20 +336,20 @@ DBG_MESSAGE("tunnelbauer_t::baue()","build from (%d,%d,%d) to (%d,%d,%d) ", pos.
 			weg->set_besch(weg_besch);
 			weg->set_max_speed(besch->get_topspeed());
 			tunnel->neuen_weg_bauen(weg, ribi_t::doppelt(ribi), sp);
-			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		}
 		else {
 			lt = new leitung_t(welt, tunnel->get_pos(), sp);
 			lt->set_besch(weg_besch);
 			tunnel->obj_add( lt );
 			lt->laden_abschliessen();
-			spieler_t::add_maintenance( sp, -weg_besch->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg_besch->get_wartung(), powerline_wt );
 		}
 		tunnel->obj_add(new tunnel_t(welt, pos, sp, besch));
 		tunnel->calc_bild();
 		tunnel->set_flag(grund_t::dirty);
 		assert(!tunnel->ist_karten_boden());
-		spieler_t::add_maintenance( sp, besch->get_wartung() );
+		spieler_t::add_maintenance( sp, besch->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		cost += besch->get_preis();
 		pos = pos + zv;
 	}
@@ -372,20 +372,20 @@ DBG_MESSAGE("tunnelbauer_t::baue()","build from (%d,%d,%d) to (%d,%d,%d) ", pos.
 			weg->set_besch(weg_besch);
 			weg->set_max_speed(besch->get_topspeed());
 			tunnel->neuen_weg_bauen(weg, ribi, sp);
-			spieler_t::add_maintenance( sp,  -weg->get_besch()->get_wartung() );
+			spieler_t::add_maintenance( sp,  -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		}
 		else {
 			lt = new leitung_t(welt, tunnel->get_pos(), sp);
 			lt->set_besch(weg_besch);
 			tunnel->obj_add( lt );
 			lt->laden_abschliessen();
-			spieler_t::add_maintenance( sp, -weg_besch->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg_besch->get_wartung(), powerline_wt );
 		}
 		tunnel->obj_add(new tunnel_t(welt, pos, sp, besch));
 		tunnel->calc_bild();
 		tunnel->set_flag(grund_t::dirty);
 		assert(!tunnel->ist_karten_boden());
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		cost += besch->get_preis();
 	}
 
@@ -425,7 +425,7 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 			}
 			tunnel->neuen_weg_bauen( weg, ribi, sp );
 		}
-		spieler_t::add_maintenance( sp,  -weg->get_besch()->get_wartung() );
+		spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		weg->set_max_speed( besch->get_topspeed() );
 	}
 	else {
@@ -434,12 +434,12 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 			lt = new leitung_t(welt, tunnel->get_pos(), sp);
 			lt->set_besch(weg_besch);
 			tunnel->obj_add( lt );
-			spieler_t::add_maintenance( sp, -weg_besch->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg_besch->get_wartung(), powerline_wt );
 		}
 		else {
 			// subtract twice maintenance: once for the already existing powerline
 			// once since leitung_t::laden_abschliessen will add it again
-			spieler_t::add_maintenance( sp, -2*lt->get_besch()->get_wartung());
+			spieler_t::add_maintenance( sp, -2*lt->get_besch()->get_wartung(), powerline_wt );
 		}
 		lt->laden_abschliessen();
 	}
@@ -483,7 +483,7 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 
 
 	if(sp!=NULL) {
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), weg->get_besch()->get_finance_waytype() );
 	}
 	cost += besch->get_preis();
 }

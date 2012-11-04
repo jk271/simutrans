@@ -71,7 +71,7 @@ wayobj_t::~wayobj_t()
 		return;
 	}
 	if(get_besitzer()) {
-		spieler_t::add_maintenance(get_besitzer(), -besch->get_wartung());
+		spieler_t::add_maintenance(get_besitzer(), -besch->get_wartung(), get_waytype());
 	}
 	if(besch->get_own_wtyp()==overheadlines_wt) {
 		grund_t *gr=welt->lookup(get_pos());
@@ -218,7 +218,7 @@ void wayobj_t::laden_abschliessen()
 	}
 
 	if(get_besitzer()) {
-		spieler_t::add_maintenance(get_besitzer(), besch->get_wartung());
+		spieler_t::add_maintenance(get_besitzer(), besch->get_wartung(), besch->get_wtyp());
 	}
 }
 

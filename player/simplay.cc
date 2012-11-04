@@ -134,6 +134,11 @@ spieler_t::~spieler_t()
 }
 
 
+void spieler_t::add_maintenance(sint64 change, waytype_t const, const int utyp) {
+	spieler_t::add_maintenance(this, (sint32) change);  // This will we superseded
+}
+
+
 void spieler_t::book_construction_costs(const sint64 amount, const koord k, const waytype_t wt, const int utyp){
 	buche(amount, k, COST_CONSTRUCTION);  // This will be superseded
 }
@@ -598,7 +603,7 @@ void spieler_t::ai_bankrupt()
 					if(  w  &&  w->get_besitzer()==this  ) {
 						// take ownership
 						if (wnr>1  ||  (!gr->ist_bruecke()  &&  !gr->ist_tunnel())) {
-							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung() );
+							spieler_t::add_maintenance( this, -w->get_besch()->get_wartung(), w->get_besch()->get_finance_waytype() );
 						}
 						w->set_besitzer(NULL); // make public
 					}
@@ -657,7 +662,7 @@ void spieler_t::ai_bankrupt()
 								break;
 							case ding_t::leitung:
 								if(gr->ist_bruecke()) {
-									maintenance -= ((leitung_t*)dt)->get_besch()->get_wartung();
+									add_maintenance( -((leitung_t*)dt)->get_besch()->get_wartung(), powerline_wt );
 									// do not remove powerline from bridges
 									dt->set_besitzer( welt->get_spieler(1) );
 								}
@@ -676,7 +681,7 @@ void spieler_t::ai_bankrupt()
 									w->set_besitzer( NULL );
 								}
 								else if(w->get_waytype()==road_wt  ||  w->get_waytype()==water_wt) {
-									maintenance -= w->get_besch()->get_wartung();
+									add_maintenance( -w->get_besch()->get_wartung(), w->get_waytype() );
 									w->set_besitzer( NULL );
 								}
 								else {
@@ -685,11 +690,11 @@ void spieler_t::ai_bankrupt()
 								break;
 							}
 							case ding_t::bruecke:
-								maintenance -= ((bruecke_t*)dt)->get_besch()->get_wartung();
+								add_maintenance( -((bruecke_t*)dt)->get_besch()->get_wartung(), dt->get_waytype() );
 								dt->set_besitzer( NULL );
 								break;
 							case ding_t::tunnel:
-								maintenance -= ((tunnel_t*)dt)->get_besch()->get_wartung();
+								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung(), ((tunnel_t*)dt)->get_besch()->get_finance_waytype() );
 								dt->set_besitzer( NULL );
 								break;
 

@@ -134,10 +134,10 @@ void bruecke_t::laden_abschliessen()
 			}
 			weg->set_max_speed(besch->get_topspeed());
 			// take ownership of way
-			spieler_t::add_maintenance( weg->get_besitzer(), -weg->get_besch()->get_wartung());
+			spieler_t::add_maintenance( weg->get_besitzer(), -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype());
 			weg->set_besitzer(sp);
 		}
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_finance_waytype() );
 	}
 }
 
@@ -153,7 +153,7 @@ void bruecke_t::entferne( spieler_t *sp2 )
 			weg_t *weg = gr->get_weg( besch->get_waytype() );
 			if(weg) {
 				weg->set_max_speed( weg->get_besch()->get_topspeed() );
-				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung());
+				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype());
 				// reset offsets
 				weg->set_yoff(0);
 				if (gr->get_weg_nr(1)) {
@@ -161,7 +161,7 @@ void bruecke_t::entferne( spieler_t *sp2 )
 				}
 			}
 		}
-		spieler_t::add_maintenance( sp,  -besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  -besch->get_wartung(), besch->get_finance_waytype() );
 	}
 	spieler_t::book_construction_costs( sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_waytype() );
 }

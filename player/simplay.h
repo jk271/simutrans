@@ -163,6 +163,25 @@ protected:
 
 public:
 	/**
+	 * Adds somme amount to the maintenance costs
+	 * @param change the change
+	 * @return the new maintenance costs
+	 */
+	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt, const int utyp = 0);
+
+	/**
+	 * Adds somme amount to the maintenance costs
+	 * @param player (could be zero too!)
+	 * @param change the change
+	 * @author Hj. Malthaner
+	 */
+	static void add_maintenance(spieler_t *sp, sint64 change, waytype_t const wt=ignore_wt, const int utyp = 0) {
+		if(sp != NULL) {
+			sp->add_maintenance(change, wt, utyp);
+		}
+	}
+
+	/**
 	 * Adds construction costs to accounting statistics,
 	 * @param amount How much does it cost
 	 * @param tt type of transport

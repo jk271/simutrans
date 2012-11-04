@@ -2153,8 +2153,7 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 			if(gb) {
 				spieler_t *gb_sp=gb->get_besitzer();
 				sint64 const costs = welt->get_settings().maint_building * gb->get_tile()->get_besch()->get_level();
-				total_costs += costs;
-				spieler_t::add_maintenance( gb_sp, (sint32)-costs );
+				spieler_t::add_maintenance( gb_sp, -costs, gb->get_waytype() );
 				gb->set_besitzer(public_owner);
 				gb->set_flag(ding_t::dirty);
 				spieler_t::add_maintenance(public_owner, (sint32)costs );
@@ -2211,7 +2210,8 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 				if(public_owner!=gb_sp) {
 					spieler_t *gb_sp=gb->get_besitzer();
 					sint64 const costs = welt->get_settings().maint_building * gb->get_tile()->get_besch()->get_level();
-					spieler_t::add_maintenance( gb_sp, (sint32)-costs );
+					spieler_t::add_maintenance(gb_sp,       -costs, gb->get_waytype() );
+					spieler_t::add_maintenance(public_owner, costs, gb->get_waytype() );
 					if (( gb_sp != NULL) && ( gb_sp != welt->get_spieler(1)) ) // do not allow to public authority to gain money by making public station public
 					{
 						// it is not real construction cost, it is fee payed for public authority for future maintenance. So money are transferred to public authority
@@ -2220,7 +2220,6 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 					}
 					gb->set_besitzer(public_owner);
 					gb->set_flag(ding_t::dirty);
-					spieler_t::add_maintenance( public_owner, (sint32)costs );
 				}
 			}
 			// transfer tiles to us

@@ -2538,7 +2538,10 @@ void convoi_t::calc_gewinn()
 
 	for(unsigned i=0; i<anz_vehikel; i++) {
 		vehikel_t* v = fahr[i];
-		gewinn += v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+		sint64 tmp;
+		gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+		// get_schedule is needed as v->get_waytype() returns track_wt for trams (instead of tram_wt
+		besitzer_p->book_revenue(tmp, fahr[0]->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_fracht_typ()->get_index() );
 		v->last_stop_pos = v->get_pos().get_2d();
 	}
 
@@ -2553,7 +2556,7 @@ void convoi_t::calc_gewinn()
 	sum_speed_limit = 0;
 
 	if(gewinn) {
-		besitzer_p->buche(gewinn, fahr[0]->get_pos().get_2d(), COST_INCOME);
+		besitzer_p->add_money_message(gewinn, fahr[0]->get_pos().get_2d());
 		jahresgewinn += gewinn;
 
 		book(gewinn, CONVOI_PROFIT);
@@ -2615,8 +2618,10 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 
 		// we need not to call this on the same position
 		if(  v->last_stop_pos != v->get_pos().get_2d()  ) {
+			sint64 tmp;
 			// calc_revenue
-			gewinn += v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+			gewinn += tmp = v->calc_gewinn(v->last_stop_pos, v->get_pos().get_2d() );
+			besitzer_p->book_revenue(tmp, fahr[0]->get_pos().get_2d(), get_schedule()->get_waytype(), v->get_fracht_typ()->get_index());
 			v->last_stop_pos = v->get_pos().get_2d();
 		}
 
@@ -2651,7 +2656,7 @@ void convoi_t::hat_gehalten(halthandle_t halt)
 	sum_speed_limit = 0;
 
 	if(gewinn) {
-		besitzer_p->buche(gewinn, fahr[0]->get_pos().get_2d(), COST_INCOME);
+		besitzer_p->add_money_message(gewinn, fahr[0]->get_pos().get_2d());
 		jahresgewinn += gewinn;
 
 		book(gewinn, CONVOI_PROFIT);

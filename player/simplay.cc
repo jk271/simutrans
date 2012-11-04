@@ -139,6 +139,21 @@ void spieler_t::add_maintenance(sint64 change, waytype_t const, const int utyp) 
 }
 
 
+void spieler_t::add_money_message(const sint64 amount, const koord pos) {
+	if(amount != 0) {
+		if(  koord_distance(welt->get_world_position(),pos)<2*(uint32)(display_get_width()/get_tile_raster_width())+3  ) {
+			// only display, if near the screen ...
+			add_message(pos, amount);
+
+			// and same for sound too ...
+			if(  amount>=10000  &&  !welt->is_fast_forward()  ) {
+				welt->play_sound_area_clipped(pos, SFX_CASH);
+			}
+		}
+	}
+}
+
+
 void spieler_t::book_construction_costs(const sint64 amount, const koord k, const waytype_t wt, const int utyp){
 	buche(amount, k, COST_CONSTRUCTION);  // This will be superseded
 }
@@ -163,6 +178,12 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
 void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
 	buche( amount, k, COST_NEW_VEHICLE);
 	buche(-amount, COST_ASSETS);
+}
+
+
+void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
+	buche(amount, COST_INCOME);
+	add_money_message(amount, k);
 }
 
 

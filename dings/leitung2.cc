@@ -656,7 +656,7 @@ void senke_t::step(long delta_t)
 	}
 
 	if(max_einkommen>(2000<<11)) {
-		get_besitzer()->buche(einkommen >> 11, get_pos().get_2d(), COST_POWERLINES);
+		get_besitzer()->book_revenue(einkommen >> 11, get_pos().get_2d(), powerline_wt);
 		einkommen = 0;
 		max_einkommen = 1;
 	}

@@ -181,6 +181,12 @@ public:
 		}
 	}
 
+	/*
+	 * displayes amount of money when koordinates and on screen
+	 * reworked function buche()
+	 */
+	void add_money_message(const sint64 amount, const koord k);
+
 	/**
 	 * Adds construction costs to accounting statistics,
 	 * @param amount How much does it cost
@@ -200,6 +206,17 @@ public:
 	 * @author jk271
 	 */
 	void book_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
+
+	/**
+	 * Adds income to accounting statistics.
+	 * @param amount earned money
+	 * @param tt transport type used in accounting statistics
+	 * @param cathegory parameter
+	 * 	0 ... passenger
+	 *	1 ... mail
+	 *	2 ... good (and powerlines revenue)
+	 */
+	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	virtual bool set_active( bool b ) { return automat = b; }
 

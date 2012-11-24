@@ -8,6 +8,7 @@
 
 #include "../simline.h"
 #include "../simcolor.h"
+#include "../simdepot.h"
 #include "../simhalt.h"
 #include "../simworld.h"
 #include "../simmenu.h"
@@ -30,6 +31,7 @@
 
 #include "../tpl/vector_tpl.h"
 
+#include "depot_frame.h"
 #include "fahrplan_gui.h"
 #include "line_item.h"
 
@@ -102,16 +104,20 @@ static void gimme_stop_name(cbuffer_t& buf, karte_t* const welt, spieler_t const
 			buf.printf("%d%% ", entry.ladegrad);
 		}
 		what = halt->get_name();
-	} else {
+	}
+	else {
 		grund_t const* const gr = welt->lookup(entry.pos);
 		if (!gr) {
 			what = translator::translate("Invalid coordinate");
-		} else if (gr->get_depot()) {
+		}
+		else if (gr->get_depot()) {
 			what = translator::translate("Depot");
-		} else if (char const* const label_text = gr->get_text()) {
+		}
+		else if (char const* const label_text = gr->get_text()) {
 			buf.printf("%s ", translator::translate("Wegpunkt"));
 			what = label_text;
-		} else {
+		}
+		else {
 			what = translator::translate("Wegpunkt");
 		}
 	}
@@ -325,10 +331,13 @@ fahrplan_gui_t::fahrplan_gui_t(schedule_t* fpl_, spieler_t* sp_, convoihandle_t 
 	bt_wait_next.add_listener(this);
 	add_komponente(&bt_wait_next);
 
-	bt_return.init(button_t::roundbox, "return ticket", koord(BUTTON3_X, ypos ), koord(D_BUTTON_WIDTH,D_BUTTON_HEIGHT) );
-	bt_return.set_tooltip("Add stops for backward travel");
-	bt_return.add_listener(this);
-	add_komponente(&bt_return);
+	if(  !umgebung_t::hide_rail_return_ticket  ||  fpl->get_waytype()==road_wt  ||  fpl->get_waytype()==air_wt  ||  fpl->get_waytype()==water_wt  ) {
+		//  hide the return ticket on rail stuff, where it causes much trouble
+		bt_return.init(button_t::roundbox, "return ticket", koord(BUTTON3_X, ypos ), koord(D_BUTTON_WIDTH,D_BUTTON_HEIGHT) );
+		bt_return.set_tooltip("Add stops for backward travel");
+		bt_return.add_listener(this);
+		add_komponente(&bt_return);
+	}
 
 	ypos += D_BUTTON_HEIGHT;
 
@@ -399,15 +408,12 @@ void fahrplan_gui_t::update_werkzeug(bool set)
 
 void fahrplan_gui_t::update_selection()
 {
-	// update load
-	lb_load.set_color( COL_GREY3 );
-	numimp_load.disable();
-	numimp_load.set_value( 0 );
 	bt_wait_prev.disable();
 	lb_wait.set_color( COL_GREY3 );
 	strcpy( str_parts_month, translator::translate("off") );
 	lb_waitlevel.set_color( COL_GREY3 );
 	bt_wait_next.disable();
+
 	if(  !fpl->empty()  ) {
 		fpl->set_aktuell( min(fpl->get_count()-1,fpl->get_aktuell()) );
 		const uint8 aktuell = fpl->get_aktuell();
@@ -424,6 +430,11 @@ void fahrplan_gui_t::update_selection()
 				lb_waitlevel.set_color( COL_WHITE );
 				bt_wait_next.enable();
 			}
+		}
+		else {
+			lb_load.set_color( COL_GREY3 );
+			numimp_load.disable();
+			numimp_load.set_value( 0 );
 		}
 	}
 }
@@ -492,6 +503,19 @@ bool fahrplan_gui_t::infowin_event(const event_t *ev)
 					cbuffer_t buf;
 					fpl->sprintf_schedule( buf );
 					cnv->call_convoi_tool( 'g', buf );
+				}
+
+				if(  cnv->in_depot()  ) {
+					const grund_t *const ground = welt->lookup( cnv->get_home_depot() );
+					if(  ground  ) {
+						const depot_t *const depot = ground->get_depot();
+						if(  depot  ) {
+							depot_frame_t *const frame = dynamic_cast<depot_frame_t *>( win_get_magic( (ptrdiff_t)depot ) );
+							if(  frame  ) {
+								frame->update_data();
+							}
+						}
+					}
 				}
 			}
 		}
@@ -592,7 +616,7 @@ DBG_MESSAGE("fahrplan_gui_t::action_triggered()","komp=%p combo=%p",komp,&line_s
 		fpl->sprintf_schedule( buf );
 		w->set_default_param(buf);
 		sp->get_welt()->set_werkzeug( w, sp );
-		// since init always returns false, it is save to delete immediately
+		// since init always returns false, it is safe to delete immediately
 		delete w;
 	}
 	// recheck lines
@@ -616,7 +640,7 @@ void fahrplan_gui_t::init_line_selector()
 {
 	line_selector.clear_elements();
 	line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( no_line, COL_BLACK ) );
-	int selection = -1;
+	int selection = 0;
 	sp->simlinemgmt.sort_lines();	// to take care of renaming ...
 	sp->simlinemgmt.get_lines(fpl->get_type(), &lines);
 

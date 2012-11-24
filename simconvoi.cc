@@ -1321,7 +1321,7 @@ void convoi_t::start()
 		fahr[0]->set_bild(IMG_LEER);
 
 		// update finances for used vehicle reduction when first driven
-		besitzer_p->update_assets( restwert_delta );
+		besitzer_p->update_assets( restwert_delta, get_schedule()->get_waytype());
 
 		// calc state for convoi
 		calc_loading();

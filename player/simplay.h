@@ -435,7 +435,7 @@ public:
 	/**
 	* Updates the assets value of the player
 	*/
-	void update_assets(sint64 const delta);
+	void update_assets(sint64 const delta, const waytype_t wt = ignore_wt);
 
 	/**
 	* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered

@@ -508,7 +508,7 @@ void spieler_t::calc_assets()
 }
 
 
-void spieler_t::update_assets(sint64 const delta)
+void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 {
 	finance_history_year[0][COST_ASSETS] += delta;
 	finance_history_year[0][COST_NETWEALTH] += delta;

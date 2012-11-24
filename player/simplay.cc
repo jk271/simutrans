@@ -187,6 +187,12 @@ void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t
 }
 
 
+void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
+	buche(amount, COST_VEHICLE_RUN);
+}
+
+
+
 void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index){
 	index = (index > 2) || (index < 0) ? 2 : index;
 	buche(amount, (player_cost) (COST_TRANSPORTED_PAS+index));

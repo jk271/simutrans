@@ -641,7 +641,7 @@ void convoi_t::add_running_cost( const weg_t *weg )
 		weg->get_besitzer()->buche( toll, COST_WAY_TOLLS );
 		get_besitzer()->buche( -toll, COST_WAY_TOLLS );
 	}
-	get_besitzer()->buche( sum_running_costs, COST_VEHICLE_RUN);
+	get_besitzer()->book_running_costs( sum_running_costs, get_schedule()->get_waytype());
 
 	book( sum_running_costs, CONVOI_OPERATIONS );
 	book( sum_running_costs, CONVOI_PROFIT );

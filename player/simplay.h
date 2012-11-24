@@ -218,6 +218,15 @@ public:
 	 */
 	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
+	/**
+	 * Add amount of transported passanger, mail, goods to accounting statistics
+	 * @param amount number of transported units
+	 * @papam tt type of transport
+	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
+	 *                  other same as in the pak files)
+	 */
+	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+
 	virtual bool set_active( bool b ) { return automat = b; }
 
 	bool is_active() const { return automat; }

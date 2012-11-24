@@ -743,9 +743,8 @@ uint16 vehikel_t::unload_freight(halthandle_t halt)
 
 					// book delivered goods to destination
 					if(end_halt==halt) {
-						// pax is alway index 1
-						const int categorie = tmp.get_index()>1 ? 2 : tmp.get_index();
-						get_besitzer()->buche( menge, (player_cost)(COST_TRANSPORTED_PAS+categorie) );
+						// passenger .. 0, mail .. 1, other .. 2
+						get_besitzer()->book_transported( menge, get_besch()->get_waytype(), tmp.get_index() );
 					}
 
 					i = fracht.erase( i );

@@ -192,6 +192,15 @@ void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
 }
 
 
+void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt){
+	buche(amount, COST_WAY_TOLLS);
+}
+
+
+void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt){
+	buche(amount, COST_WAY_TOLLS);
+}
+
 
 void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index){
 	index = (index > 2) || (index < 0) ? 2 : index;

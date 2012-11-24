@@ -227,6 +227,20 @@ public:
         void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
+	 * books toll paid by our company to someone else
+	 * @param amount money paid to our company
+	 * @param tt type of transport used for assounting statistisc
+	 */
+	void book_toll_paid(const sint64 amount, const waytype_t wt=ignore_wt);
+
+	/**
+	 * books toll paid to out company by someone else
+	 * @param amount money paid for usage of our roads,railway,channels, ... ; positive sign
+	 * @param tt type of transport used for assounting statistisc
+	 */
+	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
+
+	/**
 	 * Add amount of transported passanger, mail, goods to accounting statistics
 	 * @param amount number of transported units
 	 * @papam tt type of transport

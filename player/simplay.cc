@@ -171,6 +171,11 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
 }
 
 
+void spieler_t::book_convoi_number(const sint64 count)
+{
+	buche(count, COST_ALL_CONVOIS);
+}
+
 
 /**
  * amount has negative value = buy vehicle, positive value = vehicle sold

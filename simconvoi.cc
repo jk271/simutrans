@@ -182,7 +182,7 @@ convoi_t::convoi_t(karte_t* wl, loadsave_t* file) : fahr(max_vehicle, NULL)
 convoi_t::convoi_t(spieler_t* sp) : fahr(max_vehicle, NULL)
 {
 	self = convoihandle_t(this);
-	sp->buche( 1, COST_ALL_CONVOIS );
+	sp->book_convoi_number(1);
 	init(sp->get_welt(), sp);
 	set_name( "Unnamed" );
 	welt->add_convoi( self );
@@ -192,7 +192,7 @@ convoi_t::convoi_t(spieler_t* sp) : fahr(max_vehicle, NULL)
 
 convoi_t::~convoi_t()
 {
-	besitzer_p->buche( -1, COST_ALL_CONVOIS );
+	besitzer_p->book_convoi_number( -1);
 
 	assert(self.is_bound());
 	assert(anz_vehikel==0);

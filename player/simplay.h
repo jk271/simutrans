@@ -198,6 +198,12 @@ public:
 	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
 	/**
+	 * sums up "count" with number of convois in statistics,
+	 * supersedes buche( count, COST_ALL_CONVOIS)
+	 */
+	void book_convoi_number(const sint64 count);
+
+	/**
 	 * Accounts bought/sold vehicles
 	 * @param price money used for purchase of vehicle,
 	 *              negative value = vehicle bought,

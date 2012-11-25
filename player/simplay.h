@@ -315,6 +315,7 @@ public:
 
 	sint64 get_maintenance() const { return maintenance; }
 
+private:
 	/**
 	 * Adds somme amount to the maintenance costs
 	 * @param player (could be zero too!)
@@ -332,6 +333,7 @@ public:
 	// this is also save to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
 	static void accounting(spieler_t* sp, sint64 betrag, koord k, player_cost pc);
 
+public:
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner

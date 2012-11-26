@@ -375,14 +375,6 @@ public:
 	void calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST]);
 
 	/**
- 	 * Translates finance statistisc from new format to old (version<=111) one.
- 	 * Used for saving data in old format
- 	 * @author jk271
- 	 */
-	void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-
-	/**
 	 * Returns amount of money on account (also known as konto)
 	 */
 	inline sint64 get_account_balance() { return account_balance; }
@@ -464,14 +456,6 @@ public:
 	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
 
 	/**
- 	 * Translates finance statistisc from old (version<=111) format to new one.
- 	 * Used for loading data from old format
- 	 * @author jk271
- 	 */
-	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-
-	/**
 	 * increases number of month for which the company is in red numbers
 	 */
 	inline void increase_account_overdrawn() { account_overdrawn++; }
@@ -533,6 +517,23 @@ private:
 	int translate_index_cost_to_at(int cost_);
 
 	int translate_index_cost_to_atc( const int cost_index ) const;
+
+	/**
+	 * Translates finance statistics from new format to old one.
+	 * Used for saving data in old format
+	 * @author jk271
+	 */
+	void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+
+
+	/**
+	 * Translates finance statistics from old format to new one.
+	 * Used for loading data from old format
+	 * @author jk271
+	 */
+	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 };
 
 #endif

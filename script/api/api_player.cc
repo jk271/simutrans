@@ -112,7 +112,7 @@ void export_player(HSQUIRRELVM vm)
 	 * Get monthly statistics of assets.
 	 * @returns array, index [0] corresponds to current month
 	 */
-	register_method_fv(vm, &get_player_stat, "get_assets",            freevariable3<sint32,sint32,bool>(ATV_NON_FINANTIAL_ASSETS, TT_ALL, true), true);
+	register_method_fv(vm, &get_player_stat, "get_assets",            freevariable3<sint32,sint32,bool>(ATV_NON_FINANCIAL_ASSETS, TT_ALL, true), true);
 	/**
 	 * Get monthly statistics of cash.
 	 * @returns array, index [0] corresponds to current month

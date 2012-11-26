@@ -96,14 +96,14 @@ enum accounting_type_vehicles {
 	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
 	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
 	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
-	ATV_TOLL_PAYED,			// toll paid by you to another player
+	ATV_TOLL_PAID,			// toll paid by you to another player
 	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAYED
 	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
 	ATV_NEW_VEHICLE,			// New vehicles
 	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here
 	ATV_PROFIT,			// = AT_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), COST_PROFIT
-	ATV_WAY_TOLL,			// = ATV_TOLL_PAYED + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
-	ATV_NON_FINANTIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
+	ATV_WAY_TOLL,			// = ATV_TOLL_PAID + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
+	ATV_NON_FINANCIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
 	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
 
 
@@ -287,8 +287,8 @@ public:
 
 		veh_year[ tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
 		veh_month[tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
-		veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
-		veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+		veh_year[ tt][0][ATV_NON_FINANCIAL_ASSETS] -= (sint64) amount;
+		veh_month[tt][0][ATV_NON_FINANCIAL_ASSETS] -= (sint64) amount;
 
 		account_balance += amount;
 	}
@@ -329,8 +329,8 @@ public:
 	 */
 	inline void book_toll_paid(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
-		veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
-		veh_month[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
+		veh_year[tt][0][ATV_TOLL_PAID] += (sint64) amount;
+		veh_month[tt][0][ATV_TOLL_PAID] += (sint64) amount;
 		account_balance += amount;
 	}
 
@@ -453,7 +453,7 @@ public:
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
-	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
+	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANCIAL_ASSETS) ) > 0 ); }
 
 	/**
 	 * increases number of month for which the company is in red numbers

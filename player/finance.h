@@ -380,14 +380,6 @@ public:
 	inline sint64 get_account_balance() { return account_balance; }
 
 	/**
-	 * Returns the finance history for player
-	 * @author hsiegeln, jk271
-	 * 'proxy' for more complicated internal data structures
-	 */
-	sint64 get_history_year(int tt, int year, int type);
-	sint64 get_history_month(int tt, int month, int type);
-
-	/**
 	 * Returns the finance history (indistinguishable part) for player
 	 * @author hsiegeln, jk271
 	 */

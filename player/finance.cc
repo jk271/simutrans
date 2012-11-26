@@ -170,51 +170,6 @@ void finance_t::calc_finance_history()
 
 }
 
-/*
- * int tt is COST_ !!!
-*/
-sint64 finance_t::get_history_year(int tt, int year, int type)
-{
-	assert((tt>=0) && (tt<TT_MAX));
-	int index = translate_index_cost_to_at(type);
-	const int atc_index = translate_index_cost_to_atc(type);
-	assert(index < ATV_MAX);
-	assert(atc_index < ATC_MAX);
-
-	if( ( tt == TT_ALL ) && ( type == COST_POWERLINES ) ) {
-		return veh_year[TT_POWERLINE][year][ATV_REVENUE];
-	}
-	if( index >= 0 ) {
-		return veh_year[tt][year][index];
-	}
-	else {
-		return ( atc_index >= 0 ) ? com_year[year][atc_index] : 0;
-	}
-}
-
-
-/*
- * int tt is COST_ !!!
-*/
-sint64 finance_t::get_history_month(int tt, int month, int type)
-{
-	assert((tt>=0) && (tt<TT_MAX));
-	int index = translate_index_cost_to_at(type);
-	const int atc_index = translate_index_cost_to_atc(type);
-	assert( index < ATV_MAX );
-	assert( atc_index < ATC_MAX );
-
-	if( ( tt == TT_ALL ) && ( type == COST_POWERLINES ) ) {
-		return veh_month[TT_POWERLINE][month][ATV_REVENUE];
-	}
-	if( index >= 0 ) {
-		return veh_month[tt][month][index];
-	}
-	else {
-		return ( atc_index >= 0 ) ? com_month[month][atc_index] : 0;
-	}
-}
-
 
 sint64 finance_t::get_maintenance_with_bits(transport_type tt) const
 {

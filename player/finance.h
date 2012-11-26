@@ -391,15 +391,15 @@ public:
 	 * Returns the finance history (indistinguishable part) for player
 	 * @author hsiegeln, jk271
 	 */
-	sint64 get_history_com_year(int year, int type) { return com_year[year][type]; }
-	sint64 get_history_com_month(int month, int type) { return com_month[month][type]; }
+	sint64 get_history_com_year(int year, int type) const { return com_year[year][type]; }
+	sint64 get_history_com_month(int month, int type) const { return com_month[month][type]; }
 
 	/**
 	 * Returns the finance history (distinguishable by type of transport) for player
 	 * @author hsiegeln, jk271
 	 */
-	sint64 get_history_veh_year(transport_type tt, int year, int type) { return veh_year[tt][year][type]; }
-	sint64 get_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
+	sint64 get_history_veh_year(transport_type tt, int year, int type) const { return veh_year[tt][year][type]; }
+	sint64 get_history_veh_month(transport_type tt, int month, int type) const { return veh_month[tt][month][type]; }
 
 	/**
  	 * @return finance history of indistinguishable (by type of transport)

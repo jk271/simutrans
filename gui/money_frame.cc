@@ -71,23 +71,25 @@ const COLOR_VAL money_frame_t::cost_type_color[MAX_PLAYER_COST_BUTTON] =
 	COL_WEALTH
 };
 
-const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
+
+const uint8 money_frame_t::cost_type[3*MAX_PLAYER_COST_BUTTON] =
 {
-	COST_ALL_TRANSPORTED, // all transported goods
-	COST_INCOME,        // Income
-	COST_VEHICLE_RUN,   // Vehicle running costs
-	COST_MAINTENANCE,   // Upkeep
-	COST_WAY_TOLLS,
-	COST_POWERLINES,	  // revenue from the power grid
-	COST_OPERATING_PROFIT, // COST_POWERLINES+COST_INCOME-(COST_VEHICLE_RUN+COST_MAINTENANCE)
-	COST_NEW_VEHICLE,   // New vehicles
-	COST_CONSTRUCTION,	// Construction
-	COST_PROFIT,        // COST_POWERLINES+COST_INCOME-(COST_CONSTRUCTION+COST_VEHICLE_RUN+COST_NEW_VEHICLE+COST_MAINTENANCE)
-	COST_CASH,          // Cash
-	COST_ASSETS,        // value of all vehicles and buildings
-	COST_MARGIN,        // COST_OPERATING_PROFIT/COST_INCOME
-	COST_NETWEALTH,     // Total Cash + Assets
+	ATV_TRANSPORTED,                TT_ALL, STANDARD, // all transported goods
+	ATV_REVENUE_TRANSPORT,          TT_ALL, MONEY,    // Income
+	ATV_RUNNING_COST,               TT_ALL, MONEY,    // Vehicle running costs
+	ATV_INFRASTRUCTURE_MAINTENANCE, TT_ALL, MONEY,    // Upkeep
+	ATV_WAY_TOLL,                   TT_ALL, MONEY,
+	ATV_REVENUE,              TT_POWERLINE, MONEY,    // revenue from the power grid
+	ATV_OPERATING_PROFIT,           TT_ALL, MONEY,
+	ATV_NEW_VEHICLE,                TT_ALL, MONEY,   // New vehicles
+	ATV_CONSTRUCTION_COST,	        TT_ALL, MONEY,   // Construction
+	ATV_PROFIT,                     TT_ALL, MONEY,
+	ATC_CASH,                       TT_MAX, MONEY,   // Cash
+	ATV_NON_FINANCIAL_ASSETS,       TT_ALL, MONEY,   // value of all vehicles and buildings
+	ATV_PROFIT_MARGIN,              TT_ALL, STANDARD,
+	ATC_NETWEALTH,                  TT_MAX, MONEY,   // Total Cash + Assets
 };
+
 
 /* order has to be same as in enum transport_type in file simtypes.h */
 const char * money_frame_t::transport_type_values[TT_MAX] = {
@@ -104,38 +106,46 @@ const char * money_frame_t::transport_type_values[TT_MAX] = {
 	"Powerlines",
 };
 
-
-/**
- * fills buffer (char array) with finance info
- * @author Owen Rudge, Hj. Malthaner
- */
-const char *money_frame_t::display_money(int type, char *buf, int old)
+/// Helper method to query data from players statistics
+sint64 money_frame_t::get_statistics_value(int tt, uint8 type, int yearmonth, bool monthly)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type)) / 100.0;
-	money_to_string(buf, cost );
-	return(buf);
+	const finance_t* finance = sp->get_finance();
+	if (tt == TT_MAX) {
+		return monthly ? finance->get_history_com_month(yearmonth, type)
+		               : finance->get_history_com_year( yearmonth, type);
+	}
+	else {
+		assert(0 <= tt  &&  tt < TT_MAX);
+		return monthly ? finance->get_history_veh_month((transport_type)tt, yearmonth, type)
+		               : finance->get_history_veh_year( (transport_type)tt, yearmonth, type);
+	}
 }
 
-
-const char *money_frame_t::display_number(int type, char *buf, int old)
-{
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type)) / 1.0;
-	money_to_string(buf, cost );
-	buf[strlen(buf)-4] = 0;	// remove comma
-	return(buf);
-}
-
-
 /**
- * Returns the appropriate colour for a certain finance type
- * @author Owen Rudge
+ * Updates label text and color.
+ * @param buf used to save the string
+ * @param transport_type transport type to query statistics for (or TT_ALL)
+ * @param type value from accounting_type_common (if transport_type==TT_ALL) or accounting_type_vehicles
+ * @param yearmonth how many months/years back in history (0 == current)
+ * @param label_type MONEY or STANDARD
  */
-int money_frame_t::get_money_colour(int type, int old)
+void money_frame_t::update_label(gui_label_t &label, char *buf, int transport_type, uint8 type, int yearmonth, int label_type)
 {
-	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type));
-	if (i < 0) return MONEY_MINUS;
-	if (i > 0) return MONEY_PLUS;
-	return COL_YELLOW;
+	sint64 value = get_statistics_value(transport_type, type, yearmonth, year_month_tabs.get_active_tab_index()==1);
+	int color = value >= 0 ? (value > 0 ? MONEY_PLUS : COL_YELLOW) : MONEY_MINUS;
+
+	if (label_type == MONEY) {
+		const double cost = value / 100.0;
+		money_to_string(buf, cost );
+	}
+	else {
+		const double cost = value / 1.0;
+		money_to_string(buf, cost );
+		buf[strlen(buf)-4] = 0;	// remove comma
+	}
+
+	label.set_text(buf);
+	label.set_color(color);
 }
 
 
@@ -238,10 +248,6 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	chart.set_dimension(MAX_PLAYER_HISTORY_YEARS, 10000);
 	chart.set_seed(sp->get_welt()->get_last_year());
 	chart.set_background(MN_GREY1);
-	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
-		const int type = cost_type[i];
-		chart.add_curve( cost_type_color[i], *flat_view_year, MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
-	}
 	//CHART YEAR END
 
 	//CHART MONTH
@@ -250,11 +256,15 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	mchart.set_dimension(MAX_PLAYER_HISTORY_MONTHS, 10000);
 	mchart.set_seed(0);
 	mchart.set_background(MN_GREY1);
-	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
-		const int type = cost_type[i];
-		mchart.add_curve( cost_type_color[i], *flat_view_month, MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
-	}
 	//CHART MONTH END
+
+	// add chart curves
+	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
+		const int curve_type = cost_type[3*i+2];
+		const int curve_precision = curve_type == MONEY ? 2 : 0;
+		mchart.add_curve( cost_type_color[i], *flat_view_month, MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
+		chart.add_curve(  cost_type_color[i], *flat_view_year,  MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
+	}
 
 	// tab (month/year)
 	year_month_tabs.add_tab( &year_dummy, translator::translate("Years"));
@@ -386,8 +396,8 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	static char str_buf[26][64];
 
 	sp->get_finance()->calc_finance_history();
-	sp->get_finance()->calc_flat_view_month(transport_type_option, flat_view_month);
-	sp->get_finance()->calc_flat_view_year(transport_type_option, flat_view_year);
+//	sp->get_finance()->calc_flat_view_month(transport_type_option, flat_view_month);
+	//sp->get_finance()->calc_flat_view_year(transport_type_option, flat_view_year);
 
 	chart.set_visible( year_month_tabs.get_active_tab_index()==0 );
 	mchart.set_visible( year_month_tabs.get_active_tab_index()==1 );
@@ -395,68 +405,39 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	tylabel.set_text( year_month_tabs.get_active_tab_index() ? "This Month" : "This Year" );
 	lylabel.set_text( year_month_tabs.get_active_tab_index() ? "Last Month" : "Last Year" );
 
-	conmoney.set_text(display_money(COST_CONSTRUCTION, str_buf[0], 0));
-	nvmoney.set_text(display_money(COST_NEW_VEHICLE, str_buf[1], 0));
-	vrmoney.set_text(display_money(COST_VEHICLE_RUN, str_buf[2], 0));
-	mmoney.set_text(display_money(COST_MAINTENANCE, str_buf[3], 0));
-	imoney.set_text(display_money(COST_INCOME, str_buf[4], 0));
-	tmoney.set_text(display_money(COST_PROFIT, str_buf[5], 0));
-	omoney.set_text(display_money(COST_OPERATING_PROFIT, str_buf[6], 0));
+	// update_label(gui_label_t &label, char *buf, int transport_type, uint8 type, int yearmonth)
+	update_label(conmoney, str_buf[0], transport_type_option, ATV_CONSTRUCTION_COST, 0);
+	update_label(nvmoney,  str_buf[1], transport_type_option, ATV_NEW_VEHICLE, 0);
+	update_label(vrmoney,  str_buf[2], transport_type_option, ATV_RUNNING_COST, 0);
+	update_label(mmoney,   str_buf[3], transport_type_option, ATV_INFRASTRUCTURE_MAINTENANCE, 0);
+	update_label(imoney,   str_buf[5], transport_type_option, ATV_REVENUE_TRANSPORT, 0);
+	update_label(tmoney,   str_buf[6], transport_type_option, ATV_PROFIT, 0);
+	update_label(omoney,   str_buf[6], transport_type_option, ATV_OPERATING_PROFIT, 0);
 
-	old_conmoney.set_text(display_money(COST_CONSTRUCTION, str_buf[7], 1));
-	old_nvmoney.set_text(display_money(COST_NEW_VEHICLE, str_buf[8], 1));
-	old_vrmoney.set_text(display_money(COST_VEHICLE_RUN, str_buf[9], 1));
-	old_mmoney.set_text(display_money(COST_MAINTENANCE, str_buf[10], 1));
-	old_imoney.set_text(display_money(COST_INCOME, str_buf[11], 1));
-	old_tmoney.set_text(display_money(COST_PROFIT, str_buf[12], 1));
-	old_omoney.set_text(display_money(COST_OPERATING_PROFIT, str_buf[13], 1));
+	update_label(old_conmoney, str_buf[7], transport_type_option, ATV_CONSTRUCTION_COST, 1);
+	update_label(old_nvmoney,  str_buf[8], transport_type_option, ATV_NEW_VEHICLE, 1);
+	update_label(old_vrmoney,  str_buf[9], transport_type_option, ATV_RUNNING_COST, 1);
+	update_label(old_mmoney,   str_buf[10], transport_type_option, ATV_INFRASTRUCTURE_MAINTENANCE, 1);
+	update_label(old_imoney,   str_buf[11], transport_type_option, ATV_REVENUE_TRANSPORT, 1);
+	update_label(old_tmoney,   str_buf[12], transport_type_option, ATV_PROFIT, 1);
+	update_label(old_omoney,   str_buf[13], transport_type_option, ATV_OPERATING_PROFIT, 1);
 
 	// transported goods
-	transport.set_text(display_number(COST_ALL_TRANSPORTED, str_buf[20], 0));
-	transport.set_color(get_money_colour(COST_ALL_TRANSPORTED, 0));
+	update_label(transport,     str_buf[20], transport_type_option, ATV_TRANSPORTED, 0, STANDARD);
+	update_label(old_transport, str_buf[21], transport_type_option, ATV_TRANSPORTED, 1, STANDARD);
 
-	old_transport.set_text(display_number(COST_ALL_TRANSPORTED, str_buf[21], 1));
-	old_transport.set_color(get_money_colour(COST_ALL_TRANSPORTED, 1));
+	update_label(toll,     str_buf[24], transport_type_option, ATV_WAY_TOLL, 0);
+	update_label(old_toll, str_buf[25], transport_type_option, ATV_WAY_TOLL, 1);
 
-	toll.set_text(display_money(COST_WAY_TOLLS, str_buf[24], 0));
-	toll.set_color(get_money_colour(COST_WAY_TOLLS, 0));
-	old_toll.set_text(display_money(COST_WAY_TOLLS, str_buf[25], 1));
-	old_toll.set_color(get_money_colour(COST_WAY_TOLLS, 1));
+	update_label(powerline,     str_buf[22], TT_POWERLINE, ATV_PROFIT, 0);
+	update_label(old_powerline, str_buf[23], TT_POWERLINE, ATV_PROFIT, 1);
 
-	powerline.set_text(display_money(COST_POWERLINES, str_buf[22], 0));
-	powerline.set_color(get_money_colour(COST_POWERLINES, 0));
-	old_powerline.set_text(display_money(COST_POWERLINES, str_buf[23], 1));
-	old_powerline.set_color(get_money_colour(COST_POWERLINES, 1));
+	update_label(gtmoney, str_buf[14], TT_MAX, ATC_CASH, 0);
+	update_label(vtmoney, str_buf[17], transport_type_option, ATV_NON_FINANCIAL_ASSETS, 0);
 
-	conmoney.set_color(get_money_colour(COST_CONSTRUCTION, 0));
-	nvmoney.set_color(get_money_colour(COST_NEW_VEHICLE, 0));
-	vrmoney.set_color(get_money_colour(COST_VEHICLE_RUN, 0));
-	mmoney.set_color(get_money_colour(COST_MAINTENANCE, 0));
-	imoney.set_color(get_money_colour(COST_INCOME, 0));
-	tmoney.set_color(get_money_colour(COST_PROFIT, 0));
-	omoney.set_color(get_money_colour(COST_OPERATING_PROFIT, 0));
-
-	old_conmoney.set_color(get_money_colour(COST_CONSTRUCTION, 1));
-	old_nvmoney.set_color(get_money_colour(COST_NEW_VEHICLE, 1));
-	old_vrmoney.set_color(get_money_colour(COST_VEHICLE_RUN, 1));
-	old_mmoney.set_color(get_money_colour(COST_MAINTENANCE, 1));
-	old_imoney.set_color(get_money_colour(COST_INCOME, 1));
-	old_tmoney.set_color(get_money_colour(COST_PROFIT, 1));
-	old_omoney.set_color(get_money_colour(COST_OPERATING_PROFIT, 1));
-
-	gtmoney.set_text(display_money(COST_CASH, str_buf[14], 0));
-	gtmoney.set_color(get_money_colour(COST_CASH, 0));
-
-	vtmoney.set_text(display_money(COST_ASSETS, str_buf[17], 0));
-	vtmoney.set_color(get_money_colour(COST_ASSETS, 0));
-
-	money.set_text(display_money(COST_NETWEALTH, str_buf[18], 0));
-	money.set_color(get_money_colour(COST_NETWEALTH, 0));
-
-	display_money(COST_MARGIN, str_buf[19], 0);
+	update_label(money, str_buf[18], TT_MAX, ATC_NETWEALTH, 0);
+	update_label(margin, str_buf[19], transport_type_option, ATV_PROFIT_MARGIN, 0);
 	str_buf[19][strlen(str_buf[19])-1] = '%';	// remove cent sign
-	margin.set_text(str_buf[19]);
-	margin.set_color(get_money_colour(COST_MARGIN, 0));
 
 	// warning/success messages
 	if(sp->get_player_nr()!=1  &&  sp->get_welt()->get_scenario()->active()) {

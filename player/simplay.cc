@@ -311,6 +311,7 @@ void spieler_t::neuer_monat()
 {
 	// since the messages must remain on the screen longer ...
 	static cbuffer_t buf;
+
 	finance->new_month();
 
 	// new month has started => recalculate vehicle value
@@ -319,18 +320,6 @@ void spieler_t::neuer_monat()
 	finance->calc_finance_history();
 
 	simlinemgmt.new_month();
-
-	// enough money and scenario finished?
-	if(finance->get_account_balance() > 0  &&  welt->get_scenario()->active()  &&  finance->get_scenario_completed() >= 100) {
-		destroy_all_win(true);
-		sint32 const time = welt->get_current_month() - welt->get_settings().get_starting_year() * 12;
-		buf.clear();
-		buf.printf( translator::translate("Congratulation\nScenario was complete in\n%i months %i years."), time%12, time/12 );
-		create_win(280, 40, new news_img(buf), w_info, magic_none);
-		// disable further messages
-		welt->get_scenario()->init("",welt);
-		return;
-	}
 
 	// Bankrott ?
 	if(  finance->get_account_balance() < 0  ) {
@@ -666,7 +655,7 @@ void spieler_t::rdwr(loadsave_t *file)
 	sint32 account_overdrawn = finance->get_account_overdrawn();
 	file->rdwr_long(account_overdrawn);
 	finance->set_account_overdrawn( account_overdrawn );
-	
+
 	if( ( file->get_version() < 111006 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
 		finance->export_to_cost_month( finance_history_month );
 		finance->export_to_cost_year( finance_history_year );

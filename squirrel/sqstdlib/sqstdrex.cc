@@ -262,8 +262,6 @@ static SQInteger sqstd_rex_element(SQRex *exp)
 		break;
 	}
 
-
-	SQInteger op;
 	SQBool isgreedy = SQFalse;
 	unsigned short p0 = 0, p1 = 0;
 	switch(*exp->_p){
@@ -297,7 +295,6 @@ static SQInteger sqstd_rex_element(SQRex *exp)
 	}
 	if(isgreedy) {
 		SQInteger nnode = sqstd_rex_newnode(exp,OP_GREEDY);
-		op = OP_GREEDY;
 		exp->_nodes[nnode].left = ret;
 		exp->_nodes[nnode].right = ((p0)<<16)|p1;
 		ret = nnode;
@@ -525,7 +522,7 @@ static const SQChar *sqstd_rex_matchnode(SQRex* exp,SQRexNode *node,const SQChar
 /* public api */
 SQRex *sqstd_rex_compile(const SQChar *pattern,const SQChar **error)
 {
-	SQRex *exp = (SQRex *)sq_malloc(sizeof(SQRex));
+	SQRex *const exp = (SQRex *)sq_malloc(sizeof(SQRex));
 	exp->_eol = exp->_bol = NULL;
 	exp->_p = pattern;
 	exp->_nallocated = (SQInteger)scstrlen(pattern) * sizeof(SQChar);

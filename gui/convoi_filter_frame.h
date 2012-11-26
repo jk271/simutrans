@@ -15,17 +15,9 @@
 #include "components/gui_button.h"
 #include "components/gui_textinput.h"
 
+class convoi_frame_t;
 class spieler_t;
 class ware_besch_t;
-
-
-class sort_frame_t
-{
-public:
-	virtual void sort_list( char *, uint16, const slist_tpl<const ware_besch_t *> * ) = 0;
-};
-
-
 
 /**
  * Displays a filter settings for the convoi list
@@ -67,7 +59,7 @@ private:
 	uint32 filter_flags;
 
 	bool get_filter(convoi_filter_frame_t::filter_flag_t filter) { return (filter_flags & filter) != 0; }
-	void set_filter(convoi_filter_frame_t::filter_flag_t filter, bool on) { filter_flags = on ? (filter_flags | filter) : (filter_flags & ~filter); }
+	void set_filter(convoi_filter_frame_t::filter_flag_t filter, bool on) { filter_flags = (on ? (filter_flags | filter) : (filter_flags & ~filter) ); }
 
 	/*
 	* Helper class for the entries of the srollable list of goods.
@@ -97,7 +89,7 @@ private:
 	};
 
 	slist_tpl<ware_item_t *>all_ware;
-	slist_tpl<const ware_besch_t *>active_ware;
+	static slist_tpl<const ware_besch_t *>active_ware;
 
 	static koord filter_buttons_pos[FILTER_BUTTONS];
 	static filter_flag_t filter_buttons_types[FILTER_BUTTONS];
@@ -106,14 +98,14 @@ private:
 	/*
 	 * We are bound to this window. All filter states are stored in main_frame.
 	 */
-	sort_frame_t *main_frame;
+	convoi_frame_t *main_frame;
 
 	/*
 	 * All gui elements of this dialog:
 	 */
 	button_t filter_buttons[FILTER_BUTTONS];
 
-	char name_filter_text[64];
+	static char name_filter_text[64];
 	gui_textinput_t name_filter_input;
 
 	button_t typ_filter_enable;
@@ -132,7 +124,7 @@ public:
 	 * Konstruktor. Erzeugt alle notwendigen Subkomponenten.
 	 * @author V. Meyer
 	 */
-	convoi_filter_frame_t(spieler_t *sp, sort_frame_t *parent );
+	convoi_filter_frame_t(spieler_t *sp, convoi_frame_t *parent, uint32 initial_filters );
 
 	/**
 	 * Does this window need a min size button in the title bar?
@@ -140,9 +132,9 @@ public:
 	 */
 	bool has_min_sizer() const {return true;}
 
-    /**
-     * resize window in response to a resize event
-     */
+	/**
+	 * resize window in response to a resize event
+	 */
 	void resize(const koord delta);
 
 	/**

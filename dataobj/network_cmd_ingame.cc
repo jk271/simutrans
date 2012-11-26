@@ -243,7 +243,7 @@ void nwc_nick_t::server_tools(karte_t *welt, uint32 client_id, uint8 what, const
 	// queue tool for network
 	nwc_tool_t *nwc = new nwc_tool_t(NULL, w, koord3d::invalid, 0, welt->get_map_counter(), true);
 	network_send_server(nwc);
-	// since init always returns false, it is save to delete immediately
+	// since init always returns false, it is safe to delete immediately
 	delete w;
 }
 
@@ -679,7 +679,7 @@ void nwc_sync_t::do_command(karte_t *welt)
 		bool old_restore_UI = umgebung_t::restore_UI;
 		umgebung_t::restore_UI = true;
 
-		welt->speichern( fn, SERVER_SAVEGAME_VER_NR, false );
+		welt->speichern( fn, loadsave_t::autosave_mode, SERVER_SAVEGAME_VER_NR, false );
 		uint32 old_sync_steps = welt->get_sync_steps();
 		welt->laden( fn );
 		umgebung_t::restore_UI = old_restore_UI;
@@ -721,7 +721,7 @@ void nwc_sync_t::do_command(karte_t *welt)
 		sprintf( fn, "server%d-network.sve", umgebung_t::server );
 		bool old_restore_UI = umgebung_t::restore_UI;
 		umgebung_t::restore_UI = true;
-		welt->speichern( fn, SERVER_SAVEGAME_VER_NR, false );
+		welt->speichern( fn, loadsave_t::save_mode, SERVER_SAVEGAME_VER_NR, false );
 
 		// ok, now sending game
 		// this sends nwc_game_t
@@ -1309,10 +1309,20 @@ bool nwc_service_t::execute(karte_t *welt)
 		}
 
 		case SRVC_FORCE_SYNC: {
-			// send sync command
 			const uint32 new_map_counter = welt->generate_new_map_counter();
 			nwc_sync_t *nw_sync = new nwc_sync_t(welt->get_sync_steps() + 1, welt->get_map_counter(), -1, new_map_counter);
-			network_send_all(nw_sync, false);
+
+			if (welt->is_paused()) {
+				if (socket_list_t::get_playing_clients() == 0) {
+					// we can save directly without disturbing clients
+					nw_sync->do_command(welt);
+				}
+				delete nw_sync;
+			}
+			else {
+				// send sync command
+				network_send_all(nw_sync, false);
+			}
 			break;
 		}
 

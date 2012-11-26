@@ -568,9 +568,11 @@ void gebaeude_t::zeige_info()
 		welt->suche_naechste_stadt(get_pos().get_2d())->zeige_info();
 	}
 
-	if(!special  ||  (umgebung_t::townhall_info  &&  old_count==win_get_open_count()) ) {
-		// open info window for the first tile of our building (not relying on presence of (0,0) tile)
-		get_first_tile()->ding_t::zeige_info();
+	if(!tile->get_besch()->ist_ohne_info()) {
+		if(!special  ||  (umgebung_t::townhall_info  &&  old_count==win_get_open_count()) ) {
+			// open info window for the first tile of our building (not relying on presence of (0,0) tile)
+			get_first_tile()->ding_t::zeige_info();
+		}
 	}
 }
 
@@ -883,7 +885,7 @@ void gebaeude_t::laden_abschliessen()
 #if MULTI_THREAD>1
 				pthread_mutex_lock( &add_to_city_mutex );
 #endif
-				city->add_gebaeude_to_stadt(this);
+				city->add_gebaeude_to_stadt(this, true);
 #if MULTI_THREAD>1
 				pthread_mutex_unlock( &add_to_city_mutex );
 #endif

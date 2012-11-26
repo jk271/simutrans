@@ -41,7 +41,7 @@ simline_t::simline_t(karte_t* welt, spieler_t* sp, linetype type)
 	this->fpl = NULL;
 	this->sp = sp;
 	withdraw = false;
-	state_color = COL_YELLOW;
+	state_color = COL_WHITE;
 	create_schedule();
 }
 
@@ -54,6 +54,7 @@ simline_t::simline_t(karte_t* welt, spieler_t* sp, linetype type, loadsave_t *fi
 	this->welt = welt;
 	this->fpl = NULL;
 	this->sp = sp;
+	withdraw = false;
 	create_schedule();
 	rdwr(file);
 	// now self has the right id but the this-pointer is not assigned to the quickstone handle yet

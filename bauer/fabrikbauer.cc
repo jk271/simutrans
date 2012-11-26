@@ -284,65 +284,49 @@ const fabrik_besch_t *fabrikbauer_t::finde_hersteller(const ware_besch_t *ware, 
 }
 
 
-
-
 koord3d fabrikbauer_t::finde_zufallsbauplatz(karte_t *welt, const koord3d pos, const int radius, koord groesse, bool wasser, const haus_besch_t *besch, bool ignore_climates)
 {
-	static vector_tpl<koord3d> list(10000);
-	koord k;
 	bool is_fabrik = besch->get_utyp()==haus_besch_t::fabrik;
 
-	list.clear();
 	if(wasser) {
 		groesse += koord(6,6);
 	}
 
 	climate_bits climates = !ignore_climates ? besch->get_allowed_climate_bits() : ALL_CLIMATES;
 
-	// check no factory but otherwise good place
-	for(  k.y=pos.y-radius;  k.y <= pos.y+radius;  k.y++  ) {
-		if(  k.y < 0  ) {
+	uint32 diam   = 2*radius + 1;
+	uint32 size   = diam * diam;
+	uint32 offset = diam*groesse.x*groesse.y + 1;
+	uint32 index  = simrand(size);
+	koord k;
+	for(uint32 i = 0; i<size; i++, index+=offset) {
+		// as offset % size == 1, we are guaranteed that the iteration hits all tiles and does not repeat itself
+		k = koord( pos.x-radius + (index / diam), pos.y-radius + (index % diam));
+
+		if (!welt->ist_in_kartengrenzen(k)) {
 			continue;
 		}
-		if(  k.y >= welt->get_groesse_y()  ) {
-			break;
+		// to close to existing factory
+		if(  is_fabrik  &&  is_factory_at(k.x,k.y)  ) {
+			continue;
 		}
+		// climate check
+		if(  fabrik_t::ist_bauplatz(welt, k, groesse,wasser,climates)  ) {
+			// we accept first hit
+			goto finish;
+		}
+		// next search will be groesse.x rows down, groesse.y+1 columns left
+	}
+	// nothing found
+	return koord3d(-1, -1, -1);
 
-		for(  k.x=pos.x-radius;  k.x <= pos.x+radius;  k.x++  ) {
-			if(  k.x < 0  ) {
-				continue;
-			}
-			if(  k.x >= welt->get_groesse_x()  ) {
-				break;
-			}
-			// to close to existing factory
-			if(  is_fabrik  &&  is_factory_at(k.x,k.y)  ) {
-				continue;
-			}
-			// climate check
-			if(  fabrik_t::ist_bauplatz(welt, k, groesse,wasser,climates)  ) {
-				list.append( welt->lookup_kartenboden(k)->get_pos() );
-				// nicht gleich daneben nochmal suchen
-				k.x += 4;
-				if(  list.get_count() >= 10000  ) {
-					goto finish;
-				}
-			}
-		}
-	}
 finish:
-	// printf("Zufallsbauplatzindex %d\n", index);
-	if (list.empty()) {
-		return koord3d(-1, -1, -1);
+	koord3d p = welt->lookup_kartenboden(k)->get_pos();
+	if(wasser) {
+		// take care of offset
+		p += koord3d(3, 3, 0);
 	}
-	else {
-		koord3d k = pick_any(list);
-		if(wasser) {
-			// take care of offset
-			k += koord3d(3, 3, 0);
-		}
-		return k;
-	}
+	return p;
 }
 
 
@@ -944,22 +928,22 @@ next_ware_check:
 	// ok, nothing to built, thus we must start new
 
 	// first decide, whether a new powerplant is needed or not
-	uint32 total_produktivity = 1;
-	uint32 electric_productivity = 0;
+	uint32 electric_supply = 0;
+	uint32 electric_demand = 1;
 
 	FOR(slist_tpl<fabrik_t*>, const fab, welt->get_fab_list()) {
-		if(fab->get_besch()->is_electricity_producer()) {
-			electric_productivity += fab->get_base_production();
+		if(  fab->get_besch()->is_electricity_producer()  ) {
+			electric_supply += fab->get_scaled_electric_amount() / PRODUCTION_DELTA_T;
 		}
 		else {
-			total_produktivity += fab->get_base_production();
+			electric_demand += fab->get_scaled_electric_amount() / PRODUCTION_DELTA_T;
 		}
 	}
 
 	// now decide producer of electricity or normal ...
-	sint32 promille = (electric_productivity*4000l)/total_produktivity;
+	sint32 promille = (electric_supply*1000l)/electric_demand;
 	int    no_electric = promille > welt->get_settings().get_electric_promille();
-	DBG_MESSAGE( "fabrikbauer_t::increase_industry_density()", "production of electricity/total production is %i/%i (%i o/oo)", electric_productivity, total_produktivity, promille );
+	DBG_MESSAGE( "fabrikbauer_t::increase_industry_density()", "production of electricity/total production is %i/%i (%i o/oo)", electric_supply, electric_demand, promille );
 
 	bool not_yet_too_desperate_to_ignore_climates = false;
 	while(  no_electric<2  ) {

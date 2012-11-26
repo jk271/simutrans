@@ -495,7 +495,7 @@ void finance_t::rdwr(loadsave_t *file) {
 		calc_finance_history();
 	}
 
-	if( file->get_version() >= 111006 ) { // detailed statistic were introduded in 111006
+	if( file->get_version() >= 113000 ) { // detailed statistic were introduded in 113000
 		file->rdwr_byte( max_years );
 		file->rdwr_byte( max_months );
 		file->rdwr_byte( max_tt ); // tt = transport type

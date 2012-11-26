@@ -31,8 +31,6 @@
 static pthread_t ls_thread;
 static pthread_barrier_t loadsave_barrier;
 static pthread_mutex_t loadsave_mutex;
-static pthread_mutex_t loadsave_cv_mutex;
-static pthread_cond_t loadsave_cv;
 
 // parameters passed starting a thread
 typedef struct{
@@ -46,31 +44,29 @@ void *loadsave_thread( void *ptr )
 	loadsave_param_t *lsp = reinterpret_cast<loadsave_param_t *>(ptr);
 	int buf = 1;
 
-	pthread_mutex_lock(&loadsave_cv_mutex);
-	pthread_barrier_wait(&loadsave_barrier); // ensures main thread waits until cv_mutex is locked.
-
 	while(true) {
 		if(  lsp->loadsave_routine->is_saving()  ) {
-			// wait for signal from main thread to flush the buffer
-			pthread_cond_wait(&loadsave_cv, &loadsave_cv_mutex);
+			// wait to sync with main thread before flushing the buffer
+			pthread_barrier_wait(&loadsave_barrier);
+
 			buf = (buf+1)&1;
 			if(  lsp->loadsave_routine->get_buf_pos(buf)==0  ) {
-				// signal received with empty buffer - exit
+				// empty buffer after sync - signal to exit
 				break;
 			}
 			lsp->loadsave_routine->flush_buffer(buf);
 		}
 		else {
-			if(  !lsp->loadsave_routine->fill_buffer(buf)>0  ) {
+			if(  lsp->loadsave_routine->fill_buffer(buf) <= 0  ) {
 				// nothing read into buffer - exit
 				break;
 			}
-			// wait for signal from main thread to fill the next buffer
-			pthread_cond_wait(&loadsave_cv, &loadsave_cv_mutex);
+			// wait to sync with main thread before filling the next buffer
+			pthread_barrier_wait(&loadsave_barrier);
+
 			buf = (buf+1)&1;
 		}
 	}
-	pthread_mutex_unlock(&loadsave_cv_mutex);
 	return ptr;
 }
 #endif
@@ -86,6 +82,7 @@ struct file_descriptors_t {
 
 
 loadsave_t::mode_t loadsave_t::save_mode = bzip2;	// default to use for saving
+loadsave_t::mode_t loadsave_t::autosave_mode = zipped;	// default to use for autosaving
 
 loadsave_t::loadsave_t() : filename()
 {
@@ -115,22 +112,18 @@ void loadsave_t::set_buffered(bool enable)
 #if MULTI_THREAD>1
 			ls_buf[1] = new char[LS_BUF_SIZE]; // second buffer only when multithreaded
 
+			pthread_barrier_init(&loadsave_barrier, NULL, 2);
+			pthread_mutex_init(&loadsave_mutex, NULL);
+
 			pthread_attr_t attr;
 			pthread_attr_init(&attr);
 			pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-
-			pthread_barrier_init(&loadsave_barrier, NULL, 2);
-			pthread_mutex_init(&loadsave_mutex, NULL);
-			pthread_mutex_init(&loadsave_cv_mutex, NULL);
-			pthread_cond_init(&loadsave_cv, NULL);
 
 			ls.loadsave_routine = this;
 
 			pthread_create(&ls_thread, &attr, loadsave_thread, (void *)&ls);
 
 			pthread_attr_destroy(&attr);
-
-			pthread_barrier_wait( &loadsave_barrier );
 #endif
 		}
 	}
@@ -138,20 +131,18 @@ void loadsave_t::set_buffered(bool enable)
 		if(  buffered  ) {
 			if(  saving  &&  buf_pos[curr_buff]>0  ) {
 #if MULTI_THREAD>1
-				pthread_mutex_lock(&loadsave_cv_mutex);
-#endif
+				// first sync with thread causes buffer to be flushed
+				pthread_barrier_wait(&loadsave_barrier);
+				// second sync with empty buffer signals thread to exit
+				pthread_barrier_wait(&loadsave_barrier);
+#else
 				flush_buffer(curr_buff);
-#if MULTI_THREAD>1
-				pthread_cond_signal(&loadsave_cv);
-				pthread_mutex_unlock(&loadsave_cv_mutex);
 #endif
 			}
 #if MULTI_THREAD>1
 			pthread_join(ls_thread,NULL);
 
-			pthread_cond_destroy(&loadsave_cv);
 			pthread_mutex_destroy(&loadsave_mutex);
-			pthread_mutex_destroy(&loadsave_cv_mutex);
 			pthread_barrier_destroy(&loadsave_barrier);
 
 			delete [] ls_buf[1]; // second buffer only when multithreaded
@@ -482,15 +473,13 @@ size_t loadsave_t::write(const void *buf, size_t len)
 			}
 
 #if MULTI_THREAD>1
-			// signal thread to flush the buffer
-			pthread_mutex_lock(&loadsave_cv_mutex);
-			pthread_cond_signal(&loadsave_cv);
-			pthread_mutex_unlock(&loadsave_cv_mutex);
+			// sync with thread to flush the buffer
+			pthread_barrier_wait(&loadsave_barrier);
 
 			// switch buffers
 			curr_buff = (curr_buff+1)&1;
 #else
-			// not threaded, flush ourselves
+			// not threaded, flush single buffer ourselves
 			flush_buffer(curr_buff);
 #endif
 			// copy the rest
@@ -566,15 +555,13 @@ size_t loadsave_t::read(void *buf, size_t len)
 				}
 			}
 #if MULTI_THREAD>1
+			// sync with other thread to read more
+			pthread_barrier_wait(&loadsave_barrier);
+
 			// switch buffers
 			curr_buff = (curr_buff+1)&1;
-
-			// signal other thread to read more
-			pthread_mutex_lock(&loadsave_cv_mutex);
-			pthread_cond_signal(&loadsave_cv);
-			pthread_mutex_unlock(&loadsave_cv_mutex);
 #else
-			// not threaded, read ourselves
+			// not threaded, read more into single buffer ourselves
 			fill_buffer(curr_buff);
 #endif
 			// check if enough read

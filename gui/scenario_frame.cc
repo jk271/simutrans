@@ -18,16 +18,17 @@
 #include "../dataobj/scenario.h"
 #include "../dataobj/translator.h"
 
+#include "../utils/cbuffer_t.h"
+
 
 /**
  * Aktion, die nach Knopfdruck gestartet wird.
  * @author Hansjörg Malthaner
  */
-void scenario_frame_t::action(const char *filename)
+void scenario_frame_t::action(const char *fullpath)
 {
 	scenario_t *scn = new scenario_t(welt);
-	path.append(filename);
-	const char* err = scn->init( path, welt );
+	const char* err = scn->init(this->get_basename(fullpath).c_str(), this->get_filename(fullpath).c_str(), welt );
 	if (err == NULL) {
 		// start the game
 		welt->set_pause(false);
@@ -42,12 +43,21 @@ void scenario_frame_t::action(const char *filename)
 }
 
 
-scenario_frame_t::scenario_frame_t(karte_t *welt) : savegame_frame_t(".nut","./")
+scenario_frame_t::scenario_frame_t(karte_t *welt) : savegame_frame_t(NULL, true, NULL, false)
 {
+	static cbuffer_t pakset_scenario;
+	static cbuffer_t addons_scenario;
+
+	pakset_scenario.clear();
+	pakset_scenario.printf("%s%sscenario/", umgebung_t::program_dir, umgebung_t::objfilename.c_str());
+
+	addons_scenario.clear();
+	addons_scenario.printf("addons/%sscenario/", umgebung_t::objfilename.c_str());
+
+	this->add_path(addons_scenario);
+	this->add_path(pakset_scenario);
 	this->welt = welt;
-	path.printf("%s%sscenario/", umgebung_t::program_dir, umgebung_t::objfilename.c_str() );
-	// set search path
-	fullpath = path;
+
 	set_name(translator::translate("Load scenario"));
 	set_focus(NULL);
 }
@@ -55,11 +65,21 @@ scenario_frame_t::scenario_frame_t(karte_t *welt) : savegame_frame_t(".nut","./"
 
 const char *scenario_frame_t::get_info(const char *filename)
 {
-	return filename;
-	/*
-	scenario_t scn(NULL);
-	char path[1024];
-	sprintf( path, "%s%sscenario/%s", umgebung_t::program_dir, umgebung_t::objfilename.c_str(), filename );
-	scn.init( path, NULL );
-	return scn.get_description();*/
+	static char info[1024];
+
+	sprintf(info,"%s",this->get_filename(filename, false).c_str());
+
+	return info;
+}
+
+
+bool scenario_frame_t::check_file( const char *filename, const char * )
+{
+	char buf[1024];
+	sprintf( buf, "%s/scenario.nut", filename );
+	if (FILE* const f = fopen(buf, "r")) {
+		fclose(f);
+		return true;
+	}
+	return false;
 }

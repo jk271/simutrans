@@ -29,7 +29,6 @@ class ware_besch_t;
  */
 class convoi_frame_t :
 	public gui_frame_t,
-	private sort_frame_t,
 	private action_listener_t           //28-Dec-01     Markus Weber    Added , private action_listener_t
 {
 public:
@@ -89,7 +88,7 @@ public:
 	/**
 	 * Resorts convois
 	 */
-	virtual void sort_list( char *name, uint16 filter, const slist_tpl<const ware_besch_t *> *wares );
+	void sort_list( char *name, uint32 filter, const slist_tpl<const ware_besch_t *> *wares );
 
 	convoi_frame_t(spieler_t *sp);
 

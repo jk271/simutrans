@@ -320,62 +320,38 @@ void hausbauer_t::remove( karte_t *welt, spieler_t *sp, gebaeude_t *gb )
 			}
 		}
 		// remove all transformers
-		for(k.y = pos.y; k.y < pos.y+size.y;  k.y ++) {
-			k.x = pos.x-1;
-			grund_t *gr = welt->lookup_kartenboden(k);
-			if(gr) {
-				senke_t *sk = gr->find<senke_t>();
-				if(sk) delete sk;
-				pumpe_t *pp = gr->find<pumpe_t>();
-				if(pp) delete pp;
-			}
-			k.x = pos.x+size.x;
-			gr = welt->lookup_kartenboden(k);
-			if(gr) {
-				senke_t *sk = gr->find<senke_t>();
-				if(sk) delete sk;
-				pumpe_t *pp = gr->find<pumpe_t>();
-				if(pp) delete pp;
-			}
-		}
-		for(k.x = pos.x; k.x < pos.x+size.x;  k.x ++) {
-			k.y = pos.y-1;
-			grund_t *gr = welt->lookup_kartenboden(k);
-			if(gr) {
-				senke_t *sk = gr->find<senke_t>();
-				if(sk) delete sk;
-				pumpe_t *pp = gr->find<pumpe_t>();
-				if(pp) delete pp;
-			}
-			k.y = pos.y+size.y;
-			gr = welt->lookup_kartenboden(k);
-			if(gr) {
-				senke_t *sk = gr->find<senke_t>();
-				if(sk) delete sk;
-				pumpe_t *pp = gr->find<pumpe_t>();
-				if(pp) delete pp;
-			}
-		}
-		for(k.x = 0; k.x < size.x;  k.x ++) {
-			for(k.y = 0; k.y < size.y;  k.y ++) {
-				grund_t *gr = welt->lookup(koord3d(k,-1)+pos);
-				if(gr) {
+		for(k.y = -1; k.y < size.y+1;  k.y ++) {
+			for(k.x = -1; k.x < size.x+1;  k.x ++) {
+				grund_t *gr = NULL;
+				if (0<=k.x  &&  k.x<size.x  &&  0<=k.y  &&  k.y<size.y) {
+					// look below factory
+					gr = welt->lookup(koord3d(k,-1) + pos);
+				}
+				else {
+					// find transformers near factory
+					gr = welt->lookup_kartenboden(k + pos.get_2d());
+				}
+				if (gr) {
 					senke_t *sk = gr->find<senke_t>();
-					if(sk) {
+					if (sk  &&  sk->get_factory() == fab) {
+						sk->mark_image_dirty(sk->get_bild(), 0);
 						delete sk;
 					}
-					pumpe_t *pp = gr->find<pumpe_t>();
-					if(pp) {
+					pumpe_t* pp = gr->find<pumpe_t>();
+					if (pp  &&  pp->get_factory() == fab) {
+						pp->mark_image_dirty(pp->get_bild(), 0);
 						delete pp;
 					}
-					// remove tunnelboden
-					if(  gr->ist_im_tunnel()  &&  gr->get_top()<=1  ) {
-						tunnel_t *t = gr->find<tunnel_t>();
-						t->entferne( t->get_besitzer() );
-						delete t;
-						welt->lookup_kartenboden(pos.get_2d())->clear_flag(grund_t::marked);
+					// remove tunnel
+					if( (sk!=NULL ||  pp!=NULL)  &&  gr->ist_im_tunnel()  &&  gr->get_top()<=1  ) {
+						if (tunnel_t *t = gr->find<tunnel_t>()) {
+							t->entferne( t->get_besitzer() );
+							delete t;
+						}
+						const koord p = gr->get_pos().get_2d();
+						welt->lookup_kartenboden(p)->clear_flag(grund_t::marked);
 						// remove ground
-						welt->access(pos.get_2d())->boden_entfernen(gr);
+						welt->access(p)->boden_entfernen(gr);
 						delete gr;
 					}
 				}
@@ -706,6 +682,9 @@ const haus_besch_t* hausbauer_t::get_random_station(const haus_besch_t::utyp uty
 
 	FOR(vector_tpl<haus_besch_t const*>, const besch, station_building) {
 		if(besch->get_utyp()==utype  &&  besch->get_extra()==wt  &&  (enables==0  ||  (besch->get_enabled()&enables)!=0)) {
+			if( !besch->can_be_built_aboveground()) {
+				continue;
+			}
 			// ok, now check timeline
 			if(time==0  ||  (besch->get_intro_year_month()<=time  &&  besch->get_retire_year_month()>time)) {
 				stops.append(besch,max(1,16-besch->get_level()*besch->get_b()*besch->get_h()),16);
@@ -717,14 +696,24 @@ const haus_besch_t* hausbauer_t::get_random_station(const haus_besch_t::utyp uty
 
 
 
-const haus_besch_t* hausbauer_t::get_special(int bev, haus_besch_t::utyp utype, uint16 time, bool ignore_retire, climate cl)
+const haus_besch_t* hausbauer_t::get_special(uint32 bev, haus_besch_t::utyp utype, uint16 time, bool ignore_retire, climate cl)
 {
 	weighted_vector_tpl<const haus_besch_t *> auswahl(16);
 
-	vector_tpl<const haus_besch_t*> &list = utype == haus_besch_t::rathaus ? rathaeuser : (bev == -1 ? sehenswuerdigkeiten_land : sehenswuerdigkeiten_city);
-	FOR(vector_tpl<haus_besch_t const*>, const besch, list) {
+	vector_tpl<const haus_besch_t*> *list = NULL;
+	switch(utype) {
+		case haus_besch_t::rathaus:
+			list = &rathaeuser;
+			break;
+		case haus_besch_t::attraction_city:
+			list = &sehenswuerdigkeiten_city;
+			break;
+		default:
+			return NULL;
+	}
+	FOR(vector_tpl<haus_besch_t const*>, const besch, *list) {
 		// extra data contains number of inhabitants for building
-		if(bev == -1 || besch->get_extra()==bev) {
+		if(besch->get_extra()==bev) {
 			if(cl==MAX_CLIMATES  ||  besch->is_allowed_climate(cl)) {
 				// ok, now check timeline
 				if(time==0  ||  (besch->get_intro_year_month()<=time  &&  (ignore_retire  ||  besch->get_retire_year_month() > time)  )  ) {

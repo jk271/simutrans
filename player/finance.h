@@ -11,6 +11,8 @@
 #ifndef finance_h
 #define finance_h
 
+#define PATCH_SAVEGAME_VERSION (113000)
+
 #include <assert.h>
 
 #include "../simtypes.h"

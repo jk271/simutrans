@@ -370,10 +370,6 @@ public:
 	 */
 	void calc_finance_history();
 
-	/* workaround, used for charts in money_frame */
-	void calc_flat_view_month(int tt, sint64 (&flat_view_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]);
-	void calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST]);
-
 	/**
 	 * Returns amount of money on account (also known as konto)
 	 */

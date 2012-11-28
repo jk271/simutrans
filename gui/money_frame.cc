@@ -121,6 +121,7 @@ sint64 money_frame_t::get_statistics_value(int tt, uint8 type, int yearmonth, bo
 	}
 }
 
+
 /**
  * Updates label text and color.
  * @param buf used to save the string
@@ -148,6 +149,22 @@ void money_frame_t::update_label(gui_label_t &label, char *buf, int transport_ty
 	label.set_color(color);
 }
 
+
+void money_frame_t::fill_chart_tables()
+{
+	// fill tables for chart curves
+	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
+		const uint8 tt = cost_type[3*i+1] == TT_ALL ? transport_type_option : cost_type[3*i+1];
+
+		for(int j=0; j<MAX_PLAYER_HISTORY_MONTHS; j++) {
+			chart_table_month[j][i] = get_statistics_value(tt, cost_type[3*i], j, true);
+		}
+
+		for(int j=0; j<MAX_PLAYER_HISTORY_YEARS; j++) {
+			chart_table_year[j][i] =  get_statistics_value(tt, cost_type[3*i], j, false);
+		}
+	}
+}
 
 money_frame_t::money_frame_t(spieler_t *sp)
   : gui_frame_t( translator::translate("Finanzen"), sp),
@@ -262,8 +279,8 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int curve_type = cost_type[3*i+2];
 		const int curve_precision = curve_type == MONEY ? 2 : 0;
-		mchart.add_curve( cost_type_color[i], *flat_view_month, MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
-		chart.add_curve(  cost_type_color[i], *flat_view_year,  MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
+		mchart.add_curve( cost_type_color[i], *chart_table_month, MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
+		chart.add_curve(  cost_type_color[i], *chart_table_year,  MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
 	}
 
 	// tab (month/year)
@@ -396,8 +413,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	static char str_buf[26][64];
 
 	sp->get_finance()->calc_finance_history();
-//	sp->get_finance()->calc_flat_view_month(transport_type_option, flat_view_month);
-	//sp->get_finance()->calc_flat_view_year(transport_type_option, flat_view_year);
+	fill_chart_tables();
 
 	chart.set_visible( year_month_tabs.get_active_tab_index()==0 );
 	mchart.set_visible( year_month_tabs.get_active_tab_index()==1 );

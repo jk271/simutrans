@@ -104,8 +104,10 @@ private:
 	/// Helper method to query data from players statistics
 	sint64 get_statistics_value(int transport_type, uint8 type, int yearmonth, bool monthly);
 
-	sint64 flat_view_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST_BUTTON];
-	sint64 flat_view_year[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST_BUTTON];
+	sint64 chart_table_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST_BUTTON];
+	sint64 chart_table_year[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST_BUTTON];
+
+	void fill_chart_tables();
 
 public:
 	/**

@@ -75,12 +75,6 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	}
 }
 
-/*
-void finance_t::book_convoi_number( int count ) {
-	finance.com_year[0][ATC_ALL_CONVOIS] += count;
-	finance.com_month[0][ATC_ALL_CONVOIS] += count;
-}
-*/
 
 void finance_t::calc_finance_history()
 {
@@ -482,54 +476,6 @@ int finance_t::translate_index_cost_to_at(int cost_index) {
 	};
 
 	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
-}
-
-
-
-void finance_t::calc_flat_view_month(int tt, sint64 (&flat_view_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST])
-{
-	assert((0 <=tt ) && ( tt < TT_MAX ));
-	for(int month=0; month<MAX_PLAYER_HISTORY_MONTHS; ++month) {
-		for(int i=0; i<MAX_PLAYER_COST; ++i) {
-			int index = translate_index_cost_to_at(i);
-			if(index >=0 ){
-				flat_view_month[month][i] = veh_month[tt][month][index];
-			} else {
-				if(i==COST_CASH) {
-					flat_view_month[month][i] = com_month[month][ATC_CASH];
-				}
-				if(i==COST_NETWEALTH ) {
-					flat_view_month[month][i] = com_month[month][ATC_NETWEALTH];
-				}
-				if( ( i == COST_POWERLINES ) && ( tt == TT_ALL ) ) {
-					flat_view_month[month][i] = veh_month[TT_POWERLINE][month][ATV_REVENUE];
-				}
-			}
-		}
-	}
-}
-
-void finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST])
-{
-	assert(( 0<=tt ) && ( tt < TT_MAX ));
-	for(int year=0; year<MAX_PLAYER_HISTORY_YEARS; ++year) {
-		for(int i=0; i<MAX_PLAYER_COST; ++i) {
-			int index = translate_index_cost_to_at(i);
-			if(index >=0 ){
-				flat_view_year[year][i] = veh_year[tt][year][index];
-			} else {
-				if(i==COST_CASH) {
-					flat_view_year[year][i] = com_year[year][ATC_CASH];
-				}
-				if(i==COST_NETWEALTH ) {
-					flat_view_year[year][i] = com_year[year][ATC_NETWEALTH];
-				}
-				if( ( i == COST_POWERLINES ) && ( tt == TT_ALL ) ) {
-					flat_view_year[year][i] = veh_year[TT_POWERLINE][year][ATV_REVENUE];
-				}
-			}
-		}
-	}
 }
 
 

@@ -17,17 +17,16 @@
 
 #include "../simtypes.h"
 
-// for compatibility with old versions
-#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
-#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
+/// for compatibility with old versions
+#define OLD_MAX_PLAYER_COST (19)
 
 /** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_YEARS
 */
-#define MAX_PLAYER_HISTORY_YEARS2  (25) // number of years to keep history
+#define MAX_PLAYER_HISTORY_YEARS  (25) // number of years to keep history
 
 /** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_MONTHS
 */
-#define MAX_PLAYER_HISTORY_MONTHS2  (25) // number of months to keep history
+#define MAX_PLAYER_HISTORY_MONTHS  (25) // number of months to keep history
 
 
 /**
@@ -116,30 +115,6 @@ enum accounting_type_vehicles {
 };
 
 
-enum player_cost {
-	COST_CONSTRUCTION=0,// Construction
-	COST_VEHICLE_RUN,   // Vehicle running costs
-	COST_NEW_VEHICLE,   // New vehicles
-	COST_INCOME,        // Income
-	COST_MAINTENANCE,   // Upkeep
-	COST_ASSETS,        // value of all vehicles and buildings
-	COST_CASH,          // Cash
-	COST_NETWEALTH,     // Total Cash + Assets
-	COST_PROFIT,        // COST_POWERLINES+COST_INCOME-(COST_CONSTRUCTION+COST_VEHICLE_RUN+COST_NEW_VEHICLE+COST_MAINTENANCE)
-	COST_OPERATING_PROFIT, // COST_POWERLINES+COST_INCOME-(COST_VEHICLE_RUN+COST_MAINTENANCE)
-	COST_MARGIN,        // COST_OPERATING_PROFIT/COST_INCOME
-	COST_ALL_TRANSPORTED, // all transported goods
-	COST_POWERLINES,	  // revenue from the power grid
-	COST_TRANSPORTED_PAS,	// number of passengers that actually reached destination
-	COST_TRANSPORTED_MAIL,
-	COST_TRANSPORTED_GOOD,
-	COST_ALL_CONVOIS,		// number of convois
-	COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
-	COST_WAY_TOLLS,
-	MAX_PLAYER_COST
-};
-
-
 class loadsave_t;
 class karte_t;
 class spieler_t;
@@ -204,19 +179,19 @@ class finance_t {
 	 * type of transport (com - common)
  	 * @author jk271
  	 */
-	sint64 com_year[MAX_PLAYER_HISTORY_YEARS2][ATC_MAX];
+	sint64 com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
 
 	/**
 	 * monthly finance history, data not distinguishable by transport type
 	 */
-	sint64 com_month[MAX_PLAYER_HISTORY_MONTHS2][ATC_MAX];
+	sint64 com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
 
 	/**
  	 * finance history having relation with particular type of service
  	 * @author jk271
  	 */
-	sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS2][ATV_MAX];
-	sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS2][ATV_MAX];
+	sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
+	sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
 	/**
  	 * Monthly maintenance cost
@@ -511,8 +486,8 @@ private:
 	 * Used for saving data in old format
 	 * @author jk271
 	 */
-	void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void export_to_cost_month(sint64 finance_history_month[][OLD_MAX_PLAYER_COST]);
+	void export_to_cost_year( sint64 finance_history_year[][OLD_MAX_PLAYER_COST]);
 
 
 	/**
@@ -520,8 +495,8 @@ private:
 	 * Used for loading data from old format
 	 * @author jk271
 	 */
-	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void import_from_cost_month(const sint64 finance_history_month[][OLD_MAX_PLAYER_COST]);
+	void import_from_cost_year( const sint64 finance_history_year[][OLD_MAX_PLAYER_COST]);
 };
 
 #endif

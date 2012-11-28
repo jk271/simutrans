@@ -32,7 +32,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	starting_money = account_balance;
 	account_overdrawn = 0;
 
-	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS2; year++) {
+	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
 		for (int cost_type=0; cost_type<ATC_MAX; cost_type++) {
 			com_year[year][cost_type] = 0;
 			if ((cost_type == ATC_CASH) || (cost_type == ATC_NETWEALTH)) {
@@ -41,7 +41,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 		}
 	}
 
-	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS2; month++) {
+	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
 		for (int cost_type=0; cost_type<ATC_MAX; cost_type++) {
 			com_month[month][cost_type] = 0;
 			if ((cost_type == ATC_CASH) || (cost_type == ATC_NETWEALTH)) {
@@ -51,7 +51,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	}
 
 	for (int transport_type=0; transport_type<TT_MAX; ++transport_type){
-		for (int year=0; year<MAX_PLAYER_HISTORY_YEARS2; year++) {
+		for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
 			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
 				veh_year[transport_type][year][cost_type] = 0;
 			}
@@ -59,7 +59,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	}
 
 	for (int transport_type=0; transport_type<TT_MAX; ++transport_type){
-		for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS2; month++) {
+		for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
 			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
 				veh_month[transport_type][month][cost_type] = 0;
 			}
@@ -197,7 +197,7 @@ bool finance_t::is_bancrupted() const
 		com_year[0][ATC_NETWEALTH] <=0  &&
 		veh_year[TT_ALL][0][ATV_INFRASTRUCTURE_MAINTENANCE] == 0  &&
 		maintenance[TT_ALL] == 0  &&
-		com_year[0][COST_ALL_CONVOIS] == 0
+		com_year[0][ATC_ALL_CONVOIS] == 0
 	);
 }
 
@@ -235,8 +235,8 @@ void finance_t::rdwr(loadsave_t *file)
 	*	more transport_types
 	*	and new items in ATC_ or ATV_
 	*/
-	sint8 max_years  = MAX_PLAYER_HISTORY_YEARS2;
-	sint8 max_months = MAX_PLAYER_HISTORY_MONTHS2;
+	sint8 max_years  = MAX_PLAYER_HISTORY_YEARS;
+	sint8 max_months = MAX_PLAYER_HISTORY_MONTHS;
 	sint8 max_tt     = TT_MAX;
 	sint8 max_atc    = ATC_MAX;
 	sint8 max_atv    = ATV_MAX;
@@ -419,6 +419,32 @@ transport_type finance_t::translate_waytype_to_tt(const waytype_t wt) const
 
 /** compatibility code follows **/
 
+#define OLD_MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
+#define OLD_MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
+
+enum player_cost {
+	COST_CONSTRUCTION=0,// Construction
+	COST_VEHICLE_RUN,   // Vehicle running costs
+	COST_NEW_VEHICLE,   // New vehicles
+	COST_INCOME,        // Income
+	COST_MAINTENANCE,   // Upkeep
+	COST_ASSETS,        // value of all vehicles and buildings
+	COST_CASH,          // Cash
+	COST_NETWEALTH,     // Total Cash + Assets
+	COST_PROFIT,        // COST_POWERLINES+COST_INCOME-(COST_CONSTRUCTION+COST_VEHICLE_RUN+COST_NEW_VEHICLE+COST_MAINTENANCE)
+	COST_OPERATING_PROFIT, // COST_POWERLINES+COST_INCOME-(COST_VEHICLE_RUN+COST_MAINTENANCE)
+	COST_MARGIN,        // COST_OPERATING_PROFIT/COST_INCOME
+	COST_ALL_TRANSPORTED, // all transported goods
+	COST_POWERLINES,	  // revenue from the power grid
+	COST_TRANSPORTED_PAS,	// number of passengers that actually reached destination
+	COST_TRANSPORTED_MAIL,
+	COST_TRANSPORTED_GOOD,
+	COST_ALL_CONVOIS,		// number of convois
+	COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
+	COST_WAY_TOLLS,
+	// OLD_MAX_PLAYER_COST = 19
+};
+
 
 int finance_t::translate_index_cost_to_atc(const int cost_index) const
 {
@@ -442,10 +468,10 @@ int finance_t::translate_index_cost_to_atc(const int cost_index) const
 		ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS
 		ATC_SCENARIO_COMPLETED, // COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
 		-1,		// COST_WAY_TOLLS,
-		ATC_MAX		// MAX_PLAYER_COST
+		ATC_MAX		// OLD_MAX_PLAYER_COST
 	};
 
-	return (cost_index < MAX_PLAYER_COST) ? cost_to_atc_indices[cost_index] :  -1;
+	return (cost_index < OLD_MAX_PLAYER_COST) ? cost_to_atc_indices[cost_index] :  -1;
 }
 
 
@@ -472,17 +498,18 @@ int finance_t::translate_index_cost_to_at(int cost_index) {
 		-2,                     // COST_ALL_CONVOIS
 		-2,                     // COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
 		ATV_WAY_TOLL,           // COST_WAY_TOLLS,
-		ATV_MAX                 // MAX_PLAYER_COST
+		ATV_MAX                 // OLD_MAX_PLAYER_COST
 	};
 
-	return (cost_index < MAX_PLAYER_COST) ? indices[cost_index] :  -2;
+	return (cost_index < OLD_MAX_PLAYER_COST) ? indices[cost_index] :  -2;
 }
 
 
-void finance_t::export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST])
+void finance_t::export_to_cost_month(sint64 finance_history_month[][OLD_MAX_PLAYER_COST])
 {
+
 	calc_finance_history();
-	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
+	for(int i=0; i<OLD_MAX_PLAYER_HISTORY_MONTHS; ++i){
 		finance_history_month[i][COST_CONSTRUCTION] = veh_month[TT_ALL][i][ATV_CONSTRUCTION_COST];
 		finance_history_month[i][COST_VEHICLE_RUN]  = veh_month[TT_ALL][i][ATV_RUNNING_COST] + veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
 		finance_history_month[i][COST_NEW_VEHICLE]  = veh_month[TT_ALL][i][ATV_NEW_VEHICLE];
@@ -506,10 +533,10 @@ void finance_t::export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_
 }
 
 
-void finance_t::export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST])
+void finance_t::export_to_cost_year( sint64 finance_history_year[][OLD_MAX_PLAYER_COST])
 {
 	calc_finance_history();
-	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
+	for(int i=0; i<OLD_MAX_PLAYER_HISTORY_YEARS; ++i){
 		finance_history_year[i][COST_CONSTRUCTION] = veh_year[TT_ALL][i][ATV_CONSTRUCTION_COST];
 		finance_history_year[i][COST_VEHICLE_RUN]  = veh_year[TT_ALL][i][ATV_RUNNING_COST] + veh_month[TT_ALL][i][ATV_VEHICLE_MAINTENANCE];
 		finance_history_year[i][COST_NEW_VEHICLE]  = veh_year[TT_ALL][i][ATV_NEW_VEHICLE];
@@ -533,10 +560,10 @@ void finance_t::export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_H
 }
 
 
-void finance_t::import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST])
+void finance_t::import_from_cost_month(const sint64 finance_history_month[][OLD_MAX_PLAYER_COST])
 {
 	// does it need initial clean-up ? (= initialization)
-	for(int i=0; i<MAX_PLAYER_HISTORY_MONTHS; ++i){
+	for(int i=0; i<OLD_MAX_PLAYER_HISTORY_MONTHS; ++i){
 		veh_month[TT_OTHER][i][ATV_CONSTRUCTION_COST] = finance_history_month[i][COST_CONSTRUCTION];
 		veh_month[TT_ALL  ][i][ATV_CONSTRUCTION_COST] = finance_history_month[i][COST_CONSTRUCTION];
 		veh_month[TT_OTHER][i][ATV_RUNNING_COST]      = finance_history_month[i][COST_VEHICLE_RUN];
@@ -584,9 +611,9 @@ void finance_t::import_from_cost_month(const sint64 (& finance_history_month)[MA
 }
 
 
-void finance_t::import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST])
+void finance_t::import_from_cost_year( const sint64 finance_history_year[][OLD_MAX_PLAYER_COST])
 {
-	for(int i=0; i<MAX_PLAYER_HISTORY_YEARS; ++i){
+	for(int i=0; i<OLD_MAX_PLAYER_HISTORY_YEARS; ++i){
 		veh_year[TT_OTHER][i][ATV_CONSTRUCTION_COST] = finance_history_year[i][COST_CONSTRUCTION];
 		veh_year[TT_ALL  ][i][ATV_CONSTRUCTION_COST] = finance_history_year[i][COST_CONSTRUCTION];
 		veh_year[TT_OTHER][i][ATV_RUNNING_COST]      = finance_history_year[i][COST_VEHICLE_RUN];
@@ -636,11 +663,11 @@ void finance_t::import_from_cost_year( const sint64 (& finance_history_year)[MAX
 
 void finance_t::rdwr_compatibility(loadsave_t *file)
 {
-	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST];
-	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
+	sint64 finance_history_year[OLD_MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST];
+	sint64 finance_history_month[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST];
 
-	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
-		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
+	for (int year=0; year<OLD_MAX_PLAYER_HISTORY_YEARS; year++) {
+		for (int cost_type=0; cost_type<OLD_MAX_PLAYER_COST; cost_type++) {
 			finance_history_year[year][cost_type] = 0;
 			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
 				finance_history_year[year][cost_type] = get_starting_money();
@@ -648,8 +675,8 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 		}
 	}
 
-	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
-		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
+	for (int month=0; month<OLD_MAX_PLAYER_HISTORY_MONTHS; month++) {
+		for (int cost_type=0; cost_type<OLD_MAX_PLAYER_COST; cost_type++) {
 			finance_history_month[month][cost_type] = 0;
 			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
 				finance_history_month[month][cost_type] = get_starting_money();
@@ -663,8 +690,8 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 	}
 	if (file->get_version() < 84008) {
 		// not so old save game
-		for (int year = 0;year<MAX_PLAYER_HISTORY_YEARS;year++) {
-			for (int cost_type = 0; cost_type<MAX_PLAYER_COST; cost_type++) {
+		for (int year = 0;year<OLD_MAX_PLAYER_HISTORY_YEARS;year++) {
+			for (int cost_type = 0; cost_type<OLD_MAX_PLAYER_COST; cost_type++) {
 				if (file->get_version() < 84007) {
 					// a cost_type has has been added. For old savegames we only have 9 cost_types, now we have 10.
 					// for old savegames only load 9 types and calculate the 10th; for new savegames load all 10 values
@@ -681,13 +708,13 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 		}
 	}
 	else if (file->get_version() < 86000) {
-		for (int year = 0;year<MAX_PLAYER_HISTORY_YEARS;year++) {
+		for (int year = 0;year<OLD_MAX_PLAYER_HISTORY_YEARS;year++) {
 			for (int cost_type = 0; cost_type<10; cost_type++) {
 				file->rdwr_longlong(finance_history_year[year][cost_type]);
 			}
 		}
 		// in 84008 monthly finance history was introduced
-		for (int month = 0;month<MAX_PLAYER_HISTORY_MONTHS;month++) {
+		for (int month = 0;month<OLD_MAX_PLAYER_HISTORY_MONTHS;month++) {
 			for (int cost_type = 0; cost_type<10; cost_type++) {
 				file->rdwr_longlong(finance_history_month[month][cost_type]);
 			}
@@ -695,12 +722,12 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 	}
 	else if (file->get_version() < 99011) {
 		// powerline category missing
-		for (int year = 0;year<MAX_PLAYER_HISTORY_YEARS;year++) {
+		for (int year = 0;year<OLD_MAX_PLAYER_HISTORY_YEARS;year++) {
 			for (int cost_type = 0; cost_type<12; cost_type++) {
 				file->rdwr_longlong(finance_history_year[year][cost_type]);
 			}
 		}
-		for (int month = 0;month<MAX_PLAYER_HISTORY_MONTHS;month++) {
+		for (int month = 0;month<OLD_MAX_PLAYER_HISTORY_MONTHS;month++) {
 			for (int cost_type = 0; cost_type<12; cost_type++) {
 				file->rdwr_longlong(finance_history_month[month][cost_type]);
 			}
@@ -708,12 +735,12 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 	}
 	else if (file->get_version() < 99017) {
 		// without detailed goo statistics
-		for (int year = 0;year<MAX_PLAYER_HISTORY_YEARS;year++) {
+		for (int year = 0;year<OLD_MAX_PLAYER_HISTORY_YEARS;year++) {
 			for (int cost_type = 0; cost_type<13; cost_type++) {
 				file->rdwr_longlong(finance_history_year[year][cost_type]);
 			}
 		}
-		for (int month = 0;month<MAX_PLAYER_HISTORY_MONTHS;month++) {
+		for (int month = 0;month<OLD_MAX_PLAYER_HISTORY_MONTHS;month++) {
 			for (int cost_type = 0; cost_type<13; cost_type++) {
 				file->rdwr_longlong(finance_history_month[month][cost_type]);
 			}
@@ -721,12 +748,12 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 	}
 	else if(  file->get_version()<=102002  ) {
 		// saved everything
-		for (int year = 0;year<MAX_PLAYER_HISTORY_YEARS;year++) {
+		for (int year = 0;year<OLD_MAX_PLAYER_HISTORY_YEARS;year++) {
 			for (int cost_type = 0; cost_type<18; cost_type++) {
 				file->rdwr_longlong(finance_history_year[year][cost_type]);
 			}
 		}
-		for (int month = 0;month<MAX_PLAYER_HISTORY_MONTHS;month++) {
+		for (int month = 0;month<OLD_MAX_PLAYER_HISTORY_MONTHS;month++) {
 			for (int cost_type = 0; cost_type<18; cost_type++) {
 				file->rdwr_longlong(finance_history_month[month][cost_type]);
 			}
@@ -734,14 +761,14 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 	}
 	else if(  file->get_version()<=110006  ) {
 		// only save what is needed
-		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
+		for(int year = 0;  year<OLD_MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<18;   cost_type++  ) {
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
 					file->rdwr_longlong(finance_history_year[year][cost_type]);
 				}
 			}
 		}
-		for (int month = 0;month<MAX_PLAYER_HISTORY_MONTHS;month++) {
+		for (int month = 0;month<OLD_MAX_PLAYER_HISTORY_MONTHS;month++) {
 			for (int cost_type = 0; cost_type<18; cost_type++) {
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
 					file->rdwr_longlong(finance_history_month[month][cost_type]);
@@ -751,15 +778,15 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 	}
 	else if (  file->get_version() < PATCH_SAVEGAME_VERSION  ) {
 		// savegame version: now with toll
-		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
-			for(  int cost_type = 0;   cost_type<MAX_PLAYER_COST;   cost_type++  ) {
+		for(int year = 0;  year<OLD_MAX_PLAYER_HISTORY_YEARS;  year++  ) {
+			for(  int cost_type = 0;   cost_type<OLD_MAX_PLAYER_COST;   cost_type++  ) {
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
 					file->rdwr_longlong(finance_history_year[year][cost_type]);
 				}
 			}
 		}
-		for (int month = 0;month<MAX_PLAYER_HISTORY_MONTHS;month++) {
-			for (int cost_type = 0; cost_type<MAX_PLAYER_COST; cost_type++) {
+		for (int month = 0;month<OLD_MAX_PLAYER_HISTORY_MONTHS;month++) {
+			for (int cost_type = 0; cost_type<OLD_MAX_PLAYER_COST; cost_type++) {
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
 					file->rdwr_longlong(finance_history_month[month][cost_type]);
 				}
@@ -785,7 +812,7 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 		 * we also save only some values and recalculate all dependent ones
 		 * (remember: negative costs are just saved as negative numbers!)
 		 */
-		for(  int year=0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
+		for(  int year=0;  year<OLD_MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			finance_history_year[year][COST_NETWEALTH] = finance_history_year[year][COST_CASH]+finance_history_year[year][COST_ASSETS];
 			// only revnue minus running costs
 			finance_history_year[year][COST_OPERATING_PROFIT] = finance_history_year[year][COST_INCOME] + finance_history_year[year][COST_POWERLINES] + finance_history_year[year][COST_VEHICLE_RUN] + finance_history_year[year][COST_MAINTENANCE] + finance_history_year[year][COST_WAY_TOLLS];
@@ -794,7 +821,7 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 			finance_history_year[year][COST_PROFIT] = finance_history_year[year][COST_OPERATING_PROFIT]+finance_history_year[year][COST_CONSTRUCTION]+finance_history_year[year][COST_NEW_VEHICLE];
 			finance_history_year[year][COST_MARGIN] = calc_margin(finance_history_year[year][COST_OPERATING_PROFIT], finance_history_year[year][COST_INCOME]);
 		}
-		for(  int month=0;  month<MAX_PLAYER_HISTORY_MONTHS;  month++  ) {
+		for(  int month=0;  month<OLD_MAX_PLAYER_HISTORY_MONTHS;  month++  ) {
 			finance_history_month[month][COST_NETWEALTH] = finance_history_month[month][COST_CASH]+finance_history_month[month][COST_ASSETS];
 			finance_history_month[month][COST_OPERATING_PROFIT] = finance_history_month[month][COST_INCOME] + finance_history_month[month][COST_POWERLINES] + finance_history_month[month][COST_VEHICLE_RUN] + finance_history_month[month][COST_MAINTENANCE] + finance_history_month[month][COST_WAY_TOLLS];
 			finance_history_month[month][COST_PROFIT] = finance_history_month[month][COST_OPERATING_PROFIT]+finance_history_month[month][COST_CONSTRUCTION]+finance_history_month[month][COST_NEW_VEHICLE];

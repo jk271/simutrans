@@ -1,8 +1,0 @@
-test_case_0066
-test_case_name="Tram transport accounting - vehicles"
-description=""
-
-Prerequisities:
-tc0001 succesfully completed
-
-Follow tc0016 used for trams.

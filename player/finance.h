@@ -69,11 +69,6 @@ enum accounting_type_common {
 	ATC_NETWEALTH,		// Total Cash + Assets, COST_NETWEALTH
 	ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS; good for ?? what ??
 	ATC_SCENARIO_COMPLETED, // scenario success (only useful if there is one ... ), COST_SCENARIO_COMPLETED
-	ATC_INTERESTS,		// Experimental has it -> making savegame format a little bit more compatible between standard and experimental, COST_INTERESTS
-	ATC_CREDIT_LIMIT, 	// Experimental, too, COST_CREDIT_LIMITS
-	ATC_TAX,		// for future use, at least planed in exp.
-	ATC_ROA,		// return on assets = total revenue / all assets ; ( all assets = non-finantial assets + cash); for future use
-	ATC_ROE,		// return on equity = total tevenue / (all assets - debths); for future use
 	ATC_MAX
 };
 

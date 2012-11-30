@@ -377,26 +377,6 @@ void finance_t::update_assets(sint64 const delta, const waytype_t wt)
 }
 
 
-transport_type finance_t::translate_utyp_to_tt(const int utyp)
-{
-	switch(utyp){
-		case haus_besch_t::bahnhof:      return TT_RAILWAY;
-		case haus_besch_t::bushalt:      return TT_ROAD;
-		case haus_besch_t::hafen:        return TT_SHIP;
-		case haus_besch_t::binnenhafen:  return TT_SHIP;
-		case haus_besch_t::airport:      return TT_AIR;
-		case haus_besch_t::monorailstop: return TT_MONORAIL;
-		case haus_besch_t::bahnhof_geb:  return TT_RAILWAY;
-		case haus_besch_t::bushalt_geb:  return TT_ROAD;
-		case haus_besch_t::hafen_geb:    return TT_SHIP;
-		case haus_besch_t::binnenhafen_geb: return TT_SHIP;
-		case haus_besch_t::airport_geb:  return TT_AIR;
-		case haus_besch_t::monorail_geb: return TT_MONORAIL;
-		default: return TT_OTHER;
-	}
-}
-
-
 transport_type finance_t::translate_waytype_to_tt(const waytype_t wt)
 {
 	switch(wt){

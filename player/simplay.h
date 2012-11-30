@@ -91,7 +91,7 @@ protected:
 	 * @return the new maintenance costs
 	 * @author Hj. Malthaner
 	 */
-	sint32 add_maintenance(sint32 change, waytype_t const wt=ignore_wt, const int utyp = 0);
+	sint32 add_maintenance(sint32 change, waytype_t const wt=ignore_wt);
 
 	/**
 	 * Ist dieser Spieler ein automatischer Spieler?
@@ -251,9 +251,10 @@ public:
 
 	virtual ~spieler_t();
 
-	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt, const int utyp = 0) {
+	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt)
+	{
 		if(sp) {
-			return sp->add_maintenance(change, wt, utyp);
+			return sp->add_maintenance(change, wt);
 		}
 		return 0;
 	}

@@ -121,12 +121,12 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
  * @return the new maintenance costs
  * @author Hj. Malthaner
  */
-sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt, const int utyp) {
+sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
 	int tmp = 0;
 #if MULTI_THREAD>1
 		pthread_mutex_lock( &laden_abschl_mutex  );
 #endif
-	tmp = finance->book_maintenance(change, wt, utyp);
+	tmp = finance->book_maintenance(change, wt);
 #if MULTI_THREAD>1
 		pthread_mutex_unlock( &laden_abschl_mutex  );
 #endif

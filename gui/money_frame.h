@@ -20,7 +20,7 @@
 #include "../player/finance.h"
 #include "../player/simplay.h"
 
-#define MAX_PLAYER_COST_BUTTON (14)
+#define MAX_PLAYER_COST_BUTTON (13)
 
 /**
  * Finances dialog
@@ -63,7 +63,6 @@ private:
 	gui_label_t margin;
 	gui_label_t transport, old_transport;
 	gui_label_t toll, old_toll;
-	gui_label_t powerline, old_powerline;
 
 	gui_label_t maintenance_label;
 	gui_label_t maintenance_money;

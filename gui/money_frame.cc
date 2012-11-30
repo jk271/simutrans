@@ -41,7 +41,6 @@ const char *money_frame_t::cost_type_name[MAX_PLAYER_COST_BUTTON] =
 	"Operation",
 	"Maintenance",
 	"Road toll",
-	"Powerlines",
 	"Ops Profit",
 	"New Vehicles",
 	"Construction_Btn",
@@ -60,7 +59,6 @@ const COLOR_VAL money_frame_t::cost_type_color[MAX_PLAYER_COST_BUTTON] =
 	COL_OPERATION,
 	COL_MAINTENANCE,
 	COL_TOLL,
-	COL_POWERLINES,
 	COL_OPS_PROFIT,
 	COL_NEW_VEHICLES,
 	COL_CONSTRUCTION,
@@ -79,7 +77,6 @@ const uint8 money_frame_t::cost_type[3*MAX_PLAYER_COST_BUTTON] =
 	ATV_RUNNING_COST,               TT_ALL, MONEY,    // Vehicle running costs
 	ATV_INFRASTRUCTURE_MAINTENANCE, TT_ALL, MONEY,    // Upkeep
 	ATV_WAY_TOLL,                   TT_ALL, MONEY,
-	ATV_REVENUE,              TT_POWERLINE, MONEY,    // revenue from the power grid
 	ATV_OPERATING_PROFIT,           TT_ALL, MONEY,
 	ATV_NEW_VEHICLE,                TT_ALL, MONEY,   // New vehicles
 	ATV_CONSTRUCTION_COST,	        TT_ALL, MONEY,   // Construction
@@ -193,8 +190,6 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		old_transport(NULL, COL_WHITE, gui_label_t::right),
 		toll(NULL, COL_WHITE, gui_label_t::money),
 		old_toll(NULL, COL_WHITE, gui_label_t::money),
-		powerline(NULL, COL_WHITE, gui_label_t::money),
-		old_powerline(NULL, COL_WHITE, gui_label_t::money),
 		maintenance_label("This Month",COL_WHITE, gui_label_t::right),
 		maintenance_money(NULL, COL_RED, gui_label_t::money),
 		warn("", COL_YELLOW, gui_label_t::left),
@@ -229,26 +224,24 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	old_mmoney.set_pos(koord(lyl_x,top+3*BUTTONSPACE));
 	toll.set_pos(koord(tyl_x,top+4*BUTTONSPACE));
 	old_toll.set_pos(koord(lyl_x,top+4*BUTTONSPACE));
-	powerline.set_pos(koord(tyl_x,top+5*BUTTONSPACE));
-	old_powerline.set_pos(koord(lyl_x,top+5*BUTTONSPACE));
-	omoney.set_pos(koord(tyl_x,top+6*BUTTONSPACE));
-	old_omoney.set_pos(koord(lyl_x,top+6*BUTTONSPACE));
-	nvmoney.set_pos(koord(tyl_x,top+7*BUTTONSPACE));
-	old_nvmoney.set_pos(koord(lyl_x,top+7*BUTTONSPACE));
-	conmoney.set_pos(koord(tyl_x,top+8*BUTTONSPACE));
-	old_conmoney.set_pos(koord(lyl_x,top+8*BUTTONSPACE));
-	tmoney.set_pos(koord(tyl_x,top+9*BUTTONSPACE));
-	old_tmoney.set_pos(koord(lyl_x,top+9*BUTTONSPACE));
+	omoney.set_pos(koord(tyl_x,top+5*BUTTONSPACE));
+	old_omoney.set_pos(koord(lyl_x,top+5*BUTTONSPACE));
+	nvmoney.set_pos(koord(tyl_x,top+6*BUTTONSPACE));
+	old_nvmoney.set_pos(koord(lyl_x,top+6*BUTTONSPACE));
+	conmoney.set_pos(koord(tyl_x,top+7*BUTTONSPACE));
+	old_conmoney.set_pos(koord(lyl_x,top+7*BUTTONSPACE));
+	tmoney.set_pos(koord(tyl_x,top+8*BUTTONSPACE));
+	old_tmoney.set_pos(koord(lyl_x,top+8*BUTTONSPACE));
 
 	// right column
 	maintenance_label.set_pos(koord(left+340+80, top+2*BUTTONSPACE-2));
 	maintenance_money.set_pos(koord(left+340+55, top+3*BUTTONSPACE));
 
-	tylabel2.set_pos(koord(left+140+80+335,top+4*BUTTONSPACE-2));
-	gtmoney.set_pos(koord(left+140+335+55, top+5*BUTTONSPACE));
-	vtmoney.set_pos(koord(left+140+335+55, top+6*BUTTONSPACE));
-	margin.set_pos(koord(left+140+335+55, top+7*BUTTONSPACE));
-	money.set_pos(koord(left+140+335+55, top+8*BUTTONSPACE));
+	tylabel2.set_pos(koord(left+140+80+335,top+2*BUTTONSPACE-2));
+	gtmoney.set_pos(koord(left+140+335+55, top+4*BUTTONSPACE));
+	vtmoney.set_pos(koord(left+140+335+55, top+5*BUTTONSPACE));
+	margin.set_pos(koord(left+140+335+55, top+6*BUTTONSPACE));
+	money.set_pos(koord(left+140+335+55, top+7*BUTTONSPACE));
 
 	// return money or else stuff ...
 	warn.set_pos(koord(left+335, top+9*BUTTONSPACE));
@@ -298,7 +291,6 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	add_komponente(&tmoney);
 	add_komponente(&omoney);
 	add_komponente(&toll);
-	add_komponente(&powerline);
 	add_komponente(&transport);
 
 	add_komponente(&old_conmoney);
@@ -309,7 +301,6 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	add_komponente(&old_tmoney);
 	add_komponente(&old_omoney);
 	add_komponente(&old_toll);
-	add_komponente(&old_powerline);
 	add_komponente(&old_transport);
 
 	add_komponente(&lylabel);
@@ -366,13 +357,13 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	add_komponente(&headquarter_view);
 
 	// add filter buttons
-	for(int ibutton=0;  ibutton<10;  ibutton++) {
+	for(int ibutton=0;  ibutton<9;  ibutton++) {
 		filterButtons[ibutton].init(button_t::box, cost_type_name[ibutton], koord(left, top+ibutton*BUTTONSPACE-2), koord(120, BUTTONSPACE));
 		filterButtons[ibutton].add_listener(this);
 		filterButtons[ibutton].background = cost_type_color[ibutton];
 		add_komponente(filterButtons + ibutton);
 	}
-	for(int ibutton=10;  ibutton<MAX_PLAYER_COST_BUTTON;  ibutton++) {
+	for(int ibutton=9;  ibutton<MAX_PLAYER_COST_BUTTON;  ibutton++) {
 		filterButtons[ibutton].init(button_t::box, cost_type_name[ibutton], koord(left+335, top+(ibutton-5)*BUTTONSPACE-2), koord(120, BUTTONSPACE));
 		filterButtons[ibutton].add_listener(this);
 		filterButtons[ibutton].background = cost_type_color[ibutton];
@@ -444,9 +435,6 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 
 	update_label(toll,     str_buf[24], transport_type_option, ATV_WAY_TOLL, 0);
 	update_label(old_toll, str_buf[25], transport_type_option, ATV_WAY_TOLL, 1);
-
-	update_label(powerline,     str_buf[22], TT_POWERLINE, ATV_PROFIT, 0);
-	update_label(old_powerline, str_buf[23], TT_POWERLINE, ATV_PROFIT, 1);
 
 	update_label(gtmoney, str_buf[14], TT_MAX, ATC_CASH, 0);
 	update_label(vtmoney, str_buf[17], transport_type_option, ATV_NON_FINANCIAL_ASSETS, 0);

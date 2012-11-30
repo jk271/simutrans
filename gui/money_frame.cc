@@ -237,11 +237,11 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	maintenance_label.set_pos(koord(left+340+80, top+2*BUTTONSPACE-2));
 	maintenance_money.set_pos(koord(left+340+55, top+3*BUTTONSPACE));
 
-	tylabel2.set_pos(koord(left+140+80+335,top+2*BUTTONSPACE-2));
-	gtmoney.set_pos(koord(left+140+335+55, top+4*BUTTONSPACE));
-	vtmoney.set_pos(koord(left+140+335+55, top+5*BUTTONSPACE));
-	margin.set_pos(koord(left+140+335+55, top+6*BUTTONSPACE));
-	money.set_pos(koord(left+140+335+55, top+7*BUTTONSPACE));
+	tylabel2.set_pos(koord(left+140+80+335,top+4*BUTTONSPACE-2));
+	gtmoney.set_pos(koord(left+140+335+55, top+5*BUTTONSPACE));
+	vtmoney.set_pos(koord(left+140+335+55, top+6*BUTTONSPACE));
+	margin.set_pos(koord(left+140+335+55, top+7*BUTTONSPACE));
+	money.set_pos(koord(left+140+335+55, top+8*BUTTONSPACE));
 
 	// return money or else stuff ...
 	warn.set_pos(koord(left+335, top+9*BUTTONSPACE));
@@ -364,7 +364,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		add_komponente(filterButtons + ibutton);
 	}
 	for(int ibutton=9;  ibutton<MAX_PLAYER_COST_BUTTON;  ibutton++) {
-		filterButtons[ibutton].init(button_t::box, cost_type_name[ibutton], koord(left+335, top+(ibutton-5)*BUTTONSPACE-2), koord(120, BUTTONSPACE));
+		filterButtons[ibutton].init(button_t::box, cost_type_name[ibutton], koord(left+335, top+(ibutton-4)*BUTTONSPACE-2), koord(120, BUTTONSPACE));
 		filterButtons[ibutton].add_listener(this);
 		filterButtons[ibutton].background = cost_type_color[ibutton];
 		add_komponente(filterButtons + ibutton);

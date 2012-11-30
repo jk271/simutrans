@@ -194,11 +194,8 @@ public:
 	 * @param wt way type, e.g. tram_wt
 	 * @param utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
 	 */
-	inline void book_construction_costs(const sint64 amount, const waytype_t wt, const int utyp){
+	inline void book_construction_costs(const sint64 amount, const waytype_t wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
-		if(( tt == TT_OTHER ) && ( utyp !=0 ) ) {
-			tt = translate_utyp_to_tt(utyp);
-		}
 		veh_year[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 		veh_month[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 

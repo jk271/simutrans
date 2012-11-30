@@ -907,7 +907,7 @@ void gebaeude_t::entferne(spieler_t *sp)
 	if (tile->get_besch()->get_utyp() < haus_besch_t::bahnhof) {
 		cost *= tile->get_besch()->get_level() + 1;
 	}
-	spieler_t::book_construction_costs(sp, cost, get_pos().get_2d(), get_waytype(), tile->get_besch()->get_utyp());
+	spieler_t::book_construction_costs(sp, cost, get_pos().get_2d(), tile->get_besch()->get_finance_waytype());
 
 	// may need to update next buildings, in the case of start, middle, end buildings
 	if(tile->get_besch()->get_all_layouts()>1  &&  get_haustyp()==unbekannt) {

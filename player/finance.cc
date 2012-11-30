@@ -377,7 +377,7 @@ void finance_t::update_assets(sint64 const delta, const waytype_t wt)
 }
 
 
-transport_type finance_t::translate_utyp_to_tt(const int utyp) const
+transport_type finance_t::translate_utyp_to_tt(const int utyp)
 {
 	switch(utyp){
 		case haus_besch_t::bahnhof:      return TT_RAILWAY;
@@ -397,7 +397,7 @@ transport_type finance_t::translate_utyp_to_tt(const int utyp) const
 }
 
 
-transport_type finance_t::translate_waytype_to_tt(const waytype_t wt) const
+transport_type finance_t::translate_waytype_to_tt(const waytype_t wt)
 {
 	switch(wt){
 		case road_wt:      return TT_ROAD;

@@ -356,7 +356,7 @@ public:
 	/**
 	 * @return how much month we have been in red numbers (= we had negative account balance)
 	 */
-	inline sint32 get_account_overdrawn() { return account_overdrawn; }
+	sint32 get_account_overdrawn() const { return account_overdrawn; }
 
 	/**
 	 * @returns maintenance
@@ -370,11 +370,11 @@ public:
 	 */
 	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
-	inline sint64 get_netwealth() const { return com_year[0][ATC_NETWEALTH]; }
+	sint64 get_netwealth() const { return com_year[0][ATC_NETWEALTH]; }
 
-	inline sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
+	sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
 
-	inline sint64 get_starting_money() { return starting_money; }
+	sint64 get_starting_money() const { return starting_money; }
 
 	/**
 	 * @returns vehicle maintenance scaled with bits_per_month
@@ -390,12 +390,12 @@ public:
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
-	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANCIAL_ASSETS) ) > 0 ); }
+	bool has_money_or_assets() const { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANCIAL_ASSETS) ) > 0 ); }
 
 	/**
 	 * increases number of month for which the company is in red numbers
 	 */
-	inline void increase_account_overdrawn() { account_overdrawn++; }
+	void increase_account_overdrawn() { account_overdrawn++; }
 
 	/**
 	 * returns true if company bancrupted
@@ -426,7 +426,7 @@ public:
 	 * Sets account balance. This method enables to load old game format.
 	 * Do NOT use it in any other places!
 	 */
-	inline void set_account_balance( const sint64 amount ) { account_balance = amount; }
+	void set_account_balance(sint64 amount) { account_balance = amount; }
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
 
@@ -434,24 +434,24 @@ public:
 	 * Sets number of months for that the account balance is below zero. This method enables to load old game format.
 	 * Do NOT use it in any other places for any other purpose!
 	 */
-	inline void set_account_overdrawn( const sint32 num ) { account_overdrawn = num; }
+	void set_account_overdrawn(sint32 num) { account_overdrawn = num; }
 
-	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
+	void set_starting_money(sint64 amount) {  starting_money = amount; }
 
 	/**
  	 * Translates haus_besch_t to transport_type
 	 * Building can be assigned to transport type using utyp
  	 * @author jk271
  	 */
-	transport_type translate_utyp_to_tt(const int utyp) const;
+	static transport_type translate_utyp_to_tt(int utyp);
 
 	/**
  	 * Translates waytype_t to transport_type
  	 * @author jk271
  	 */
-	transport_type translate_waytype_to_tt(const waytype_t wt) const;
+	static transport_type translate_waytype_to_tt(waytype_t wt);
 
-	void update_assets(sint64 const delta, const waytype_t wt);
+	void update_assets(sint64 delta, waytype_t wt);
 
 private:
 	/// helper method to translate old COST_ constants

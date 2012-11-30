@@ -272,8 +272,8 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int curve_type = cost_type[3*i+2];
 		const int curve_precision = curve_type == MONEY ? 2 : 0;
-		mchart.add_curve( cost_type_color[i], *chart_table_month, MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
-		chart.add_curve(  cost_type_color[i], *chart_table_year,  MAX_PLAYER_COST_BUTTON, i, 12, curve_type, false, true, curve_precision);
+		mchart.add_curve( cost_type_color[i], *chart_table_month, MAX_PLAYER_COST_BUTTON, i, MAX_PLAYER_HISTORY_MONTHS, curve_type, false, true, curve_precision);
+		chart.add_curve(  cost_type_color[i], *chart_table_year,  MAX_PLAYER_COST_BUTTON, i, MAX_PLAYER_HISTORY_YEARS,  curve_type, false, true, curve_precision);
 	}
 
 	// tab (month/year)

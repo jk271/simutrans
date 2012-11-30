@@ -402,7 +402,7 @@ void spieler_t::neuer_monat()
 				no_cnv =          finance->get_history_veh_year(TT_ALL, y, ATV_NEW_VEHICLE)==0;
 				no_construction = finance->get_history_veh_year(TT_ALL, y, ATV_CONSTRUCTION_COST)==0;
 			}
-			// never cahnge convoi, never build => abandoned
+			// never changed convoi, never built => abandoned
 			if(  no_cnv  ) {
 				pwd_hash.clear();
 				locked = false;
@@ -410,6 +410,9 @@ void spieler_t::neuer_monat()
 			}
 		}
 	}
+
+	// subtract maintenance after bankruptcy check
+	finance->book_account( -finance->get_maintenance_with_bits(TT_ALL) );
 }
 
 

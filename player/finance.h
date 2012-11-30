@@ -351,6 +351,11 @@ public:
 	inline sint64 get_account_balance() { return account_balance; }
 
 	/**
+	 * Books amount of money to account (also known as konto)
+	 */
+	void book_account(sint64 amount) { account_balance += amount; }
+
+	/**
 	 * Returns the finance history (indistinguishable part) for player
 	 * @author hsiegeln, jk271
 	 */

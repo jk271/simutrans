@@ -445,7 +445,7 @@ enum player_cost {
 };
 
 
-int finance_t::translate_index_cost_to_atc(const int cost_index) const
+int finance_t::translate_index_cost_to_atc(const int cost_index)
 {
 	static int cost_to_atc_indices[] = {
 		-1,		// COST_CONSTRUCTION

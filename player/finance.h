@@ -462,9 +462,11 @@ public:
 	void update_assets(sint64 const delta, const waytype_t wt);
 
 private:
-	int translate_index_cost_to_at(int cost_);
+	/// helper method to translate old COST_ constants
+	static int translate_index_cost_to_at(int cost_);
 
-	int translate_index_cost_to_atc( const int cost_index ) const;
+	/// helper method to translate old COST_ constants
+	static int translate_index_cost_to_atc(int cost_index);
 
 	/**
 	 * Translates finance statistics from new format to old one.

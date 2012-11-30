@@ -365,21 +365,6 @@ public:
 	sint64 get_history_veh_month(transport_type tt, int month, int type) const { return veh_month[tt][month][type]; }
 
 	/**
- 	 * @return finance history of indistinguishable (by type of transport)
- 	 * part of finance statistics
- 	 * @author jk271
- 	 */
-	sint64* get_history_com_year() { return *com_year; }
-	sint64* get_history_com_month() { return *com_month; }
-
-	/**
- 	 * @return finance history for vehicles
- 	 * @author jk271
- 	 */
-	sint64* get_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
-	sint64* get_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
-
-	/**
 	 * @return how much month we have been in red numbers (= we had negative account balance)
 	 */
 	inline sint32 get_account_overdrawn() { return account_overdrawn; }

@@ -30,10 +30,10 @@
 
 
 /**
- * type of transport used in accounting statistics
+ * Type of transport used in accounting statistics.
  * waytype_t was not used because of values assigned to air_wt and powerline_wt.
- * There are also building like railway station that can be distinguished
- * by transport_type and can not be distinguished by waytype_t
+ * There are also buildings like railway station that can be distinguished
+ * by transport_type and can not be distinguished by waytype_t.
  * @author jk271
  */
 enum transport_type {
@@ -46,65 +46,58 @@ enum transport_type {
 	TT_TRAM,
 	TT_NARROWGAUGE,
 	TT_AIR,
-	TT_OTHER, // everything other that can not be differentiated (e.g. houses), not powerlines
-	TT_MAX_VEH = TT_OTHER, //
+	TT_OTHER,  ///< everything else that can not be differentiated (e.g. houses), not powerlines
+	TT_MAX_VEH = TT_OTHER,
 	TT_POWERLINE,
 	TT_MAX
 };
 
 
 /**
- * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
+ * ATC = accounting type commmon (common means data common for all transport types).
+ *
+ * Supersedes COST_ types, that CAN NOT be distinguished by type of transport-
  * - the data are concerning to whole company
- *
- * ATC = accounting type commmon (common means data common for all transport types)
- *
- * These constants are intended for use in class finance_t (and in money_frame_t
- * or in scriped scenarios).
- * If you need to use it in another place consider addition of new method like
- * has_money() or has_convoi()
  */
 enum accounting_type_common {
-	ATC_CASH = 0,		// Cash, COST_CASH
-	ATC_NETWEALTH,		// Total Cash + Assets, COST_NETWEALTH
-	ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS; good for ?? what ??
-	ATC_SCENARIO_COMPLETED, // scenario success (only useful if there is one ... ), COST_SCENARIO_COMPLETED
+	ATC_CASH = 0,		///< Cash
+	ATC_NETWEALTH,		///< Total Cash + Assets
+	ATC_ALL_CONVOIS,        ///< Convoy count
+	ATC_SCENARIO_COMPLETED, ///< Scenario success (only useful if there is one ... )
 	ATC_MAX
 };
 
 
 /**
- * supersedes COST_ types, that CAN be distinguished by type of transport
- * ATV = accounting type vehicles
+ * ATV = accounting type vehicles.
+ * Supersedes COST_ types, that CAN be distinguished by type of transport.
  * @author jk271
  */
 enum accounting_type_vehicles {
-	// revenue by freight type http://simutrans-germany.com/wiki/wiki/tiki-index.php?page=en_GoodsDef
-	ATV_REVENUE_PASSENGER=0, // revenue from passenger transport
-	ATV_REVENUE_MAIL,       // revenue from mail transport
-	ATV_REVENUE_GOOD,          // revenue from good transport
-	ATV_REVENUE_TRANSPORT,	// operating profit = passenger + mail+ goods = COST_INCOME
-	ATV_TOLL_RECEIVED,	// toll paid to you by another player
-	ATV_REVENUE,            // operating profit = revenue_transport + toll = passenger + mail+ goods + toll_received
+	ATV_REVENUE_PASSENGER=0, ///< Revenue from passenger transport
+	ATV_REVENUE_MAIL,        ///< Revenue from mail transport
+	ATV_REVENUE_GOOD,        ///< Revenue from good transport
+	ATV_REVENUE_TRANSPORT,	 ///< Operating profit = passenger + mail + goods = was: COST_INCOME
+	ATV_TOLL_RECEIVED,	 ///< Toll paid to you by another player
+	ATV_REVENUE,             ///< Operating profit = revenue_transport + toll = passenger + mail+ goods + toll_received
 
-	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
-	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
-	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
-	ATV_TOLL_PAID,			// toll paid by you to another player
-	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAYED
-	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
-	ATV_NEW_VEHICLE,			// New vehicles
-	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here
-	ATV_PROFIT,			// = AT_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), COST_PROFIT
-	ATV_WAY_TOLL,			// = ATV_TOLL_PAID + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
-	ATV_NON_FINANCIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
-	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
+	ATV_RUNNING_COST,               ///< Distance based running costs, was: COST_VEHICLE_RUN
+	ATV_VEHICLE_MAINTENANCE,        ///< Monthly vehicle maintenance. Unused.
+	ATV_INFRASTRUCTURE_MAINTENANCE, ///< Infrastructure maintenance (roads, railway, ...), was: COST_MAINTENANCE
+	ATV_TOLL_PAID,			  ///< Toll paid by you to another player
+	ATV_EXPENDITURE,		        ///< Total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAID
+	ATV_OPERATING_PROFIT,		  ///< ATV_REVENUE - ATV_EXPENDITURE, was: COST_OPERATING_PROFIT
+	ATV_NEW_VEHICLE,			  ///< New vehicles
+	ATV_CONSTRUCTION_COST,		  ///< Construction cost, COST_CONSTRUCTION mapped here
+	ATV_PROFIT,			        ///< ATV_OPERATING_PROFIT - (CONSTRUCTION_COST + NEW_VEHICLE), was: COST_PROFIT
+	ATV_WAY_TOLL,			  ///< = ATV_TOLL_PAID + ATV_TOLL_RECEIVED, was: COST_WAY_TOLLS
+	ATV_NON_FINANCIAL_ASSETS,	  ///< Value of vehicles owned by your company, was: COST_ASSETS
+	ATV_PROFIT_MARGIN,		  ///< ATV_OPERATING_PROFIT / ATV_REVENUE, was: COST_MARGIN
 
-
-	ATV_TRANSPORTED_PASSENGER, // numer of transported passanger, COST_TRANSPORTED_PAS
-	ATV_TRANSPORTED_MAIL,      // COST_TRANSPORTED_MAIL
-	ATV_TRANSPORTED_GOOD,         // COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
-	ATV_TRANSPORTED,           // COST_ALL_TRANSPORTED mapped here
+	ATV_TRANSPORTED_PASSENGER, ///< Number of transported passengers, was: COST_TRANSPORTED_PAS
+	ATV_TRANSPORTED_MAIL,      ///< Number of transported mail, was: COST_TRANSPORTED_MAIL
+	ATV_TRANSPORTED_GOOD,      ///< Number of transported goods, was: COST_TRANSPORTED_GOOD
+	ATV_TRANSPORTED,           ///< Total number of transported cargo
 
 	ATV_MAX
 };
@@ -136,10 +129,7 @@ inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
 
 
 /**
- * Finance_history since version around 111.5.
- * Having all finance in one class is better
- * than having it in more places in spieler_t.
- * Another benefit: It leads to shorter variable names.
+ * Class to encapsulate all company related statistics.
  */
 class finance_t {
 	/** transport company */
@@ -148,41 +138,36 @@ class finance_t {
 	karte_t * world;
 
 	/**
- 	 * Der Kontostand.
  	 * Amount of money, previously known as "konto"
  	 * @author Hj. Malthaner
  	 */
 	sint64 account_balance;
 
 	/**
-	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 * Shows how many months you have been in red numbers.
-	 *
 	 * @author Hj. Malthaner
 	 */
 	sint32 account_overdrawn;
 
 	/**
-	 * remember the starting money Used e.g. in scenarios.
+	 * Remember the starting money, used e.g. in scenarios.
 	 */
 	sint64 starting_money;
 
 	/**
-	 * finance history - will supersede the finance_history by hsiegeln
-	 * from version 111 or 112
-	 * containes values having relation with whole company but not with particular
-	 * type of transport (com - common)
+	 * Contains values having relation with whole company but not with particular
+	 * type of transport (com - common).
  	 * @author jk271
  	 */
 	sint64 com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
 
 	/**
-	 * monthly finance history, data not distinguishable by transport type
+	 * Monthly finance history, data not distinguishable by transport type.
 	 */
 	sint64 com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
 
 	/**
- 	 * finance history having relation with particular type of service
+	 * Finance history having relation with particular type of service
  	 * @author jk271
  	 */
 	sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
@@ -195,7 +180,7 @@ class finance_t {
 	sint32 maintenance[TT_MAX];
 
 	/**
- 	 * monthly vehicle maintenance cost
+	 * Monthly vehicle maintenance cost per transport type.
  	 * @author jk271
  	 */
 	sint32 vehicle_maintenance[TT_MAX];
@@ -207,7 +192,7 @@ public:
 	 * Adds construction cost to finance stats.
 	 * @param amount sum of money
 	 * @param wt way type, e.g. tram_wt
-	 * @utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
+	 * @param utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
 	 */
 	inline void book_construction_costs(const sint64 amount, const waytype_t wt, const int utyp){
 		transport_type tt = translate_waytype_to_tt(wt);
@@ -221,8 +206,7 @@ public:
 	}
 
 	/**
-	 * sums up "count" with number of convois in statistics,
-	 * supersedes buche( count, COST_ALL_CONVOIS)
+	 * Adds count to number of convois in statistics.
 	 * @author jk271
 	 */
 	inline void book_convoi_number( const int count ) {
@@ -231,7 +215,7 @@ public:
 	}
 
 	/**
-	 * Adds/subtracts maintenance into/from finance stats.
+	 * Adds maintenance into/from finance stats.
 	 * @param change monthly maintenance cost difference
 	 * @param wt - waytype for accounting purposes
 	 * @param utyp - used for distinguishing of transport type of buildings. Used with buildings only.
@@ -248,7 +232,7 @@ public:
 	}
 
 	/**
-	 * Account purchase of new vehicle: Subracts money, increases assets.
+	 * Account purchase of new vehicle: Subtracts money, increases assets.
 	 * @param amount money paid for vehicle
 	 * @param wt - waytype of vehicle
 	 */
@@ -264,7 +248,7 @@ public:
 	}
 
 	/**
-	 * Accounts income from transport of passenger, mail, goods or electricity supply
+	 * Accounts income from transport of passenger, mail, or, goods.
 	 * @param amount earned money
 	 * @param wt waytype of vehicle
 	 * @param index 0 = passenger, 1 = mail, 2 = goods
@@ -341,7 +325,7 @@ public:
 	void calc_finance_history();
 
 	/**
-	 * Returns amount of money on account (also known as konto)
+	 * @returns amount of money on account (also known as konto)
 	 */
 	inline sint64 get_account_balance() { return account_balance; }
 
@@ -351,15 +335,20 @@ public:
 	void book_account(sint64 amount) { account_balance += amount; }
 
 	/**
-	 * Returns the finance history (indistinguishable part) for player
-	 * @author hsiegeln, jk271
+	 * Returns the finance history (indistinguishable part) for player.
+	 * @param year 0 .. current year, 1 .. last year, etc
+	 * @param type one of accounting_type_common
+	 * @author jk271
 	 */
 	sint64 get_history_com_year(int year, int type) const { return com_year[year][type]; }
 	sint64 get_history_com_month(int month, int type) const { return com_month[month][type]; }
 
 	/**
-	 * Returns the finance history (distinguishable by type of transport) for player
-	 * @author hsiegeln, jk271
+	 * Returns the finance history (distinguishable by type of transport) for player.
+	 * @param tt one of transport_type
+	 * @param year 0 .. current year, 1 .. last year, etc
+	 * @param type one of accounting_type_vehicles
+	 * @author jk271
 	 */
 	sint64 get_history_veh_year(transport_type tt, int year, int type) const { return veh_year[tt][year][type]; }
 	sint64 get_history_veh_month(transport_type tt, int month, int type) const { return veh_month[tt][month][type]; }
@@ -370,13 +359,13 @@ public:
 	inline sint32 get_account_overdrawn() { return account_overdrawn; }
 
 	/**
-	 * returns maintenance
+	 * @returns maintenance
 	 * @param tt transport type (Truck, Ship Air, ...)
 	 */
 	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
 
 	/**
-	 * returns maintenance with bits_per_month
+	 * @returns maintenance scaled with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
@@ -388,7 +377,7 @@ public:
 	inline sint64 get_starting_money() { return starting_money; }
 
 	/**
-	 * returns vehicle maintenance with bits_per_month
+	 * @returns vehicle maintenance scaled with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
@@ -413,6 +402,9 @@ public:
 	 */
 	bool is_bancrupted() const;
 
+	/**
+	 * Called at beginning of new month.
+	 */
 	void new_month();
 
 	/**

@@ -838,14 +838,38 @@ void vehikel_t::remove_stale_freight()
 		FOR(slist_tpl<ware_t>, & tmp, fracht) {
 			bool found = false;
 
-			FOR(minivec_tpl<linieneintrag_t>, const& i, cnv->get_schedule()->eintrag) {
-				if (haltestelle_t::get_halt( welt, i.pos, cnv->get_besitzer()) == tmp.get_zwischenziel()) {
-					found = true;
-					break;
+			if(  tmp.get_zwischenziel().is_bound()  ) {
+				// the original halt exists, but does we still go there?
+				FOR(minivec_tpl<linieneintrag_t>, const& i, cnv->get_schedule()->eintrag) {
+					if(  haltestelle_t::get_halt( welt, i.pos, cnv->get_besitzer()) == tmp.get_zwischenziel()  ) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if(  !found  ) {
+				// the target halt may have been joined or there is a closer one now, thus our original target is no longer valid
+				const int offset = cnv->get_schedule()->get_aktuell();
+				const int max_count = cnv->get_schedule()->eintrag.get_count();
+				for(  int i=0;  i<max_count;  i++  ) {
+					// try to unload on next stop
+					halthandle_t halt = haltestelle_t::get_halt( welt, cnv->get_schedule()->eintrag[ (i+offset)%max_count ].pos, cnv->get_besitzer() );
+					if(  halt.is_bound()  ) {
+						if(  halt->is_enabled(tmp.get_index())  ) {
+							// ok, lets change here, since goods are accepted here
+							tmp.access_zwischenziel() = halt;
+							if (!tmp.get_ziel().is_bound()) {
+								// set target, to prevent that unload_freight drops cargo
+								tmp.set_ziel( halt );
+							}
+							found = true;
+							break;
+						}
+					}
 				}
 			}
 
-			if (!found) {
+			if(  !found  ) {
 				kill_queue.insert(tmp);
 			}
 			else {
@@ -859,9 +883,11 @@ void vehikel_t::remove_stale_freight()
 		}
 
 		FOR(slist_tpl<ware_t>, const& c, kill_queue) {
+			fabrik_t::update_transit( &c, false );
 			fracht.remove(c);
 		}
 	}
+	sum_weight =  get_fracht_gewicht() + besch->get_gewicht();
 }
 
 
@@ -1320,7 +1346,11 @@ void vehikel_t::get_fracht_info(cbuffer_t & buf) const
 
 void vehikel_t::loesche_fracht()
 {
+	FOR(  slist_tpl<ware_t>, w, fracht ) {
+		fabrik_t::update_transit( &w, false );
+	}
 	fracht.clear();
+	sum_weight =  besch->get_gewicht();
 }
 
 
@@ -1548,6 +1578,10 @@ DBG_MESSAGE("vehicle_t::rdwr_from_convoi()","bought at %i/%i.",(insta_zeit%12)+1
 			ware_t ware(welt,file);
 			if(  (besch==NULL  ||  ware.menge>0)  &&  welt->ist_in_kartengrenzen(ware.get_zielpos())  ) {	// also add, of the besch is unknown to find matching replacement
 				fracht.insert(ware);
+				if(  file->get_version() <= 112000  ) {
+					// restore intransit information
+					fabrik_t::update_transit( &ware, true );
+				}
 			}
 			else if(  ware.menge>0  ) {
 				dbg->error( "vehikel_t::rdwr_from_convoi()", "%i of %s to %s ignored!", ware.menge, ware.get_name(), ware.get_zielpos().get_str() );
@@ -3128,6 +3162,10 @@ bool schiff_t::ist_weg_frei(int &restart_speed,bool)
 		if(gr==NULL) {
 			// weg not existent (likely destroyed)
 			cnv->suche_neue_route();
+			return false;
+		}
+		if(  gr->get_top()>251  ) {
+			// too many ships already here ..
 			return false;
 		}
 		weg_t *w = gr->get_weg(water_wt);

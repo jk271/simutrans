@@ -93,7 +93,7 @@ private:
 	/// clears statistics, transit, and weighted_sum_storage
 	void init_stats();
 public:
-	ware_production_t() : type(NULL), menge(0), max(0)
+	ware_production_t() : type(NULL), menge(0), max(0), index_offset(0)
 	{
 		init_stats();
 	}
@@ -125,6 +125,8 @@ public:
 	sint32 menge;	// in internal units shifted by precision_bits (see step)
 	sint32 max;
 	sint32 transit;
+
+	uint32 index_offset; // used for haltlist and lieferziele searches in verteile_waren to produce round robin results
 };
 
 
@@ -165,14 +167,12 @@ private:
 	// Knightly : For accumulating weighted sums for average statistics
 	void book_weighted_sums(sint64 delta_time);
 
-	// used for haltlist and lieferziele searches in verteile_waren to produce round robin results
-	uint32 index_offset;
-
 	/**
 	 * Die möglichen Lieferziele
 	 * @author Hj. Malthaner
 	 */
 	vector_tpl <koord> lieferziele;
+	uint32 lieferziele_active_last_month;
 
 	/**
 	 * suppliers to this factry
@@ -375,7 +375,7 @@ private:
 
 public:
 	fabrik_t(karte_t *welt, loadsave_t *file);
-	fabrik_t(koord3d pos, spieler_t* sp, const fabrik_besch_t* fabesch);
+	fabrik_t(koord3d pos, spieler_t* sp, const fabrik_besch_t* fabesch, sint32 initial_prod_base);
 	~fabrik_t();
 
 	/**
@@ -428,6 +428,8 @@ public:
 	void unlink_halt(halthandle_t halt);
 
 	const vector_tpl<koord>& get_lieferziele() const { return lieferziele; }
+	bool is_active_lieferziel( koord k ) const;
+
 	const vector_tpl<koord>& get_suppliers() const { return suppliers; }
 
 	/**
@@ -486,7 +488,7 @@ public:
 	 * 0 wenn Produktionsstopp,
 	 * -1 wenn Ware nicht verarbeitet wird
 	 */
-	sint8 is_needed(const ware_besch_t *);
+	sint8 is_needed(const ware_besch_t *) const;
 
 	sint32 liefere_an(const ware_besch_t *, sint32 menge);
 

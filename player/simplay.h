@@ -107,6 +107,9 @@ protected:
 	// remember the starting money
 	sint64 starting_money;
 
+	// when was the company founded
+	uint16 player_age;
+
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 *
@@ -323,7 +326,7 @@ public:
 	// do the internal accounting (currently only used externally for running costs of convois)
 	void buche(sint64 betrag, player_cost type);
 
-	// this is also save to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
+	// this is also safe to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
 	static void accounting(spieler_t* sp, sint64 betrag, koord k, player_cost pc);
 
 	/**
@@ -353,8 +356,9 @@ public:
 	/**
 	 * Wird von welt nach jedem monat aufgerufen
 	 * @author Hj. Malthaner
+	 * @returns false if player has to be removed (bankrupt/inactive)
 	 */
-	virtual void neuer_monat();
+	virtual bool neuer_monat();
 
 	/**
 	 * Methode fuer jaehrliche Aktionen

@@ -5,6 +5,7 @@
 #include "../api_class.h"
 #include "../api_function.h"
 #include "../../player/simplay.h"
+#include "../../player/finance.h"
 
 
 using namespace script_api;
@@ -15,7 +16,7 @@ vector_tpl<sint64> const& get_player_stat(spieler_t *sp, sint32 INDEX)
 	v.clear();
 	if (sp  &&  0<=INDEX  &&  INDEX<MAX_PLAYER_COST) {
 		for(uint16 i = 0; i < MAX_PLAYER_HISTORY_MONTHS; i++) {
-			v.append(sp->get_finance_history_month_converted(i, INDEX));
+			v.append(sp->get_finance()->get_history_month_converted(i, INDEX));
 		}
 	}
 	return v;

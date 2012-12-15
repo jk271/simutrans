@@ -357,7 +357,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	// Hajo: each label needs its own buffer
 	static char str_buf[26][64];
 
-	sp->calc_finance_history();
+	sp->get_finance()->calc_finance_history();
 
 	chart.set_visible( year_month_tabs.get_active_tab_index()==0 );
 	mchart.set_visible( year_month_tabs.get_active_tab_index()==1 );
@@ -445,11 +445,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	}
 	else if(  sp->get_finance_history_year(0, COST_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
-		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_konto_ueberzogen() );
+		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_account_overdrawn() );
 	}
-	else if(  sp->get_konto_ueberzogen()  ) {
+	else if(  sp->get_account_overdrawn()  ) {
 		warn.set_color( COL_YELLOW );
-		sprintf( str_buf[15], translator::translate("On loan since %i month(s)"), sp->get_konto_ueberzogen() );
+		sprintf( str_buf[15], translator::translate("On loan since %i month(s)"), sp->get_account_overdrawn() );
 	}
 	else {
 		str_buf[15][0] = '\0';
@@ -512,11 +512,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	// Hajo: Money is counted in credit cents (100 cents = 1 Cr)
 	money_to_string(str_buf[16],
 		sp->get_welt()->ticks_per_world_month_shift>=18 ?
-		(double)((sint64)sp->get_maintenance()<<(sp->get_welt()->ticks_per_world_month_shift-18u))/100.0 :
-		(double)((sint64)sp->get_maintenance()>>(18u-sp->get_welt()->ticks_per_world_month_shift))/100.0
+		(double)((sint64)sp->get_finance()->get_maintenance(TT_ALL)<<(sp->get_welt()->ticks_per_world_month_shift-18u))/100.0 :
+		(double)((sint64)sp->get_finance()->get_maintenance(TT_ALL)>>(18u-sp->get_welt()->ticks_per_world_month_shift))/100.0
 	);
 	maintenance_money.set_text(str_buf[16]);
-	maintenance_money.set_color(sp->get_maintenance()>=0?MONEY_PLUS:MONEY_MINUS);
+	maintenance_money.set_color(sp->get_finance()->get_maintenance()>=0?MONEY_PLUS:MONEY_MINUS);
 
 	for (int i = 0;  i<MAX_PLAYER_COST_BUTTON;  i++) {
 		filterButtons[i].pressed = ( (bFilterStates[sp->get_player_nr()]&(1<<i)) != 0 );

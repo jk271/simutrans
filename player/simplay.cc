@@ -53,6 +53,7 @@
 #include "../vehicle/simvehikel.h"
 
 #include "simplay.h"
+#include "finance.h"
 
 karte_t *spieler_t::welt = NULL;
 
@@ -61,29 +62,14 @@ karte_t *spieler_t::welt = NULL;
 static pthread_mutex_t laden_abschl_mutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
 
-/**
- * Encapsulate margin calculation  (Operating_Profit / Income)
- * @author Ben Love
- */
-static sint64 calc_margin(sint64 operating_profit, sint64 proceeds)
-{
-	if (proceeds == 0) {
-		return 0;
-	}
-	return (10000 * operating_profit) / proceeds;
-}
-
 
 spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	simlinemgmt(wl)
 {
+	finance = new finance_t(this, wl);
 	welt = wl;
 	player_nr = nr;
 
-	konto = welt->get_settings().get_starting_money(welt->get_last_year());
-	starting_money = konto;
-
-	konto_ueberzogen = 0;
 	player_age = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
@@ -97,27 +83,8 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	 * @author hsiegeln
 	 */
 
-	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
-		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
-			finance_history_year[year][cost_type] = 0;
-			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
-				finance_history_year[year][cost_type] = starting_money;
-			}
-		}
-	}
-
-	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
-		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
-			finance_history_month[month][cost_type] = 0;
-			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
-				finance_history_month[month][cost_type] = starting_money;
-			}
-		}
-	}
 
 	haltcount = 0;
-
-	maintenance = 0;
 
 	welt->get_settings().set_default_player_color(this);
 
@@ -132,6 +99,10 @@ spieler_t::~spieler_t()
 		delete messages.remove_first();
 	}
 	destroy_win((ptrdiff_t)this);
+	if( finance !=NULL) {
+		delete finance;
+		finance = NULL;
+	}
 }
 
 
@@ -156,7 +127,10 @@ void spieler_t::add_money_message(const sint64 amount, const koord pos) {
 
 
 void spieler_t::book_construction_costs(const sint64 amount, const koord k, const waytype_t wt, const int utyp){
-	buche(amount, k, COST_CONSTRUCTION);  // This will be superseded
+	finance->book_construction_costs(amount, wt, utyp);
+	if(k != koord::invalid) {
+		add_money_message(amount, k);
+	}
 }
 
 
@@ -174,7 +148,7 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
 
 void spieler_t::book_convoi_number(const sint64 count)
 {
-	buche(count, COST_ALL_CONVOIS);
+	finance->book_convoi_number(count);
 }
 
 
@@ -182,35 +156,34 @@ void spieler_t::book_convoi_number(const sint64 count)
  * amount has negative value = buy vehicle, positive value = vehicle sold
  */
 void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
-	buche( amount, k, COST_NEW_VEHICLE);
-	buche(-amount, COST_ASSETS);
+	finance->book_new_vehicle(amount, wt);
+	add_money_message(amount, k);
 }
 
 
 void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
-	buche(amount, COST_INCOME);
+	finance->book_revenue(amount, wt, index);
 	add_money_message(amount, k);
 }
 
 
 void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
-	buche(amount, COST_VEHICLE_RUN);
+	finance->book_running_costs(amount, wt);
 }
 
 
 void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt){
-	buche(amount, COST_WAY_TOLLS);
+	finance->book_toll_paid(amount, wt);
 }
 
 
 void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt){
-	buche(amount, COST_WAY_TOLLS);
+	finance->book_toll_received(amount, wt);
 }
 
 
 void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index){
-	index = (index > 2) || (index < 0) ? 2 : index;
-	buche(amount, (player_cost) (COST_TRANSPORTED_PAS+index));
+	finance->book_transported(amount, wt, index);
 }
 
 
@@ -332,46 +305,54 @@ bool spieler_t::neuer_monat()
 {
 	// since the messages must remain on the screen longer ...
 	static cbuffer_t buf;
+	finance->new_month();
+
+	// new month has started => recalculate vehicle value
+	calc_assets();
+
+	finance->calc_finance_history();
+
+	simlinemgmt.new_month();
 
 	// Bankrott ?
-	if(  konto < 0  ) {
-		konto_ueberzogen++;
+	if(  finance->get_account_balance() < 0  ) {
+		finance->increase_account_overdrawn();
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
-				if(  finance_history_year[0][COST_NETWEALTH] < 0 ) {
+				if(  finance->get_netwealth() < 0 ) {
 					destroy_all_win(true);
 					create_win( display_get_width()/2-128, 40, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
 					ticker::add_msg( translator::translate("Bankrott:\n\nDu bist bankrott.\n"), koord::invalid, PLAYER_FLAG + kennfarbe1 + 1 );
 					welt->beenden(false);
 				}
-				else if(  get_finance_history_year(0, COST_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
+				else if(  finance->get_netwealth()*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 					// tell the player (problem!)
 					welt->get_message()->add_message( translator::translate("Net wealth less than 10% of starting capital!"), koord::invalid, message_t::problems, player_nr, IMG_LEER );
 				}
 				else {
 					// tell the player (just warning)
 					buf.clear();
-					buf.printf( translator::translate("On loan since %i month(s)"), konto_ueberzogen );
+					buf.printf( translator::translate("On loan since %i month(s)"), finance->get_account_overdrawn() );
 					welt->get_message()->add_message( buf, koord::invalid, message_t::ai, player_nr, IMG_LEER );
 				}
 			}
 			// no assets => nothing to go bankrupt about again
-			else if(  maintenance!=0  ||  finance_history_year[0][COST_ALL_CONVOIS]!=0  ) {
+			else if(  finance->get_maintenance(TT_ALL) != 0  ||  finance->get_convoi_number() != 0  ) {
 
 				// for AI, we only declare bankrupt, if total assets are below zero
-				if(finance_history_year[0][COST_NETWEALTH]<0) {
+				if(  finance->get_netwealth() < 0  ) {
 					return false;
 				}
 				// tell the current player (even during networkgames)
 				if(  welt->get_active_player_nr()==player_nr  ) {
-					if(  get_finance_history_year(0, COST_NETWEALTH)*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
+					if(  finance->get_netwealth()*10 < welt->get_settings().get_starting_money(welt->get_current_month()/12)  ){
 						// netweath nearly spent (problem!)
 						welt->get_message()->add_message( translator::translate("Net wealth near zero"), koord::invalid, message_t::problems, player_nr, IMG_LEER );
 					}
 					else {
 						// just minus in account (just tell)
 						buf.clear();
-						buf.printf( translator::translate("On loan since %i month(s)"), konto_ueberzogen );
+						buf.printf( translator::translate("On loan since %i month(s)"), finance->get_account_overdrawn() );
 						welt->get_message()->add_message( buf, koord::invalid, message_t::ai, player_nr, IMG_LEER );
 					}
 				}
@@ -379,7 +360,7 @@ bool spieler_t::neuer_monat()
 		}
 	}
 	else {
-		konto_ueberzogen = 0;
+		finance->set_account_overdrawn( 0 );
 	}
 
 	if(  umgebung_t::networkmode  &&  player_nr>1  &&  !automat  ) {
@@ -423,123 +404,28 @@ bool spieler_t::neuer_monat()
 		}
 	}
 
-	calc_finance_history();
-	roll_finance_history_month();
-
-	if(welt->get_last_month()==0) {
-		roll_finance_history_year();
-	}
 	// company gets older ...
 	player_age ++;
 
 	// new month has started => recalculate vehicle value
 	calc_assets();
 
-	calc_finance_history();
-
 	simlinemgmt.new_month();
-
-	// subtract maintenance
-	if(  welt->ticks_per_world_month_shift>=18  ) {
-		buche( -((sint64)maintenance) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
-	}
-	else {
-		buche( -((sint64)maintenance) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
-	}
-	return true; // still active
-}
-
-
-/**
-* we need to roll the finance history every year, so that
-* the most recent year is at position 0, etc
-* @author hsiegeln
-*/
-void spieler_t::roll_finance_history_month()
-{
-	int i;
-	for (i=MAX_PLAYER_HISTORY_MONTHS-1; i>0; i--) {
-		for (int cost_type = 0; cost_type<MAX_PLAYER_COST; cost_type++) {
-			finance_history_month[i][cost_type] = finance_history_month[i-1][cost_type];
-		}
-	}
-	for (int i=0;  i<MAX_PLAYER_COST;  i++) {
-		// reset everything except number of convois
-		if (i != COST_ALL_CONVOIS) {
-			finance_history_month[0][i] = 0;
-		}
-	}
-}
-
-
-void spieler_t::roll_finance_history_year()
-{
-	int i;
-	for (i=MAX_PLAYER_HISTORY_YEARS-1; i>0; i--) {
-		for (int cost_type = 0; cost_type<MAX_PLAYER_COST; cost_type++) {
-			finance_history_year[i][cost_type] = finance_history_year[i-1][cost_type];
-		}
-	}
-	for (int i=0;  i<MAX_PLAYER_COST;  i++) {
-		// reset everything except number of convois
-		if (i != COST_ALL_CONVOIS) {
-			finance_history_year[0][i] = 0;
-		}
-	}
-}
-
-
-void spieler_t::calc_finance_history()
-{
-	/**
-	* copy finance data into historical finance data array
-	* @author hsiegeln
-	*/
-	sint64 profit, mprofit;
-	profit = mprofit = 0;
-	for (int i=0; i<COST_ASSETS; i++) {
-		// all costs < COST_ASSETS influence profit, so we must sum them up
-		profit += finance_history_year[0][i];
-		mprofit += finance_history_month[0][i];
-	}
-	profit += finance_history_year[0][COST_POWERLINES];
-	profit += finance_history_year[0][COST_WAY_TOLLS];
-	mprofit += finance_history_month[0][COST_POWERLINES];
-	mprofit += finance_history_month[0][COST_WAY_TOLLS];
-
-	finance_history_year[0][COST_PROFIT] = profit;
-	finance_history_month[0][COST_PROFIT] = mprofit;
-
-	finance_history_year[0][COST_CASH] = konto;
-	finance_history_year[0][COST_NETWEALTH] = finance_history_year[0][COST_ASSETS] + konto;
-	finance_history_year[0][COST_OPERATING_PROFIT] = finance_history_year[0][COST_INCOME] + finance_history_year[0][COST_POWERLINES] + finance_history_year[0][COST_VEHICLE_RUN] + finance_history_year[0][COST_MAINTENANCE] + finance_history_year[0][COST_WAY_TOLLS];
-	finance_history_year[0][COST_MARGIN] = calc_margin(finance_history_year[0][COST_OPERATING_PROFIT], finance_history_year[0][COST_INCOME]);
-
-	finance_history_month[0][COST_CASH] = konto;
-	finance_history_month[0][COST_NETWEALTH] = finance_history_month[0][COST_ASSETS] + konto;
-	finance_history_month[0][COST_OPERATING_PROFIT] = finance_history_month[0][COST_INCOME] + finance_history_month[0][COST_POWERLINES] + finance_history_month[0][COST_VEHICLE_RUN] + finance_history_month[0][COST_MAINTENANCE] + finance_history_month[0][COST_WAY_TOLLS];
-	finance_history_month[0][COST_MARGIN] = calc_margin(finance_history_month[0][COST_OPERATING_PROFIT], finance_history_month[0][COST_INCOME]);
-	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
-}
-
-
-sint64 spieler_t::get_finance_history_month_converted(int month, int type)
-{
-	sint64 value = finance_history_month[month][type];
-	if ((COST_CONSTRUCTION <= type  &&  type <= COST_OPERATING_PROFIT)  ||  type == COST_WAY_TOLLS  ||  type ==  COST_POWERLINES) {
-		value = convert_money(value);
-	}
-	return value;
 }
 
 
 void spieler_t::calc_assets()
 {
-	sint64 assets = 0;
+	sint64 assets[TT_MAX];
+	for(int i=0; i < TT_MAX; ++i){
+		assets[i] = 0;
+	}
 	// all convois
 	FOR(vector_tpl<convoihandle_t>, const cnv, welt->convoys()) {
 		if(  cnv->get_besitzer() == this  ) {
-			assets += cnv->calc_restwert();
+			sint64 restwert = cnv->calc_restwert();
+			assets[TT_ALL] += restwert;
+			assets[finance->translate_waytype_to_tt(cnv->front()->get_waytype())] += restwert;
 		}
 	}
 
@@ -547,72 +433,20 @@ void spieler_t::calc_assets()
 	FOR(slist_tpl<depot_t*>, const depot, depot_t::get_depot_list()) {
 		if(  depot->get_player_nr() == player_nr  ) {
 			FOR(slist_tpl<vehikel_t*>, const veh, depot->get_vehicle_list()) {
-				assets += veh->calc_restwert();
+				sint64 restwert = veh->calc_restwert();
+				assets[TT_ALL] += restwert;
+				assets[finance->translate_waytype_to_tt(veh->get_waytype())] += restwert;
 			}
 		}
 	}
 
-	finance_history_year[0][COST_ASSETS] = finance_history_month[0][COST_ASSETS] = assets;
-	finance_history_year[0][COST_NETWEALTH] = finance_history_month[0][COST_NETWEALTH] = assets+konto;
+	finance->set_assets(assets);
 }
 
 
 void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 {
-	finance_history_year[0][COST_ASSETS] += delta;
-	finance_history_year[0][COST_NETWEALTH] += delta;
-
-	finance_history_month[0][COST_ASSETS] += delta;
-	finance_history_month[0][COST_NETWEALTH] += delta;
-}
-
-
-// add and amount, including the display of the message and some other things ...
-void spieler_t::buche(sint64 const betrag, koord const pos, player_cost const type)
-{
-	buche(betrag, type);
-
-	if(betrag != 0) {
-		if(  koord_distance(welt->get_world_position(),pos)<2*(uint32)(display_get_width()/get_tile_raster_width())+3  ) {
-			// only display, if near the screen ...
-			add_message(pos, (sint32)betrag);
-
-			// and same for sound too ...
-			if(  betrag>=10000  &&  !welt->is_fast_forward()  ) {
-				welt->play_sound_area_clipped(pos, SFX_CASH);
-			}
-		}
-	}
-}
-
-
-// add an amout to a subcategory
-void spieler_t::buche(sint64 const betrag, player_cost const type)
-{
-	assert(type < MAX_PLAYER_COST);
-
-	finance_history_year[0][type] += betrag;
-	finance_history_month[0][type] += betrag;
-
-	if(  type < COST_ASSETS  ||  type == COST_POWERLINES  ||  type == COST_WAY_TOLLS  ) {
-		konto += betrag;
-
-		// fill year history
-		finance_history_year[0][COST_PROFIT] += betrag;
-		finance_history_year[0][COST_CASH] = konto;
-		// fill month history
-		finance_history_month[0][COST_PROFIT] += betrag;
-		finance_history_month[0][COST_CASH] = konto;
-		// the other will be updated only monthly or when a finance window is shown
-	}
-}
-
-
-void spieler_t::accounting(spieler_t* const sp, sint64 const amount, koord const k, player_cost const pc)
-{
-	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
-		sp->buche( amount, k, pc );
-	}
+	finance->update_assets(delta, wt);
 }
 
 
@@ -819,7 +653,7 @@ void spieler_t::ai_bankrupt()
 	}
 
 	automat = false;
-	konto = -1;
+	finance->set_account_balance(-1);
 
 	cbuffer_t buf;
 	buf.printf( translator::translate("%s\nwas liquidated."), get_name() );
@@ -834,11 +668,42 @@ void spieler_t::ai_bankrupt()
  */
 void spieler_t::rdwr(loadsave_t *file)
 {
+	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST];
+	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
+
+	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
+		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
+			finance_history_year[year][cost_type] = 0;
+			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
+				finance_history_year[year][cost_type] = finance->get_starting_money();
+			}
+		}
+	}
+
+	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
+		for (int cost_type=0; cost_type<MAX_PLAYER_COST; cost_type++) {
+			finance_history_month[month][cost_type] = 0;
+			if ((cost_type == COST_CASH) || (cost_type == COST_NETWEALTH)) {
+				finance_history_month[month][cost_type] = finance->get_starting_money();
+			}
+		}
+	}
+
 	xml_tag_t sss( file, "spieler_t" );
 	sint32 halt_count=0;
 
+	sint64 konto = finance->get_account_balance();
 	file->rdwr_longlong(konto);
-	file->rdwr_long(konto_ueberzogen);
+	finance->set_account_balance(konto);
+
+	sint32 account_overdrawn = finance->get_account_overdrawn();
+	file->rdwr_long(account_overdrawn);
+	finance->set_account_overdrawn( account_overdrawn );
+	
+	if( ( file->get_version() < 111006 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
+		finance->export_to_cost_month( finance_history_month );
+		finance->export_to_cost_year( finance_history_year );
+	}
 
 	if(file->get_version()<101000) {
 		// ignore steps
@@ -949,8 +814,8 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	}
-	else {
-		// most recent savegame version: now with toll
+	else if (  file->get_version() < 111006  ) {
+		// savegame version: now with toll
 		for(int year = 0;  year<MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<MAX_PLAYER_COST;   cost_type++  ) {
 				if(  cost_type<COST_NETWEALTH  ||  cost_type>COST_MARGIN  ) {
@@ -966,13 +831,22 @@ void spieler_t::rdwr(loadsave_t *file)
 			}
 		}
 	}
+	else {
+		finance->rdwr( file );
+	}
 	if(  file->get_version()>102002  ) {
+		sint64 starting_money = finance->get_starting_money();
 		file->rdwr_longlong(starting_money);
+		if(  file->is_loading()  ) {
+			finance->set_starting_money(starting_money);
+		}
 	}
 
 	// we have to pay maintenance at the beginning of a month
 	if(file->get_version()<99018  &&  file->is_loading()) {
-		buche( -finance_history_month[1][COST_MAINTENANCE], COST_MAINTENANCE );
+		finance_history_month[0][COST_MAINTENANCE] -= finance_history_month[1][COST_MAINTENANCE];
+		finance_history_year [0][COST_MAINTENANCE] -= finance_history_month[1][COST_MAINTENANCE];
+		finance->set_account_balance(finance->get_account_balance() - finance_history_month[1][COST_MAINTENANCE]);
 	}
 
 	file->rdwr_bool(automat);
@@ -1037,6 +911,13 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);
+
+
+		// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
+		if((file->get_version()<111006) && (file->is_loading())){
+			finance->import_from_cost_month(finance_history_month);
+			finance->import_from_cost_year(finance_history_year);
+		}
 	}
 
 	// headquarter stuff
@@ -1093,20 +974,6 @@ void spieler_t::laden_abschliessen()
 	display_set_player_color_scheme( player_nr, kennfarbe1, kennfarbe2 );
 	// recalculate vehicle value
 	calc_assets();
-}
-
-
-void spieler_t::add_maintenance(spieler_t *sp, sint32 change)
-{
-	if(sp) {
-#if MULTI_THREAD>1
-		pthread_mutex_lock( &laden_abschl_mutex );
-#endif
-		sp->maintenance += change;
-#if MULTI_THREAD>1
-		pthread_mutex_unlock( &laden_abschl_mutex );
-#endif
-	}
 }
 
 
@@ -1272,3 +1139,19 @@ void spieler_t::tell_tool_result(werkzeug_t *tool, koord3d, const char *err, boo
 		}
 	}
 }
+
+
+double spieler_t::get_konto_als_double() const {
+	return finance->get_account_balance() / 100.0;
+}
+
+
+int spieler_t::get_account_overdrawn() const {
+	return finance->get_account_overdrawn();
+}
+
+
+bool spieler_t::has_money_or_assets() const {
+	return finance->has_money_or_assets();
+}
+

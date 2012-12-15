@@ -20,42 +20,16 @@
 #include "../tpl/vector_tpl.h"
 
 
-enum player_cost {
-	COST_CONSTRUCTION=0,// Construction
-	COST_VEHICLE_RUN,   // Vehicle running costs
-	COST_NEW_VEHICLE,   // New vehicles
-	COST_INCOME,        // Income
-	COST_MAINTENANCE,   // Upkeep
-	COST_ASSETS,        // value of all vehicles and buildings
-	COST_CASH,          // Cash
-	COST_NETWEALTH,     // Total Cash + Assets
-	COST_PROFIT,        // COST_POWERLINES+COST_INCOME-(COST_CONSTRUCTION+COST_VEHICLE_RUN+COST_NEW_VEHICLE+COST_MAINTENANCE)
-	COST_OPERATING_PROFIT, // COST_POWERLINES+COST_INCOME-(COST_VEHICLE_RUN+COST_MAINTENANCE)
-	COST_MARGIN,        // COST_OPERATING_PROFIT/COST_INCOME
-	COST_ALL_TRANSPORTED, // all transported goods
-	COST_POWERLINES,	  // revenue from the power grid
-	COST_TRANSPORTED_PAS,	// number of passengers that actually reached destination
-	COST_TRANSPORTED_MAIL,
-	COST_TRANSPORTED_GOOD,
-	COST_ALL_CONVOIS,		// number of convois
-	COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
-	COST_WAY_TOLLS,
-	MAX_PLAYER_COST
-};
-
 #define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
 #define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
+#define MAX_PLAYER_COST_X (19)
 
 
 class karte_t;
 class fabrik_t;
 class koord3d;
 class werkzeug_t;
-
-/**
- * convert to displayed value
- */
-inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
+class finance_t;
 
 /**
  * play info for simutrans human and AI are derived from this class
@@ -76,19 +50,18 @@ protected:
 	 */
 	sint32 haltcount;
 
+private:
 	/**
 	* Finance History - will supercede the finances by Owen Rudge
 	* Will hold finances for the most recent 12 years
 	* @author hsiegeln
 	*/
-	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST];
-	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
+	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST_X];
+	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST_X];
 
-	/**
-	 * Monthly maintenance cost
-	 * @author Hj. Malthaner
-	 */
-	sint64 maintenance;
+protected:
+	/* "new" finance history */
+	finance_t *finance;
 
 	/**
 	 * Die Welt in der gespielt wird.
@@ -96,16 +69,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	static karte_t *welt;
-
-	/**
-	 * Der Kontostand.
-	 *
-	 * @author Hj. Malthaner
-	 */
-	sint64 konto;
-
-	// remember the starting money
-	sint64 starting_money;
 
 	// when was the company founded
 	uint16 player_age;
@@ -258,6 +221,10 @@ public:
 	 */
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
+	bool has_money_or_assets() const;
+
+	finance_t * get_finance() { return finance; }
+
 	virtual bool set_active( bool b ) { return automat = b; }
 
 	bool is_active() const { return automat; }
@@ -316,39 +283,17 @@ public:
 
 	virtual ~spieler_t();
 
-	sint64 get_maintenance() const { return maintenance; }
-
-private:
-	/**
-	 * Adds somme amount to the maintenance costs
-	 * @param player (could be zero too!)
-	 * @param change the change
-	 * @author Hj. Malthaner
-	 */
-	static void add_maintenance(spieler_t *sp, sint32 change);
-
-public:
-	// Owen Rudge, finances
-	void buche(sint64 betrag, koord k, player_cost type);
-
-	// do the internal accounting (currently only used externally for running costs of convois)
-	void buche(sint64 betrag, player_cost type);
-
-	// this is also safe to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
-	static void accounting(spieler_t* sp, sint64 betrag, koord k, player_cost pc);
-
-public:
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner
 	 */
-	double get_konto_als_double() const { return konto / 100.0; }
+	double get_konto_als_double() const;
 
 	/**
 	 * @return true wenn Konto Überzogen ist
 	 * @author Hj. Malthaner
 	 */
-	int get_konto_ueberzogen() const { return konto_ueberzogen; }
+	int get_account_overdrawn() const;
 
 	/**
 	 * Zeigt Meldungen aus der Queue des Spielers auf dem Bildschirm an
@@ -449,13 +394,6 @@ public:
 	* Updates the assets value of the player
 	*/
 	void update_assets(sint64 const delta, const waytype_t wt = ignore_wt);
-
-	/**
-	* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
-	* @author hsiegeln
-	*/
-	void roll_finance_history_year();
-	void roll_finance_history_month();
 
 	/**
 	 * Rückruf, um uns zu informieren, dass ein Vehikel ein Problem hat

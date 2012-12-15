@@ -93,13 +93,14 @@
 #include "utils/simstring.h"
 
 #include "simwerkz.h"
+#include "player/finance.h"
 
 
 #define is_scenario()  welt->get_scenario()->is_scripted()
 
 #define CHECK_FUNDS() \
 	/* do not allow, if out of money */ \
-	if(  !welt->get_settings().is_freeplay()  &&  sp->get_player_nr()!=1  &&  sp->get_finance_history_month(0,COST_CASH)+sp->get_finance_history_month(0,COST_ASSETS) < 0  ) {\
+	if(  !welt->get_settings().is_freeplay()  &&  sp->get_player_nr()!=1  &&  !sp->has_money_or_assets() ) {\
 		return "Out of funds";\
 	}\
 
@@ -4812,7 +4813,7 @@ DBG_MESSAGE("wkz_headquarter()", "building headquarter at (%d,%d)", pos.x, pos.y
 
 	koord size = besch->get_groesse();
 	sint64 const cost = welt->get_settings().cst_multiply_headquarter * besch->get_level() * size.x * size.y;
-	if(  -cost > sp->get_finance_history_month(0,COST_CASH)  ) {
+	if(  -cost > sp->get_finance()->get_account_balance()  ) {
 		return "Not enough money!";
 	}
 

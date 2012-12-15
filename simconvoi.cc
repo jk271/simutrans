@@ -9,6 +9,7 @@
 #include "simunits.h"
 #include "simworld.h"
 #include "simware.h"
+#include "player/finance.h"
 #include "player/simplay.h"
 #include "simconvoi.h"
 #include "simhalt.h"

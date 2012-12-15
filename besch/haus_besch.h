@@ -175,7 +175,7 @@ class haus_besch_t : public obj_besch_std_name_t { // Daten für ein ganzes Gebäu
 	utyp            utype; // Hajo: if gtyp == gebaeude_t::unbekannt, then this is the real type
 
 	uint16 animation_time;	// in ms
-	uint16 extra_data;      // bauzeit (inhabitants) for city attractions, waytype for depots, player level for headquarters
+	uint32 extra_data;      // bauzeit (inhabitants) for city attractions, waytype for depots, player level for headquarters
 	koord  groesse;
 	flag_t flags;
 	uint16 level;          // or passengers;
@@ -221,7 +221,7 @@ public:
 
 	uint8 get_all_layouts() const { return layouts; }
 
-	uint16 get_extra() const { return extra_data; }
+	uint32 get_extra() const { return extra_data; }
 
 	/** Returns waytype used for finance stats (distinguishes between tram track and train track) */
 	waytype_t get_finance_waytype() const;

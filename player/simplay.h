@@ -107,6 +107,9 @@ protected:
 	// remember the starting money
 	sint64 starting_money;
 
+	// when was the company founded
+	uint16 player_age;
+
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 *
@@ -266,8 +269,9 @@ public:
 	/**
 	 * Wird von welt nach jedem monat aufgerufen
 	 * @author Hj. Malthaner
+	 * @returns false if player has to be removed (bankrupt/inactive)
 	 */
-	virtual void neuer_monat();
+	virtual bool neuer_monat();
 
 	/**
 	 * Methode fuer jaehrliche Aktionen

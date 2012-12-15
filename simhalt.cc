@@ -2122,7 +2122,7 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 				spieler_t::add_maintenance( gb_sp, -costs, gb->get_waytype() );
 				gb->set_besitzer(public_owner);
 				gb->set_flag(ding_t::dirty);
-				spieler_t::add_maintenance(public_owner, (sint32)costs );
+				spieler_t::add_maintenance(public_owner, costs, gb->get_waytype());
 				if (( sp != NULL) && (sp != welt->get_spieler(1))) // do not allow to public authority to gain money by making public station public
 				{
 					spieler_t::book_construction_costs( sp,          -costs*60, get_basis_pos(), gb->get_waytype());

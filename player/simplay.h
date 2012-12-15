@@ -327,6 +327,7 @@ private:
 	 */
 	static void add_maintenance(spieler_t *sp, sint32 change);
 
+public:
 	// Owen Rudge, finances
 	void buche(sint64 betrag, koord k, player_cost type);
 

@@ -132,6 +132,8 @@ settings_t::settings_t() :
 
 	factory_enforce_demand = true;
 
+	factory_maximum_intransit_percentage = 0;
+
 	electric_promille = 330;
 
 #ifdef OTTD_LIKE
@@ -206,6 +208,12 @@ settings_t::settings_t() :
 		startingmoneyperyear[i].money = 0;
 		startingmoneyperyear[i].interpol = 0;
 	}
+
+	// six month time frame for starting first conovi
+	remove_dummy_player_months = 6;
+
+	// off
+	unprotect_abondoned_player_months = 0;
 
 	maint_building = 5000;	// normal buildings
 	way_toll_runningcost_percentage = 0;
@@ -718,6 +726,15 @@ void settings_t::rdwr(loadsave_t *file)
 			file->rdwr_short( special_building_distance );
 		}
 
+		if(  file->get_version()>=112001  ) {
+			file->rdwr_short( factory_maximum_intransit_percentage );
+		}
+
+		if(  file->get_version()>=112002  ) {
+			file->rdwr_short( remove_dummy_player_months );
+			file->rdwr_short( unprotect_abondoned_player_months );
+		}
+
 		// otherwise the default values of the last one will be used
 	}
 }
@@ -788,6 +805,9 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	umgebung_t::simple_drawing_fast_forward = contents.get_int("simple_drawing_fast_forward",umgebung_t::simple_drawing_fast_forward );
 	umgebung_t::visualize_schedule = contents.get_int("visualize_schedule",umgebung_t::visualize_schedule )!=0;
 	umgebung_t::show_vehicle_states = contents.get_int("show_vehicle_states",umgebung_t::show_vehicle_states );
+
+	umgebung_t::hide_rail_return_ticket = contents.get_int("hide_rail_return_ticket",umgebung_t::hide_rail_return_ticket );
+	umgebung_t::chat_window_transparency = contents.get_int("chat_transparency",umgebung_t::chat_window_transparency );
 
 	// network stuff
 	umgebung_t::server_frames_ahead = contents.get_int("server_frames_ahead", umgebung_t::server_frames_ahead );
@@ -992,6 +1012,8 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	factory_worker_maximum_towns = contents.get_int("factory_worker_maximum_towns", factory_worker_maximum_towns );
 	factory_arrival_periods = clamp( contents.get_int("factory_arrival_periods", factory_arrival_periods), 1, 16 );
 	factory_enforce_demand = contents.get_int("factory_enforce_demand", factory_enforce_demand) != 0;
+	factory_maximum_intransit_percentage  = contents.get_int("maximum_intransit_percentage", factory_maximum_intransit_percentage);
+
 	tourist_percentage = contents.get_int("tourist_percentage", tourist_percentage );
 	seperate_halt_capacities = contents.get_int("seperate_halt_capacities", seperate_halt_capacities ) != 0;
 	pay_for_total_distance = contents.get_int("pay_for_total_distance", pay_for_total_distance );
@@ -1116,7 +1138,9 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 		locality_factor_per_year[j].factor = 0;
 	}
 
-	// player colors
+	// player stuff
+	remove_dummy_player_months = contents.get_int("remove_dummy_player_months", remove_dummy_player_months );
+	unprotect_abondoned_player_months = contents.get_int("unprotect_abondoned_player_months", unprotect_abondoned_player_months );
 	default_player_color_random = contents.get_int("random_player_colors", default_player_color_random ) != 0;
 	for(  int i = 0;  i<MAX_PLAYER_COUNT;  i++  ) {
 		char name[32];

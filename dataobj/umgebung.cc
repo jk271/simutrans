@@ -55,6 +55,8 @@ bool umgebung_t::mute_midi = false;
 bool umgebung_t::shuffle_midi = true;
 sint16 umgebung_t::window_snap_distance = 8;
 koord umgebung_t::iconsize( 32, 32 );
+uint8 umgebung_t::chat_window_transparency = 75;
+bool umgebung_t::hide_rail_return_ticket = true;
 
 // only used internally => do not touch further
 bool umgebung_t::quit_simutrans = false;
@@ -267,7 +269,10 @@ void umgebung_t::rdwr(loadsave_t *file)
 	file->rdwr_bool( window_buttons_right );
 	file->rdwr_bool( window_frame_active );
 
-	file->rdwr_byte( verbose_debug );
+	if(  file->get_version()<=112000  ) {
+		// set by command-line, it does not make sense to save it.
+		file->rdwr_byte( verbose_debug );
+	}
 
 	file->rdwr_long( intercity_road_length );
 	if(  file->get_version()<=102002  ) {

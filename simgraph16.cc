@@ -1668,12 +1668,12 @@ static void rezoom_img(const image_id n)
 
 				do {
 					// check length of transparent pixels
-					for (i = 0;  line[x] == 0x73FE  &&  x < newzoomwidth;  i++, x++)
+					for (i = 0;  x < newzoomwidth  &&  line[x] == 0x73FE;  i++, x++)
 						{}
 					// first runlength: transparent pixels
 					*dest++ = i;
 					// copy for non-transparent
-					for (i = 0;  line[x] != 0x73FE  &&  x < newzoomwidth;  i++, x++) {
+					for (i = 0;  x < newzoomwidth  &&  line[x] != 0x73FE;  i++, x++) {
 						dest[i + 1] = line[x];
 					}
 
@@ -2524,7 +2524,13 @@ void display_base_img(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, const sint8 
 				} while (*sp);
 				sp++;
 			}
-			display_color_img_wc( sp, x, y, h );
+			// clipping at poly lines?
+			if (number_of_clips>0) {
+				display_img_pc<colored>(h, x, y, sp);
+			}
+			else {
+				display_color_img_wc( sp, x, y, h );
+			}
 		}
 
 	} // number ok

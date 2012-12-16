@@ -106,7 +106,7 @@ spieler_t::~spieler_t()
 }
 
 
-void spieler_t::add_maintenance(sint64 change, waytype_t const, const int utyp) {
+void spieler_t::add_maintenance(sint64 change, waytype_t const wt) {
 	spieler_t::add_maintenance(this, (sint32) change);  // This will we superseded
 }
 

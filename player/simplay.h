@@ -170,7 +170,7 @@ public:
 	 * @param change the change
 	 * @return the new maintenance costs
 	 */
-	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt, const int utyp = 0);
+	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt);
 
 	/**
 	 * Adds somme amount to the maintenance costs
@@ -178,9 +178,9 @@ public:
 	 * @param change the change
 	 * @author Hj. Malthaner
 	 */
-	static void add_maintenance(spieler_t *sp, sint64 change, waytype_t const wt=ignore_wt, const int utyp = 0) {
+	static void add_maintenance(spieler_t *sp, sint64 change, waytype_t const wt=ignore_wt) {
 		if(sp != NULL) {
-			sp->add_maintenance(change, wt, utyp);
+			sp->add_maintenance(change, wt);
 		}
 	}
 

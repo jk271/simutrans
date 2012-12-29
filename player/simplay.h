@@ -158,12 +158,12 @@ public:
 	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	/**
-         * Adds running costs to accounting statistics.
-         * this function is called very often --> inline
-         * @param amount How much does it cost
-         * @param wt
+	 * Adds running costs to accounting statistics.
+	 * this function is called very often --> inline
+	 * @param amount How much does it cost
+	 * @param wt
 	 * @author jk271
-         */
+	 */
         void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
@@ -184,10 +184,9 @@ public:
 
 	/**
 	 * Add amount of transported passanger, mail, goods to accounting statistics
-	 * @param amount number of transported units
-	 * @papam tt type of transport
-	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
-	 *                  other same as in the pak files)
+	 * @param amount sum of money
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
 	 * @author jk271
 	 */
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);

@@ -76,12 +76,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	headquarter_pos = koord::invalid;
 	headquarter_level = 0;
 
-	/**
-	 * initialize finance history array
-	 * @author hsiegeln
-	 */
-
-
 	haltcount = 0;
 
 	welt->get_settings().set_default_player_color(this);

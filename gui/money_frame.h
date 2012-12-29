@@ -72,6 +72,7 @@ private:
 
 	gui_container_t month_dummy, year_dummy;
 
+	int transport_types[TT_MAX];
 	int transport_type_option;
 	gui_combobox_t transport_type_c;
 
@@ -107,6 +108,9 @@ private:
 	sint64 chart_table_year[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST_BUTTON];
 
 	void fill_chart_tables();
+
+	bool is_chart_table_zero(int ttoption);
+
 
 public:
 	/**

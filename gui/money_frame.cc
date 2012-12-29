@@ -163,6 +163,36 @@ void money_frame_t::fill_chart_tables()
 	}
 }
 
+
+bool money_frame_t::is_chart_table_zero(int ttoption)
+{
+	if (sp->get_finance()->get_maintenance_with_bits((transport_type)ttoption) != 0) {
+		return false;
+	}
+	// search for any non-zero values
+	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
+		const uint8 tt = cost_type[3*i+1] == TT_ALL ? ttoption : cost_type[3*i+1];
+
+		if (tt == TT_MAX  &&  ttoption != TT_ALL) {
+			continue;
+		}
+
+		for(int j=0; j<MAX_PLAYER_HISTORY_MONTHS; j++) {
+			if (get_statistics_value(tt, cost_type[3*i], j, true) != 0) {
+				return false;
+			}
+		}
+
+		for(int j=0; j<MAX_PLAYER_HISTORY_YEARS; j++) {
+			if (get_statistics_value(tt, cost_type[3*i], j, false) != 0) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+
 money_frame_t::money_frame_t(spieler_t *sp)
   : gui_frame_t( translator::translate("Finanzen"), sp),
 		tylabel("This Year", COL_WHITE, gui_label_t::right),
@@ -385,8 +415,11 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	transport_type_c.set_pos(koord(koord(left+335-12-2, 0)));
 	transport_type_c.set_groesse( koord(116,D_BUTTON_HEIGHT) );
 	transport_type_c.set_max_size( koord( 116, 1*BUTTONSPACE ) );
-	for(int i=0; i<TT_MAX; ++i) {
-		transport_type_c.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
+	for(int i=0, count=0; i<TT_MAX; ++i) {
+		if (!is_chart_table_zero(i)) {
+			transport_type_c.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
+			transport_types[ count++ ] = i;
+		}
 	}
 	transport_type_c.set_selection(0);
 	transport_type_c.set_focusable( false );
@@ -571,8 +604,8 @@ bool money_frame_t::action_triggered( gui_action_creator_t *komp,value_t /* */)
 	}
 	if(komp == &transport_type_c) {
 		int tmp = transport_type_c.get_selection();
-		if((0 <= tmp) && (tmp < TT_MAX)) {
-			transport_type_option = tmp;
+		if((0 <= tmp) && (tmp < transport_type_c.count_elements())) {
+			transport_type_option = transport_types[tmp];
 		}
 		return true;
 	}

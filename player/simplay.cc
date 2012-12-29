@@ -68,7 +68,7 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	finance = new finance_t(this, wl);
 	welt = wl;
 	player_nr = nr;
-
+	player_age = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
 	unlock_pending = false;
@@ -298,7 +298,7 @@ void spieler_t::step()
  * wird von welt nach jedem monat aufgerufen
  * @author Hj. Malthaner
  */
-void spieler_t::neuer_monat()
+bool spieler_t::neuer_monat()
 {
 	// since the messages must remain on the screen longer ...
 	static cbuffer_t buf;
@@ -339,7 +339,7 @@ void spieler_t::neuer_monat()
 
 				// for AI, we only declare bankrupt, if total assest are below zero
 				if(  finance->get_netwealth() < 0  ) {
-					ai_bankrupt();
+					return false;
 				}
 				// tell the current player (even during networkgames)
 				if(  welt->get_active_player_nr()==player_nr  ) {
@@ -361,40 +361,37 @@ void spieler_t::neuer_monat()
 		finance->set_account_overdrawn( 0 );
 	}
 
-	if(   umgebung_t::networkmode  ) {
+	if(  umgebung_t::networkmode  &&  player_nr>1  &&  !automat  ) {
 		// find out dummy companies (i.e. no vehicle running within x months)
-		if(  welt->get_settings().get_remove_dummy_player_months()  )  {
-			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
+		if(  welt->get_settings().get_remove_dummy_player_months()  &&  player_age >= welt->get_settings().get_remove_dummy_player_months()  )  {
 			bool no_cnv = true;
+			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
 			for(  uint16 m=0;  m<months  &&  no_cnv;  m++  ) {
-				no_cnv = finance->get_history_com_month(m, ATC_ALL_CONVOIS) ==0;
+				no_cnv &= finance->get_history_com_month(m, ATC_ALL_CONVOIS) ==0;
 			}
 			const uint16 years = max( MAX_PLAYER_HISTORY_YEARS,  (welt->get_settings().get_remove_dummy_player_months() - 1) / 12 );
 			for(  uint16 y=0;  y<years  &&  no_cnv;  y++  ) {
-				no_cnv = finance->get_history_com_year(y, ATC_ALL_CONVOIS)==0;
+				no_cnv &= finance->get_history_com_year(y, ATC_ALL_CONVOIS)==0;
 			}
 			// never run a convoi => dummy
 			if(  no_cnv  ) {
-				ai_bankrupt();
+				return false; // remove immediately
 			}
 		}
 
 		// find out abandoned companies (no activity within x months)
-		if(  welt->get_settings().get_remove_dummy_player_months()  )  {
-			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
-			bool no_cnv =          finance->get_history_veh_month(TT_ALL, 0, ATV_NEW_VEHICLE)==0;
-			bool no_construction = finance->get_history_veh_month(TT_ALL, 0, ATV_CONSTRUCTION_COST)==0;
-			for(  uint16 m=1;  m<months  &&  no_cnv  &&  no_construction;  m++  ) {
-				no_cnv =          finance->get_history_veh_month(TT_ALL, m, ATV_NEW_VEHICLE)==0;
-				no_construction = finance->get_history_veh_month(TT_ALL, m, ATV_CONSTRUCTION_COST)==0;
+		if(  welt->get_settings().get_unprotect_abondoned_player_months()  &&  player_age >= welt->get_settings().get_unprotect_abondoned_player_months()  )  {
+			bool abandoned = true;
+			const uint16 months = min( 12,  welt->get_settings().get_unprotect_abondoned_player_months() );
+			for(  uint16 m = 0;  m < months  &&  abandoned;  m++  ) {
+				abandoned &= finance->get_history_veh_month(TT_ALL, m, ATV_NEW_VEHICLE)==0  &&  finance->get_history_veh_month(TT_ALL, m, ATV_CONSTRUCTION_COST)==0;
 			}
-			const uint16 years = max( MAX_PLAYER_HISTORY_YEARS, (welt->get_settings().get_remove_dummy_player_months() - 1) / 12);
-			for(  uint16 y=0;  y<years  &&  no_cnv  &&  no_construction;  y++  ) {
-				no_cnv =          finance->get_history_veh_year(TT_ALL, y, ATV_NEW_VEHICLE)==0;
-				no_construction = finance->get_history_veh_year(TT_ALL, y, ATV_CONSTRUCTION_COST)==0;
+			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS, (welt->get_settings().get_unprotect_abondoned_player_months() - 1) / 12);
+			for(  uint16 y = 0;  y < years  &&  abandoned;  y++  ) {
+				abandoned &= finance->get_history_veh_year(TT_ALL, y, ATV_NEW_VEHICLE)==0  &&  finance->get_history_veh_year(TT_ALL, y, ATV_CONSTRUCTION_COST)==0;
 			}
 			// never changed convoi, never built => abandoned
-			if(  no_cnv  ) {
+			if(  abandoned  ) {
 				pwd_hash.clear();
 				locked = false;
 				unlock_pending = false;
@@ -404,6 +401,10 @@ void spieler_t::neuer_monat()
 
 	// subtract maintenance after bankruptcy check
 	finance->book_account( -finance->get_maintenance_with_bits(TT_ALL) );
+	// company gets older ...
+	player_age ++;
+
+	return true; // still active
 }
 
 
@@ -646,6 +647,11 @@ void spieler_t::ai_bankrupt()
 	}
 
 	automat = false;
+	// make account negative
+	if (finance->get_account_balance() > 0) {
+		finance->book_account( -finance->get_account_balance() -1 );
+	}
+
 	cbuffer_t buf;
 	buf.printf( translator::translate("%s\nwas liquidated."), get_name() );
 	welt->get_message()->add_message( buf, koord::invalid, message_t::ai, PLAYER_FLAG|player_nr );
@@ -774,8 +780,13 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 	}
 
 	// save the name too
-	if(file->get_version()>102003) {
+	if(  file->get_version() > 102003  ) {
 		file->rdwr_str( spieler_name_buf, lengthof(spieler_name_buf) );
+	}
+
+	// save age
+	if(  file->get_version() >= 112002  ) {
+		file->rdwr_short( player_age );
 	}
 }
 

@@ -72,6 +72,10 @@ uint8 haltestelle_t::status_step = 0;
 uint8 haltestelle_t::reconnect_counter = 0;
 
 
+static vector_tpl<convoihandle_t>stale_convois;
+static vector_tpl<linehandle_t>stale_lines;
+
+
 void haltestelle_t::reset_routing()
 {
 	reconnect_counter = welt->get_schedule_counter()-1;
@@ -80,6 +84,21 @@ void haltestelle_t::reset_routing()
 
 void haltestelle_t::step_all()
 {
+	// tell all stale convois to reroute their goods
+	if(  !stale_convois.empty()  ) {
+		convoihandle_t cnv = stale_convois.pop_back();
+		if(  cnv.is_bound()  ) {
+			cnv->check_freight();
+		}
+	}
+	// same for stale lines
+	if(  !stale_lines.empty()  ) {
+		linehandle_t line = stale_lines.pop_back();
+		if(  line.is_bound()  ) {
+			line->check_freight();
+		}
+	}
+
 	static slist_tpl<halthandle_t>::iterator iter( alle_haltestellen.begin() );
 	if (alle_haltestellen.empty()) {
 		return;
@@ -114,37 +133,9 @@ void haltestelle_t::step_all()
 }
 
 
-
-halthandle_t haltestelle_t::get_halt(const karte_t *welt, const koord pos, const spieler_t *sp )
-{
-	const planquadrat_t *plan = welt->lookup(pos);
-	if(  plan  ) {
-		if(plan->get_halt().is_bound()  &&  spieler_t::check_owner(sp,plan->get_halt()->get_besitzer())  ) {
-			return plan->get_halt();
-		}
-		// no halt? => we do the water check
-		if(plan->get_kartenboden()->ist_wasser()) {
-			// may catch bus stops close to water ...
-			const uint8 cnt = plan->get_haltlist_count();
-			// first check for own stop
-			for(  uint8 i=0;  i<cnt;  i++  ) {
-				if(  plan->get_haltlist()[i]->get_besitzer()==sp  ) {
-					return plan->get_haltlist()[i];
-				}
-			}
-			// then for public stop
-			for(  uint8 i=0;  i<cnt;  i++  ) {
-				if(  plan->get_haltlist()[i]->get_besitzer()==welt->get_spieler(1)  ) {
-					return plan->get_haltlist()[i];
-				}
-			}
-			// so: nothing found
-		}
-	}
-	return halthandle_t();
-}
-
-
+/* we allow only for a single stop per planquadrat
+ * this will only return something if this stop belongs to same player or is public, or is a dock (when on water)
+ */
 halthandle_t haltestelle_t::get_halt(const karte_t *welt, const koord3d pos, const spieler_t *sp )
 {
 	const grund_t *gr = welt->lookup(pos);
@@ -159,14 +150,16 @@ halthandle_t haltestelle_t::get_halt(const karte_t *welt, const koord3d pos, con
 			const uint8 cnt = plan->get_haltlist_count();
 			// first check for own stop
 			for(  uint8 i=0;  i<cnt;  i++  ) {
-				if(  plan->get_haltlist()[i]->get_besitzer()==sp  ) {
-					return plan->get_haltlist()[i];
+				halthandle_t halt = plan->get_haltlist()[i];
+				if(  halt->get_besitzer()==sp  &&  halt->get_station_type()&dock  ) {
+					return halt;
 				}
 			}
 			// then for public stop
 			for(  uint8 i=0;  i<cnt;  i++  ) {
-				if(  plan->get_haltlist()[i]->get_besitzer()==welt->get_spieler(1)  ) {
-					return plan->get_haltlist()[i];
+				halthandle_t halt = plan->get_haltlist()[i];
+				if(  halt->get_besitzer()==welt->get_spieler(1)  &&  halt->get_station_type()&dock  ) {
+					return halt;
 				}
 			}
 			// so: nothing found
@@ -247,11 +240,6 @@ DBG_DEBUG("haltestelle_t::remove()","remove last");
 		// all deleted?
 DBG_DEBUG("haltestelle_t::remove()","destroy");
 		haltestelle_t::destroy( halt );
-	}
-	else {
-DBG_DEBUG("haltestelle_t::remove()","not last");
-		// acceptance and type may have been changed ... (due to post office/dock/railways station deletion)
-		halt->recalc_station_type();
 	}
 
 	// if building was removed this is false!
@@ -520,7 +508,7 @@ void haltestelle_t::set_name(const char *new_name)
 		}
 		if(!gr->find<label_t>()) {
 			gr->set_text( new_name );
-			if(new_name  &&  !all_names.put(gr->get_text(),self)) {
+			if(new_name  &&  all_names.set(gr->get_text(),self).is_bound() ) {
  				DBG_MESSAGE("haltestelle_t::set_name()","name %s already used!",new_name);
 			}
 		}
@@ -1081,7 +1069,7 @@ sint32 haltestelle_t::rebuild_connections()
 	while(  lines  ||  current_index < registered_convoys.get_count()  ) {
 
 		// Now, collect the "fpl", "owner" and "add_catg_index" from line resp. convoy.
-		if( lines ) {
+		if(  lines  ) {
 			if(  current_index >= registered_lines.get_count()  ) {
 				// We have looped over all lines.
 				lines = false;
@@ -1122,7 +1110,7 @@ sint32 haltestelle_t::rebuild_connections()
 			}
 		}
 
-		if (supported_catg_index.empty()) {
+		if(  supported_catg_index.empty()  ) {
 			// this halt does not support the goods categories handled by the line/lineless convoy
 			continue;
 		}
@@ -1133,12 +1121,12 @@ sint32 haltestelle_t::rebuild_connections()
 		uint16 aggregate_weight = WEIGHT_WAIT;
 		for(  uint8 j=0;  j<fpl->get_count();  ++j  ) {
 
-			halthandle_t current_halt = get_halt(welt, fpl->eintrag[(start_index+j)%fpl->get_count()].pos,owner);
+			halthandle_t current_halt = get_halt(welt, fpl->eintrag[(start_index+j)%fpl->get_count()].pos, owner );
 			if(  !current_halt.is_bound()  ) {
 				// ignore way points
 				continue;
 			}
-			if(  current_halt==self  ) {
+			if(  current_halt == self  ) {
 				// Knightly : check for consecutive halts which precede self halt
 				FOR(minivec_tpl<uint8>, const catg_index, supported_catg_index) {
 					if(  previous_halt[catg_index]!=self  ) {
@@ -1157,7 +1145,7 @@ sint32 haltestelle_t::rebuild_connections()
 			FOR(minivec_tpl<uint8>, const catg_index, supported_catg_index) {
 				if(  current_halt->is_enabled(catg_index)  ) {
 					// Knightly : check for consecutive halts which succeed self halt
-					if(  previous_halt[catg_index]==self  ) {
+					if(  previous_halt[catg_index] == self  ) {
 						consecutive_halts[catg_index].append_unique(current_halt);
 						consecutive_halts_fpl[catg_index].append_unique(current_halt);
 					}
@@ -1173,15 +1161,15 @@ sint32 haltestelle_t::rebuild_connections()
 		}
 
 		FOR(minivec_tpl<uint8>, const catg_index, supported_catg_index) {
-			if (consecutive_halts_fpl[catg_index].get_count() > max_consecutive_halts_fpl[catg_index]) {
+			if(  consecutive_halts_fpl[catg_index].get_count() > max_consecutive_halts_fpl[catg_index]  ) {
 				max_consecutive_halts_fpl[catg_index] = consecutive_halts_fpl[catg_index].get_count();
 			}
 		}
 		connections_searched += fpl->get_count();
 	}
 	for(  uint8 i=0;  i<warenbauer_t::get_max_catg_index();  i++  ){
-		if (!consecutive_halts[i].empty()) {
-			if (consecutive_halts[i].get_count() == max_consecutive_halts_fpl[i]) {
+		if(  !consecutive_halts[i].empty()  ) {
+			if(  consecutive_halts[i].get_count() == max_consecutive_halts_fpl[i]  ) {
 				// one schedule reaches all consecutive halts -> this is not transfer halt
 				serving_schedules[i] = 1u;
 			}
@@ -2156,7 +2144,7 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 	}
 
 	// set name to name of first public stop
-	if (!joining.empty()) {
+	if(  !joining.empty()  ) {
 		set_name( joining.front()->get_name());
 	}
 
@@ -2165,7 +2153,7 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 		halthandle_t halt = joining.remove_first();
 
 		// now with the second stop
-		while(halt.is_bound()  &&  halt!=self) {
+		while(  halt.is_bound()  &&  halt!=self  ) {
 			// add statistics
 			for(  int month=0;  month<MAX_MONTHS;  month++  ) {
 				for(  int type=0;  type<MAX_HALT_COST;  type++  ) {
@@ -2547,6 +2535,8 @@ void haltestelle_t::rdwr(loadsave_t *file)
 
 void haltestelle_t::laden_abschliessen()
 {
+	stale_convois.clear();
+	stale_lines.clear();
 	// fix good destination coordinates
 	for(unsigned i=0; i<warenbauer_t::get_max_catg_index(); i++) {
 		if(waren[i]) {
@@ -2591,7 +2581,7 @@ void haltestelle_t::laden_abschliessen()
 	}
 	else {
 		const char *current_name = bd->get_text();
-		if(  all_names.get(current_name).is_bound()  ) {
+		if(  all_names.get(current_name).is_bound()  &&  fabrik_t::get_fab(welt, get_basis_pos())==NULL  ) {
 			// try to get a new name ...
 			const char *new_name;
 			if(  station_type & airstop  ) {
@@ -2610,7 +2600,7 @@ void haltestelle_t::laden_abschliessen()
 			bd->set_text( new_name );
 			current_name = new_name;
 		}
-		all_names.put( current_name, self );
+		all_names.set( current_name, self );
 	}
 	recalc_status();
 	reconnect_counter = welt->get_schedule_counter()-1;
@@ -2800,13 +2790,13 @@ bool haltestelle_t::add_grund(grund_t *gr)
 	if(  get_besitzer()==welt->get_spieler(1)  ) {
 		// must iterate over all players lines ...
 		for(  int i=0;  i<MAX_PLAYER_COUNT;  i++  ) {
-			if(welt->get_spieler(i)) {
+			if(  welt->get_spieler(i)  ) {
 				welt->get_spieler(i)->simlinemgmt.get_lines(simline_t::line, &check_line);
-				FOR(vector_tpl<linehandle_t>, const j, check_line) {
+				FOR(  vector_tpl<linehandle_t>, const j, check_line  ) {
 					// only add unknown lines
-					if (!registered_lines.is_contained(j) && j->count_convoys() > 0) {
-						FOR(minivec_tpl<linieneintrag_t>, const& k, j->get_schedule()->eintrag) {
-							if (get_halt(welt, k.pos, j->get_besitzer()) == self) {
+					if(  !registered_lines.is_contained(j)  &&  j->count_convoys() > 0  ) {
+						FOR(  minivec_tpl<linieneintrag_t>, const& k, j->get_schedule()->eintrag  ) {
+							if(  get_halt(welt, k.pos, j->get_besitzer()) == self  ) {
 								registered_lines.append(j);
 								break;
 							}
@@ -2833,11 +2823,11 @@ bool haltestelle_t::add_grund(grund_t *gr)
 	}
 	else {
 		get_besitzer()->simlinemgmt.get_lines(simline_t::line, &check_line);
-		FOR(vector_tpl<linehandle_t>, const j, check_line) {
+		FOR( vector_tpl<linehandle_t>, const j, check_line ) {
 			// only add unknown lines
-			if (!registered_lines.is_contained(j) && j->count_convoys() > 0) {
-					FOR(minivec_tpl<linieneintrag_t>, const& k, j->get_schedule()->eintrag) {
-					if (get_halt(welt, k.pos, get_besitzer()) == self) {
+			if(  !registered_lines.is_contained(j)  &&  j->count_convoys() > 0  ) {
+					FOR( minivec_tpl<linieneintrag_t>, const& k, j->get_schedule()->eintrag ) {
+					if(  get_halt(welt, k.pos, get_besitzer()) == self  ) {
 						registered_lines.append(j);
 						break;
 					}
@@ -2845,13 +2835,13 @@ bool haltestelle_t::add_grund(grund_t *gr)
 			}
 		}
 		// Knightly : iterate over all convoys
-		FOR(vector_tpl<convoihandle_t>, const cnv, welt->convoys()) {
+		FOR( vector_tpl<convoihandle_t>, const cnv, welt->convoys() ) {
 			// only check lineless convoys which have matching ownership and which are not yet registered
 			if(  !cnv->get_line().is_bound()  &&  cnv->get_besitzer()==get_besitzer()  &&  !registered_convoys.is_contained(cnv)  ) {
 				const schedule_t *const fpl = cnv->get_schedule();
 				if(  fpl  ) {
-					FOR(minivec_tpl<linieneintrag_t>, const& k, fpl->eintrag) {
-						if (get_halt(welt, k.pos, get_besitzer()) == self) {
+					FOR(  minivec_tpl<linieneintrag_t>, const& k, fpl->eintrag  ) {
+						if(  get_halt(welt, k.pos, get_besitzer()) == self  ) {
 							registered_convoys.append(cnv);
 							break;
 						}
@@ -2862,7 +2852,7 @@ bool haltestelle_t::add_grund(grund_t *gr)
 	}
 
 	if(  welt->lookup(pos)->get_halt() != self  ||  !gr->is_halt()  ) {
-		dbg->error( "haltestelle_t::add_grund()", "no ground added to (%s)", pos.get_str() );
+		dbg->error( "haltestelle_t::add_grund()", "no ground added to (%s)", gr->get_pos().get_str() );
 	}
 	init_pos = tiles.front().grund->get_pos().get_2d();
 	welt->set_schedule_counter();
@@ -2938,35 +2928,40 @@ bool haltestelle_t::rem_grund(grund_t *gr)
 		}
 	}
 
+	// needs to be done, if this was a dock
+	recalc_station_type();
+
 	// factory reach may have been changed ...
 	verbinde_fabriken();
 
 	// remove lines eventually
-	for (size_t j = registered_lines.get_count(); j-- != 0;) {
-		bool ok=false;
-		FOR(minivec_tpl<linieneintrag_t>, const& k, registered_lines[j]->get_schedule()->eintrag) {
-			if (get_halt(welt, k.pos, registered_lines[j]->get_besitzer()) == self) {
+	for(  size_t j = registered_lines.get_count();  j-- != 0;  ) {
+		bool ok = false;
+		FOR(  minivec_tpl<linieneintrag_t>, const& k, registered_lines[j]->get_schedule()->eintrag  ) {
+			if(  get_halt(welt, k.pos, registered_lines[j]->get_besitzer()) == self  ) {
 				ok = true;
 				break;
 			}
 		}
 		// need removal?
 		if(!ok) {
+			stale_lines.append_unique( registered_lines[j] );
 			registered_lines.remove_at(j);
 		}
 	}
 
 	// Knightly : remove registered lineless convoys as well
-	for (size_t j = registered_convoys.get_count(); j-- != 0;) {
+	for(  size_t j = registered_convoys.get_count();  j-- != 0;  ) {
 		bool ok = false;
-		FOR(minivec_tpl<linieneintrag_t>, const& k, registered_convoys[j]->get_schedule()->eintrag) {
-			if (get_halt(welt, k.pos, registered_convoys[j]->get_besitzer()) == self) {
+		FOR(  minivec_tpl<linieneintrag_t>, const& k, registered_convoys[j]->get_schedule()->eintrag  ) {
+			if(  get_halt(welt, k.pos, registered_convoys[j]->get_besitzer()) == self  ) {
 				ok = true;
 				break;
 			}
 		}
 		// need removal?
 		if(  !ok  ) {
+			stale_convois.append_unique( registered_convoys[j] );
 			registered_convoys.remove_at(j);
 		}
 	}

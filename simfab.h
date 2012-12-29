@@ -259,7 +259,7 @@ private:
 	// power requested for next step
 	uint32 power_demand;
 
-	uint32 total_input, total_output;
+	uint32 total_input, total_transit, total_output;
 	uint8 status;
 
 	/// Position of a building of the factory.
@@ -375,7 +375,7 @@ private:
 
 public:
 	fabrik_t(karte_t *welt, loadsave_t *file);
-	fabrik_t(koord3d pos, spieler_t* sp, const fabrik_besch_t* fabesch);
+	fabrik_t(koord3d pos, spieler_t* sp, const fabrik_besch_t* fabesch, sint32 initial_prod_base);
 	~fabrik_t();
 
 	/**
@@ -583,8 +583,9 @@ public:
 	enum { bad, medium, good, inactive, nothing };
 	static unsigned status_to_color[5];
 
-	uint8  get_status()    const { return status;       }
-	uint32 get_total_in()  const { return total_input;  }
+	uint8  get_status() const { return status; }
+	uint32 get_total_in() const { return total_input; }
+	uint32 get_total_transit() const { return total_transit; }
 	uint32 get_total_out() const { return total_output; }
 
 	/**

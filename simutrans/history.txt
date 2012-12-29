@@ -1,3 +1,4 @@
+Release of 112.1: (r6212 on 23-Dec-2012):
 	ADD: transparent chat window in networkmode
 	FIX: underground stations in networkmode
 	ADD: (Markohs) Scenario and heightmap dialogs now support multi-directory
@@ -11,6 +12,14 @@
 	ADD: display which factories supplied/recieved goods last month
 	ADD: player without operations can be deleted after x month
 	ADD: player without new buidling/replacing activities can lose password protection
+	ADD: logging of ip/nickname of company creators
+	ADD: nettool commands to lock, unlock, remove a company
+	ADD: (Timothy) support for syslog (compile flag -DSYSLOG, command-line option -syslog)
+	ADD: Restore city window on joining
+	ADD: Restore chat window on joining
+	ADD: Restore factory window on joining
+	FIX: correctly remove stale freight from convois when stops are joined or tiles are deleted
+	FIX: less desyncs when renaming, better processing server queue
 
 
 Release of 112.0: (r6000 on 22-Oct-2012):

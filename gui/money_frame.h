@@ -14,6 +14,7 @@
 #include "components/gui_label.h"
 #include "components/gui_tab_panel.h"
 #include "components/gui_chart.h"
+#include "components/gui_combobox.h"
 #include "components/gui_location_view_t.h"
 
 #include "../player/finance.h"
@@ -72,6 +73,9 @@ private:
 
 	gui_container_t month_dummy, year_dummy;
 
+	int transport_type_option;
+	gui_combobox_t transport_type_c;
+
 	/**
 	 * fills buffer (char array) with finance info
 	 * @author Owen Rudge, Hj. Malthaner
@@ -100,6 +104,7 @@ private:
 	static const char *cost_type_name[MAX_PLAYER_COST_BUTTON];
 	static const COLOR_VAL cost_type_color[MAX_PLAYER_COST_BUTTON];
 	static const uint8 cost_type[MAX_PLAYER_COST_BUTTON];
+	static const char * transport_type_values[TT_MAX];
 	gui_tab_panel_t year_month_tabs;
 
 	button_t headquarter, goto_headquarter;
@@ -109,6 +114,9 @@ private:
 	// last remembered HQ pos
 	sint16 old_level;
 	koord old_pos;
+
+	sint64 flat_view_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST];
+	sint64 flat_view_year[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST];
 
 public:
 	/**

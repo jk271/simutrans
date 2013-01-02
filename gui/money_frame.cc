@@ -36,6 +36,7 @@ static uint32 bFilterStates[MAX_PLAYER_COUNT];
 // @author hsiegeln
 const char *money_frame_t::cost_type_name[MAX_PLAYER_COST_BUTTON] =
 {
+	"Transported",
 	"Revenue",
 	"Operation",
 	"Maintenance",
@@ -45,7 +46,6 @@ const char *money_frame_t::cost_type_name[MAX_PLAYER_COST_BUTTON] =
 	"New Vehicles",
 	"Construction_Btn",
 	"Gross Profit",
-	"Transported",
 	"Cash",
 	"Assets",
 	"Margin (%)",
@@ -55,6 +55,7 @@ const char *money_frame_t::cost_type_name[MAX_PLAYER_COST_BUTTON] =
 
 const COLOR_VAL money_frame_t::cost_type_color[MAX_PLAYER_COST_BUTTON] =
 {
+	COL_TRANSPORTED,
 	COL_REVENUE,
 	COL_OPERATION,
 	COL_MAINTENANCE,
@@ -64,7 +65,6 @@ const COLOR_VAL money_frame_t::cost_type_color[MAX_PLAYER_COST_BUTTON] =
 	COL_NEW_VEHICLES,
 	COL_CONSTRUCTION,
 	COL_PROFIT,
-	COL_TRANSPORTED,
 	COL_CASH,
 	COL_VEHICLE_ASSETS,
 	COL_MARGIN,
@@ -73,6 +73,7 @@ const COLOR_VAL money_frame_t::cost_type_color[MAX_PLAYER_COST_BUTTON] =
 
 const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
 {
+	COST_ALL_TRANSPORTED, // all transported goods
 	COST_INCOME,        // Income
 	COST_VEHICLE_RUN,   // Vehicle running costs
 	COST_MAINTENANCE,   // Upkeep
@@ -82,11 +83,25 @@ const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
 	COST_NEW_VEHICLE,   // New vehicles
 	COST_CONSTRUCTION,	// Construction
 	COST_PROFIT,        // COST_POWERLINES+COST_INCOME-(COST_CONSTRUCTION+COST_VEHICLE_RUN+COST_NEW_VEHICLE+COST_MAINTENANCE)
-	COST_ALL_TRANSPORTED, // all transported goods
 	COST_CASH,          // Cash
 	COST_ASSETS,        // value of all vehicles and buildings
 	COST_MARGIN,        // COST_OPERATING_PROFIT/COST_INCOME
 	COST_NETWEALTH,     // Total Cash + Assets
+};
+
+/* order has to be same as in enum transport_type in file simtypes.h */
+const char * money_frame_t::transport_type_values[TT_MAX] = {
+	"All",
+	"Truck",
+	"Train",
+	"Ship",
+	"Monorail",
+	"Maglev",
+	"Tram",
+	"Narrowgauge",
+	"Air",
+	"tt_Other",
+	"Powerlines",
 };
 
 
@@ -96,7 +111,7 @@ const uint8 money_frame_t::cost_type[MAX_PLAYER_COST_BUTTON] =
  */
 const char *money_frame_t::display_money(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(old, type) : sp->get_finance_history_year(old, type)) / 100.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type)) / 100.0;
 	money_to_string(buf, cost );
 	return(buf);
 }
@@ -104,7 +119,7 @@ const char *money_frame_t::display_money(int type, char *buf, int old)
 
 const char *money_frame_t::display_number(int type, char *buf, int old)
 {
-	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(old, type) : sp->get_finance_history_year(old, type)) / 1.0;
+	const double cost = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type)) / 1.0;
 	money_to_string(buf, cost );
 	buf[strlen(buf)-4] = 0;	// remove comma
 	return(buf);
@@ -117,7 +132,7 @@ const char *money_frame_t::display_number(int type, char *buf, int old)
  */
 int money_frame_t::get_money_colour(int type, int old)
 {
-	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance_history_month(old, type) : sp->get_finance_history_year(old, type));
+	sint64 i = (year_month_tabs.get_active_tab_index() ? sp->get_finance()->get_history_month(transport_type_option, old, type) : sp->get_finance()->get_history_year(transport_type_option, old, type));
 	if (i < 0) return MONEY_MINUS;
 	if (i > 0) return MONEY_PLUS;
 	return COL_YELLOW;
@@ -157,6 +172,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		maintenance_money(NULL, COL_RED, gui_label_t::money),
 		warn("", COL_YELLOW, gui_label_t::left),
 		scenario("", COL_BLACK, gui_label_t::left),
+		transport_type_option(0),
 		headquarter_view(sp->get_welt(), koord3d::invalid, koord(120, 64))
 {
 	if(sp->get_welt()->get_spieler(0)!=sp) {
@@ -176,30 +192,30 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	tylabel.set_pos(koord(tyl_x+25,top-1*BUTTONSPACE));
 	lylabel.set_pos(koord(lyl_x+25,top-1*BUTTONSPACE));
 
-	imoney.set_pos(koord(tyl_x,top+0*BUTTONSPACE));
-	old_imoney.set_pos(koord(lyl_x,top+0*BUTTONSPACE));
-	vrmoney.set_pos(koord(tyl_x,top+1*BUTTONSPACE));
-	old_vrmoney.set_pos(koord(lyl_x,top+1*BUTTONSPACE));
-	mmoney.set_pos(koord(tyl_x,top+2*BUTTONSPACE));
-	old_mmoney.set_pos(koord(lyl_x,top+2*BUTTONSPACE));
-	toll.set_pos(koord(tyl_x,top+3*BUTTONSPACE));
-	old_toll.set_pos(koord(lyl_x,top+3*BUTTONSPACE));
-	powerline.set_pos(koord(tyl_x,top+4*BUTTONSPACE));
-	old_powerline.set_pos(koord(lyl_x,top+4*BUTTONSPACE));
-	omoney.set_pos(koord(tyl_x,top+5*BUTTONSPACE));
-	old_omoney.set_pos(koord(lyl_x,top+5*BUTTONSPACE));
-	nvmoney.set_pos(koord(tyl_x,top+6*BUTTONSPACE));
-	old_nvmoney.set_pos(koord(lyl_x,top+6*BUTTONSPACE));
-	conmoney.set_pos(koord(tyl_x,top+7*BUTTONSPACE));
-	old_conmoney.set_pos(koord(lyl_x,top+7*BUTTONSPACE));
-	tmoney.set_pos(koord(tyl_x,top+8*BUTTONSPACE));
-	old_tmoney.set_pos(koord(lyl_x,top+8*BUTTONSPACE));
-	transport.set_pos(koord(tyl_x+19, top+9*BUTTONSPACE));
-	old_transport.set_pos(koord(lyl_x+19, top+9*BUTTONSPACE));
+	transport.set_pos(koord(tyl_x+19, top+0*BUTTONSPACE));
+	old_transport.set_pos(koord(lyl_x+19, top+0*BUTTONSPACE));
+	imoney.set_pos(koord(tyl_x,top+1*BUTTONSPACE));
+	old_imoney.set_pos(koord(lyl_x,top+1*BUTTONSPACE));
+	vrmoney.set_pos(koord(tyl_x,top+2*BUTTONSPACE));
+	old_vrmoney.set_pos(koord(lyl_x,top+2*BUTTONSPACE));
+	mmoney.set_pos(koord(tyl_x,top+3*BUTTONSPACE));
+	old_mmoney.set_pos(koord(lyl_x,top+3*BUTTONSPACE));
+	toll.set_pos(koord(tyl_x,top+4*BUTTONSPACE));
+	old_toll.set_pos(koord(lyl_x,top+4*BUTTONSPACE));
+	powerline.set_pos(koord(tyl_x,top+5*BUTTONSPACE));
+	old_powerline.set_pos(koord(lyl_x,top+5*BUTTONSPACE));
+	omoney.set_pos(koord(tyl_x,top+6*BUTTONSPACE));
+	old_omoney.set_pos(koord(lyl_x,top+6*BUTTONSPACE));
+	nvmoney.set_pos(koord(tyl_x,top+7*BUTTONSPACE));
+	old_nvmoney.set_pos(koord(lyl_x,top+7*BUTTONSPACE));
+	conmoney.set_pos(koord(tyl_x,top+8*BUTTONSPACE));
+	old_conmoney.set_pos(koord(lyl_x,top+8*BUTTONSPACE));
+	tmoney.set_pos(koord(tyl_x,top+9*BUTTONSPACE));
+	old_tmoney.set_pos(koord(lyl_x,top+9*BUTTONSPACE));
 
 	// right column
-	maintenance_label.set_pos(koord(left+340+80, top+1*BUTTONSPACE-2));
-	maintenance_money.set_pos(koord(left+340+55, top+2*BUTTONSPACE));
+	maintenance_label.set_pos(koord(left+340+80, top+2*BUTTONSPACE-2));
+	maintenance_money.set_pos(koord(left+340+55, top+3*BUTTONSPACE));
 
 	tylabel2.set_pos(koord(left+140+80+335,top+4*BUTTONSPACE-2));
 	gtmoney.set_pos(koord(left+140+335+55, top+5*BUTTONSPACE));
@@ -224,7 +240,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	chart.set_background(MN_GREY1);
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int type = cost_type[i];
-		chart.add_curve( cost_type_color[i], sp->get_finance_history_year(), MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
+		chart.add_curve( cost_type_color[i], *flat_view_year, MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
 	}
 	//CHART YEAR END
 
@@ -236,7 +252,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	mchart.set_background(MN_GREY1);
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int type = cost_type[i];
-		mchart.add_curve( cost_type_color[i], sp->get_finance_history_month(), MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
+		mchart.add_curve( cost_type_color[i], *flat_view_month, MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
 	}
 	//CHART MONTH END
 
@@ -348,6 +364,18 @@ money_frame_t::money_frame_t(spieler_t *sp)
 		}
 	}
 
+	transport_type_c.set_pos(koord(koord(left+335-12-2, 0)));
+	transport_type_c.set_groesse( koord(116,D_BUTTON_HEIGHT) );
+	transport_type_c.set_max_size( koord( 116, 1*BUTTONSPACE ) );
+	for(int i=0; i<TT_MAX; ++i) {
+		transport_type_c.append_element( new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(transport_type_values[i]), COL_BLACK));
+	}
+	transport_type_c.set_selection(0);
+	transport_type_c.set_focusable( false );
+	add_komponente(&transport_type_c);
+	transport_type_c.add_listener( this );
+
+
 	set_fenstergroesse(koord(582, 340));
 }
 
@@ -358,6 +386,8 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	static char str_buf[26][64];
 
 	sp->get_finance()->calc_finance_history();
+	sp->get_finance()->calc_flat_view_month(transport_type_option, flat_view_month);
+	sp->get_finance()->calc_flat_view_year(transport_type_option, flat_view_year);
 
 	chart.set_visible( year_month_tabs.get_active_tab_index()==0 );
 	mchart.set_visible( year_month_tabs.get_active_tab_index()==1 );
@@ -439,11 +469,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 			sprintf( str_buf[15], translator::translate("Scenario lost!") );
 		}
 	}
-	else if(sp->get_finance_history_year(0, COST_NETWEALTH)<0) {
+	else if(sp->get_finance()->get_netwealth()<0) {
 		warn.set_color( MONEY_MINUS );
 		tstrncpy(str_buf[15], translator::translate("Company bankrupt"), lengthof(str_buf[15]) );
 	}
-	else if(  sp->get_finance_history_year(0, COST_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
+	else if(  sp->get_finance()->get_netwealth()*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
 		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_account_overdrawn() );
 	}
@@ -510,13 +540,9 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	}
 
 	// Hajo: Money is counted in credit cents (100 cents = 1 Cr)
-	money_to_string(str_buf[16],
-		sp->get_welt()->ticks_per_world_month_shift>=18 ?
-		(double)((sint64)sp->get_finance()->get_maintenance(TT_ALL)<<(sp->get_welt()->ticks_per_world_month_shift-18u))/100.0 :
-		(double)((sint64)sp->get_finance()->get_maintenance(TT_ALL)>>(18u-sp->get_welt()->ticks_per_world_month_shift))/100.0
-	);
+	money_to_string(str_buf[16], (double)((sint64)sp->get_finance()->get_maintenance_with_bits(TT_ALL))/100.0);
 	maintenance_money.set_text(str_buf[16]);
-	maintenance_money.set_color(sp->get_finance()->get_maintenance()>=0?MONEY_PLUS:MONEY_MINUS);
+	maintenance_money.set_color(sp->get_finance()->get_maintenance((transport_type)transport_type_option)>=0?MONEY_PLUS:MONEY_MINUS);
 
 	for (int i = 0;  i<MAX_PLAYER_COST_BUTTON;  i++) {
 		filterButtons[i].pressed = ( (bFilterStates[sp->get_player_nr()]&(1<<i)) != 0 );
@@ -555,6 +581,13 @@ bool money_frame_t::action_triggered( gui_action_creator_t *komp,value_t /* */)
 			}
 			return true;
 		}
+	}
+	if(komp == &transport_type_c) {
+		int tmp = transport_type_c.get_selection();
+		if((0 <= tmp) && (tmp < TT_MAX)) {
+			transport_type_option = tmp;
+		}
+		return true;
 	}
 	return false;
 }

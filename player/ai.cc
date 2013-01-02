@@ -71,6 +71,16 @@ bool ai_bauplatz_mit_strasse_sucher_t::ist_platz_ok(koord pos, sint16 b, sint16 
 /************************** and now the "real" helper functions ***************/
 
 
+/* return the halt on the map ground */
+halthandle_t ai_t::get_halt(const koord pos ) const
+{
+	if(  grund_t *gr = welt->lookup_kartenboden(pos)  ) {
+		return haltestelle_t::get_halt( welt, gr->get_pos(), this );
+	}
+	return halthandle_t();
+}
+
+
 /* returns true,
  * if there is already a connection
  * @author prissi
@@ -229,7 +239,7 @@ bool ai_t::suche_platz(koord &start, koord &size, koord target, koord off)
 			}
 			else {
 				koord test(x,y);
-				if(  haltestelle_t::get_halt(welt,test,this).is_bound()  ) {
+				if(  get_halt(test).is_bound()  ) {
 DBG_MESSAGE("ai_t::suche_platz()","Search around stop at (%i,%i)",x,y);
 
 					// we are on a station that belongs to us
@@ -561,4 +571,11 @@ void ai_t::rdwr(loadsave_t *file)
 	file->rdwr_bool( rail_transport );
 	file->rdwr_bool( air_transport );
 	file->rdwr_bool( ship_transport );
+}
+
+
+const vehikel_besch_t *ai_t::vehikel_search(waytype_t typ, const uint32 target_power, const sint32 target_speed, const ware_besch_t * target_freight, bool include_electric)
+{
+	bool obsolete_allowed = welt->get_settings().get_allow_buying_obsolete_vehicles();
+	return vehikelbauer_t::vehikel_search(typ, welt->get_timeline_year_month(), target_power, target_speed, target_freight, include_electric, !obsolete_allowed);
 }

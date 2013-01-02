@@ -375,7 +375,6 @@ public:
 	/**
  	* Translates finance statistisc from new format to old (version<=111) one.
  	* Used for saving data in old format
- 	* @author jk271
  	*/
 	void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 	void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
@@ -384,6 +383,8 @@ public:
 	 * Returns amount of money on account (also known as konto)
 	 */
 	inline sint64 get_account_balance() { return account_balance; }
+
+	inline sint64 get_convoi_number() { return com_month[0][ATC_ALL_CONVOIS]; }
 
 	/**
 	* Returns the finance history for player

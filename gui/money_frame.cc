@@ -469,11 +469,11 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 			sprintf( str_buf[15], translator::translate("Scenario lost!") );
 		}
 	}
-	else if(sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)<0) {
+	else if(sp->get_finance()->get_netwealth()<0) {
 		warn.set_color( MONEY_MINUS );
 		tstrncpy(str_buf[15], translator::translate("Company bankrupt"), lengthof(str_buf[15]) );
 	}
-	else if(  sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
+	else if(  sp->get_finance()->get_netwealth()*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
 		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_account_overdrawn() );
 	}
@@ -540,9 +540,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	}
 
 	// Hajo: Money is counted in credit cents (100 cents = 1 Cr)
-	money_to_string(str_buf[16],
-		(double)((sint64)sp->get_finance()->get_maintenance_with_bits((transport_type)transport_type_option))/100.0
-	);
+	money_to_string(str_buf[16], (double)((sint64)sp->get_finance()->get_maintenance_with_bits(TT_ALL))/100.0);
 	maintenance_money.set_text(str_buf[16]);
 	maintenance_money.set_color(sp->get_finance()->get_maintenance((transport_type)transport_type_option)>=0?MONEY_PLUS:MONEY_MINUS);
 

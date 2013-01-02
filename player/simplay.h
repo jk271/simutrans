@@ -20,6 +20,11 @@
 #include "../tpl/vector_tpl.h"
 
 
+#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
+#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
+#define MAX_PLAYER_COST_X (19)
+
+
 class karte_t;
 class fabrik_t;
 class koord3d;
@@ -45,6 +50,16 @@ protected:
 	 */
 	sint32 haltcount;
 
+private:
+	/**
+	* Finance History - will supercede the finances by Owen Rudge
+	* Will hold finances for the most recent 12 years
+	* @author hsiegeln
+	*/
+	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST_X];
+	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST_X];
+
+protected:
 	/* "new" finance history */
 	finance_t *finance;
 
@@ -54,6 +69,9 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	static karte_t *welt;
+
+	// when was the company founded
+	uint16 player_age;
 
 	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
 
@@ -86,14 +104,6 @@ protected:
 	uint8 player_nr;
 
 	/**
-	 * Adds somme amount to the maintenance costs
-	 * @param change the change
-	 * @return the new maintenance costs
-	 * @author Hj. Malthaner
-	 */
-	sint32 add_maintenance(sint32 change, waytype_t const wt=ignore_wt, const int utyp = 0);
-
-	/**
 	 * Ist dieser Spieler ein automatischer Spieler?
 	 * @author Hj. Malthaner
 	 */
@@ -112,11 +122,29 @@ protected:
 
 public:
 	/**
-	 * sums up "count" with number of convois in statistics,
-	 * supersedes buche( count, COST_ALL_CONVOIS)
-	 * @author jk271
+	 * Adds somme amount to the maintenance costs
+	 * @param change the change
+	 * @return the new maintenance costs
 	 */
-	void book_convoi_number(int count);
+	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt);
+
+	/**
+	 * Adds somme amount to the maintenance costs
+	 * @param player (could be zero too!)
+	 * @param change the change
+	 * @author Hj. Malthaner
+	 */
+	static void add_maintenance(spieler_t *sp, sint64 change, waytype_t const wt=ignore_wt) {
+		if(sp != NULL) {
+			sp->add_maintenance(change, wt);
+		}
+	}
+
+	/*
+	 * displayes amount of money when koordinates and on screen
+	 * reworked function buche()
+	 */
+	void add_money_message(const sint64 amount, const koord k);
 
 	/**
 	 * Adds construction costs to accounting statistics,
@@ -128,18 +156,18 @@ public:
 
 	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
 
-	/*
-	 * displayes amount of money when koordinates and on screen
-	 * reworked function buche()
+	/**
+	 * sums up "count" with number of convois in statistics,
+	 * supersedes buche( count, COST_ALL_CONVOIS)
 	 */
-	void add_money_message(const sint64 amount, const koord k);
+	void book_convoi_number(const sint64 count);
 
 	/**
 	 * Accounts bought/sold vehicles
 	 * @param price money used for purchase of vehicle,
 	 *              negative value = vehicle bought,
 	 *              negative value = vehicle sold
-	 * @param tt type of transport for accounting purpose
+	 * @param wt waytype for accounting purpose
 	 * @author jk271
 	 */
 	void book_new_vehicle(const sint64 price, const koord k, const waytype_t wt=ignore_wt);
@@ -152,16 +180,14 @@ public:
 	 * 	0 ... passenger
 	 *	1 ... mail
 	 *	2 ... good (and powerlines revenue)
-	 * @author jk271
 	 */
 	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	/**
          * Adds running costs to accounting statistics.
-         * this function is called very often --> inline
+         * this function is called very often
          * @param amount How much does it cost
          * @param wt
-	 * @author jk271
          */
         void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
@@ -169,7 +195,6 @@ public:
 	 * books toll paid by our company to someone else
 	 * @param amount money paid to our company
 	 * @param tt type of transport used for assounting statistisc
-	 * @author jk271
 	 */
 	void book_toll_paid(const sint64 amount, const waytype_t wt=ignore_wt);
 
@@ -177,7 +202,6 @@ public:
 	 * books toll paid to out company by someone else
 	 * @param amount money paid for usage of our roads,railway,channels, ... ; positive sign
 	 * @param tt type of transport used for assounting statistisc
-	 * @author jk271
 	 */
 	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
@@ -187,7 +211,6 @@ public:
 	 * @papam tt type of transport
 	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
 	 *                  other same as in the pak files)
-	 * @author jk271
 	 */
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
@@ -253,13 +276,6 @@ public:
 
 	virtual ~spieler_t();
 
-	static sint32 add_maintenance(spieler_t *sp, sint32 const change, waytype_t const wt=ignore_wt, const int utyp = 0) {
-		if(sp) {
-			return sp->add_maintenance(change, wt, utyp);
-		}
-		return 0;
-	}
-
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner
@@ -287,8 +303,9 @@ public:
 	/**
 	 * Wird von welt nach jedem monat aufgerufen
 	 * @author Hj. Malthaner
+	 * @returns false if player has to be removed (bankrupt/inactive)
 	 */
-	virtual void neuer_monat();
+	virtual bool neuer_monat();
 
 	/**
 	 * Methode fuer jaehrliche Aktionen

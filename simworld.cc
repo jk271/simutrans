@@ -116,32 +116,51 @@ static std::string last_network_game;
 
 stringhashtable_tpl<karte_t::missing_level_t>missing_pak_names;
 
-typedef void (karte_t::*y_loop_func)(sint16,sint16);
-
 #if MULTI_THREAD>1
 // enable barriers by this
 #define _XOPEN_SOURCE 600
 #include <pthread.h>
+#include <semaphore.h>
 
 // to start a thread
 typedef struct{
 	karte_t *welt;
-	sint16	y_min;
-	sint16	y_max;
-	y_loop_func function;
+	int thread_num;
+	sint16 x_step;
+	sint16 y_min;
+	sint16 y_max;
+	sem_t* wait_for_previous;
+	sem_t* signal_to_next;
+	xy_loop_func function;
 } world_thread_param_t;
 
 
-void *karte_t::world_y_loop_thread( void *ptr )
+void *karte_t::world_xy_loop_thread(void *ptr)
 {
 	world_thread_param_t *param = reinterpret_cast<world_thread_param_t *>(ptr);
-	(param->welt->*(param->function))(param->y_min, param->y_max);
+	sint16 x_min = 0;
+	sint16 x_max = param->x_step;
+
+	while(  x_min < param->welt->cached_groesse_gitter_x  ) {
+		// wait for predecessor to finish its block
+		if(  param->wait_for_previous  ) {
+			sem_wait( param->wait_for_previous );
+		}
+		(param->welt->*(param->function))(x_min, x_max, param->y_min, param->y_max);
+
+		// signal to next thread that we finished one block
+		if(  param->signal_to_next  ) {
+			sem_post( param->signal_to_next );
+		}
+		x_min = x_max;
+		x_max = min(x_max + param->x_step, param->welt->cached_groesse_gitter_x);
+	}
 	return NULL;
 }
 #endif
 
 
-void karte_t::world_y_loop(y_loop_func function)
+void karte_t::world_xy_loop(xy_loop_func function, bool sync_x_steps)
 {
 #if MULTI_THREAD>1
 	set_random_mode( INTERACTIVE_RANDOM ); // do not allow simrand() here!
@@ -151,33 +170,54 @@ void karte_t::world_y_loop(y_loop_func function)
 	/* Initialize and set thread detached attribute */
 	pthread_attr_init(&attr);
 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-	// now the paramters
+
+	// semaphores to synchronize progress in x direction
+	sem_t sems[MULTI_THREAD-1];
+
+	// now the parameters
 	world_thread_param_t ka[MULTI_THREAD];
 
-	for(int t=0; t<MULTI_THREAD-1; t++) {
+	for(  int t = 0;  t < MULTI_THREAD;  t++  ) {
+		if(  sync_x_steps  &&  t < MULTI_THREAD - 1  ) {
+			sem_init(&sems[t], 0, 0);
+		}
+
    		ka[t].welt = this;
+   		ka[t].thread_num = t;
+		ka[t].x_step = min(64, cached_groesse_gitter_x/MULTI_THREAD);
 		ka[t].y_min = (t*cached_groesse_gitter_y)/MULTI_THREAD;
 		ka[t].y_max = ((t+1)*cached_groesse_gitter_y)/MULTI_THREAD;
 		ka[t].function = function;
-		if(  pthread_create( &thread[t], &attr, world_y_loop_thread, &ka[t] )  ) {
-			// here some more sophicsticated error handling would be fine ...
+
+		ka[t].wait_for_previous = sync_x_steps  &&  t > 0 ? &sems[t-1] : NULL;
+		ka[t].signal_to_next    = sync_x_steps  &&  t < MULTI_THREAD - 1 ? &sems[t] : NULL;
+
+		if(  t < MULTI_THREAD - 1  ) {
+			if(  pthread_create(&thread[t], &attr, world_xy_loop_thread, &ka[t])  ) {
+				// here some more sophisticated error handling would be fine ...
+			}
 		}
 	}
 	pthread_attr_destroy(&attr);
 
-	// the last we do alone ...
-	(this->*function)( ((MULTI_THREAD-1)*cached_groesse_gitter_y)/MULTI_THREAD, cached_groesse_gitter_y );
+	// the last rows we do ourselves...
+	world_xy_loop_thread(&ka[MULTI_THREAD-1]);
 
 	// return from thread
-	for(int t=0; t<MULTI_THREAD-1; t++) {
+	for(  int t = 0;  t < MULTI_THREAD - 1;  t++  ) {
 		void *status;
 		pthread_join(thread[t], &status);
+
+		if(  sync_x_steps  ) {
+			sem_destroy(&sems[t]);
+		}
 	}
 
 	clear_random_mode( INTERACTIVE_RANDOM ); // do not allow simrand() here!
+
 #else
 	// slow serial way of display
-	(this->*function)( 0, cached_groesse_gitter_y );
+	(this->*function)( 0, cached_groesse_gitter_x, 0, cached_groesse_gitter_y );
 #endif
 }
 
@@ -723,7 +763,7 @@ DBG_MESSAGE("karte_t::destroy()", "attraction list destroyed");
 assert( depot_t::get_depot_list().empty() );
 
 DBG_MESSAGE("karte_t::destroy()", "world destroyed");
-	printf("World destroyed.\n");
+	dbg->important("World destroyed.");
 }
 
 
@@ -743,7 +783,7 @@ void karte_t::rem_convoi(convoihandle_t const cnv)
 void karte_t::add_stadt(stadt_t *s)
 {
 	settings.set_anzahl_staedte(settings.get_anzahl_staedte() + 1);
-	stadt.append(s, s->get_einwohner(), 64);
+	stadt.append(s, s->get_einwohner());
 
 	// Knightly : add links between this city and other cities as well as attractions
 	FOR(weighted_vector_tpl<stadt_t*>, const c, stadt) {
@@ -915,7 +955,7 @@ void karte_t::create_rivers( sint16 number )
 				last_koord = k;
 				// using h*h as weight would give mountian sources more preferences
 				// on the other hand most rivers do not string near summits ...
-				mountain_tiles.append( k, h, 256 );
+				mountain_tiles.append( k, h );
 			}
 		}
 	}
@@ -975,7 +1015,7 @@ DBG_DEBUG("karte_t::distribute_groundobjs_cities()","distributing rivers");
 		create_rivers(settings.get_river_number());
 	}
 
-printf("Creating cities ...\n");
+dbg->important("Creating cities ...");
 DBG_DEBUG("karte_t::distribute_groundobjs_cities()","prepare cities");
 	vector_tpl<koord> *pos = stadt_t::random_place(this, new_anzahl_staedte, old_x, old_y);
 
@@ -1048,9 +1088,6 @@ DBG_DEBUG("karte_t::distribute_groundobjs_cities()","prepare cities");
 							old_progress ++;
 							display_progress(old_progress, max_display_progress);
 						}
-						else {
-							printf("*");fflush(NULL);
-						}
 						not_updated = true;
 					}
 					current_month += diff;
@@ -1061,9 +1098,6 @@ DBG_DEBUG("karte_t::distribute_groundobjs_cities()","prepare cities");
 				if(is_display_init()) {
 					old_progress ++;
 					display_progress(old_progress, max_display_progress);
-				}
-				else {
-					printf("*");fflush(NULL);
 				}
 			}
 
@@ -1457,7 +1491,7 @@ DBG_DEBUG("karte_t::init()","built timeline");
 
 	nosave_warning = nosave = false;
 
-	printf("Creating factories ...\n");
+	dbg->important("Creating factories ...");
 	fabrikbauer_t::neue_karte(this);
 	// new system ...
 	int const max_display_progress = 16 + settings.get_anzahl_staedte() * 4 + settings.get_factory_count();
@@ -1481,7 +1515,7 @@ DBG_DEBUG("karte_t::init()","built timeline");
 	// tourist attractions
 	fabrikbauer_t::verteile_tourist(this, settings.get_tourist_attractions());
 
-	printf("Preparing startup ...\n");
+	dbg->important("Preparing startup ...");
 	if(zeiger == 0) {
 		zeiger = new zeiger_t(this, koord3d::invalid, NULL );
 	}
@@ -2415,6 +2449,10 @@ bool karte_t::change_player_tool(uint8 cmd, uint8 player_nr, uint16 param, bool 
 			if ( (param != spieler_t::HUMAN  &&  !public_player_unlocked)  ||  param >= spieler_t::MAX_AI) {
 				return false;
 			}
+			// range check, player already existent?
+			if ( player_nr >= PLAYER_UNOWNED  ||   get_spieler(player_nr) ) {
+				return false;
+			}
 			if (exec) {
 				new_spieler( player_nr, param );
 				// activate/deactivate AI immediately
@@ -2433,6 +2471,16 @@ bool karte_t::change_player_tool(uint8 cmd, uint8 player_nr, uint16 param, bool 
 			}
 			if (exec) {
 				settings.set_freeplay( !settings.is_freeplay() );
+			}
+			return true;
+		}
+		case delete_player: {
+			// range check, player existent?
+			if ( player_nr >= PLAYER_UNOWNED  ||   get_spieler(player_nr)==NULL ) {
+				return false;
+			}
+			if (exec) {
+				remove_player(player_nr);
 			}
 			return true;
 		}
@@ -2542,18 +2590,18 @@ sint8 karte_t::max_hgt(const koord pos) const
 
 planquadrat_t *rotate90_new_plan;
 
-void karte_t::rotate90_plans(sint16 y_min, sint16 y_max)
+void karte_t::rotate90_plans(sint16 x_min, sint16 x_max, sint16 y_min, sint16 y_max)
 {
 	const int LOOP_BLOCK = 64;
-	if(  (loaded_rotation+settings.get_rotation())&1  ) {  // 1 || 3
-		for(  int yy=y_min;  yy<y_max;  yy+=LOOP_BLOCK  ) {
-			for(  int xx=0;  xx<cached_groesse_gitter_x;  xx+=LOOP_BLOCK  ) {
-				for(  int y=yy;  y<min(yy+LOOP_BLOCK,y_max);  y++  ) {
-					for(  int x=xx;  x<min(xx+LOOP_BLOCK,cached_groesse_gitter_x);  x++  ) {
-						const int nr = x+(y*cached_groesse_gitter_x);
-						const int new_nr = (cached_groesse_karte_y-y)+(x*cached_groesse_gitter_y);
+	if(  (loaded_rotation + settings.get_rotation()) & 1  ) {  // 1 || 3
+		for(  int yy = y_min;  yy < y_max;  yy += LOOP_BLOCK  ) {
+			for(  int xx = x_min;  xx < x_max;  xx += LOOP_BLOCK  ) {
+				for(  int y = yy;  y < min(yy + LOOP_BLOCK, y_max);  y++  ) {
+					for(  int x = xx;  x < min(xx + LOOP_BLOCK, x_max);  x++  ) {
+						const int nr = x + (y * cached_groesse_gitter_x);
+						const int new_nr = (cached_groesse_karte_y - y) + (x * cached_groesse_gitter_y);
 						// first rotate everything on the ground(s)
-						for(  uint i=0;  i<plan[nr].get_boden_count();  i++  ) {
+						for(  uint i = 0;  i < plan[nr].get_boden_count();  i++  ) {
 							plan[nr].get_boden_bei(i)->rotate90();
 						}
 						// now: rotate all things on the map
@@ -2565,24 +2613,24 @@ void karte_t::rotate90_plans(sint16 y_min, sint16 y_max)
 	}
 	else {
 		// first: rotate all things on the map
-		for(  int xx=0;  xx<cached_groesse_gitter_x;  xx+=LOOP_BLOCK  ) {
-			for(  int yy=y_min;  yy<y_max;  yy+=LOOP_BLOCK  ) {
-				for(  int x=xx;  x<min(xx+LOOP_BLOCK,cached_groesse_gitter_x);  x++  ) {
-					for(  int y=yy;  y<min(yy+LOOP_BLOCK,y_max);  y++  ) {
-						const int nr = x+(y*cached_groesse_gitter_x);
-						const int new_nr = (cached_groesse_karte_y-y)+(x*cached_groesse_gitter_y);
+		for(  int xx = x_min;  xx < x_max;  xx += LOOP_BLOCK  ) {
+			for(  int yy = y_min;  yy < y_max;  yy += LOOP_BLOCK  ) {
+				for(  int x = xx;  x < min(xx + LOOP_BLOCK, x_max);  x++  ) {
+					for(  int y=yy;  y < min(yy + LOOP_BLOCK, y_max);  y++  ) {
+						const int nr = x + (y * cached_groesse_gitter_x);
+						const int new_nr = (cached_groesse_karte_y - y) + (x * cached_groesse_gitter_y);
 						swap(rotate90_new_plan[new_nr], plan[nr]);
 					}
 				}
 			}
 		}
 		// now rotate everything on the ground(s)
-		for(  int xx=0;  xx<cached_groesse_gitter_x;  xx+=LOOP_BLOCK  ) {
-			for(  int yy=y_min;  yy<y_max;  yy+=LOOP_BLOCK  ) {
-				for(  int x=xx;  x<min(xx+LOOP_BLOCK,cached_groesse_gitter_x);  x++  ) {
-					for(  int y=yy;  y<min(yy+LOOP_BLOCK,y_max);  y++  ) {
-						const int new_nr = (cached_groesse_karte_y-y)+(x*cached_groesse_gitter_y);
-						for(  uint i=0;  i<rotate90_new_plan[new_nr].get_boden_count();  i++  ) {
+		for(  int xx = x_min;  xx < x_max;  xx += LOOP_BLOCK  ) {
+			for(  int yy = y_min;  yy < y_max;  yy += LOOP_BLOCK  ) {
+				for(  int x = xx;  x < min(xx + LOOP_BLOCK, x_max);  x++  ) {
+					for(  int y = yy;  y < min(yy + LOOP_BLOCK, y_max);  y++  ) {
+						const int new_nr = (cached_groesse_karte_y - y) + (x * cached_groesse_gitter_y);
+						for(  uint i = 0;  i < rotate90_new_plan[new_nr].get_boden_count();  i++  ) {
 							rotate90_new_plan[new_nr].get_boden_bei(i)->rotate90();
 						}
 					}
@@ -2613,7 +2661,7 @@ DBG_MESSAGE( "karte_t::rotate90()", "called" );
 	//rotate plans in parallel posix thread ...
 	rotate90_new_plan = new planquadrat_t[cached_groesse_gitter_y*cached_groesse_gitter_x];
 
-	world_y_loop(&karte_t::rotate90_plans);
+	world_xy_loop(&karte_t::rotate90_plans, false);
 
 	grund_t::finish_rotate90();
 
@@ -2771,7 +2819,7 @@ bool karte_t::rem_fab(fabrik_t *fab)
 void karte_t::add_ausflugsziel(gebaeude_t *gb)
 {
 	assert(gb != NULL);
-	ausflugsziele.append( gb, gb->get_tile()->get_besch()->get_level(), 16 );
+	ausflugsziele.append( gb, gb->get_tile()->get_besch()->get_level() );
 
 	// Knightly : add links between this attraction and all cities
 	FOR(weighted_vector_tpl<stadt_t*>, const c, stadt) {
@@ -3295,32 +3343,27 @@ void karte_t::neuer_monat()
 
 	INT_CHECK("simworld 1282");
 
-//	DBG_MESSAGE("karte_t::neuer_monat()","players");
-	if (letzter_monat == 0 && !settings.is_freeplay()) {
-		// remove all player (but first and second) who went bankrupt during last year
-		for(int i=2; i<MAX_PLAYER_COUNT-1; i++) {
+	// spieler
+	for(uint i=0; i<MAX_PLAYER_COUNT; i++) {
+		if(i>=2  &&  letzter_monat == 0  &&  !settings.is_freeplay()  ) {
+			// remove all player (but first and second) who went bankrupt during last year
 			if(  spieler[i] != NULL  &&  spieler[i]->get_finance()->is_bancrupted()  )
 			{
-				delete spieler[i];
-				spieler[i] = 0;
-				// if currently still active => reset to default human
-				if(  i == active_player_nr  ) {
-					i = 0;
-					active_player = spieler[0];
-				}
+				remove_player(i);
 			}
 		}
-		// update the window
-		ki_kontroll_t* playerwin = (ki_kontroll_t*)win_get_magic(magic_ki_kontroll_t);
-		if (playerwin) {
-			playerwin->update_data();
+
+		if(  spieler[i] != NULL  ) {
+			// if returns false -> remove player
+			if (!spieler[i]->neuer_monat()) {
+				remove_player(i);
+			}
 		}
 	}
-	// spieler
-	for(int i=0; i<MAX_PLAYER_COUNT; i++) {
-		if(  spieler[i] != NULL  ) {
-			spieler[i]->neuer_monat();
-		}
+	// update the window
+	ki_kontroll_t* playerwin = (ki_kontroll_t*)win_get_magic(magic_ki_kontroll_t);
+	if(  playerwin  ) {
+		playerwin->update_data();
 	}
 
 	INT_CHECK("simworld 1289");
@@ -3453,8 +3496,8 @@ void karte_t::recalc_average_speed()
 			}
 		}
 
-		// city road check
-		if (weg_besch_t const* city_road_test = settings.get_city_road_type(get_timeline_year_month())) {
+		// city road (try to use always a timeline)
+		if (weg_besch_t const* city_road_test = settings.get_city_road_type(current_month) ) {
 			city_road = city_road_test;
 		}
 		else {
@@ -3737,7 +3780,7 @@ void karte_t::step()
 		werkzeug_t *w = create_tool( WKZ_ADD_MESSAGE_TOOL | SIMPLE_TOOL );
 		w->set_default_param( buf );
 		set_werkzeug( w, NULL );
-		// since init always returns false, it is save to delete immediately
+		// since init always returns false, it is safe to delete immediately
 		delete w;
 	}
 
@@ -4734,15 +4777,15 @@ DBG_MESSAGE("karte_t::laden()","Savegame version is %d", file.get_version());
 
 uint32 file_version;
 
-void karte_t::plans_laden_abschliessen(sint16 y_min, sint16 y_max)
+void karte_t::plans_laden_abschliessen(sint16 x_min, sint16 x_max, sint16 y_min, sint16 y_max)
 {
-	for( int y=y_min;  y<y_max;  y++  ) {
-		for (int x = 0; x < get_groesse_x(); x++) {
+	for(  int y = y_min;  y < y_max;  y++  ) {
+		for(  int x = x_min; x < x_max;  x++  ) {
 			const planquadrat_t *plan = lookup(koord(x,y));
 			const int boden_count = plan->get_boden_count();
-			for(int schicht=0; schicht<boden_count; schicht++) {
+			for(  int schicht = 0;  schicht < boden_count;  schicht++  ) {
 				grund_t *gr = plan->get_boden_bei(schicht);
-				for(int n=0; n<gr->get_top(); n++) {
+				for(  int n = 0;  n < gr->get_top();  n++  ) {
 					ding_t *d = gr->obj_bei(n);
 					if(d) {
 						d->laden_abschliessen();
@@ -4907,7 +4950,7 @@ DBG_MESSAGE("karte_t::laden()", "init player");
 	stadt.resize(settings.get_anzahl_staedte());
 	for (int i = 0; i < settings.get_anzahl_staedte(); ++i) {
 		stadt_t *s = new stadt_t(this, file);
-		stadt.append( s, s->get_einwohner(), 64 );
+		stadt.append( s, s->get_einwohner());
 	}
 
 	DBG_MESSAGE("karte_t::laden()","loading blocks");
@@ -5113,7 +5156,7 @@ DBG_MESSAGE("karte_t::laden()", "messages loaded");
 
 DBG_MESSAGE("karte_t::laden()", "%d ways loaded",weg_t::get_alle_wege().get_count());
 
-	world_y_loop( &karte_t::plans_laden_abschliessen );
+	world_xy_loop(&karte_t::plans_laden_abschliessen, true);
 
 DBG_MESSAGE("karte_t::laden()", "laden_abschliesen for tiles finished" );
 
@@ -5122,7 +5165,7 @@ DBG_MESSAGE("karte_t::laden()", "laden_abschliesen for tiles finished" );
 	FOR(weighted_vector_tpl<stadt_t*>, const s, stadt) {
 		s->laden_abschliessen();
 		s->recalc_target_cities();
-		new_weighted_stadt.append(s, s->get_einwohner(), 64);
+		new_weighted_stadt.append(s, s->get_einwohner());
 		INT_CHECK("simworld 1278");
 	}
 	swap(stadt, new_weighted_stadt);
@@ -5227,13 +5270,6 @@ DBG_MESSAGE("karte_t::laden()", "%d factories loaded", fab_list.get_count());
 		last_month_bev = finance_history_month[1][WORLD_CITICENS];
 	}
 
-#if 0
-	// preserve tick counter ...
-	ticks = ticks % karte_t::ticks_per_world_month;
-	next_month_ticks = karte_t::ticks_per_world_month;
-	letzter_monat %= 12;
-#endif
-
 	// finally: do we run a scenario?
 	if(file->get_version()>=99018) {
 		scenario->rdwr(file);
@@ -5273,16 +5309,16 @@ DBG_MESSAGE("karte_t::laden()", "%d factories loaded", fab_list.get_count());
 
 
 // recalcs all ground tiles on the map
-void karte_t::update_map_intern(sint16 y_min, sint16 y_max)
+void karte_t::update_map_intern(sint16 x_min, sint16 x_max, sint16 y_min, sint16 y_max)
 {
-	if(  (loaded_rotation+settings.get_rotation())&1  ) {  // 1 || 3  // ~14% faster loop blocking rotations 1 and 3
+	if(  (loaded_rotation + settings.get_rotation()) & 1  ) {  // 1 || 3  // ~14% faster loop blocking rotations 1 and 3
 		const int LOOP_BLOCK = 128;
-		for(  int xx=0;  xx<cached_groesse_gitter_x;  xx+=LOOP_BLOCK  ) {
-			for(  int yy=y_min;  yy<y_max;  yy+=LOOP_BLOCK  ) {
-				for(  int y=yy;  y<min(yy+LOOP_BLOCK,y_max);  y++  ) {
-					for(  int x=xx;  x<min(xx+LOOP_BLOCK,cached_groesse_gitter_x);  x++  ) {
-						const int nr = y*cached_groesse_gitter_x+x;
-						for(  uint i=0;  i<plan[nr].get_boden_count();  i++  ) {
+		for(  int xx = x_min;  xx < x_max;  xx += LOOP_BLOCK  ) {
+			for(  int yy = y_min;  yy < y_max;  yy += LOOP_BLOCK  ) {
+				for(  int y = yy;  y < min(yy + LOOP_BLOCK, y_max);  y++  ) {
+					for(  int x = xx;  x < min(xx + LOOP_BLOCK, x_max);  x++  ) {
+						const int nr = y * cached_groesse_gitter_x + x;
+						for(  uint i = 0;  i < plan[nr].get_boden_count();  i++  ) {
 							plan[nr].get_boden_bei(i)->calc_bild();
 						}
 					}
@@ -5291,10 +5327,10 @@ void karte_t::update_map_intern(sint16 y_min, sint16 y_max)
 		}
 	}
 	else {
-		for(  int y=y_min;  y<y_max;  y++  ) {
-			for(  int x=0;  x<cached_groesse_gitter_x;  x++  ) {
-				const int nr = y*cached_groesse_gitter_x+x;
-				for(  uint i=0;  i<plan[nr].get_boden_count();  i++  ) {
+		for(  int y = y_min;  y < y_max;  y++  ) {
+			for(  int x = x_min;  x < x_max;  x++  ) {
+				const int nr = y * cached_groesse_gitter_x + x;
+				for(  uint i = 0;  i < plan[nr].get_boden_count();  i++  ) {
 					plan[nr].get_boden_bei(i)->calc_bild();
 				}
 			}
@@ -5307,7 +5343,7 @@ void karte_t::update_map_intern(sint16 y_min, sint16 y_max)
 void karte_t::update_map()
 {
 	DBG_MESSAGE( "karte_t::update_map()", "" );
-	world_y_loop(&karte_t::update_map_intern);
+	world_xy_loop(&karte_t::update_map_intern, true);
 	set_dirty();
 }
 
@@ -5701,6 +5737,29 @@ const char *karte_t::new_spieler(uint8 new_player, uint8 type)
 	}
 	settings.set_player_type(new_player, type);
 	return NULL;
+}
+
+
+void karte_t::remove_player(uint8 player_nr)
+{
+	if ( player_nr!=1  &&  player_nr<PLAYER_UNOWNED  &&  spieler[player_nr]!=NULL) {
+		spieler[player_nr]->ai_bankrupt();
+		delete spieler[player_nr];
+		spieler[player_nr] = 0;
+		nwc_chg_player_t::company_removed(player_nr);
+		// if default human, create new instace of it (to avoid crashes)
+		if(  player_nr == 0  ) {
+			spieler[0] = new spieler_t( this, 0 );
+		}
+		// if currently still active => reset to default human
+		if(  player_nr == active_player_nr  ) {
+			active_player_nr = 0;
+			active_player = spieler[0];
+			if(  !umgebung_t::server  ) {
+				create_win( display_get_width()/2-128, 40, new news_img("Bankrott:\n\nDu bist bankrott.\n"), w_info, magic_none);
+			}
+		}
+	}
 }
 
 

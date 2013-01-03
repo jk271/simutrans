@@ -146,34 +146,40 @@ void spieler_t::add_money_message(const sint64 amount, const koord pos) {
 /**
  * amount has negative value = buy vehicle, positive value = vehicle sold
  */
-void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
+void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt)
+{
 	finance->book_new_vehicle(amount, wt);
 	add_money_message(amount, k);
 }
 
 
-void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
+void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index)
+{
 	finance->book_revenue(amount, wt, index);
 	add_money_message(amount, k);
 }
 
 
-void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
+void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt)
+{
 	finance->book_running_costs(amount, wt);
 }
 
 
-void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt){
+void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt)
+{
 	finance->book_toll_paid(amount, wt);
 }
 
 
-void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt){
+void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt)
+{
 	finance->book_toll_received(amount, wt);
 }
 
 
-void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index){
+void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index)
+{
 	finance->book_transported(amount, wt, index);
 }
 

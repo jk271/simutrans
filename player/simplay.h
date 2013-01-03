@@ -183,7 +183,7 @@ public:
 	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
 	/**
-	 * Add amount of transported passanger, mail, goods to accounting statistics
+	 * Add amount of transported passenger, mail, goods to accounting statistics
 	 * @param amount sum of money
 	 * @param wt way type
 	 * @param index 0 = passenger, 1 = mail, 2 = goods

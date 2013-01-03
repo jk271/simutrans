@@ -708,7 +708,7 @@ void vehikel_t::set_convoi(convoi_t *c)
  */
 uint16 vehikel_t::unload_freight(halthandle_t halt)
 {
-	uint16 sum_menge = 0;
+	uint16 sum_menge = 0, sum_delivered = 0, index = 0;
 
 	if(halt->is_enabled( get_fracht_typ() )) {
 		if (!fracht.empty()) {
@@ -741,10 +741,10 @@ uint16 vehikel_t::unload_freight(halthandle_t halt)
 					sum_menge += menge;
 					total_freight -= menge;
 
-					// book delivered goods to destination
+					index = tmp.get_index();
+
 					if(end_halt==halt) {
-						// passenger .. 0, mail .. 1, other .. 2
-						get_besitzer()->book_transported( menge, get_besch()->get_waytype(), tmp.get_index() );
+						sum_delivered += menge;
 					}
 
 					i = fracht.erase( i );
@@ -755,6 +755,16 @@ uint16 vehikel_t::unload_freight(halthandle_t halt)
 			}
 		}
 		INT_CHECK("vehikel_t::unload_freight");
+	}
+
+	if (sum_menge) {
+		// book transported goods
+		get_besitzer()->book_transported( sum_menge, get_besch()->get_waytype(), index );
+
+		if (sum_delivered) {
+			// book delivered goods to destination
+			get_besitzer()->book_delivered( sum_delivered, get_besch()->get_waytype(), index );
+		}
 	}
 
 	return sum_menge;

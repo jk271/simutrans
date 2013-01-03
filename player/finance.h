@@ -94,10 +94,15 @@ enum accounting_type_vehicles {
 	ATV_NON_FINANCIAL_ASSETS,	  ///< Value of vehicles owned by your company, was: COST_ASSETS
 	ATV_PROFIT_MARGIN,		  ///< ATV_OPERATING_PROFIT / ATV_REVENUE, was: COST_MARGIN
 
-	ATV_TRANSPORTED_PASSENGER, ///< Number of transported passengers, was: COST_TRANSPORTED_PAS
-	ATV_TRANSPORTED_MAIL,      ///< Number of transported mail, was: COST_TRANSPORTED_MAIL
-	ATV_TRANSPORTED_GOOD,      ///< Number of transported goods, was: COST_TRANSPORTED_GOOD
-	ATV_TRANSPORTED,           ///< Total number of transported cargo
+	ATV_TRANSPORTED_PASSENGER, ///< Number of transported passengers
+	ATV_TRANSPORTED_MAIL,      ///< Number of transported mail
+	ATV_TRANSPORTED_GOOD,      ///< Number of transported goods
+	ATV_TRANSPORTED,           ///< Total number of transported cargo, was COST_ALL_TRANSPORTED
+
+	ATV_DELIVERED_PASSENGER,   ///< Number of delivered passengers, was: COST_TRANSPORTED_PAS
+	ATV_DELIVERED_MAIL,        ///< Number of delivered mail, was: COST_TRANSPORTED_MAIL
+	ATV_DELIVERED_GOOD,        ///< Number of delivered goods, was: COST_TRANSPORTED_GOOD
+	ATV_DELIVERED,             ///< Total number of delivered cargo
 
 	ATV_MAX
 };
@@ -309,6 +314,25 @@ public:
 
 		veh_year[ tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
 		veh_month[tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
+	}
+
+
+	/**
+	 * Makes stats of amount of delivered passenger, mail and goods
+	 * @param amount sum of money
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
+	 */
+	inline void book_delivered(const sint64 amount, const waytype_t wt, int index){
+		const transport_type tt = translate_waytype_to_tt(wt);
+
+		// there are: passenger, mail, goods
+		if( (index < 0) || (index > 2)){
+			index = 2;
+		}
+
+		veh_year[ tt][0][ATV_DELIVERED_PASSENGER+index] += amount;
+		veh_month[tt][0][ATV_DELIVERED_PASSENGER+index] += amount;
 	}
 
 	/**

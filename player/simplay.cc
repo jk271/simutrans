@@ -183,6 +183,11 @@ void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int in
 	finance->book_transported(amount, wt, index);
 }
 
+void spieler_t::book_delivered(const sint64 amount, const waytype_t wt, int index)
+{
+	finance->book_delivered(amount, wt, index);
+}
+
 
 /* returns the name of the player; "player -1" sits in front of the screen
  * @author prissi

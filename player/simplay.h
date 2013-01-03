@@ -191,6 +191,14 @@ public:
 	 */
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
+	/**
+	 * Add amount of delivered passenger, mail, goods to accounting statistics
+	 * @param amount sum of money
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
+	 */
+	void book_delivered(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+
 	bool has_money_or_assets() const;
 
 	finance_t * get_finance() { return finance; }

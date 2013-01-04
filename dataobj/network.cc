@@ -52,7 +52,7 @@ void clear_command_queue()
 }
 
 #ifdef _WIN32
-#define RET_ERR_STR { FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM,NULL,WSAGetLastError(),MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),err_str,sizeof(err_str),NULL); err = err_str; return INVALID_SOCKET; }
+#define RET_ERR_STR { DWORD errnr = WSAGetLastError(); if( errnr!=0 ) FormatMessageA( FORMAT_MESSAGE_FROM_SYSTEM,NULL,errnr,MAKELANGID(LANG_NEUTRAL,SUBLANG_NEUTRAL),err_str,sizeof(err_str),NULL); err = err_str; return INVALID_SOCKET; }
 #else
 #define RET_ERR_STR { err = err_str; return INVALID_SOCKET; }
 #endif
@@ -477,11 +477,13 @@ bool network_init_server( int port )
 
 void network_set_socket_nodelay( SOCKET sock )
 {
-#if defined(TCP_NODELAY)  &&  !defined(__APPLE__)
+#if (defined(TCP_NODELAY)  &&  !defined(__APPLE__))  ||  COLOUR_DEPTH == 0
 	// do not wait to join small (command) packets when sending (may cause 200ms delay!)
+	// force this for dedicated servers
 	int b = 1;
 	setsockopt( sock, IPPROTO_TCP, TCP_NODELAY, (const char*)&b, sizeof(b) );
 #else
+#warning TCP_NODELAY not defined. Expect multiplayer problems.
 	(void)sock;
 #endif
 }

@@ -115,8 +115,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		}
 	}
 
-	haltcount = 0;
-
 	maintenance = 0;
 
 	welt->get_settings().set_default_player_color(this);
@@ -203,9 +201,13 @@ void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt){
 }
 
 
-void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index){
+void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index, const int destination_reached){
 	index = (index > 2) || (index < 0) ? 2 : index;
-	buche(amount, (player_cost) (COST_TRANSPORTED_PAS+index));
+	buche(amount, (player_cost) (COST_ALL_TRANSPORTED));
+	if (destination_reached)
+	{
+		buche(amount, (player_cost) (COST_TRANSPORTED_PAS+index));
+	}
 }
 
 
@@ -380,14 +382,14 @@ bool spieler_t::neuer_monat()
 	if(  umgebung_t::networkmode  &&  player_nr>1  &&  !automat  ) {
 		// find out dummy companies (i.e. no vehicle running within x months)
 		if(  welt->get_settings().get_remove_dummy_player_months()  &&  player_age >= welt->get_settings().get_remove_dummy_player_months()  )  {
-			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
 			bool no_cnv = true;
-			for(  uint16 m=0;  m<months  &&  no_cnv;  m++  ) {
-				no_cnv = finance_history_month[m][COST_ALL_CONVOIS]==0;
+			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
+			for(  uint16 m = 0;  m < months  &&  no_cnv;  m++  ) {
+				no_cnv &= finance_history_month[m][COST_ALL_CONVOIS]==0;
 			}
 			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS,  (welt->get_settings().get_remove_dummy_player_months() - 1) / 12 );
-			for(  uint16 y=0;  y<years  &&  no_cnv;  y++  ) {
-				no_cnv = finance_history_year[y][COST_ALL_CONVOIS]==0;
+			for(  uint16 y = 0;  y < years  &&  no_cnv;  y++  ) {
+				no_cnv &= finance_history_year[y][COST_ALL_CONVOIS]==0;
 			}
 			// never run a convoi => dummy
 			if(  no_cnv  ) {
@@ -397,20 +399,17 @@ bool spieler_t::neuer_monat()
 
 		// find out abandoned companies (no activity within x months)
 		if(  welt->get_settings().get_unprotect_abondoned_player_months()  &&  player_age >= welt->get_settings().get_unprotect_abondoned_player_months()  )  {
-			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
-			bool no_cnv = finance_history_month[0][COST_NEW_VEHICLE]==0;
-			bool no_construction = finance_history_month[0][COST_CONSTRUCTION]==0;
-			for(  uint16 m=1;  m<months  &&  no_cnv  &&  no_construction;  m++  ) {
-				no_cnv = finance_history_month[m][COST_NEW_VEHICLE]==0;
-				no_construction = finance_history_month[m][COST_CONSTRUCTION]==0;
+			bool abandoned = true;
+			const uint16 months = min( 12,  welt->get_settings().get_unprotect_abondoned_player_months() );
+			for(  uint16 m = 0;  m < months  &&  abandoned;  m++  ) {
+				abandoned &= finance_history_month[m][COST_NEW_VEHICLE]==0  &&  finance_history_month[m][COST_CONSTRUCTION]==0;
 			}
-			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS, (welt->get_settings().get_remove_dummy_player_months() - 1) / 12);
-			for(  uint16 y=0;  y<years  &&  no_cnv  &&  no_construction;  y++  ) {
-				no_cnv = finance_history_year[y][COST_NEW_VEHICLE]==0;
-				no_construction = finance_history_year[y][COST_CONSTRUCTION]==0;
+			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS, (welt->get_settings().get_unprotect_abondoned_player_months() - 1) / 12);
+			for(  uint16 y = 0;  y < years  &&  abandoned;  y++  ) {
+				abandoned &= finance_history_year[y][COST_NEW_VEHICLE]==0  &&  finance_history_year[y][COST_CONSTRUCTION]==0;
 			}
 			// never changed convoi, never built => abandoned
-			if(  no_cnv  ) {
+			if(  abandoned  ) {
 				pwd_hash.clear();
 				locked = false;
 				unlock_pending = false;
@@ -617,41 +616,6 @@ bool spieler_t::check_owner( const spieler_t *owner, const spieler_t *test )
 }
 
 
-/**
- * Erzeugt eine neue Haltestelle des Spielers an Position pos
- * @author Hj. Malthaner
- */
-halthandle_t spieler_t::halt_add(koord pos)
-{
-	halthandle_t halt = haltestelle_t::create(welt, pos, this);
-	halt_add(halt);
-	return halt;
-}
-
-
-/**
- * Erzeugt eine neue Haltestelle des Spielers an Position pos
- * @author Hj. Malthaner
- */
-void spieler_t::halt_add(halthandle_t halt)
-{
-	if(!halt_list.is_contained(halt)) {
-		halt_list.append(halt);
-		haltcount ++;
-	}
-}
-
-
-/**
- * Entfernt eine Haltestelle des Spielers aus der Liste
- * @author Hj. Malthaner
- */
-void spieler_t::halt_remove(halthandle_t halt)
-{
-	halt_list.remove(halt);
-}
-
-
 void spieler_t::ai_bankrupt()
 {
 	DBG_MESSAGE("spieler_t::ai_bankrupt()","Removing convois");
@@ -683,6 +647,14 @@ void spieler_t::ai_bankrupt()
 	headquarter_pos = koord::invalid;
 
 	// remove all stops
+	// first generate list of our stops
+	slist_tpl<halthandle_t> halt_list;
+	FOR(slist_tpl<halthandle_t>, const halt, haltestelle_t::get_alle_haltestellen()) {
+		if(  halt->get_besitzer()==this  ) {
+			halt_list.append(halt);
+		}
+	}
+	// ... and destroy them
 	while (!halt_list.empty()) {
 		halthandle_t h = halt_list.remove_first();
 		haltestelle_t::destroy( h );
@@ -830,7 +802,6 @@ void spieler_t::ai_bankrupt()
 void spieler_t::rdwr(loadsave_t *file)
 {
 	xml_tag_t sss( file, "spieler_t" );
-	sint32 halt_count=0;
 
 	file->rdwr_longlong(konto);
 	file->rdwr_long(konto_ueberzogen);
@@ -851,10 +822,15 @@ void spieler_t::rdwr(loadsave_t *file)
 		file->rdwr_byte(kennfarbe1);
 		file->rdwr_byte(kennfarbe2);
 	}
+
+	sint32 halt_count=0;
 	if(file->get_version()<99008) {
 		file->rdwr_long(halt_count);
 	}
-	file->rdwr_long(haltcount);
+	if(file->get_version()<=112002) {
+		sint32 haltcount = 0;
+		file->rdwr_long(haltcount);
+	}
 
 	if (file->get_version() < 84008) {
 		// not so old save game
@@ -991,11 +967,6 @@ void spieler_t::rdwr(loadsave_t *file)
 		k.rdwr( file );
 	}
 
-	// Hajo: sanity checks
-	if(halt_count < 0  ||  haltcount < 0) {
-		dbg->fatal("spieler_t::rdwr()", "Halt count is out of bounds: %d -> corrupt savegame?", halt_count|haltcount);
-	}
-
 	if(file->is_loading()) {
 
 		/* prior versions calculated margin incorrectly.
@@ -1021,14 +992,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		// halt_count will be zero for newer savegames
 DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this ),halt_count);
 		for(int i=0; i<halt_count; i++) {
-			halthandle_t halt = haltestelle_t::create( welt, file );
-			// it was possible to have stops without ground: do not load them
-			if(halt.is_bound()) {
-				halt_list.insert(halt);
-				if(!halt->existiert_in_welt()) {
-					dbg->warning("spieler_t::rdwr()","empty halt id %i qill be ignored", halt.get_id() );
-				}
-			}
+			haltestelle_t::create( welt, file );
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);

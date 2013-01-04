@@ -63,18 +63,10 @@ inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
 class spieler_t
 {
 public:
-	enum { MAX_KONTO_VERZUG = 3 };
-
 	enum { EMPTY=0, HUMAN=1, AI_GOODS=2, AI_PASSENGER=3, MAX_AI, PASSWORD_PROTECTED=128 };
 
 protected:
 	char spieler_name_buf[256];
-
-	/*
-	 * holds total number of all halts, ever built
-	 * @author hsiegeln
-	 */
-	sint32 haltcount;
 
 	/**
 	* Finance History - will supercede the finances by Owen Rudge
@@ -116,8 +108,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	sint32 konto_ueberzogen;
-
-	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
 
 	class income_message_t {
 	public:
@@ -255,8 +245,9 @@ public:
 	 * @papam tt type of transport
 	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
 	 *                  other same as in the pak files)
+	 * @param destinatio_reached: This is the last station of transport:  0 - this is not endstation, 1 this is endstation
 	 */
-	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2, const int destination_reached=0);
 
 	virtual bool set_active( bool b ) { return automat = b; }
 
@@ -373,30 +364,6 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	virtual void neues_jahr() {}
-
-	/**
-	 * Erzeugt eine neue Haltestelle des Spielers an Position pos
-	 * @author Hj. Malthaner
-	 */
-	halthandle_t halt_add(koord pos);
-
-	/**
-	 * needed to transfer ownership
-	 * @author prissi
-	 */
-	void halt_add(halthandle_t h);
-
-	/**
-	 * Entfernt eine Haltestelle des Spielers aus der Liste
-	 * @author Hj. Malthaner
-	 */
-	void halt_remove(halthandle_t halt);
-
-	/**
-	 * Gets haltcount, for naming purposes
-	 * @author hsiegeln
-	 */
-	int get_haltcount() const { return haltcount; }
 
 	/**
 	 * Lädt oder speichert Zustand des Spielers

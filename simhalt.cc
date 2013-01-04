@@ -374,11 +374,6 @@ haltestelle_t::~haltestelle_t()
 		dbg->error("haltestelle_t::~haltestelle_t()", "handle %i found %i times in haltlist!", self.get_id(), i );
 	}
 
-	// do not forget the players list ...
-	if(besitzer_p!=NULL) {
-		besitzer_p->halt_remove(self);
-	}
-
 	// free name
 	set_name(NULL);
 
@@ -552,9 +547,15 @@ char* haltestelle_t::create_name(koord const k, char const* const typ)
 
 	// this fails only, if there are no towns at all!
 	if(stadt==NULL) {
-		// get a default name
-		buf.printf( translator::translate("land stop %i %s",lang), get_besitzer()->get_haltcount(), stop );
-		return strdup(buf);
+		for(  uint32 i=1;  i<65536;  i++  ) {
+			// get a default name
+			buf.printf( translator::translate("land stop %i %s",lang), i, stop );
+			if(  !all_names.get(buf).is_bound()  ) {
+				return strdup(buf);
+			}
+			buf.clear();
+		}
+		return strdup("Unnamed");
 	}
 
 	// now we have a city
@@ -2142,9 +2143,8 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 			}
 		}
 		// transfer ownership
-		besitzer_p->halt_remove(self);
+		spieler_t::accounting( sp, -total_costs*60, get_basis_pos(), COST_CONSTRUCTION);
 		besitzer_p = public_owner;
-		public_owner->halt_add(self);
 	}
 
 	// set name to name of first public stop

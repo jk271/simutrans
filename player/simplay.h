@@ -227,8 +227,9 @@ public:
 	 * @papam tt type of transport
 	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
 	 *                  other same as in the pak files)
+	 * @param destinatio_reached: This is the last station of transport:  0 - this is not endstation, 1 this is endstation
 	 */
-	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
+	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2, const int destination_reached=0);
 
 	virtual bool set_active( bool b ) { return automat = b; }
 

@@ -1990,6 +1990,7 @@ void wkz_wegebau_t::mark_tiles( karte_t *welt, spieler_t *sp, const koord3d &sta
 				way->set_bild( besch->get_bild_nr(zeige,0) );
 			}
 			gr->obj_add( way );
+			way->set_yoff(-gr->get_weg_yoff() );
 			marked.insert( way );
 			way->mark_image_dirty( way->get_bild(), 0 );
 		}
@@ -3291,7 +3292,7 @@ DBG_MESSAGE("wkz_dockbau()","building dock from square (%d,%d) to (%d,%d)", pos.
 	bool neu = !halt.is_bound();
 
 	if(neu) { // neues dock
-		halt = sp->halt_add(pos);
+		halt = haltestelle_t::create(welt, pos, sp);
 	}
 	hausbauer_t::baue(welt, halt->get_besitzer(), bau_pos, layout, besch, &halt);
 	sint64 costs = welt->get_settings().cst_multiply_dock * besch->get_level();
@@ -3494,7 +3495,7 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 	bool neu = !halt.is_bound();
 
 	if(neu) {
-		halt = sp->halt_add(pos);
+		halt = haltestelle_t::create(welt, pos, sp);
 	}
 	hausbauer_t::neues_gebaeude( welt, halt->get_besitzer(), bd->get_pos(), layout, besch, &halt);
 	halt->recalc_station_type();

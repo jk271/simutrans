@@ -224,7 +224,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	chart.set_background(MN_GREY1);
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int type = cost_type[i];
-		chart.add_curve( cost_type_color[i], sp->get_finance_history_year(), MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
+		chart.add_curve( cost_type_color[i], sp->get_finance_history_year(), OLD_MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
 	}
 	//CHART YEAR END
 
@@ -236,7 +236,7 @@ money_frame_t::money_frame_t(spieler_t *sp)
 	mchart.set_background(MN_GREY1);
 	for (int i = 0; i<MAX_PLAYER_COST_BUTTON; i++) {
 		const int type = cost_type[i];
-		mchart.add_curve( cost_type_color[i], sp->get_finance_history_month(), MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
+		mchart.add_curve( cost_type_color[i], sp->get_finance_history_month(), OLD_MAX_PLAYER_COST, type, 12, (type < COST_ALL_TRANSPORTED  ||  type==COST_POWERLINES)  ||  type==COST_WAY_TOLLS  ? MONEY: STANDARD, false, true, (type < COST_ALL_TRANSPORTED) ||  type==COST_POWERLINES  ||  type==COST_WAY_TOLLS ? 2 : 0 );
 	}
 	//CHART MONTH END
 

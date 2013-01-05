@@ -791,7 +791,7 @@ DBG_MESSAGE("wkz_remover()", "removing way");
 	}
 
 	if(  cost_sum > 0  ) {
-		sp->book_construction_costs(-cost_sum, pos.get_2d(), wt);
+		spieler_t::book_construction_costs(sp, -cost_sum, pos.get_2d(), wt);
 		if(  gr->get_top()>0  ) {
 			return true;
 		}
@@ -1617,7 +1617,7 @@ const char *wkz_buy_house_t::work( karte_t *welt, spieler_t *sp, koord3d pos)
 					spieler_t::add_maintenance(old_owner, -maint);
 					spieler_t::add_maintenance(sp,        +maint);
 					gb->set_besitzer(sp);
-					sp->book_construction_costs(-maint, k + pos.get_2d(), gb->get_waytype());
+					spieler_t::book_construction_costs(sp, -maint, k + pos.get_2d(), gb->get_waytype());
 				}
 			}
 		}
@@ -3147,7 +3147,7 @@ DBG_MESSAGE("wkz_station_building_aux()", "building mail office/station building
 		cost -= (s.maint_building * factor * 60);
 	}
 	// difficult to distinguish correctly most suitable waytype
-	sp->book_construction_costs( cost, pos, besch->get_finance_waytype());
+	spieler_t::book_construction_costs(sp,  cost, pos, besch->get_finance_waytype());
 	halt->recalc_station_type();
 
 	return NULL;
@@ -3301,7 +3301,7 @@ DBG_MESSAGE("wkz_dockbau()","building dock from square (%d,%d) to (%d,%d)", pos.
 	}
 	for(int i=0;  i<=len;  i++ ) {
 		koord p=pos-dx*i;
-		sp->book_construction_costs( costs, p, water_wt);
+		spieler_t::book_construction_costs(sp,  costs, p, water_wt);
 	}
 
 	halt->recalc_station_type();
@@ -3512,7 +3512,7 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 		// public stops are expensive!
 		cost -= (welt->get_settings().maint_building * besch->get_level() * besch->get_b() * besch->get_h() * 60);
 	}
-	sp->book_construction_costs( cost, pos, wegtype);
+	spieler_t::book_construction_costs(sp,  cost, pos, wegtype);
 	if(umgebung_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==pos) {
 		// since we are larger now ...
 		halt->mark_unmark_coverage( true );
@@ -4271,7 +4271,7 @@ const char *wkz_depot_t::wkz_depot_aux(karte_t *welt, spieler_t *sp, koord3d pos
 				case ribi_t::west:  layout = 3;    break;
 			}
 			hausbauer_t::neues_gebaeude( welt, sp, bd->get_pos(), layout, besch );
-			sp->book_construction_costs(cost, pos.get_2d(), besch->get_finance_waytype());
+			spieler_t::book_construction_costs(sp, cost, pos.get_2d(), besch->get_finance_waytype());
 			if(is_local_execution()  &&  sp == welt->get_active_player()) {
 				welt->set_werkzeug( general_tool[WKZ_ABFRAGE], sp );
 			}
@@ -4908,7 +4908,7 @@ DBG_MESSAGE("wkz_headquarter()", "building headquarter at (%d,%d)", pos.x, pos.y
 		if (built) {
 			// sometimes those are not correct after rotation ...
 			sp->add_headquarter(besch->get_extra()+1, hq->get_pos().get_2d()-hq->get_tile()->get_offset() );
-			sp->book_construction_costs( cost, pos.get_2d(), ignore_wt);
+			spieler_t::book_construction_costs(sp,  cost, pos.get_2d(), ignore_wt);
 			// tell the world of it ...
 			cbuffer_t buf;
 			buf.printf( translator::translate("%s s\nheadquarter now\nat (%i,%i)."), sp->get_name(), pos.x, pos.y );

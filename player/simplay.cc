@@ -556,14 +556,6 @@ void spieler_t::buche(sint64 const betrag, player_cost const type)
 }
 
 
-void spieler_t::accounting(spieler_t* const sp, sint64 const amount, koord const k, player_cost const pc)
-{
-	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
-		sp->buche( amount, k, pc );
-	}
-}
-
-
 bool spieler_t::check_owner( const spieler_t *owner, const spieler_t *test )
 {
 	return owner == test  ||  owner == NULL  ||  test == welt->get_spieler(1);

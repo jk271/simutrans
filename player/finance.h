@@ -11,19 +11,21 @@
 #ifndef finance_h
 #define finance_h
 
+#define PATCH_SAVEGAME_VERSION (113000)
+
 #include <assert.h>
 
 #include "../simtypes.h"
 
 // for compatibility with old versions
-#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
-#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
+#define OLD_MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
+#define OLD_MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_YEARS
+/** this HAS TO be greater or equal than OLD_MAX_PLAYER_HISTORY_YEARS
 */
 #define MAX_PLAYER_HISTORY_YEARS2  (25) // number of years to keep history
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_MONTHS
+/** this HAS TO be greater or equal than OLD_MAX_PLAYER_HISTORY_MONTHS
 */
 #define MAX_PLAYER_HISTORY_MONTHS2  (25) // number of months to keep history
 
@@ -64,10 +66,10 @@ enum transport_type {
  * has_money() or has_convoi()
  */
 enum accounting_type_common {
-	ATC_CASH = 0,		// Cash, COST_CASH
-	ATC_NETWEALTH,		// Total Cash + Assets, COST_NETWEALTH
-	ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS; good for ?? what ??
-	ATC_SCENARIO_COMPLETED, // scenario success (only useful if there is one ... ), COST_SCENARIO_COMPLETED
+	ATC_CASH = 0,		///< Cash
+	ATC_NETWEALTH,		///< Total Cash + Assets
+	ATC_ALL_CONVOIS,        ///< Convoy count
+	ATC_SCENARIO_COMPLETED, ///< Scenario success (only useful if there is one ... )
 	ATC_INTERESTS,		// Experimental has it -> making savegame format a little bit more compatible between standard and experimental, COST_INTERESTS
 	ATC_CREDIT_LIMIT, 	// Experimental, too, COST_CREDIT_LIMITS
 	ATC_TAX,		// for future use, at least planed in exp.
@@ -94,14 +96,14 @@ enum accounting_type_vehicles {
 	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
 	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
 	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
-	ATV_TOLL_PAYED,			// toll paid by you to another player
-	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAYED
+	ATV_TOLL_PAID,			// toll paid by you to another player
+	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAID
 	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
 	ATV_NEW_VEHICLE,			// New vehicles
 	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here
 	ATV_PROFIT,			// = AT_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), COST_PROFIT
-	ATV_WAY_TOLL,			// = ATV_TOLL_PAYED + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
-	ATV_NON_FINANTIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
+	ATV_WAY_TOLL,			// = ATV_TOLL_PAID + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
+	ATV_NON_FINANCIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
 	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
 
 
@@ -139,7 +141,7 @@ enum player_cost {
 	COST_ALL_CONVOIS,		// number of convois
 	COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
 	COST_WAY_TOLLS,
-	MAX_PLAYER_COST
+	OLD_MAX_PLAYER_COST
 };
 
 
@@ -226,7 +228,7 @@ class finance_t {
 	sint32 maintenance[TT_MAX];
 
 	/**
- 	 * monthly vehicle maintenance cost
+	 * Monthly vehicle maintenance cost per transport type.
  	 */
 	sint32 vehicle_maintenance[TT_MAX];
 
@@ -239,11 +241,8 @@ public:
 	 * @param wt way type, e.g. tram_wt
 	 * @utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
 	 */
-	inline void book_construction_costs(const sint64 amount, const waytype_t wt, const int utyp){
+	inline void book_construction_costs(const sint64 amount, const waytype_t wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
-		if(( tt == TT_OTHER ) && ( utyp !=0 ) ) {
-			tt = translate_utyp_to_tt(utyp);
-		}
 		veh_year[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 		veh_month[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 
@@ -274,7 +273,7 @@ public:
 	}
 
 	/**
-	 * Account purchase of new vehicle: Subracts money, increases assets.
+	 * Account purchase of new vehicle: Subtracts money, increases assets.
 	 * @param amount money paid for vehicle
 	 * @param wt - waytype of vehicle
 	 */
@@ -283,8 +282,8 @@ public:
 
 		veh_year[ tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
 		veh_month[tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
-		veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
-		veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+		veh_year[ tt][0][ATV_NON_FINANCIAL_ASSETS] -= (sint64) amount;
+		veh_month[tt][0][ATV_NON_FINANCIAL_ASSETS] -= (sint64) amount;
 
 		account_balance += amount;
 	}
@@ -293,7 +292,7 @@ public:
 	 * Accounts income from transport of passenger, mail, goods or electricity supply
 	 * @param amount earned money
 	 * @param wt waytype of vehicle
-	 * @param index 0 = passenger, 1 = mail, 2 = goods
+	 * @param index 0 = passenger, 1 = mail, 2 = goods (or electricity)
 	 */
 	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index=2){
 		const transport_type tt = translate_waytype_to_tt(wt);
@@ -325,8 +324,8 @@ public:
 	 */
 	inline void book_toll_paid(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
-		veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
-		veh_month[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
+		veh_year[tt][0][ATV_TOLL_PAID] += (sint64) amount;
+		veh_month[tt][0][ATV_TOLL_PAID] += (sint64) amount;
 		account_balance += amount;
 	}
 
@@ -374,15 +373,15 @@ public:
 	void calc_finance_history();
 
 	/* workaround, used for charts in money_frame */
-	void calc_flat_view_month(int tt, sint64 (&flat_view_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]);
-	void calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST]);
+	void calc_flat_view_month(int tt, sint64 (&flat_view_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]);
+	void calc_flat_view_year( int tt, sint64 (&flat_view_year)[ OLD_MAX_PLAYER_HISTORY_YEARS ][OLD_MAX_PLAYER_COST]);
 
 	/**
  	 * Translates finance statistisc from new format to old (version<=111) one.
  	 * Used for saving data in old format
  	 */
-	void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void export_to_cost_month(sint64 (&finance_history_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]);
+	void export_to_cost_year( sint64 (&finance_history_year)[OLD_MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST]);
 
 	/**
 	 * Returns amount of money on account (also known as konto)
@@ -469,15 +468,15 @@ public:
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
-	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
+	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANCIAL_ASSETS) ) > 0 ); }
 
 	/**
  	 * Translates finance statistisc from old (version<=111) format to new one.
  	 * Used for loading data from old format
  	 * @author jk271
  	 */
-	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void import_from_cost_month(const sint64 (& finance_history_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]);
+	void import_from_cost_year( const sint64 (& finance_history_year)[OLD_MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST]);
 
 	/**
 	 * returns true if company bancrupted
@@ -493,8 +492,13 @@ public:
 	void roll_history_year();
 	void roll_history_month();
 
-	/* loads or saves finance statistic */
+	/**
+	 * loads or saves finance statistic 
+	 */
 	void rdwr(loadsave_t *file);
+
+	/// loads statistics of old versions
+	void rdwr_compatibility(loadsave_t *file);
 
 	/**
 	 * Sets account balance. This method enables to load old game format.

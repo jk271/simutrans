@@ -398,8 +398,8 @@ public:
 	void calc_finance_history();
 
 	/**
-	* Calculates the assets of the player
-	*/
+	 * Calculates the assets of the player
+	 */
 	void calc_assets();
 
 	/**

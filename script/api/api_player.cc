@@ -25,7 +25,7 @@ vector_tpl<sint64> const& get_player_stat(spieler_t *sp, sint32 INDEX)
 void_t change_player_account(spieler_t *sp, sint64 delta)
 {
 	if (sp) {
-		sp->get_finance()->book_revenue(delta, ignore_wt);
+		sp->book_revenue(delta, koord::invalid);
 	}
 	return void_t();
 }

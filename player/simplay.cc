@@ -112,7 +112,7 @@ void spieler_t::add_maintenance(sint64 change, waytype_t const wt) {
 
 
 void spieler_t::add_money_message(const sint64 amount, const koord pos) {
-	if(amount != 0) {
+	if(( amount != 0 ) && (pos != koord::invalid)) {
 		if(  koord_distance(welt->get_world_position(),pos)<2*(uint32)(display_get_width()/get_tile_raster_width())+3  ) {
 			// only display, if near the screen ...
 			add_message(pos, amount);

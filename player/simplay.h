@@ -71,13 +71,6 @@ protected:
 	// when was the company founded
 	uint16 player_age;
 
-	/**
-	 * Zählt wie viele Monate das Konto schon ueberzogen ist
-	 *
-	 * @author Hj. Malthaner
-	 */
-	sint32 konto_ueberzogen;
-
 	class income_message_t {
 	public:
 		char str[33];
@@ -351,12 +344,6 @@ public:
 	* @author hsiegeln
 	*/
 	static karte_t *get_welt() { return welt; }
-
-	/**
-	* Calculates the finance history for player
-	* @author hsiegeln
-	*/
-	void calc_finance_history();
 
 	/**
 	* Calculates the assets of the player

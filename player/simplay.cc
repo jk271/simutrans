@@ -99,7 +99,13 @@ spieler_t::~spieler_t()
 
 
 void spieler_t::add_maintenance(sint64 change, waytype_t const wt) {
-	spieler_t::add_maintenance(this, (sint32) change);  // This will we superseded
+#if MULTI_THREAD>1
+	pthread_mutex_lock( &laden_abschl_mutex );
+#endif
+	finance->book_maintenance(change, wt);
+#if MULTI_THREAD>1
+	pthread_mutex_unlock( &laden_abschl_mutex );
+#endif
 }
 
 

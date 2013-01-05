@@ -269,11 +269,8 @@ public:
 	* @param wt - waytype for accounting purposes
 	* @param utyp - used for distinguishing of transport type of buildings. Used with buildings only.
 	*/
-	inline sint32 book_maintenance(sint32 change, waytype_t const wt, const int utyp) {
+	inline sint32 book_maintenance(sint32 change, waytype_t const wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
-		if(( tt ==TT_OTHER ) && ( utyp !=0 ) ) {
-			tt = translate_utyp_to_tt(utyp);
-		}
 		assert(tt!=TT_ALL);
 		maintenance[tt] += change;
 		maintenance[TT_ALL] += change;

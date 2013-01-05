@@ -466,7 +466,7 @@ bool finance_t::is_bancrupted() const {
 		com_year[0][ATC_NETWEALTH] <=0  &&
 		veh_year[TT_ALL][0][ATV_INFRASTRUCTURE_MAINTENANCE] == 0  &&
 		maintenance[TT_ALL] == 0  &&
-		com_year[0][COST_ALL_CONVOIS] == 0
+		com_year[0][ATC_ALL_CONVOIS] == 0
 	);
 }
 

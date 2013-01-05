@@ -11,6 +11,8 @@
 #ifndef finance_h
 #define finance_h
 
+#define PATCH_SAVEGAME_VERSION (113000)
+
 #include <assert.h>
 
 #include "../simtypes.h"
@@ -18,6 +20,9 @@
 // for compatibility with old versions
 #define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
 #define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
+
+/// for compatibility with old versions
+#define OLD_MAX_PLAYER_COST (19)
 
 /** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_YEARS
 */
@@ -29,10 +34,10 @@
 
 
 /**
- * type of transport used in accounting statistics
+ * Type of transport used in accounting statistics.
  * waytype_t was not used because of values assigned to air_wt and powerline_wt.
- * There are also building like railway station that can be distinguished
- * by transport_type and can not be distinguished by waytype_t
+ * There are also buildings like railway station that can be distinguished
+ * by transport_type and can not be distinguished by waytype_t.
  * @author jk271
  */
 enum transport_type {
@@ -45,34 +50,28 @@ enum transport_type {
 	TT_TRAM,
 	TT_NARROWGAUGE,
 	TT_AIR,
-	TT_OTHER, // everything other that can not be differentiated (e.g. houses), not powerlines
-	TT_MAX_VEH = TT_OTHER, //
+	TT_OTHER,  ///< everything else that can not be differentiated (e.g. houses), not powerlines
+	TT_MAX_VEH = TT_OTHER,
 	TT_POWERLINE,
 	TT_MAX
 };
 
 
 /**
- * supersedes COST_ types, that CAN NOT be distinguished by type of transport-
+ * ATC = accounting type commmon (common means data common for all transport types).
+ *
+ * Supersedes COST_ types, that CAN NOT be distinguished by type of transport-
  * - the data are concerning to whole company
- *
- * ATC = accounting type commmon (common means data common for all transport types)
- *
  * These constants are intended for use in class finance_t (and in money_frame_t
  * or in scriped scenarios).
  * If you need to use it in another place consider addition of new method like
  * has_money() or has_convoi()
  */
 enum accounting_type_common {
-	ATC_CASH = 0,		// Cash, COST_CASH
-	ATC_NETWEALTH,		// Total Cash + Assets, COST_NETWEALTH
-	ATC_ALL_CONVOIS,        // COST_ALL_CONVOIS; good for ?? what ??
-	ATC_SCENARIO_COMPLETED, // scenario success (only useful if there is one ... ), COST_SCENARIO_COMPLETED
-	ATC_INTERESTS,		// Experimental has it -> making savegame format a little bit more compatible between standard and experimental, COST_INTERESTS
-	ATC_CREDIT_LIMIT, 	// Experimental, too, COST_CREDIT_LIMITS
-	ATC_TAX,		// for future use, at least planed in exp.
-	ATC_ROA,		// return on assets = total revenue / all assets ; ( all assets = non-finantial assets + cash); for future use
-	ATC_ROE,		// return on equity = total tevenue / (all assets - debths); for future use
+	ATC_CASH = 0,		///< Cash
+	ATC_NETWEALTH,		///< Total Cash + Assets
+	ATC_ALL_CONVOIS,        ///< Convoy count
+	ATC_SCENARIO_COMPLETED, ///< Scenario success (only useful if there is one ... )
 	ATC_MAX
 };
 
@@ -94,14 +93,14 @@ enum accounting_type_vehicles {
 	ATV_RUNNING_COST,               // distance based running costs, COST_VEHICLE_RUN
 	ATV_VEHICLE_MAINTENANCE,        // monthly vehicle maintenance
 	ATV_INFRASTRUCTURE_MAINTENANCE,	// infrastructure maintenance (roads, railway, ...), COST_MAINTENENCE
-	ATV_TOLL_PAYED,			// toll paid by you to another player
-	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAYED
+	ATV_TOLL_PAID,			// toll paid by you to another player
+	ATV_EXPENDITURE,		// total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAID
 	ATV_OPERATING_PROFIT,		// = AT_REVENUE - AT_EXPENDITURE, COST_OPERATING_PROFIT
 	ATV_NEW_VEHICLE,			// New vehicles
 	ATV_CONSTRUCTION_COST,		// costruction cost, COST_COSTRUCTION mapped here
 	ATV_PROFIT,			// = AT_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), COST_PROFIT
-	ATV_WAY_TOLL,			// = ATV_TOLL_PAYED + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
-	ATV_NON_FINANTIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
+	ATV_WAY_TOLL,			// = ATV_TOLL_PAID + ATV_TOLL_RECEIVED; ATV_WAY_TOLL = COST_WAY_TOLLS
+	ATV_NON_FINANCIAL_ASSETS,	// value of vehicles owned by your company, COST_ASSETS
 	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
 
 
@@ -110,36 +109,12 @@ enum accounting_type_vehicles {
 	ATV_TRANSPORTED_GOOD,      // number of transported goods
 	ATV_TRANSPORTED,           // COST_ALL_TRANSPORTED mapped here
 
-	ATV_TRANSPORTED2_PASSENGER, // number of transported passanger that reached end station, COST_TRANSPORTED_PAS
-	ATV_TRANSPORTED2_MAIL,      // number of transported mail that reached end station, COST_TRANSPORTED_MAIL
-	ATV_TRANSPORTED2_GOOD,      // number of transported goods that reached end station, COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
-	ATV_TRANSPORTED2,           // sum of previous 3 items
+	ATV_DELIVERED_PASSENGER, // number of transported passanger that reached end station, COST_TRANSPORTED_PAS
+	ATV_DELIVERED_MAIL,      // number of transported mail that reached end station, COST_TRANSPORTED_MAIL
+	ATV_DELIVERED_GOOD,      // number of transported goods that reached end station, COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
+	ATV_DELIVERED,           // sum of previous 3 items
 
 	ATV_MAX
-};
-
-
-enum player_cost {
-	COST_CONSTRUCTION=0,// Construction
-	COST_VEHICLE_RUN,   // Vehicle running costs
-	COST_NEW_VEHICLE,   // New vehicles
-	COST_INCOME,        // Income
-	COST_MAINTENANCE,   // Upkeep
-	COST_ASSETS,        // value of all vehicles and buildings
-	COST_CASH,          // Cash
-	COST_NETWEALTH,     // Total Cash + Assets
-	COST_PROFIT,        // COST_POWERLINES+COST_INCOME-(COST_CONSTRUCTION+COST_VEHICLE_RUN+COST_NEW_VEHICLE+COST_MAINTENANCE)
-	COST_OPERATING_PROFIT, // COST_POWERLINES+COST_INCOME-(COST_VEHICLE_RUN+COST_MAINTENANCE)
-	COST_MARGIN,        // COST_OPERATING_PROFIT/COST_INCOME
-	COST_ALL_TRANSPORTED, // all transported goods
-	COST_POWERLINES,	  // revenue from the power grid
-	COST_TRANSPORTED_PAS,	// number of passengers that actually reached destination
-	COST_TRANSPORTED_MAIL,
-	COST_TRANSPORTED_GOOD,
-	COST_ALL_CONVOIS,		// number of convois
-	COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
-	COST_WAY_TOLLS,
-	MAX_PLAYER_COST
 };
 
 
@@ -169,10 +144,7 @@ inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
 
 
 /**
- * Finance_history since version around 111.5.
- * Having all finance in one class is better
- * than having it in more places in spieler_t.
- * Another benefit: It leads to shorter variable names.
+ * Class to encapsulate all company related statistics.
  */
 class finance_t {
 	/** transport company */
@@ -181,72 +153,63 @@ class finance_t {
 	karte_t * world;
 
 	/**
- 	* Der Kontostand.
- 	* Amount of money, previously known as "konto"
- 	* @author Hj. Malthaner
- 	*/
+ 	 * Amount of money, previously known as "konto"
+ 	 * @author Hj. Malthaner
+ 	 */
 	sint64 account_balance;
 
 	/**
-	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 * Shows how many months you have been in red numbers.
-	 *
 	 * @author Hj. Malthaner
 	 */
 	sint32 account_overdrawn;
 
 	/**
-	 * remember the starting money Used e.g. in scenarios.
+	 * Remember the starting money, used e.g. in scenarios.
 	 */
 	sint64 starting_money;
 
 	/**
-	 * finance history - will supersede the finance_history by hsiegeln
-	 * from version 111 or 112
-	 * containes values having relation with whole company but not with particular
-	 * type of transport (com - common)
- 	* @author jk271
- 	*/
+	 * Contains values having relation with whole company but not with particular
+	 * type of transport (com - common).
+ 	 */
 	sint64 com_year[MAX_PLAYER_HISTORY_YEARS2][ATC_MAX];
 
 	/**
-	* monthly finance history, data not distinguishable by transport type
-	*/
-	sint64 com_month[MAX_PLAYER_HISTORY_MONTHS2][ATC_MAX];
+	 * Monthly finance history, data not distinguishable by transport type.
+	 */
+	sint64 com_month[MAX_PLAYER_HISTORY_MONTHS][ATC_MAX];
 
 	/**
- 	* finance history having relation with particular type of service
- 	* @author jk271
- 	*/
-	sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS2][ATV_MAX];
-	sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS2][ATV_MAX];
+	 * Finance history having relation with particular type of service
+ 	 * @author jk271
+ 	 */
+	sint64 veh_year[TT_MAX][MAX_PLAYER_HISTORY_YEARS][ATV_MAX];
+	sint64 veh_month[TT_MAX][MAX_PLAYER_HISTORY_MONTHS][ATV_MAX];
 
 	/**
- 	* Monthly maintenance cost
- 	* @author Hj. Malthaner
- 	*/
+ 	 * Monthly maintenance cost
+ 	 * @author Hj. Malthaner
+ 	 */
 	sint32 maintenance[TT_MAX];
 
 	/**
- 	* monthly vehicle maintenance cost
- 	* @author jk271
- 	*/
+	 * Monthly vehicle maintenance cost per transport type.
+ 	 * @author jk271
+ 	 */
 	sint32 vehicle_maintenance[TT_MAX];
 
 public:
 	finance_t(spieler_t * _player, karte_t * _world);
 
 	/**
-	* Adds construction cost to finance stats.
-	* @param amount sum of money
-	* @param wt way type, e.g. tram_wt
-	* @utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
-	*/
-	inline void book_construction_costs(const sint64 amount, const waytype_t wt, const int utyp){
+	 * Adds construction cost to finance stats.
+	 * @param amount sum of money
+	 * @param wt way type, e.g. tram_wt
+	 * @param utyp used for distinguishing tranport type of building for accounting purposes, used with buildings only.
+	 */
+	inline void book_construction_costs(const sint64 amount, const waytype_t wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
-		if(( tt == TT_OTHER ) && ( utyp !=0 ) ) {
-			tt = translate_utyp_to_tt(utyp);
-		}
 		veh_year[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 		veh_month[tt][0][ATV_CONSTRUCTION_COST] += (sint64) amount;
 
@@ -254,9 +217,7 @@ public:
 	}
 
 	/**
-	 * sums up "count" with number of convois in statistics,
-	 * supersedes buche( count, COST_ALL_CONVOIS)
-	 * @author jk271
+	 * Adds count to number of convois in statistics.
 	 */
 	inline void book_convoi_number( const int count ) {
 		com_year[0][ATC_ALL_CONVOIS] += count;
@@ -264,42 +225,41 @@ public:
 	}
 
 	/**
-	* Adds/subracts maintenance into/from finance stats.
-	* @param change monthly maintenance cost difference
-	* @param wt - waytype for accounting purposes
-	* @param utyp - used for distinguishing of transport type of buildings. Used with buildings only.
-	*/
+	 * Adds maintenance into/from finance stats.
+	 * @param change monthly maintenance cost difference
+	 * @param wt - waytype for accounting purposes
+	 * @param utyp - used for distinguishing of transport type of buildings. Used with buildings only.
+	 */
 	inline sint32 book_maintenance(sint32 change, waytype_t const wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
-		assert(tt!=TT_ALL);
 		maintenance[tt] += change;
 		maintenance[TT_ALL] += change;
 		return maintenance[tt];
 	}
 
 	/**
-	* Account purchase of new vehicle: Subracts money, increases assets.
-	* @param amount money paid for vehicle
-	* @param wt - waytype of vehicle
-	*/
+	 * Account purchase of new vehicle: Subtracts money, increases assets.
+	 * @param amount money paid for vehicle
+	 * @param wt - waytype of vehicle
+	 */
 	inline void book_new_vehicle(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
 		veh_year[ tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
 		veh_month[tt][0][ATV_NEW_VEHICLE] += (sint64) amount;
-		veh_year[ tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
-		veh_month[tt][0][ATV_NON_FINANTIAL_ASSETS] -= (sint64) amount;
+		veh_year[ tt][0][ATV_NON_FINANCIAL_ASSETS] -= (sint64) amount;
+		veh_month[tt][0][ATV_NON_FINANCIAL_ASSETS] -= (sint64) amount;
 
 		account_balance += amount;
 	}
 
 	/**
-	* Accounts income from transport of passenger, mail, goods or electricity supply
-	* @param amount earned money
-	* @param wt waytype of vehicle
-	* @param index 0 = passenger, 1 = mail, 2 = goods
-	*/
-	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index=2){
+	 * Accounts income from transport of passenger, mail, or, goods.
+	 * @param amount earned money
+	 * @param wt waytype of vehicle
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
+	 */
+	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
 		index = ((0 <= index) && (index <= 2)? index : 2);
@@ -311,10 +271,10 @@ public:
 	}
 
 	/**
-	* Accounts distance-based running costs
-	* @param amount sum of money
-	* @param wt way type
-	*/
+	 * Accounts distance-based running costs
+	 * @param amount sum of money
+	 * @param wt way type
+	 */
 	inline void book_running_costs(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_RUNNING_COST] += amount;
@@ -323,22 +283,22 @@ public:
 	}
 
 	/**
-	* Account toll we have paid to any other company.
-	* @param amount sum of money
-	* @param wt way type
-	*/
+	 * Account toll we have paid to any other company.
+	 * @param amount sum of money
+	 * @param wt way type
+	 */
 	inline void book_toll_paid(const sint64 amount, const waytype_t wt){
 		const transport_type tt =  translate_waytype_to_tt(wt);
-		veh_year[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
-		veh_month[tt][0][ATV_TOLL_PAYED] += (sint64) amount;
+		veh_year[tt][0][ATV_TOLL_PAID] += (sint64) amount;
+		veh_month[tt][0][ATV_TOLL_PAID] += (sint64) amount;
 		account_balance += amount;
 	}
 
 	/**
-	* Account toll we have received from another company.
-	* @param amount sum of money
-	* @param wt way type
-	*/
+	 * Account toll we have received from another company.
+	 * @param amount sum of money
+	 * @param wt way type
+	 */
 	inline void book_toll_received(const sint64 amount, const waytype_t wt){
 		const transport_type tt = translate_waytype_to_tt(wt);
 		veh_year[tt][0][ATV_TOLL_RECEIVED] += (sint64) amount;
@@ -347,13 +307,13 @@ public:
 	}
 
 	/**
-	* Makes stats of amount of transported passenger, mail and goods
-	* @param amount sum of money
-	* @param wt way type
-	* @param index 0 = passenger, 1 = mail, 2 = goods
-	* @param destination_reached - 0 - passenger/mail/good will continue in transport in the network
-	*                              1 - passenger/mail/good was delivered to endpoint
-	*/
+	 * Makes stats of amount of transported passenger, mail and goods
+	 * @param amount sum of money
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
+	 * @param destination_reached - 0 - passenger/mail/good will continue in transport in the network
+	 *                              1 - passenger/mail/good was delivered to endpoint
+	 */
 	inline void book_transported(const sint64 amount, const waytype_t wt, int index, const int destination_reached){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
@@ -366,32 +326,27 @@ public:
 		veh_month[tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
 
 		if(  destination_reached  ){
-			veh_year[ tt][0][ATV_TRANSPORTED2_PASSENGER+index] += amount;
-			veh_month[tt][0][ATV_TRANSPORTED2_PASSENGER+index] += amount;
+			veh_year[ tt][0][ATV_DELIVERED_PASSENGER+index] += amount;
+			veh_month[tt][0][ATV_DELIVERED_PASSENGER+index] += amount;
 		}
 	}
 
 	/**
-	* Calculates the finance history for player
-	* @author hsiegeln
-	*/
-	void calc_finance_history();
-
-	/* workaround, used for charts in money_frame */
-	void calc_flat_view_month(int tt, sint64 (&flat_view_month)[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST]);
-	void calc_flat_view_year( int tt, sint64 (&flat_view_year)[ MAX_PLAYER_HISTORY_YEARS ][MAX_PLAYER_COST]);
-
-	/**
- 	* Translates finance statistisc from new format to old (version<=111) one.
- 	* Used for saving data in old format
- 	*/
-	void export_to_cost_month(sint64 (&finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void export_to_cost_year( sint64 (&finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-
-	/**
-	 * Returns amount of money on account (also known as konto)
+	 * Makes stats of amount of delivered passenger, mail and goods
+	 * @param amount sum of money
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
 	 */
-	inline sint64 get_account_balance() { return account_balance; }
+	inline void book_delivered(const sint64 amount, const waytype_t wt, int index){
+		const transport_type tt = translate_waytype_to_tt(wt);
+		// there are: passenger, mail, goods
+		if( (index < 0) || (index > 2)){
+			index = 2;
+		}
+
+		veh_year[ tt][0][ATV_DELIVERED_PASSENGER+index] += amount;
+		veh_month[tt][0][ATV_DELIVERED_PASSENGER+index] += amount;
+	}
 
 	inline sint64 get_convoi_number() { return com_month[0][ATC_ALL_CONVOIS]; }
 
@@ -405,23 +360,20 @@ public:
 	sint64 get_history_month(int tt, int month, int type);
 
 	/**
-	 * used in scripted scenario
+	 * Calculates the finance history for player
+	 * @author hsiegeln
 	 */
-	sint64 get_history_month_converted( int month, int type);
+	void calc_finance_history();
 
 	/**
-	* Returns the finance history (indistinguishable part) for player
-	* @author hsiegeln, jk271
-	*/
-	sint64 get_history_com_year(int year, int type) { return com_year[year][type]; }
-	sint64 get_history_com_month(int month, int type) { return com_month[month][type]; }
+	 * @returns amount of money on account (also known as konto)
+	 */
+	inline sint64 get_account_balance() { return account_balance; }
 
 	/**
-	* Returns the finance history (distinguishable by type of transport) for player
-	* @author hsiegeln, jk271
-	*/
-	sint64 get_history_veh_year(transport_type tt, int year, int type) { return veh_year[tt][year][type]; }
-	sint64 get_history_veh_month(transport_type tt, int month, int type) { return veh_month[tt][month][type]; }
+	 * Books amount of money to account (also known as konto)
+	 */
+	void book_account(sint64 amount) { account_balance += amount; }
 
 	/**
  	* @return finance history of indistinguishable (by type of transport)
@@ -432,110 +384,150 @@ public:
 	sint64* get_history_com_month() { return *com_month; }
 
 	/**
- 	* @return finance history for vehicles
- 	* @author jk271
- 	*/
-	sint64* get_history_veh_year(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_year[tt]; }
-	sint64* get_history_veh_month(transport_type tt) { assert(tt<TT_MAX_VEH); return *veh_month[tt]; }
+	 * Returns the finance history (indistinguishable part) for player.
+	 * @param year 0 .. current year, 1 .. last year, etc
+	 * @param type one of accounting_type_common
+	 * @author jk271
+	 */
+	sint64 get_history_com_year(int year, int type) const { return com_year[year][type]; }
+	sint64 get_history_com_month(int month, int type) const { return com_month[month][type]; }
 
 	/**
-	* @return how much month we have been in red numbers (= we had negative account balance)
-	*/
-	inline sint32 get_account_overdrawn() { return account_overdrawn; }
+	 * Returns the finance history (distinguishable by type of transport) for player.
+	 * @param tt one of transport_type
+	 * @param year 0 .. current year, 1 .. last year, etc
+	 * @param type one of accounting_type_vehicles
+	 * @author jk271
+	 */
+	sint64 get_history_veh_year(transport_type tt, int year, int type) const { return veh_year[tt][year][type]; }
+	sint64 get_history_veh_month(transport_type tt, int month, int type) const { return veh_month[tt][month][type]; }
 
 	/**
-	 * returns maintenance
+	 * @return how much month we have been in red numbers (= we had negative account balance)
+	 */
+	sint32 get_account_overdrawn() const { return account_overdrawn; }
+
+	/**
+	 * @returns maintenance
 	 * @param tt transport type (Truck, Ship Air, ...)
 	 */
 	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
 
 	/**
-	 * returns maintenance with bits_per_month
+	 * @returns maintenance scaled with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
 	inline sint64 get_netwealth() const { return com_year[0][ATC_NETWEALTH]; }
 
-	inline sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
+	sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
 
-	inline sint64 get_starting_money() { return starting_money; }
+	sint64 get_starting_money() const { return starting_money; }
 
 	/**
-	 * returns vehicle maintenance with bits_per_month
+	 * @returns vehicle maintenance scaled with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
 
 	/**
-	* @returns TRUE if there is at least one convoi, otherwise returns false
-	*/
+	 * @returns TRUE if there is at least one convoi, otherwise returns false
+	 */
 	bool has_convoi() const { return (com_year[0][ATC_ALL_CONVOIS] > 0); }
 
 	/**
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
-	bool has_money_or_assets() { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANTIAL_ASSETS) ) > 0 ); }
+	bool has_money_or_assets() const { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANCIAL_ASSETS) ) > 0 ); }
 
 	/**
  	* Translates finance statistisc from old (version<=111) format to new one.
  	* Used for loading data from old format
  	* @author jk271
  	*/
-	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
+	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST]);
+	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST]);
 
 	/**
-	* returns true if company bancrupted
-	*/
+	 * returns true if company bancrupted
+	 */
 	bool is_bancrupted() const;
 
+	/**
+	 * Called at beginning of new month.
+	 */
 	void new_month();
 
 	/**
-	* rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
-	* @author hsiegeln, jk271
-	*/
+	 * rolls the finance history for player (needed when neues_jahr() or neuer_monat()) triggered
+	 * @author hsiegeln, jk271
+	 */
 	void roll_history_year();
 	void roll_history_month();
 
-	/* loads or saves finance statistic */
+	/**
+	 * loads or saves finance statistic
+	 */
 	void rdwr(loadsave_t *file);
 
+	/// loads statistics of old versions
+	void rdwr_compatibility(loadsave_t *file);
+
 	/**
-	* Sets account balance. This method enables to load old game format.
-	* Do NOT use it in any other places!
-	*/
-	inline void set_account_balance( const sint64 amount ) { account_balance = amount; }
+	 * Sets account balance. This method enables to load old game format.
+	 * Do NOT use it in any other places!
+	 */
+	void set_account_balance(sint64 amount) { account_balance = amount; }
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
 
 	/**
-	* Sets number of months for that the account balance is below zero. This method enables to load old game format.
-	* Do NOT use it in any other places for any other purpose!
-	*/
-	inline void set_account_overdrawn( const sint32 num ) { account_overdrawn = num; }
+	 * Sets number of months for that the account balance is below zero. This method enables to load old game format.
+	 * Do NOT use it in any other places for any other purpose!
+	 */
+	void set_account_overdrawn(sint32 num) { account_overdrawn = num; }
 
-	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
-
-	int translate_index_cost_to_at(int cost_);
-
-	int translate_index_cost_to_atc( const int cost_index ) const;
+	void set_starting_money(sint64 amount) {  starting_money = amount; }
 
 	/**
- 	* Translates haus_besch_t to transport_type
-	* Building can be assigned to transport type using utyp
- 	* @author jk271
- 	*/
-	transport_type translate_utyp_to_tt(const int utyp) const;
+ 	 * Translates haus_besch_t to transport_type
+	 * Building can be assigned to transport type using utyp
+ 	 * @author jk271
+ 	 */
+	static transport_type translate_utyp_to_tt(int utyp);
 
 	/**
- 	* Translates waytype_t to transport_type
- 	* @author jk271
- 	*/
-	transport_type translate_waytype_to_tt(const waytype_t wt) const;
+ 	 * Translates waytype_t to transport_type
+ 	 * @author jk271
+ 	 */
+	static transport_type translate_waytype_to_tt(waytype_t wt);
 
-	void update_assets(sint64 const delta, const waytype_t wt);
+	void update_assets(sint64 delta, waytype_t wt);
+
+private:
+	/// helper method to translate old COST_ constants
+	static int translate_index_cost_to_at(int cost_);
+
+	/// helper method to translate old COST_ constants
+	static int translate_index_cost_to_atc(int cost_index);
+
+	/**
+	 * Translates finance statistics from new format to old one.
+	 * Used for saving data in old format
+	 * @author jk271
+	 */
+	void export_to_cost_month(sint64 finance_history_month[][OLD_MAX_PLAYER_COST]);
+	void export_to_cost_year( sint64 finance_history_year[][OLD_MAX_PLAYER_COST]);
+
+
+	/**
+	 * Translates finance statistics from old format to new one.
+	 * Used for loading data from old format
+	 * @author jk271
+	 */
+	void import_from_cost_month(const sint64 finance_history_month[][OLD_MAX_PLAYER_COST]);
+	void import_from_cost_year( const sint64 finance_history_year[][OLD_MAX_PLAYER_COST]);
 };
 
 #endif

@@ -71,6 +71,8 @@ protected:
 	// when was the company founded
 	uint16 player_age;
 
+	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
+
 	class income_message_t {
 	public:
 		char str[33];
@@ -118,9 +120,9 @@ protected:
 
 public:
 	/**
-	 * Adds somme amount to the maintenance costs
-	 * @param change the change
-	 * @return the new maintenance costs
+	 * sums up "count" with number of convois in statistics,
+	 * supersedes buche( count, COST_ALL_CONVOIS)
+	 * @author jk271
 	 */
 	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt);
 
@@ -148,9 +150,9 @@ public:
 	 * @param tt type of transport
 	 * @author jk271
 	 */
-	void book_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
+	void book_construction_costs(const sint64 amount, const koord k, const waytype_t wt=ignore_wt);
 
-	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt, const int utyp=0);
+	static void book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt=ignore_wt);
 
 	/**
 	 * sums up "count" with number of convois in statistics,
@@ -204,12 +206,19 @@ public:
 	/**
 	 * Add amount of transported passanger, mail, goods to accounting statistics
 	 * @param amount number of transported units
-	 * @papam tt type of transport
-	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
-	 *                  other same as in the pak files)
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
 	 * @param destinatio_reached: This is the last station of transport:  0 - this is not endstation, 1 this is endstation
 	 */
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2, const int destination_reached=0);
+
+	/**
+	 * Add amount of delivered passenger, mail, goods to accounting statistics
+	 * @param amount sum of money
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
+	 */
+	void book_delivered(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
 	bool has_money_or_assets() const;
 

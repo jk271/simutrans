@@ -319,9 +319,6 @@ public:
 	// do the internal accounting (currently only used externally for running costs of convois)
 	void buche(sint64 betrag, player_cost type);
 
-	// this is also safe to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
-	static void accounting(spieler_t* sp, sint64 betrag, koord k, player_cost pc);
-
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner

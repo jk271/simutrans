@@ -25,6 +25,7 @@ void_t change_player_account(spieler_t *sp, sint64 delta)
 {
 	if (sp) {
 		sp->buche(delta, COST_INCOME);
+		sp->book_revenue(delta, koord::invalid);
 	}
 	return void_t();
 }

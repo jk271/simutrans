@@ -2,7 +2,6 @@
 #include "../simtypes.h"
 #include "../simdebug.h"
 
-#include "../player/finance.h"
 #include "../player/simplay.h"
 #include "../simworld.h"
 #include "../simmesg.h"

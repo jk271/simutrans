@@ -1597,7 +1597,6 @@ bool grund_t::remove_everything_from_way(spieler_t* sp, waytype_t wt, ribi_t::ri
 	// check, if the way must be totally removed?
 	weg_t *weg = get_weg(wt);
 	if(weg) {
-		waytype_t wt = weg->get_waytype();
 		const koord here = pos.get_2d();
 
 		// stopps

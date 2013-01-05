@@ -14,7 +14,6 @@
 #include "components/gui_label.h"
 #include "components/gui_tab_panel.h"
 #include "components/gui_chart.h"
-#include "components/gui_combobox.h"
 #include "components/gui_location_view_t.h"
 #include "components/gui_combobox.h"
 

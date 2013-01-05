@@ -489,11 +489,6 @@ public:
 	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 
 	/**
-	* increases number of month for which the company is in red numbers
-	*/
-	inline void increase_account_overdrawn() { account_overdrawn++; }
-
-	/**
 	* returns true if company bancrupted
 	*/
 	bool is_bancrupted() const;

@@ -470,6 +470,13 @@ void finance_t::new_month() {
 		veh_year [i][0][ATV_INFRASTRUCTURE_MAINTENANCE] -= get_maintenance_with_bits((transport_type)i);
 	}
 	account_balance -= get_maintenance_with_bits(TT_ALL);
+
+	if (get_account_balance() < 0) {
+		account_overdrawn++;
+	}
+	else {
+		account_overdrawn = 0;
+	}
 }
 
 

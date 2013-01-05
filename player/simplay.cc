@@ -308,7 +308,6 @@ bool spieler_t::neuer_monat()
 
 	// Bankrott ?
 	if(  finance->get_account_balance() < 0  ) {
-		finance->increase_account_overdrawn();
 		if(  !welt->get_settings().is_freeplay()  &&  player_nr != 1  ) {
 			if(  welt->get_active_player_nr()==player_nr  &&  !umgebung_t::networkmode  ) {
 				if(  finance->get_netwealth() < 0 ) {
@@ -350,9 +349,6 @@ bool spieler_t::neuer_monat()
 				}
 			}
 		}
-	}
-	else {
-		finance->set_account_overdrawn( 0 );
 	}
 
 	if(  umgebung_t::networkmode  &&  player_nr>1  &&  !automat  ) {

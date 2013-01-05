@@ -71,8 +71,6 @@ protected:
 	// when was the company founded
 	uint16 player_age;
 
-	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
-
 	class income_message_t {
 	public:
 		char str[33];

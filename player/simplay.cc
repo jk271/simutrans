@@ -153,18 +153,18 @@ void spieler_t::add_money_message(const sint64 amount, const koord pos) {
 }
 
 
-void spieler_t::book_construction_costs(const sint64 amount, const koord k, const waytype_t wt, const int utyp){
+void spieler_t::book_construction_costs(const sint64 amount, const koord k, const waytype_t wt){
 	buche(amount, k, COST_CONSTRUCTION);  // This will be superseded
 }
 
 
-void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt, const int utyp){
+void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amount, const koord k, const waytype_t wt){
 	if(sp!=NULL  &&  sp!=welt->get_spieler(1)) {
-		sp->book_construction_costs( amount, k, wt, utyp );
+		sp->book_construction_costs( amount, k, wt );
 	} else {
 		// when making road or stop public, pay to public authority
 		if (sp!=NULL && sp == welt->get_spieler(1) && amount >0) {
-			sp->book_construction_costs( amount, k, wt, utyp );
+			sp->book_construction_costs( amount, k, wt );
 		}
 	}
 }

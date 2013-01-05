@@ -105,10 +105,15 @@ enum accounting_type_vehicles {
 	ATV_PROFIT_MARGIN,		// AT_OPERATING_PROFIT / AT_REVENUE, COST_MARGIN
 
 
-	ATV_TRANSPORTED_PASSENGER, // numer of transported passanger, COST_TRANSPORTED_PAS
-	ATV_TRANSPORTED_MAIL,      // COST_TRANSPORTED_MAIL
-	ATV_TRANSPORTED_GOOD,         // COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
+	ATV_TRANSPORTED_PASSENGER, // number of transported passanger
+	ATV_TRANSPORTED_MAIL,      // number of transported mail
+	ATV_TRANSPORTED_GOOD,      // number of transported goods
 	ATV_TRANSPORTED,           // COST_ALL_TRANSPORTED mapped here
+
+	ATV_TRANSPORTED2_PASSENGER, // number of transported passanger that reached end station, COST_TRANSPORTED_PAS
+	ATV_TRANSPORTED2_MAIL,      // number of transported mail that reached end station, COST_TRANSPORTED_MAIL
+	ATV_TRANSPORTED2_GOOD,      // number of transported goods that reached end station, COST_TRANSPORTED_GOOD mapped here, all ATV_TRANSPORTED_* mapped to COST_TRANSPORTED_GOOD
+	ATV_TRANSPORTED2,           // sum of previous 3 items
 
 	ATV_MAX
 };
@@ -264,11 +269,8 @@ public:
 	* @param wt - waytype for accounting purposes
 	* @param utyp - used for distinguishing of transport type of buildings. Used with buildings only.
 	*/
-	inline sint32 book_maintenance(sint32 change, waytype_t const wt, const int utyp) {
+	inline sint32 book_maintenance(sint32 change, waytype_t const wt) {
 		transport_type tt = translate_waytype_to_tt(wt);
-		if(( tt ==TT_OTHER ) && ( utyp !=0 ) ) {
-			tt = translate_utyp_to_tt(utyp);
-		}
 		assert(tt!=TT_ALL);
 		maintenance[tt] += change;
 		maintenance[TT_ALL] += change;
@@ -297,7 +299,7 @@ public:
 	* @param wt waytype of vehicle
 	* @param index 0 = passenger, 1 = mail, 2 = goods
 	*/
-	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index){
+	inline void book_revenue(const sint64 amount, const waytype_t wt, sint32 index=2){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
 		index = ((0 <= index) && (index <= 2)? index : 2);
@@ -349,8 +351,10 @@ public:
 	* @param amount sum of money
 	* @param wt way type
 	* @param index 0 = passenger, 1 = mail, 2 = goods
+	* @param destination_reached - 0 - passenger/mail/good will continue in transport in the network
+	*                              1 - passenger/mail/good was delivered to endpoint
 	*/
-	inline void book_transported(const sint64 amount, const waytype_t wt, int index){
+	inline void book_transported(const sint64 amount, const waytype_t wt, int index, const int destination_reached){
 		const transport_type tt = translate_waytype_to_tt(wt);
 
 		// there are: passenger, mail, goods
@@ -360,6 +364,11 @@ public:
 
 		veh_year[ tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
 		veh_month[tt][0][ATV_TRANSPORTED_PASSENGER+index] += amount;
+
+		if(  destination_reached  ){
+			veh_year[ tt][0][ATV_TRANSPORTED2_PASSENGER+index] += amount;
+			veh_month[tt][0][ATV_TRANSPORTED2_PASSENGER+index] += amount;
+		}
 	}
 
 	/**
@@ -475,11 +484,6 @@ public:
  	*/
 	void import_from_cost_month(const sint64 (& finance_history_month)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
 	void import_from_cost_year( const sint64 (& finance_history_year)[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST]);
-
-	/**
-	* increases number of month for which the company is in red numbers
-	*/
-	inline void increase_account_overdrawn() { account_overdrawn++; }
 
 	/**
 	* returns true if company bancrupted

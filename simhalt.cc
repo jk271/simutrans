@@ -2108,7 +2108,6 @@ sint64 haltestelle_t::calc_maintenance() const
 void haltestelle_t::make_public_and_join( spieler_t *sp )
 {
 	spieler_t *public_owner=welt->get_spieler(1);
-	sint64 total_costs = 0;
 	slist_tpl<halthandle_t> joining;
 
 	// only something to do if not yet owner ...
@@ -2143,7 +2142,6 @@ void haltestelle_t::make_public_and_join( spieler_t *sp )
 			}
 		}
 		// transfer ownership
-		spieler_t::accounting( sp, -total_costs*60, get_basis_pos(), COST_CONSTRUCTION);
 		besitzer_p = public_owner;
 	}
 

@@ -722,6 +722,9 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);
+
+
+		// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
 	}
 
 	// headquarter stuff

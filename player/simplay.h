@@ -71,8 +71,6 @@ protected:
 	// when was the company founded
 	uint16 player_age;
 
-	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
-
 	class income_message_t {
 	public:
 		char str[33];
@@ -340,8 +338,8 @@ public:
 	static karte_t *get_welt() { return welt; }
 
 	/**
-	* Calculates the assets of the player
-	*/
+	 * Calculates the assets of the player
+	 */
 	void calc_assets();
 
 	/**

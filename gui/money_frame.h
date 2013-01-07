@@ -111,7 +111,6 @@ private:
 
 	bool is_chart_table_zero(int ttoption);
 
-
 public:
 	/**
 	 * Manche Fenster haben einen Hilfetext assoziiert.

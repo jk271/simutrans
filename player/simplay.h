@@ -20,11 +20,6 @@
 #include "../tpl/vector_tpl.h"
 
 
-#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
-#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
-#define MAX_PLAYER_COST_X (19)
-
-
 class karte_t;
 class fabrik_t;
 class koord3d;
@@ -48,16 +43,6 @@ protected:
 	 */
 	sint32 haltcount;
 
-private:
-	/**
-	* Finance History - will supercede the finances by Owen Rudge
-	* Will hold finances for the most recent 12 years
-	* @author hsiegeln
-	*/
-	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST_X];
-	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST_X];
-
-protected:
 	/* "new" finance history */
 	finance_t *finance;
 
@@ -118,11 +103,10 @@ protected:
 
 public:
 	/**
-	 * Adds somme amount to the maintenance costs
-	 * @param change the change
-	 * @return the new maintenance costs
+	 * sums up "count" with number of convois in statistics,
+	 * supersedes buche( count, COST_ALL_CONVOIS)
 	 */
-	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt);
+	void add_maintenance(sint64 const change, waytype_t const wt=ignore_wt);
 
 	/**
 	 * Adds somme amount to the maintenance costs
@@ -180,11 +164,11 @@ public:
 	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	/**
-         * Adds running costs to accounting statistics.
-         * this function is called very often
-         * @param amount How much does it cost
-         * @param wt
-         */
+	 * Adds running costs to accounting statistics.
+	 * this function is called very often
+	 * @param amount How much does it cost
+	 * @param wt
+	 */
         void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
@@ -202,11 +186,10 @@ public:
 	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
 	/**
-	 * Add amount of transported passanger, mail, goods to accounting statistics
+	 * Add amount of transported passenger, mail, goods to accounting statistics
 	 * @param amount number of transported units
-	 * @papam tt type of transport
-	 * @param cathegory constegory of transported items (-2 passanger, -1 mail,
-	 *                  other same as in the pak files)
+	 * @param wt way type
+	 * @param index 0 = passenger, 1 = mail, 2 = goods
 	 * @param destinatio_reached: This is the last station of transport:  0 - this is not endstation, 1 this is endstation
 	 */
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2, const int destination_reached=0);
@@ -323,21 +306,6 @@ public:
 	virtual void laden_abschliessen();
 
 	virtual void rotate90( const sint16 y_size );
-
-	/**
-	* Returns the finance history for player
-	* @author hsiegeln
-	*/
-	sint64 get_finance_history_year(int year, int type) { return finance_history_year[year][type]; }
-	sint64 get_finance_history_month(int month, int type) { return finance_history_month[month][type]; }
-	sint64 get_finance_history_month_converted(int month, int type);
-
-	/**
-	 * Returns pointer to finance history for player
-	 * @author hsiegeln
-	 */
-	sint64* get_finance_history_year() { return *finance_history_year; }
-	sint64* get_finance_history_month() { return *finance_history_month; }
 
 	/**
 	* Returns the world the player is in

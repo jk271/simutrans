@@ -153,34 +153,40 @@ void spieler_t::book_convoi_number(const sint64 count)
 /**
  * amount has negative value = buy vehicle, positive value = vehicle sold
  */
-void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt){
+void spieler_t::book_new_vehicle(const sint64 amount, const koord k, const waytype_t wt)
+{
 	finance->book_new_vehicle(amount, wt);
 	add_money_message(amount, k);
 }
 
 
-void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index){
+void spieler_t::book_revenue(const sint64 amount, const koord k, const waytype_t wt, sint32 index)
+{
 	finance->book_revenue(amount, wt, index);
 	add_money_message(amount, k);
 }
 
 
-void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt){
+void spieler_t::book_running_costs(const sint64 amount, const waytype_t wt)
+{
 	finance->book_running_costs(amount, wt);
 }
 
 
-void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt){
+void spieler_t::book_toll_paid(const sint64 amount, const waytype_t wt)
+{
 	finance->book_toll_paid(amount, wt);
 }
 
 
-void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt){
+void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt)
+{
 	finance->book_toll_received(amount, wt);
 }
 
 
-void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index, const int destination_reached){
+void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index, const int destination_reached)
+{
 	finance->book_transported(amount, wt, index, destination_reached);
 }
 
@@ -362,12 +368,12 @@ bool spieler_t::neuer_monat()
 		if(  welt->get_settings().get_remove_dummy_player_months()  &&  player_age >= welt->get_settings().get_remove_dummy_player_months()  )  {
 			bool no_cnv = true;
 			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
-			for(  uint16 m = 0;  m < months  &&  no_cnv;  m++  ) {
-				no_cnv &= finance_history_month[m][COST_ALL_CONVOIS]==0;
+			for(  uint16 m=0;  m<months  &&  no_cnv;  m++  ) {
+				no_cnv &= finance->get_history_com_month(m, ATC_ALL_CONVOIS) ==0;
 			}
 			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS,  (welt->get_settings().get_remove_dummy_player_months() - 1) / 12 );
-			for(  uint16 y = 0;  y < years  &&  no_cnv;  y++  ) {
-				no_cnv &= finance_history_year[y][COST_ALL_CONVOIS]==0;
+			for(  uint16 y=0;  y<years  &&  no_cnv;  y++  ) {
+				no_cnv &= finance->get_history_com_year(y, ATC_ALL_CONVOIS)==0;
 			}
 			// never run a convoi => dummy
 			if(  no_cnv  ) {
@@ -380,11 +386,11 @@ bool spieler_t::neuer_monat()
 			bool abandoned = true;
 			const uint16 months = min( 12,  welt->get_settings().get_unprotect_abondoned_player_months() );
 			for(  uint16 m = 0;  m < months  &&  abandoned;  m++  ) {
-				abandoned &= finance_history_month[m][COST_NEW_VEHICLE]==0  &&  finance_history_month[m][COST_CONSTRUCTION]==0;
+				abandoned &= finance->get_history_veh_month(TT_ALL, m, ATV_NEW_VEHICLE)==0  &&  finance->get_history_veh_month(TT_ALL, m, ATV_CONSTRUCTION_COST)==0;
 			}
 			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS, (welt->get_settings().get_unprotect_abondoned_player_months() - 1) / 12);
 			for(  uint16 y = 0;  y < years  &&  abandoned;  y++  ) {
-				abandoned &= finance_history_year[y][COST_NEW_VEHICLE]==0  &&  finance_history_year[y][COST_CONSTRUCTION]==0;
+				abandoned &= finance->get_history_veh_year(TT_ALL, y, ATV_NEW_VEHICLE)==0  &&  finance->get_history_veh_year(TT_ALL, y, ATV_CONSTRUCTION_COST)==0;
 			}
 			// never changed convoi, never built => abandoned
 			if(  abandoned  ) {

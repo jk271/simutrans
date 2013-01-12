@@ -32,7 +32,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	starting_money = account_balance;
 	account_overdrawn = 0;
 
-	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS2; year++) {
+	for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
 		for (int cost_type=0; cost_type<ATC_MAX; cost_type++) {
 			com_year[year][cost_type] = 0;
 			if ((cost_type == ATC_CASH) || (cost_type == ATC_NETWEALTH)) {
@@ -41,7 +41,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 		}
 	}
 
-	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS2; month++) {
+	for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
 		for (int cost_type=0; cost_type<ATC_MAX; cost_type++) {
 			com_month[month][cost_type] = 0;
 			if ((cost_type == ATC_CASH) || (cost_type == ATC_NETWEALTH)) {
@@ -51,7 +51,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	}
 
 	for (int transport_type=0; transport_type<TT_MAX; ++transport_type){
-		for (int year=0; year<MAX_PLAYER_HISTORY_YEARS2; year++) {
+		for (int year=0; year<MAX_PLAYER_HISTORY_YEARS; year++) {
 			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
 				veh_year[transport_type][year][cost_type] = 0;
 			}
@@ -59,7 +59,7 @@ finance_t::finance_t(spieler_t * _player, karte_t * _world) :
 	}
 
 	for (int transport_type=0; transport_type<TT_MAX; ++transport_type){
-		for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS2; month++) {
+		for (int month=0; month<MAX_PLAYER_HISTORY_MONTHS; month++) {
 			for (int cost_type=0; cost_type<ATV_MAX; cost_type++) {
 				veh_month[transport_type][month][cost_type] = 0;
 			}
@@ -83,7 +83,8 @@ void finance_t::book_convoi_number( int count ) {
 }
 */
 
-void finance_t::calc_finance_history() {
+void finance_t::calc_finance_history()
+{
 	// vehicles
 	for(int tt=1; tt<TT_MAX; ++tt){
 		// ATV_REVENUE_TRANSPORT = ATV_REVENUE_PAS+MAIL+GOOD
@@ -129,8 +130,7 @@ void finance_t::calc_finance_history() {
 		veh_year[tt][0][ATV_PROFIT_MARGIN] = calc_margin(veh_year[tt][0][ATV_OPERATING_PROFIT], veh_year[tt][0][ATV_REVENUE]);
 
 		// sum up visible transported stats
-		sint64 transported, mtransported;
-		transported = mtransported = 0;
+		sint64 transported = 0, mtransported = 0;
 		for(int i=ATV_TRANSPORTED_PASSENGER; i<ATV_TRANSPORTED; ++i){
 			mtransported += veh_month[tt][0][i];
 			transported  += veh_year[ tt][0][i];
@@ -139,13 +139,13 @@ void finance_t::calc_finance_history() {
 		veh_year[ tt][0][ATV_TRANSPORTED] =  transported;
 
 		// sum hidden stats too
-		transported = mtransported = 0;
-		for(int i=ATV_TRANSPORTED2_PASSENGER; i<ATV_TRANSPORTED2; ++i){
-			mtransported += veh_month[tt][0][i];
-			transported  += veh_year[ tt][0][i];
+		sint64 delivered = 0, mdelivered = 0;
+		for(int i=ATV_DELIVERED_PASSENGER; i<ATV_DELIVERED; ++i){
+			mdelivered += veh_month[tt][0][i];
+			delivered  += veh_year[ tt][0][i];
 		}
-		veh_month[tt][0][ATV_TRANSPORTED2] = mtransported;
-		veh_year[ tt][0][ATV_TRANSPORTED2] =  transported;
+		veh_month[tt][0][ATV_DELIVERED] = mdelivered;
+		veh_year[ tt][0][ATV_DELIVERED] =  delivered;
 	}
 
 	// sum up statistic for all transport types
@@ -181,51 +181,6 @@ void finance_t::calc_finance_history() {
 }
 
 
-void finance_t::calc_flat_view_month(int tt, sint64 (&flat_view_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]){
-	assert((0 <=tt ) && ( tt < TT_MAX ));
-	for(int month=0; month<OLD_MAX_PLAYER_HISTORY_MONTHS; ++month) {
-		for(int i=0; i<OLD_MAX_PLAYER_COST; ++i) {
-			int index = translate_index_cost_to_at(i);
-			if(index >=0 ){
-				flat_view_month[month][i] = veh_month[tt][month][index];
-			} else {
-				if(i==COST_CASH) {
-					flat_view_month[month][i] = com_month[month][ATC_CASH];
-				}
-				if(i==COST_NETWEALTH ) {
-					flat_view_month[month][i] = com_month[month][ATC_NETWEALTH];
-				}
-				if( ( i == COST_POWERLINES ) && ( tt == TT_ALL ) ) {
-					flat_view_month[month][i] = veh_month[TT_POWERLINE][month][ATV_REVENUE];
-				}
-			}
-		}
-	}
-}
-
-void finance_t::calc_flat_view_year( int tt, sint64 (&flat_view_year)[ OLD_MAX_PLAYER_HISTORY_YEARS ][OLD_MAX_PLAYER_COST]){
-	assert(( 0<=tt ) && ( tt < TT_MAX ));
-	for(int year=0; year<OLD_MAX_PLAYER_HISTORY_YEARS; ++year) {
-		for(int i=0; i<OLD_MAX_PLAYER_COST; ++i) {
-			int index = translate_index_cost_to_at(i);
-			if(index >=0 ){
-				flat_view_year[year][i] = veh_year[tt][year][index];
-			} else {
-				if(i==COST_CASH) {
-					flat_view_year[year][i] = com_year[year][ATC_CASH];
-				}
-				if(i==COST_NETWEALTH ) {
-					flat_view_year[year][i] = com_year[year][ATC_NETWEALTH];
-				}
-				if( ( i == COST_POWERLINES ) && ( tt == TT_ALL ) ) {
-					flat_view_year[year][i] = veh_year[TT_POWERLINE][year][ATV_REVENUE];
-				}
-			}
-		}
-	}
-}
-
-
 void finance_t::export_to_cost_month(sint64 (&finance_history_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]) {
 	calc_finance_history();
 	for(int i=0; i<OLD_MAX_PLAYER_HISTORY_MONTHS; ++i){
@@ -242,9 +197,9 @@ void finance_t::export_to_cost_month(sint64 (&finance_history_month)[OLD_MAX_PLA
 		finance_history_month[i][COST_MARGIN]           = veh_month[TT_ALL][i][ATV_PROFIT_MARGIN];
 		finance_history_month[i][COST_ALL_TRANSPORTED]  = veh_month[TT_ALL][i][ATV_TRANSPORTED];
 		finance_history_month[i][COST_POWERLINES]       = veh_month[TT_POWERLINE][i][ATV_REVENUE];
-		finance_history_month[i][COST_TRANSPORTED_PAS]  = veh_month[TT_ALL][i][ATV_TRANSPORTED2_PASSENGER];
-		finance_history_month[i][COST_TRANSPORTED_MAIL] = veh_month[TT_ALL][i][ATV_TRANSPORTED2_MAIL];
-		finance_history_month[i][COST_TRANSPORTED_GOOD] = veh_month[TT_ALL][i][ATV_TRANSPORTED2_GOOD];
+		finance_history_month[i][COST_TRANSPORTED_PAS]  = veh_month[TT_ALL][i][ATV_DELIVERED_PASSENGER];
+		finance_history_month[i][COST_TRANSPORTED_MAIL] = veh_month[TT_ALL][i][ATV_DELIVERED_MAIL];
+		finance_history_month[i][COST_TRANSPORTED_GOOD] = veh_month[TT_ALL][i][ATV_DELIVERED_GOOD];
 		finance_history_month[i][COST_ALL_CONVOIS]      = com_month[i][ATC_ALL_CONVOIS];
 		finance_history_month[i][COST_SCENARIO_COMPLETED] = com_month[i][ATC_SCENARIO_COMPLETED];
 		finance_history_month[i][COST_WAY_TOLLS]        = veh_month[TT_ALL][i][ATV_WAY_TOLL];
@@ -268,9 +223,9 @@ void finance_t::export_to_cost_year( sint64 (&finance_history_year)[OLD_MAX_PLAY
 		finance_history_year[i][COST_MARGIN]           = veh_year[TT_ALL][i][ATV_PROFIT_MARGIN];
 		finance_history_year[i][COST_ALL_TRANSPORTED]  = veh_year[TT_ALL][i][ATV_TRANSPORTED];
 		finance_history_year[i][COST_POWERLINES]       = veh_year[TT_POWERLINE][i][ATV_REVENUE];
-		finance_history_year[i][COST_TRANSPORTED_PAS]  = veh_year[TT_ALL][i][ATV_TRANSPORTED2_PASSENGER];
-		finance_history_year[i][COST_TRANSPORTED_MAIL] = veh_year[TT_ALL][i][ATV_TRANSPORTED2_MAIL];
-		finance_history_year[i][COST_TRANSPORTED_GOOD] = veh_year[TT_ALL][i][ATV_TRANSPORTED2_GOOD];
+		finance_history_year[i][COST_TRANSPORTED_PAS]  = veh_year[TT_ALL][i][ATV_DELIVERED_PASSENGER];
+		finance_history_year[i][COST_TRANSPORTED_MAIL] = veh_year[TT_ALL][i][ATV_DELIVERED_MAIL];
+		finance_history_year[i][COST_TRANSPORTED_GOOD] = veh_year[TT_ALL][i][ATV_DELIVERED_GOOD];
 		finance_history_year[i][COST_ALL_CONVOIS]      = com_year[i][ATC_ALL_CONVOIS];
 		finance_history_year[i][COST_SCENARIO_COMPLETED] = com_year[i][ATC_SCENARIO_COMPLETED];
 		finance_history_year[i][COST_WAY_TOLLS]        = veh_year[TT_ALL][i][ATV_WAY_TOLL];
@@ -388,12 +343,12 @@ void finance_t::import_from_cost_month(const sint64 (& finance_history_month)[OL
 		veh_month[TT_OTHER][i][ATV_TRANSPORTED]       = finance_history_month[i][COST_ALL_TRANSPORTED];
 		veh_month[TT_ALL  ][i][ATV_TRANSPORTED]       = finance_history_month[i][COST_ALL_TRANSPORTED];
 		veh_month[TT_POWERLINE][i][ATV_REVENUE]       = finance_history_month[i][COST_POWERLINES];
-		veh_month[TT_OTHER][i][ATV_TRANSPORTED2_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
-		veh_month[TT_ALL  ][i][ATV_TRANSPORTED2_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
-		veh_month[TT_OTHER][i][ATV_TRANSPORTED2_MAIL] = finance_history_month[i][COST_TRANSPORTED_MAIL];
-		veh_month[TT_ALL  ][i][ATV_TRANSPORTED2_MAIL] = finance_history_month[i][COST_TRANSPORTED_MAIL];
-		veh_month[TT_OTHER][i][ATV_TRANSPORTED2_GOOD] = finance_history_month[i][COST_TRANSPORTED_GOOD];
-		veh_month[TT_ALL  ][i][ATV_TRANSPORTED2_GOOD] = finance_history_month[i][COST_TRANSPORTED_GOOD];
+		veh_month[TT_OTHER][i][ATV_DELIVERED_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
+		veh_month[TT_ALL  ][i][ATV_DELIVERED_PASSENGER] = finance_history_month[i][COST_TRANSPORTED_PAS];
+		veh_month[TT_OTHER][i][ATV_DELIVERED_MAIL] = finance_history_month[i][COST_TRANSPORTED_MAIL];
+		veh_month[TT_ALL  ][i][ATV_DELIVERED_MAIL] = finance_history_month[i][COST_TRANSPORTED_MAIL];
+		veh_month[TT_OTHER][i][ATV_DELIVERED_GOOD] = finance_history_month[i][COST_TRANSPORTED_GOOD];
+		veh_month[TT_ALL  ][i][ATV_DELIVERED_GOOD] = finance_history_month[i][COST_TRANSPORTED_GOOD];
 		com_month[i][ATC_ALL_CONVOIS]                 = finance_history_month[i][COST_ALL_CONVOIS];
 		com_month[i][ATC_SCENARIO_COMPLETED]          = finance_history_month[i][COST_SCENARIO_COMPLETED];
 		if(finance_history_month[i][COST_WAY_TOLLS] > 0 ){
@@ -439,12 +394,12 @@ void finance_t::import_from_cost_year( const sint64 (& finance_history_year)[OLD
 		veh_year[TT_ALL  ][i][ATV_TRANSPORTED]       = finance_history_year[i][COST_ALL_TRANSPORTED];
 		veh_year[TT_ALL  ][i][ATV_TRANSPORTED]       = finance_history_year[i][COST_ALL_TRANSPORTED];
 		veh_year[TT_POWERLINE][i][ATV_REVENUE]       = finance_history_year[i][COST_POWERLINES];
-		veh_year[TT_OTHER][i][ATV_TRANSPORTED2_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
-		veh_year[TT_ALL  ][i][ATV_TRANSPORTED2_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
-		veh_year[TT_OTHER][i][ATV_TRANSPORTED2_MAIL] = finance_history_year[i][COST_TRANSPORTED_MAIL];
-		veh_year[TT_ALL  ][i][ATV_TRANSPORTED2_MAIL] = finance_history_year[i][COST_TRANSPORTED_MAIL];
-		veh_year[TT_OTHER][i][ATV_TRANSPORTED2_GOOD] = finance_history_year[i][COST_TRANSPORTED_GOOD];
-		veh_year[TT_ALL  ][i][ATV_TRANSPORTED2_GOOD] = finance_history_year[i][COST_TRANSPORTED_GOOD];
+		veh_year[TT_OTHER][i][ATV_DELIVERED_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
+		veh_year[TT_ALL  ][i][ATV_DELIVERED_PASSENGER] = finance_history_year[i][COST_TRANSPORTED_PAS];
+		veh_year[TT_OTHER][i][ATV_DELIVERED_MAIL] = finance_history_year[i][COST_TRANSPORTED_MAIL];
+		veh_year[TT_ALL  ][i][ATV_DELIVERED_MAIL] = finance_history_year[i][COST_TRANSPORTED_MAIL];
+		veh_year[TT_OTHER][i][ATV_DELIVERED_GOOD] = finance_history_year[i][COST_TRANSPORTED_GOOD];
+		veh_year[TT_ALL  ][i][ATV_DELIVERED_GOOD] = finance_history_year[i][COST_TRANSPORTED_GOOD];
 		com_year[i][ATC_ALL_CONVOIS]                 = finance_history_year[i][COST_ALL_CONVOIS];
 		com_year[i][ATC_SCENARIO_COMPLETED]          = finance_history_year[i][COST_SCENARIO_COMPLETED];
 		if(finance_history_year[i][COST_WAY_TOLLS] > 0 ){
@@ -509,8 +464,8 @@ void finance_t::rdwr(loadsave_t *file) {
 	*	more transport_types
 	*	and new items in ATC_ or ATV_
 	*/
-	sint8 max_years  = MAX_PLAYER_HISTORY_YEARS2;
-	sint8 max_months = MAX_PLAYER_HISTORY_MONTHS2;
+	sint8 max_years  = MAX_PLAYER_HISTORY_YEARS;
+	sint8 max_months = MAX_PLAYER_HISTORY_MONTHS;
 	sint8 max_tt     = TT_MAX;
 	sint8 max_atc    = ATC_MAX;
 	sint8 max_atv    = ATV_MAX;
@@ -739,7 +694,7 @@ void finance_t::rdwr_compatibility(loadsave_t *file) {
 			finance_history_month[month][COST_PROFIT] = finance_history_month[month][COST_OPERATING_PROFIT]+finance_history_month[month][COST_CONSTRUCTION]+finance_history_month[month][COST_NEW_VEHICLE];
 			finance_history_month[month][COST_MARGIN] = calc_margin(finance_history_month[month][COST_OPERATING_PROFIT], finance_history_month[month][COST_INCOME]);
 		}
- 
+
 		// now import the statistics in old format to the new one
 		import_from_cost_month(finance_history_month);
 		import_from_cost_year(finance_history_year);
@@ -854,9 +809,9 @@ int finance_t::translate_index_cost_to_at(int cost_index) {
 		ATV_PROFIT_MARGIN,      // COST_MARGIN
 		ATV_TRANSPORTED,        // COST_ALL_TRANSPORTED
 		-1,                     // ATV_COST_POWERLINES
-		ATV_TRANSPORTED2_PASSENGER, // COST_TRANSPORTED_PAS
-		ATV_TRANSPORTED2_MAIL,  // COST_TRANSPORTED_MAIL
-		ATV_TRANSPORTED2_GOOD,  // COST_TRANSPORTED_GOOD
+		ATV_DELIVERED_PASSENGER, // COST_TRANSPORTED_PAS
+		ATV_DELIVERED_MAIL,  // COST_TRANSPORTED_MAIL
+		ATV_DELIVERED_GOOD,  // COST_TRANSPORTED_GOOD
 		-2,                     // COST_ALL_CONVOIS
 		-2,                     // COST_SCENARIO_COMPLETED,// scenario success (only useful if there is one ... )
 		ATV_WAY_TOLL,           // COST_WAY_TOLLS,
@@ -866,7 +821,7 @@ int finance_t::translate_index_cost_to_at(int cost_index) {
 	return (cost_index < OLD_MAX_PLAYER_COST) ? indices[cost_index] :  -2;
 }
 
-
+/*
 transport_type finance_t::translate_utyp_to_tt(const int utyp) const {
 	switch(utyp){
 		case haus_besch_t::bahnhof:      return TT_RAILWAY;
@@ -884,7 +839,7 @@ transport_type finance_t::translate_utyp_to_tt(const int utyp) const {
 		default: return TT_OTHER;
 	}
 }
-
+*/
 
 transport_type finance_t::translate_waytype_to_tt(const waytype_t wt) const {
 	switch(wt){

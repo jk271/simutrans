@@ -69,7 +69,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	finance = new finance_t(this, wl);
 	welt = wl;
 	player_nr = nr;
-
 	player_age = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
@@ -309,6 +308,7 @@ bool spieler_t::neuer_monat()
 {
 	// since the messages must remain on the screen longer ...
 	static cbuffer_t buf;
+
 	finance->new_month();
 
 	// new month has started => recalculate vehicle value
@@ -623,7 +623,10 @@ void spieler_t::ai_bankrupt()
 	}
 
 	automat = false;
-	finance->set_account_balance(-1);
+	// make account negative
+	if (finance->get_account_balance() > 0) {
+		finance->set_account_balance(-1);
+	}
 
 	cbuffer_t buf;
 	buf.printf( translator::translate("%s\nwas liquidated."), get_name() );
@@ -706,9 +709,6 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);
-
-
-		// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
 	}
 
 	// headquarter stuff

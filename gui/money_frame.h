@@ -76,23 +76,6 @@ private:
 	int transport_type_option;
 	gui_combobox_t transport_type_c;
 
-	/**
-	 * fills buffer (char array) with finance info
-	 * @author Owen Rudge, Hj. Malthaner
-	 */
-//	const char *display_money(int, char * buf, int);
-
-	/**
-	 * fills buffer (char array) with number info (e.g. amount of transported items)
-	 */
-//	const char *display_number(int, char * buf, int);
-
-	/**
-	 * Returns the appropriate colour for a certain finance type
-	 * @author Owen Rudge
-	 */
-//	int get_money_colour(int type, int old);
-
 	/// Helper method to update number label text and color
 	void update_label(gui_label_t &label, char *buf, int transport_type, uint8 type, int yearmonth, int label_type = MONEY);
 

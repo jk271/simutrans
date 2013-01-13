@@ -95,15 +95,15 @@ enum accounting_type_vehicles {
 	ATV_RUNNING_COST,               ///< Distance based running costs, was: COST_VEHICLE_RUN
 	ATV_VEHICLE_MAINTENANCE,        ///< Monthly vehicle maintenance. Unused.
 	ATV_INFRASTRUCTURE_MAINTENANCE, ///< Infrastructure maintenance (roads, railway, ...), was: COST_MAINTENANCE
-	ATV_TOLL_PAID,			///< Toll paid by you to another player
-	ATV_EXPENDITURE,		///< Total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAID
+	ATV_TOLL_PAID,                  ///< Toll paid by you to another player
+	ATV_EXPENDITURE,                ///< Total expenditure = RUNNING_COSTS+VEHICLE_MAINTENANCE+INFRACTRUCTURE_MAINTENANCE+TOLL_PAID
 	ATV_OPERATING_PROFIT,		///< ATV_REVENUE - ATV_EXPENDITURE, was: COST_OPERATING_PROFIT
-	ATV_NEW_VEHICLE,			///< New vehicles
-	ATV_CONSTRUCTION_COST,		///< costruction cost, COST_COSTRUCTION mapped here
-	ATV_PROFIT,			///< ATV_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), was: COST_PROFIT
-	ATV_WAY_TOLL,			///< ATV_TOLL_PAID + ATV_TOLL_RECEIVED, was: COST_WAY_TOLLS
-	ATV_NON_FINANCIAL_ASSETS,	///< Value of vehicles owned by your company, was: COST_ASSETS
-	ATV_PROFIT_MARGIN,		///< ATV_OPERATING_PROFIT / ATV_REVENUE, was: COST_MARGIN
+	ATV_NEW_VEHICLE,                ///< New vehicles
+	ATV_CONSTRUCTION_COST,         	///< costruction cost, COST_COSTRUCTION mapped here
+	ATV_PROFIT,                     ///< ATV_OPERATING_PROFIT - (COSTRUCTION_COST + NEW_VEHICLE)(and INTERESTS in Experimental), was: COST_PROFIT
+	ATV_WAY_TOLL,                   ///< ATV_TOLL_PAID + ATV_TOLL_RECEIVED, was: COST_WAY_TOLLS
+	ATV_NON_FINANCIAL_ASSETS,       ///< Value of vehicles owned by your company, was: COST_ASSETS
+	ATV_PROFIT_MARGIN,              ///< ATV_OPERATING_PROFIT / ATV_REVENUE, was: COST_MARGIN
 
 	ATV_TRANSPORTED_PASSENGER, ///< Number of transported passengers
 	ATV_TRANSPORTED_MAIL,      ///< Number of transported mail
@@ -170,10 +170,6 @@ inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
 
 /**
  * Class to encapsulate all company related statistics.
- * Finance_history since version around 111.5.
- * Having all finance in one class is better
- * than having it in more places in spieler_t.
- * Another benefit: It leads to shorter variable names.
  */
 class finance_t {
 	/** transport company */
@@ -200,7 +196,7 @@ class finance_t {
 
 	/**
 	 * Contains values having relation with whole company but not with particular
-	 * type of transport (com - common)
+	 * type of transport (com - common).
  	*/
 	sint64 com_year[MAX_PLAYER_HISTORY_YEARS][ATC_MAX];
 
@@ -363,43 +359,26 @@ public:
 	void calc_finance_history();
 
 	/**
- 	 * Translates finance statistisc from new format to old (version<=111) one.
- 	 * Used for saving data in old format
- 	 */
-	void export_to_cost_month(sint64 (&finance_history_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]);
-	void export_to_cost_year( sint64 (&finance_history_year)[OLD_MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST]);
-
-	/**
 	 * @returns amount of money on account (also known as konto)
 	 */
 	inline sint64 get_account_balance() { return account_balance; }
 
-	inline sint64 get_convoi_number() { return com_month[0][ATC_ALL_CONVOIS]; }
+//	inline sint64 get_convoi_number() { return com_month[0][ATC_ALL_CONVOIS]; }
 
-	/**
-	 * Returns the finance history for player
-	 * @author hsiegeln, jk271
-	 * 'proxy' for more complicated internal data structures
-	 * int tt is COST_ !!!
-	 */
-	sint64 get_history_year(int tt, int year, int type);
-	sint64 get_history_month(int tt, int month, int type);
-
-	/**
-	 * used in scripted scenario
-	 */
-	sint64 get_history_month_converted( int month, int type);
 
 	/**
 	 * Returns the finance history (indistinguishable part) for player
-	 * @author hsiegeln, jk271
+	 * @param year 0 .. current year, 1 .. last year, etc
+	 * @param type one of accounting_type_common
 	 */
 	sint64 get_history_com_year(int year, int type) const { return com_year[year][type]; }
 	sint64 get_history_com_month(int month, int type) const { return com_month[month][type]; }
 
 	/**
-	 * Returns the finance history (distinguishable by type of transport) for player
-	 * @author hsiegeln, jk271
+	 * Returns the finance history (distinguishable by type of transport) for player.
+	 * @param tt one of transport_type
+	 * @param year 0 .. current year, 1 .. last year, etc
+	 * @param type one of accounting_type_vehicles
 	 */
 	sint64 get_history_veh_year(transport_type tt, int year, int type) const { return veh_year[tt][year][type]; }
 	sint64 get_history_veh_month(transport_type tt, int month, int type) const { return veh_month[tt][month][type]; }
@@ -420,16 +399,16 @@ public:
 	/**
 	 * @return how much month we have been in red numbers (= we had negative account balance)
 	 */
-	inline sint32 get_account_overdrawn() { return account_overdrawn; }
+	inline sint32 get_account_overdrawn() const { return account_overdrawn; }
 
 	/**
-	 * returns maintenance
+	 * @returns maintenance
 	 * @param tt transport type (Truck, Ship Air, ...)
 	 */
 	sint32 get_maintenance(transport_type tt=TT_ALL) const { assert(tt<TT_MAX); return maintenance[tt]; }
 
 	/**
-	 * returns maintenance with bits_per_month
+	 * @returns maintenance scaled with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_maintenance_with_bits(transport_type tt=TT_ALL) const;
@@ -441,7 +420,7 @@ public:
 	inline sint64 get_starting_money() const { return starting_money; }
 
 	/**
-	 * @returns vehicle maintenance with bits_per_month
+	 * @returns vehicle maintenance scaled with bits_per_month
 	 * @author jk271
 	 */
 	sint64 get_vehicle_maintenance_with_bits(transport_type tt=TT_ALL) const;
@@ -455,14 +434,6 @@ public:
 	 * returns TRUE if (account(=konto) + assets )>0
 	 */
 	bool has_money_or_assets() const { return (( account_balance + get_history_veh_year(TT_ALL, 0, ATV_NON_FINANCIAL_ASSETS) ) > 0 ); }
-
-	/**
- 	 * Translates finance statistisc from old (version<=111) format to new one.
- 	 * Used for loading data from old format
- 	 * @author jk271
- 	 */
-	void import_from_cost_month(const sint64 (& finance_history_month)[OLD_MAX_PLAYER_HISTORY_MONTHS][OLD_MAX_PLAYER_COST]);
-	void import_from_cost_year( const sint64 (& finance_history_year)[OLD_MAX_PLAYER_HISTORY_YEARS][OLD_MAX_PLAYER_COST]);
 
 	/**
 	 * returns true if company bancrupted
@@ -493,7 +464,7 @@ public:
 	 * Sets account balance. This method enables to load old game format.
 	 * Do NOT use it in any other places!
 	 */
-	inline void set_account_balance( const sint64 amount ) { account_balance = amount; }
+	inline void set_account_balance(const sint64 amount) { account_balance = amount; }
 
 	void set_assets(const sint64 (&assets)[TT_MAX]);
 
@@ -501,21 +472,32 @@ public:
 	 * Sets number of months for that the account balance is below zero. This method enables to load old game format.
 	 * Do NOT use it in any other places for any other purpose!
 	 */
-	inline void set_account_overdrawn( const sint32 num ) { account_overdrawn = num; }
+	inline void set_account_overdrawn(const sint32 num) { account_overdrawn = num; }
 
 	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
-
-	int translate_index_cost_to_at(int cost_);
-
-	int translate_index_cost_to_atc( const int cost_index ) const;
 
 
 	/**
  	 * Translates waytype_t to transport_type
  	 */
-	transport_type translate_waytype_to_tt(const waytype_t wt) const;
+	static transport_type translate_waytype_to_tt(waytype_t wt);
 
 	void update_assets(sint64 const delta, const waytype_t wt);
+
+private:
+	/**
+	 * Translates finance statistics from new format to old one.
+	 * Used for saving data in old format
+	 */
+	void export_to_cost_month(sint64 finance_history_month[][OLD_MAX_PLAYER_COST]);
+	void export_to_cost_year( sint64 finance_history_year[][OLD_MAX_PLAYER_COST]);
+
+	/**
+	 * Translates finance statistics from old format to new one.
+	 * Used for loading data from old format
+	 */
+	void import_from_cost_month(const sint64 finance_history_month[][OLD_MAX_PLAYER_COST]);
+	void import_from_cost_year( const sint64 finance_history_year[][OLD_MAX_PLAYER_COST]);
 };
 
 #endif

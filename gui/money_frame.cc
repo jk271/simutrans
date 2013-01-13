@@ -451,8 +451,8 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	update_label(nvmoney,  str_buf[1], transport_type_option, ATV_NEW_VEHICLE, 0);
 	update_label(vrmoney,  str_buf[2], transport_type_option, ATV_RUNNING_COST, 0);
 	update_label(mmoney,   str_buf[3], transport_type_option, ATV_INFRASTRUCTURE_MAINTENANCE, 0);
-	update_label(imoney,   str_buf[5], transport_type_option, ATV_REVENUE_TRANSPORT, 0);
-	update_label(tmoney,   str_buf[6], transport_type_option, ATV_PROFIT, 0);
+	update_label(imoney,   str_buf[4], transport_type_option, ATV_REVENUE_TRANSPORT, 0);
+	update_label(tmoney,   str_buf[5], transport_type_option, ATV_PROFIT, 0);
 	update_label(omoney,   str_buf[6], transport_type_option, ATV_OPERATING_PROFIT, 0);
 
 	update_label(old_conmoney, str_buf[7], transport_type_option, ATV_CONSTRUCTION_COST, 1);

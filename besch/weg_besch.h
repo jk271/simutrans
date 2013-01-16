@@ -148,7 +148,7 @@ public:
 	* @return waytype used in finance stats (needed to distinguish \
 	* between train track and tram track
 	*/
-	waytype_t get_finance_waytype() const;
+	virtual waytype_t get_finance_waytype() const;
 
 	/**
 	* returns the system type of this way (mostly used with rails)

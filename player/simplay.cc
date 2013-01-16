@@ -408,6 +408,7 @@ bool spieler_t::neuer_monat()
 	calc_assets();
 
 	simlinemgmt.new_month();
+	return true; // still active
 }
 
 
@@ -444,6 +445,18 @@ void spieler_t::calc_assets()
 void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 {
 	finance->update_assets(delta, wt);
+}
+
+
+sint32 spieler_t::get_scenario_completion() const
+{
+	return (sint32) finance->get_scenario_completed();
+}
+
+
+void spieler_t::set_scenario_completion(sint32 percent)
+{
+	finance->set_scenario_completed(percent);
 }
 
 

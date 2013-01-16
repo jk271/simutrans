@@ -257,6 +257,14 @@ public:
 	virtual ~spieler_t();
 
 	/**
+	 * Cached value of scenario completion percentage.
+	 * To get correct values for clients call scenario_t::get_completion instead.
+	 */
+	sint32 get_scenario_completion() const;
+
+	void set_scenario_completion(sint32 percent);
+
+	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner
 	 */

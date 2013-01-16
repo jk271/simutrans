@@ -474,6 +474,11 @@ public:
 	 */
 	inline void set_account_overdrawn(const sint32 num) { account_overdrawn = num; }
 
+	inline void set_scenario_completed(const sint64 percent) {
+		com_year[0][ATC_SCENARIO_COMPLETED] = percent;
+		com_month[0][ATC_SCENARIO_COMPLETED] = percent;
+	}
+
 	inline void set_starting_money(const sint64 amount) {  starting_money = amount; }
 
 

@@ -168,7 +168,6 @@ void finance_t::calc_finance_history()
 	com_year [0][ATC_CASH] = account_balance;
 	com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANCIAL_ASSETS] + account_balance;
 	com_year [0][ATC_NETWEALTH] = veh_year[TT_ALL][0][ATV_NON_FINANCIAL_ASSETS] + account_balance;
-	com_month[0][ATC_SCENARIO_COMPLETED] = com_year[0][ATC_SCENARIO_COMPLETED] = world->get_scenario()->completed(player->get_player_nr());
 }
 
 

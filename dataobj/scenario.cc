@@ -8,16 +8,12 @@
 #include "../simmem.h"
 #include "../simmenu.h"
 
-#include "../dataobj/tabfile.h"
 #include "../dataobj/loadsave.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/umgebung.h"
 #include "../dataobj/network.h"
 #include "../dataobj/network_cmd_scenario.h"
 
-#include "../vehicle/simvehikel.h"
-
-#include "../utils/simstring.h"
 #include "../utils/cbuffer_t.h"
 
 // error popup
@@ -29,9 +25,14 @@
 #include "../script/export_objs.h"
 #include "../script/api/api.h"
 
+#include "../tpl/plainstringhashtable_tpl.h"
+
 #include "scenario.h"
 
 #include <stdarg.h>
+
+// cache the scenario text files
+static plainstringhashtable_tpl<plainstring> cached_text_files;
 
 
 scenario_t::scenario_t(karte_t *w) :
@@ -50,6 +51,8 @@ scenario_t::scenario_t(karte_t *w) :
 	won = false;
 	lost = false;
 	rdwr_error = false;
+
+	cached_text_files.clear();
 }
 
 
@@ -59,6 +62,7 @@ scenario_t::~scenario_t()
 		delete script;
 	}
 	clear_ptr_vector(forbidden_tools);
+	cached_text_files.clear();
 }
 
 
@@ -104,6 +108,7 @@ const char* scenario_t::init( const char *scenario_base, const char *scenario_na
 
 	// load translations
 	translator::load_files_from_folder( scenario_path.c_str(), "scenario" );
+	cached_text_files.clear();
 
 	what_scenario = SCRIPTED;
 	rotation = 0;
@@ -401,6 +406,12 @@ void scenario_t::allow_way_tool_cube(uint8 player_nr, uint16 wkz_id, waytype_t w
 }
 
 
+void scenario_t::clear_rules()
+{
+	clear_ptr_vector(forbidden_tools);
+}
+
+
 bool scenario_t::is_tool_allowed(spieler_t* sp, uint16 wkz_id, sint16 wt)
 {
 	if (what_scenario != SCRIPTED  &&  what_scenario != SCRIPTED_NETWORK) {
@@ -502,6 +513,10 @@ const char* scenario_t::get_error_text()
 void scenario_t::step()
 {
 	if (!script) {
+		// update texts at clients if info window open
+		if (umgebung_t::networkmode  &&  !umgebung_t::server  &&  win_get_magic(magic_scenario_info)) {
+			update_scenario_texts();
+		}
 		return;
 	}
 
@@ -516,6 +531,8 @@ void scenario_t::step()
 		if (sp  &&  (((won | lost) & mask)==0)) {
 			sint32 percentage = 0;
 			script->call_function("is_scenario_completed", percentage, (uint8)(sp ? sp->get_player_nr() : PLAYER_UNOWNED));
+
+			sp->set_scenario_completion(percentage);
 			// won ?
 			if (percentage >= 100) {
 				new_won |= mask;
@@ -583,7 +600,15 @@ plainstring scenario_t::load_language_file(const char* filename)
 {
 	std::string path = scenario_path.c_str();
 	// try user language
-	FILE* file = fopen((path + translator::get_lang()->iso + "/" + filename).c_str(), "rb");
+	std::string wanted_file = path + translator::get_lang()->iso + "/" + filename;
+
+	const plainstring& cached = cached_text_files.get(wanted_file.c_str());
+	if (cached != NULL) {
+		// file already cached
+		return cached;
+	}
+	// not cached: try to read file
+	FILE* file = fopen(wanted_file.c_str(), "rb");
 	if (file == NULL) {
 		// try English
 		file = fopen((path + "en/" + filename).c_str(), "rb");
@@ -607,6 +632,8 @@ plainstring scenario_t::load_language_file(const char* filename)
 		}
 		fclose(file);
 	}
+	// store text to cache
+	cached_text_files.put(wanted_file.c_str(), text);
 
 	return text;
 }
@@ -728,7 +755,7 @@ void scenario_t::rotate90(const sint16 y_size)
 
 
 // return percentage completed
-int scenario_t::completed(int player_nr)
+int scenario_t::get_completion(int player_nr)
 {
 	if ( what_scenario == 0  ||  player_nr < 0  ||  player_nr >= PLAYER_UNOWNED) {
 		return 0;
@@ -742,17 +769,24 @@ int scenario_t::completed(int player_nr)
 		return -1;
 	}
 
-	// call script to get precise numbers
 	sint32 percentage = 0;
+	spieler_t *sp = welt->get_spieler(player_nr);
 
 	if ( what_scenario == SCRIPTED ) {
-		script->call_function("is_scenario_completed", percentage, pl);
+		// take cached value
+		if (sp) {
+			percentage = sp->get_scenario_completion();
+		}
 	}
 	else if ( what_scenario == SCRIPTED_NETWORK ) {
 		cbuffer_t buf;
 		buf.printf("is_scenario_completed(%d)", pl);
 		const char *ret = dynamic_string::fetch_result((const char*)buf, NULL, NULL);
 		percentage = ret ? atoi(ret) : 0;
+		// cache value
+		if (sp) {
+			sp->set_scenario_completion(percentage);
+		}
 	}
 	return min( 100, percentage);
 }

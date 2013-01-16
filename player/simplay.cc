@@ -443,8 +443,8 @@ void spieler_t::roll_finance_history_month()
 		}
 	}
 	for (int i=0;  i<MAX_PLAYER_COST;  i++) {
-		// reset everything except number of convois
-		if (i != COST_ALL_CONVOIS) {
+		// reset everything except number of convois, scenario completion
+		if (i != COST_ALL_CONVOIS  &&  i != COST_SCENARIO_COMPLETED) {
 			finance_history_month[0][i] = 0;
 		}
 	}
@@ -460,8 +460,8 @@ void spieler_t::roll_finance_history_year()
 		}
 	}
 	for (int i=0;  i<MAX_PLAYER_COST;  i++) {
-		// reset everything except number of convois
-		if (i != COST_ALL_CONVOIS) {
+		// reset everything except number of convois, scenario completion
+		if (i != COST_ALL_CONVOIS  &&  i != COST_SCENARIO_COMPLETED) {
 			finance_history_year[0][i] = 0;
 		}
 	}
@@ -498,7 +498,6 @@ void spieler_t::calc_finance_history()
 	finance_history_month[0][COST_NETWEALTH] = finance_history_month[0][COST_ASSETS] + konto;
 	finance_history_month[0][COST_OPERATING_PROFIT] = finance_history_month[0][COST_INCOME] + finance_history_month[0][COST_POWERLINES] + finance_history_month[0][COST_VEHICLE_RUN] + finance_history_month[0][COST_MAINTENANCE] + finance_history_month[0][COST_WAY_TOLLS];
 	finance_history_month[0][COST_MARGIN] = calc_margin(finance_history_month[0][COST_OPERATING_PROFIT], finance_history_month[0][COST_INCOME]);
-	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
 }
 
 
@@ -584,6 +583,18 @@ void spieler_t::buche(sint64 const betrag, player_cost const type)
 		finance_history_month[0][COST_CASH] = konto;
 		// the other will be updated only monthly or when a finance window is shown
 	}
+}
+
+
+sint32 spieler_t::get_scenario_completion() const
+{
+	return finance_history_month[0][COST_SCENARIO_COMPLETED];
+}
+
+
+void spieler_t::set_scenario_completion(sint32 percent)
+{
+	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = percent;
 }
 
 

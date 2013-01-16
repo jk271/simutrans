@@ -30,6 +30,8 @@ void export_scenario(HSQUIRRELVM vm)
 	 * -# scenario-name/filename
 	 *
 	 * Here, iso refers to iso-abbreviation of currently active language.
+	 *
+	 * The content of the files is cached. The cache is cleared upon reloading of savegame.
 	 * @param file name of txt-file
 	 * @return content of loaded file
 	 */
@@ -123,7 +125,6 @@ void export_scenario(HSQUIRRELVM vm)
 	 * @param pos_se 3d-coordinate of south-eastern corner of cube
 	 * @param err error message presented to user when trying to apply this tool
 	 * @see tool_ids way_types player_all
-	 * @ingroup post-112-1
 	 */
 	STATIC register_method(vm, &scenario_t::forbid_way_tool_cube, "forbid_way_tool_cube");
 
@@ -137,9 +138,16 @@ void export_scenario(HSQUIRRELVM vm)
 	 * @param pos_nw 3d-coordinate of north-western corner of cube
 	 * @param pos_se 3d-coordinate of south-eastern corner of cube
 	 * @see tool_ids way_types player_all
-	 * @ingroup post-112-1
 	 */
 	STATIC register_method(vm, &scenario_t::allow_way_tool_cube,  "allow_way_tool_cube");
+
+	/**
+	 * Clear all forbidding rules, effectively allowing all tools again that were forbidden using functions of the table @ref rules.
+	 *
+	 * Only effects tools forbidden by rules::forbid_tool, rules::forbid_way_tool, rules::forbid_way_tool_cube, rules::forbid_way_tool_rect.
+	 * The result of ::is_tool_allowed and ::is_work_allowed_here is not influenced.
+	 */
+	STATIC register_method(vm, &scenario_t::clear_rules,  "clear");
 
 	end_class();
 }

@@ -189,15 +189,8 @@ static halthandle_t suche_nahe_haltestelle(spieler_t *sp, karte_t *welt, koord3d
 	// any other ground with a valid stop here?
 	if(  const planquadrat_t *plan = welt->lookup(pos.get_2d())  ) {
 		halthandle_t halt = plan->get_halt();
-		if(  halt.is_bound()  &&  sp==halt->get_besitzer()  ) {
-			// ok here is a halt: can we connect?
-			for(  int i=0;  i<plan->get_boden_count();  i++  ) {
-				if(  const grund_t *gr = plan->get_boden_bei(i)  ) {
-					if(  gr->is_halt()  ) {
-						return halt;
-					}
-				}
-			}
+		if(  halt.is_bound()  ) {
+			return (sp==halt->get_besitzer()  ||  halt->get_besitzer()->get_player_nr()==1) ? halt : halthandle_t();
 		}
 	}
 
@@ -232,14 +225,7 @@ static halthandle_t suche_nahe_haltestelle(spieler_t *sp, karte_t *welt, koord3d
 		if(  const planquadrat_t *plan = welt->lookup(pos.get_2d()+next_try_dir[i])  ) {
 			halthandle_t halt = plan->get_halt();
 			if(  halt.is_bound()  &&  sp==halt->get_besitzer()  ) {
-				// ok here is a halt: can we connect?
-				for(  int i=0;  i<plan->get_boden_count();  i++  ) {
-					if(  const grund_t *gr = plan->get_boden_bei(i)  ) {
-						if(  gr->is_halt()  ) {
-							return halt;
-						}
-					}
-				}
+				return halt;
 			}
 		}
 	}
@@ -249,27 +235,13 @@ static halthandle_t suche_nahe_haltestelle(spieler_t *sp, karte_t *welt, koord3d
 		if(  const planquadrat_t *plan = welt->lookup(pos.get_2d()+koord(-1,y))  ) {
 			halthandle_t halt = plan->get_halt();
 			if(  halt.is_bound()  &&  sp==halt->get_besitzer()  ) {
-				// ok here is a halt: can we connect?
-				for(  int i=0;  i<plan->get_boden_count();  i++  ) {
-					if(  const grund_t *gr = plan->get_boden_bei(i)  ) {
-						if(  gr->is_halt()  ) {
-							return halt;
-						}
-					}
-				}
+				return halt;
 			}
 		}
 		if(  const planquadrat_t *plan = welt->lookup(pos.get_2d()+koord(b,y))  ) {
 			halthandle_t halt = plan->get_halt();
 			if(  halt.is_bound()  &&  sp==halt->get_besitzer()  ) {
-				// ok here is a halt: can we connect?
-				for(  int i=0;  i<plan->get_boden_count();  i++  ) {
-					if(  const grund_t *gr = plan->get_boden_bei(i)  ) {
-						if(  gr->is_halt()  ) {
-							return halt;
-						}
-					}
-				}
+				return halt;
 			}
 		}
 	}
@@ -277,14 +249,14 @@ static halthandle_t suche_nahe_haltestelle(spieler_t *sp, karte_t *welt, koord3d
 		const planquadrat_t *plan = welt->lookup( pos.get_2d()+koord(x,-1) );
 		if(plan) {
 			halthandle_t halt = plan->get_halt();
-			if(halt.is_bound()  &&  sp==halt->get_besitzer()) {
+			if(  halt.is_bound()  &&  sp==halt->get_besitzer()  ) {
 				return halt;
 			}
 		}
 		plan = welt->lookup( pos.get_2d()+koord(x,h) );
 		if(plan) {
 			halthandle_t halt = plan->get_halt();
-			if(halt.is_bound()  &&  sp==halt->get_besitzer()) {
+			if(  halt.is_bound()  &&  sp==halt->get_besitzer()  ) {
 				return halt;
 			}
 		}
@@ -296,7 +268,7 @@ static halthandle_t suche_nahe_haltestelle(spieler_t *sp, karte_t *welt, koord3d
 		const planquadrat_t *plan = welt->lookup(pos.get_2d()+koord::neighbours[i]);
 		if(plan) {
 			halthandle_t halt = plan->get_halt();
-			if(halt.is_bound()  &&  welt->get_spieler(1)==halt->get_besitzer()) {
+			if(  halt.is_bound()  &&  welt->get_spieler(1)==halt->get_besitzer()  ) {
 				return halt;
 			}
 		}
@@ -3286,22 +3258,26 @@ DBG_MESSAGE("wkz_dockbau()","building dock from square (%d,%d) to (%d,%d)", pos.
 	}
 	bool neu = !halt.is_bound();
 
-	if(neu) { // neues dock
+	if(neu) {
+		if(  welt->lookup( (koord)pos )->get_halt().is_bound()  ) {
+			return "Das Feld gehoert\neinem anderen Spieler\n";
+		}
+		// ok, really new stop on this tile then
 		halt = haltestelle_t::create(welt, pos, sp);
 	}
 	hausbauer_t::baue(welt, halt->get_besitzer(), bau_pos, layout, besch, &halt);
 	sint64 costs = welt->get_settings().cst_multiply_dock * besch->get_level();
-	if(sp!=halt->get_besitzer()) {
+	if(  sp!=halt->get_besitzer()  ) {
 		// public stops are expensive!
 		costs -= (welt->get_settings().maint_building * besch->get_level() * 60);
 	}
-	for(int i=0;  i<=len;  i++ ) {
+	for(  int i=0;  i<=len;  i++  ) {
 		koord p=pos-dx*i;
 		sp->buche( costs, p, COST_CONSTRUCTION);
 	}
 
 	halt->recalc_station_type();
-	if(umgebung_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==pos) {
+	if(  umgebung_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==pos  ) {
 		// since we are larger now ...
 		halt->mark_unmark_coverage( true );
 	}
@@ -3325,50 +3301,50 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 	// get valid ground
 	grund_t *bd = wkz_intern_koord_to_weg_grund(sp, welt, k, wegtype);
 
-	if(!bd  ||  bd->get_weg_hang()!=hang_t::flach) {
+	if(  !bd  ||  bd->get_weg_hang()!=hang_t::flach  ) {
 		// only flat tiles, only one stop per map square
 		return "No suitable way on the ground!";
 	}
 
-	if(bd->ist_tunnel()  &&  bd->ist_karten_boden()) {
+	if(  bd->ist_tunnel()  &&  bd->ist_karten_boden()  ) {
 		// do not build on tunnel entries
 		return "No suitable way on the ground!";
 	}
 
-	if(bd->get_depot()) {
+	if(  bd->get_depot()  ) {
 		// not on depots
 		return "No suitable ground!";
 	}
 
-	if(bd->hat_weg(air_wt)  &&  bd->get_weg(air_wt)->get_besch()->get_styp()!=0) {
+	if(  bd->hat_weg(air_wt)  &&  bd->get_weg(air_wt)->get_besch()->get_styp()!=0  ) {
 		return "Flugzeughalt muss auf\nRunway liegen!\n";
 	}
 
 	// find out orientation ...
 	uint32 layout = 0;
 	ribi_t::ribi  ribi=ribi_t::dir_invalid;
-	if(besch->get_all_layouts()==2 || besch->get_all_layouts()==8 || besch->get_all_layouts()==16) {
+	if(  besch->get_all_layouts()==2  ||  besch->get_all_layouts()==8  ||  besch->get_all_layouts()==16  ) {
 		// through station
-		if(bd->has_two_ways()) {
+		if(  bd->has_two_ways()  ) {
 			// a crossing or maybe just a tram track on a road ...
 			ribi = bd->get_weg_nr(0)->get_ribi_unmasked()  |  bd->get_weg_nr(1)->get_ribi_unmasked();
 		}
-		else if (bd->hat_wege()) {
+		else if(  bd->hat_wege()  ) {
 			ribi = bd->get_weg_nr(0)->get_ribi_unmasked();
 		}
 		// not straight: sorry cannot build here ...
-		if(!ribi_t::ist_gerade(ribi)) {
+		if(  !ribi_t::ist_gerade(ribi)  ) {
 			return p_error;
 		}
 		layout = (ribi & ribi_t::nordsued)?0 :1;
 	}
-	else if(besch->get_all_layouts()==4) {
+	else if(  besch->get_all_layouts()==4  ) {
 		// terminal station
-		if (bd->hat_wege()) {
+		if(  bd->hat_wege()  ) {
 			ribi = bd->get_weg_nr(0)->get_ribi_unmasked();
 		}
 		// sorry cannot build here ... (not a terminal tile)
-		if(!ribi_t::ist_einfach(ribi)) {
+		if(  !ribi_t::ist_einfach(ribi)  ) {
 			return p_error;
 		}
 
@@ -3405,7 +3381,7 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 		for(  unsigned i=0;  i<4;  i++  ) {
 			// oriented buildings here - get neighbouring layouts
 			const planquadrat_t *plan = welt->lookup(pos+koord::nsow[i]);
-			if(plan  &&  plan->get_halt().is_bound()) {
+			if(  plan  &&  plan->get_halt().is_bound()  ) {
 				// ok, here is a halt at least
 //				next_halt |= ribi_t::nsow[i];
 				gr = welt->lookup(koord3d(pos+koord::nsow[i],offset));
@@ -3467,7 +3443,7 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 
 	halthandle_t halt;
 
-	if( old_halt.is_bound() ) {
+	if(  old_halt.is_bound()  ) {
 		gebaeude_t* gb = bd->find<gebaeude_t>();
 		const haus_besch_t *old_besch = gb->get_tile()->get_besch();
 		old_level = old_besch->get_level();
@@ -3490,6 +3466,9 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 	bool neu = !halt.is_bound();
 
 	if(neu) {
+		if(  welt->lookup( pos )->get_halt().is_bound()  ) {
+			return "Das Feld gehoert\neinem anderen Spieler\n";
+		}
 		halt = haltestelle_t::create(welt, pos, sp);
 	}
 	hausbauer_t::neues_gebaeude( welt, halt->get_besitzer(), bd->get_pos(), layout, besch, &halt);
@@ -3504,12 +3483,12 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 	sint64 old_cost = old_level * cost;
 	cost *= besch->get_level()*besch->get_b()*besch->get_h();
 	cost -= old_cost/2;
-	if(sp!=halt->get_besitzer()) {
+	if(  sp!=halt->get_besitzer()  ) {
 		// public stops are expensive!
 		cost -= (welt->get_settings().maint_building * besch->get_level() * besch->get_b() * besch->get_h() * 60);
 	}
 	sp->buche( cost, pos, COST_CONSTRUCTION);
-	if(umgebung_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==pos) {
+	if(  umgebung_t::station_coverage_show  &&  welt->get_zeiger()->get_pos().get_2d()==pos  ) {
 		// since we are larger now ...
 		halt->mark_unmark_coverage( true );
 	}

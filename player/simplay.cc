@@ -70,7 +70,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	finance = new finance_t(this, wl);
 	welt = wl;
 	player_nr = nr;
-
 	player_age = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
@@ -190,11 +189,6 @@ void spieler_t::book_toll_received(const sint64 amount, const waytype_t wt)
 void spieler_t::book_transported(const sint64 amount, const waytype_t wt, int index, const int destination_reached)
 {
 	finance->book_transported(amount, wt, index, destination_reached);
-}
-
-void spieler_t::book_delivered(const sint64 amount, const waytype_t wt, int index)
-{
-	finance->book_delivered(amount, wt, index);
 }
 
 
@@ -350,7 +344,7 @@ bool spieler_t::neuer_monat()
 			// no assets => nothing to go bankrupt about again
 			else if(  finance->get_maintenance(TT_ALL) != 0  ||  finance->has_convoi()  ) {
 
-				// for AI, we only declare bankrupt, if total assest are below zero
+				// for AI, we only declare bankrupt, if total assets are below zero
 				if(  finance->get_netwealth() < 0  ) {
 					return false;
 				}
@@ -379,7 +373,7 @@ bool spieler_t::neuer_monat()
 			for(  uint16 m=0;  m<months  &&  no_cnv;  m++  ) {
 				no_cnv &= finance->get_history_com_month(m, ATC_ALL_CONVOIS) ==0;
 			}
-			const uint16 years = max( MAX_PLAYER_HISTORY_YEARS,  (welt->get_settings().get_remove_dummy_player_months() - 1) / 12 );
+			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS,  (welt->get_settings().get_remove_dummy_player_months() - 1) / 12 );
 			for(  uint16 y=0;  y<years  &&  no_cnv;  y++  ) {
 				no_cnv &= finance->get_history_com_year(y, ATC_ALL_CONVOIS)==0;
 			}
@@ -416,7 +410,6 @@ bool spieler_t::neuer_monat()
 	calc_assets();
 
 	simlinemgmt.new_month();
-
 	return true; // still active
 }
 
@@ -454,6 +447,18 @@ void spieler_t::calc_assets()
 void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 {
 	finance->update_assets(delta, wt);
+}
+
+
+sint32 spieler_t::get_scenario_completion() const
+{
+	return (sint32) finance->get_scenario_completed();
+}
+
+
+void spieler_t::set_scenario_completion(sint32 percent)
+{
+	finance->set_scenario_completed(percent);
 }
 
 
@@ -635,7 +640,7 @@ void spieler_t::ai_bankrupt()
 	automat = false;
 	// make account negative
 	if (finance->get_account_balance() > 0) {
-		finance->book_account( -finance->get_account_balance() -1 );
+		finance->set_account_balance(-1);
 	}
 
 	cbuffer_t buf;
@@ -722,9 +727,6 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);
-
-
-		// If next "if" was used in rdwr, saving a game would unnecessarily clean collected statistics
 	}
 
 	// headquarter stuff

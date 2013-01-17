@@ -450,8 +450,8 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	update_label(nvmoney,  str_buf[1], transport_type_option, ATV_NEW_VEHICLE, 0);
 	update_label(vrmoney,  str_buf[2], transport_type_option, ATV_RUNNING_COST, 0);
 	update_label(mmoney,   str_buf[3], transport_type_option, ATV_INFRASTRUCTURE_MAINTENANCE, 0);
-	update_label(imoney,   str_buf[5], transport_type_option, ATV_REVENUE_TRANSPORT, 0);
-	update_label(tmoney,   str_buf[6], transport_type_option, ATV_PROFIT, 0);
+	update_label(imoney,   str_buf[4], transport_type_option, ATV_REVENUE_TRANSPORT, 0);
+	update_label(tmoney,   str_buf[5], transport_type_option, ATV_PROFIT, 0);
 	update_label(omoney,   str_buf[6], transport_type_option, ATV_OPERATING_PROFIT, 0);
 
 	update_label(old_conmoney, str_buf[7], transport_type_option, ATV_CONSTRUCTION_COST, 1);
@@ -479,7 +479,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	// warning/success messages
 	if(sp->get_player_nr()!=1  &&  sp->get_welt()->get_scenario()->active()) {
 		warn.set_color( COL_BLACK );
-		sint32 percent = sp->get_welt()->get_scenario()->completed( sp->get_player_nr() );
+		sint32 percent = sp->get_welt()->get_scenario()->get_completion(sp->get_player_nr());
 		if (percent >= 0) {
 			sprintf( str_buf[15], translator::translate("Scenario complete: %i%%"), percent );
 		}
@@ -558,7 +558,8 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	}
 
 	// Hajo: Money is counted in credit cents (100 cents = 1 Cr)
-	money_to_string(str_buf[16], (double)((sint64)sp->get_finance()->get_maintenance_with_bits(TT_ALL))/100.0);
+	money_to_string(str_buf[16], (double)(sp->get_finance()->get_maintenance_with_bits((transport_type)transport_type_option))/100.0
+	);
 	maintenance_money.set_text(str_buf[16]);
 	maintenance_money.set_color(sp->get_finance()->get_maintenance((transport_type)transport_type_option)>=0?MONEY_PLUS:MONEY_MINUS);
 

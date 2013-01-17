@@ -20,11 +20,6 @@
 #include "../tpl/vector_tpl.h"
 
 
-#define MAX_PLAYER_HISTORY_YEARS  (12) // number of years to keep history
-#define MAX_PLAYER_HISTORY_MONTHS  (12) // number of months to keep history
-#define MAX_PLAYER_COST_X (19)
-
-
 class karte_t;
 class fabrik_t;
 class koord3d;
@@ -48,16 +43,6 @@ protected:
 	 */
 	sint32 haltcount;
 
-private:
-	/**
-	* Finance History - will supercede the finances by Owen Rudge
-	* Will hold finances for the most recent 12 years
-	* @author hsiegeln
-	*/
-	sint64 finance_history_year[MAX_PLAYER_HISTORY_YEARS][MAX_PLAYER_COST_X];
-	sint64 finance_history_month[MAX_PLAYER_HISTORY_MONTHS][MAX_PLAYER_COST_X];
-
-protected:
 	/* "new" finance history */
 	finance_t *finance;
 
@@ -120,9 +105,12 @@ public:
 	/**
 	 * sums up "count" with number of convois in statistics,
 	 * supersedes buche( count, COST_ALL_CONVOIS)
+<<<<<<< HEAD
 	 * @author jk271
+=======
+>>>>>>> money2012_patchset310_player_finance_files
 	 */
-	void add_maintenance(sint64 change, waytype_t const wt=ignore_wt);
+	void add_maintenance(sint64 const change, waytype_t const wt=ignore_wt);
 
 	/**
 	 * Adds somme amount to the maintenance costs
@@ -180,11 +168,11 @@ public:
 	void book_revenue(const sint64 amount, const koord k, const waytype_t wt=ignore_wt, sint32 cathegory=2);
 
 	/**
-         * Adds running costs to accounting statistics.
-         * this function is called very often
-         * @param amount How much does it cost
-         * @param wt
-         */
+	 * Adds running costs to accounting statistics.
+	 * this function is called very often
+	 * @param amount How much does it cost
+	 * @param wt
+	 */
         void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
@@ -202,7 +190,7 @@ public:
 	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
 	/**
-	 * Add amount of transported passanger, mail, goods to accounting statistics
+	 * Add amount of transported passenger, mail, goods to accounting statistics
 	 * @param amount number of transported units
 	 * @param wt way type
 	 * @param index 0 = passenger, 1 = mail, 2 = goods
@@ -279,6 +267,14 @@ public:
 	spieler_t(karte_t *welt, uint8 player_nr );
 
 	virtual ~spieler_t();
+
+	/**
+	 * Cached value of scenario completion percentage.
+	 * To get correct values for clients call scenario_t::get_completion instead.
+	 */
+	sint32 get_scenario_completion() const;
+
+	void set_scenario_completion(sint32 percent);
 
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert

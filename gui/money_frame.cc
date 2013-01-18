@@ -103,6 +103,7 @@ const char * money_frame_t::transport_type_values[TT_MAX] = {
 	"Powerlines",
 };
 
+
 /// Helper method to query data from players statistics
 sint64 money_frame_t::get_statistics_value(int tt, uint8 type, int yearmonth, bool monthly)
 {

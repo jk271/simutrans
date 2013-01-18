@@ -378,8 +378,7 @@ void finance_t::import_from_cost_year( const sint64 finance_history_year[][OLD_M
 }
 
 
-bool finance_t::is_bancrupted() const
-{
+bool finance_t::is_bancrupted() const {
 	return (
 		com_year[0][ATC_NETWEALTH] <=0  &&
 		veh_year[TT_ALL][0][ATV_INFRASTRUCTURE_MAINTENANCE] == 0  &&

@@ -56,6 +56,10 @@
 
 karte_t *spieler_t::welt = NULL;
 
+#if MULTI_THREAD>1
+#include <pthread.h>
+static pthread_mutex_t laden_abschl_mutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 
 /**
  * Encapsulate margin calculation  (Operating_Profit / Income)
@@ -80,6 +84,7 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	starting_money = konto;
 
 	konto_ueberzogen = 0;
+	player_age = 0;
 	automat = false;		// Start nicht als automatischer Spieler
 	locked = false;	/* allowe to change anything */
 	unlock_pending = false;
@@ -110,8 +115,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 		}
 	}
 
-	haltcount = 0;
-
 	maintenance = 0;
 
 	welt->get_settings().set_default_player_color(this);
@@ -126,7 +129,7 @@ spieler_t::~spieler_t()
 	while(  !messages.empty()  ) {
 		delete messages.remove_first();
 	}
-	destroy_win( (long)this );
+	destroy_win((ptrdiff_t)this);
 }
 
 
@@ -244,46 +247,10 @@ void spieler_t::step()
  * wird von welt nach jedem monat aufgerufen
  * @author Hj. Malthaner
  */
-void spieler_t::neuer_monat()
+bool spieler_t::neuer_monat()
 {
 	// since the messages must remain on the screen longer ...
 	static cbuffer_t buf;
-
-
-	// Wartungskosten abziehen
-	calc_finance_history();
-	roll_finance_history_month();
-
-	if(welt->get_last_month()==0) {
-		roll_finance_history_year();
-	}
-
-	// new month has started => recalculate vehicle value
-	calc_assets();
-
-	calc_finance_history();
-
-	simlinemgmt.new_month();
-
-	// subtract maintenance
-	if(  welt->ticks_per_world_month_shift>=18  ) {
-		buche( -((sint64)maintenance) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
-	}
-	else {
-		buche( -((sint64)maintenance) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
-	}
-
-	// enough money and scenario finished?
-	if(konto > 0  &&  welt->get_scenario()->active()  &&  finance_history_year[0][COST_SCENARIO_COMPLETED]>=100) {
-		destroy_all_win(true);
-		sint32 const time = welt->get_current_month() - welt->get_settings().get_starting_year() * 12;
-		buf.clear();
-		buf.printf( translator::translate("Congratulation\nScenario was complete in\n%i months %i years."), time%12, time/12 );
-		create_win(280, 40, new news_img(buf), w_info, magic_none);
-		// disable further messages
-		welt->get_scenario()->init("",welt);
-		return;
-	}
 
 	// Bankrott ?
 	if(  konto < 0  ) {
@@ -310,9 +277,9 @@ void spieler_t::neuer_monat()
 			// no assets => nothing to go bankrupt about again
 			else if(  maintenance!=0  ||  finance_history_year[0][COST_ALL_CONVOIS]!=0  ) {
 
-				// for AI, we only declare bankrupt, if total assest are below zero
+				// for AI, we only declare bankrupt, if total assets are below zero
 				if(finance_history_year[0][COST_NETWEALTH]<0) {
-					ai_bankrupt();
+					return false;
 				}
 				// tell the current player (even during networkgames)
 				if(  welt->get_active_player_nr()==player_nr  ) {
@@ -333,6 +300,69 @@ void spieler_t::neuer_monat()
 	else {
 		konto_ueberzogen = 0;
 	}
+
+	if(  umgebung_t::networkmode  &&  player_nr>1  &&  !automat  ) {
+		// find out dummy companies (i.e. no vehicle running within x months)
+		if(  welt->get_settings().get_remove_dummy_player_months()  &&  player_age >= welt->get_settings().get_remove_dummy_player_months()  )  {
+			bool no_cnv = true;
+			const uint16 months = min( 12,  welt->get_settings().get_remove_dummy_player_months() );
+			for(  uint16 m = 0;  m < months  &&  no_cnv;  m++  ) {
+				no_cnv &= finance_history_month[m][COST_ALL_CONVOIS]==0;
+			}
+			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS,  (welt->get_settings().get_remove_dummy_player_months() - 1) / 12 );
+			for(  uint16 y = 0;  y < years  &&  no_cnv;  y++  ) {
+				no_cnv &= finance_history_year[y][COST_ALL_CONVOIS]==0;
+			}
+			// never run a convoi => dummy
+			if(  no_cnv  ) {
+				return false; // remove immediately
+			}
+		}
+
+		// find out abandoned companies (no activity within x months)
+		if(  welt->get_settings().get_unprotect_abondoned_player_months()  &&  player_age >= welt->get_settings().get_unprotect_abondoned_player_months()  )  {
+			bool abandoned = true;
+			const uint16 months = min( 12,  welt->get_settings().get_unprotect_abondoned_player_months() );
+			for(  uint16 m = 0;  m < months  &&  abandoned;  m++  ) {
+				abandoned &= finance_history_month[m][COST_NEW_VEHICLE]==0  &&  finance_history_month[m][COST_CONSTRUCTION]==0;
+			}
+			const uint16 years = min( MAX_PLAYER_HISTORY_YEARS, (welt->get_settings().get_unprotect_abondoned_player_months() - 1) / 12);
+			for(  uint16 y = 0;  y < years  &&  abandoned;  y++  ) {
+				abandoned &= finance_history_year[y][COST_NEW_VEHICLE]==0  &&  finance_history_year[y][COST_CONSTRUCTION]==0;
+			}
+			// never changed convoi, never built => abandoned
+			if(  abandoned  ) {
+				pwd_hash.clear();
+				locked = false;
+				unlock_pending = false;
+			}
+		}
+	}
+
+	calc_finance_history();
+	roll_finance_history_month();
+
+	if(welt->get_last_month()==0) {
+		roll_finance_history_year();
+	}
+	// company gets older ...
+	player_age ++;
+
+	// new month has started => recalculate vehicle value
+	calc_assets();
+
+	calc_finance_history();
+
+	simlinemgmt.new_month();
+
+	// subtract maintenance
+	if(  welt->ticks_per_world_month_shift>=18  ) {
+		buche( -((sint64)maintenance) << (welt->ticks_per_world_month_shift-18), COST_MAINTENANCE);
+	}
+	else {
+		buche( -((sint64)maintenance) >> (18-welt->ticks_per_world_month_shift), COST_MAINTENANCE);
+	}
+	return true; // still active
 }
 
 
@@ -350,8 +380,8 @@ void spieler_t::roll_finance_history_month()
 		}
 	}
 	for (int i=0;  i<MAX_PLAYER_COST;  i++) {
-		// reset everything except number of convois
-		if (i != COST_ALL_CONVOIS) {
+		// reset everything except number of convois, scenario completion
+		if (i != COST_ALL_CONVOIS  &&  i != COST_SCENARIO_COMPLETED) {
 			finance_history_month[0][i] = 0;
 		}
 	}
@@ -367,8 +397,8 @@ void spieler_t::roll_finance_history_year()
 		}
 	}
 	for (int i=0;  i<MAX_PLAYER_COST;  i++) {
-		// reset everything except number of convois
-		if (i != COST_ALL_CONVOIS) {
+		// reset everything except number of convois, scenario completion
+		if (i != COST_ALL_CONVOIS  &&  i != COST_SCENARIO_COMPLETED) {
 			finance_history_year[0][i] = 0;
 		}
 	}
@@ -405,7 +435,16 @@ void spieler_t::calc_finance_history()
 	finance_history_month[0][COST_NETWEALTH] = finance_history_month[0][COST_ASSETS] + konto;
 	finance_history_month[0][COST_OPERATING_PROFIT] = finance_history_month[0][COST_INCOME] + finance_history_month[0][COST_POWERLINES] + finance_history_month[0][COST_VEHICLE_RUN] + finance_history_month[0][COST_MAINTENANCE] + finance_history_month[0][COST_WAY_TOLLS];
 	finance_history_month[0][COST_MARGIN] = calc_margin(finance_history_month[0][COST_OPERATING_PROFIT], finance_history_month[0][COST_INCOME]);
-	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = welt->get_scenario()->completed(player_nr);
+}
+
+
+sint64 spieler_t::get_finance_history_month_converted(int month, int type)
+{
+	sint64 value = finance_history_month[month][type];
+	if ((COST_CONSTRUCTION <= type  &&  type <= COST_OPERATING_PROFIT)  ||  type == COST_WAY_TOLLS  ||  type ==  COST_POWERLINES) {
+		value = convert_money(value);
+	}
+	return value;
 }
 
 
@@ -492,44 +531,21 @@ void spieler_t::accounting(spieler_t* const sp, sint64 const amount, koord const
 }
 
 
+sint32 spieler_t::get_scenario_completion() const
+{
+	return finance_history_month[0][COST_SCENARIO_COMPLETED];
+}
+
+
+void spieler_t::set_scenario_completion(sint32 percent)
+{
+	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = percent;
+}
+
+
 bool spieler_t::check_owner( const spieler_t *owner, const spieler_t *test )
 {
 	return owner == test  ||  owner == NULL  ||  test == welt->get_spieler(1);
-}
-
-
-/**
- * Erzeugt eine neue Haltestelle des Spielers an Position pos
- * @author Hj. Malthaner
- */
-halthandle_t spieler_t::halt_add(koord pos)
-{
-	halthandle_t halt = haltestelle_t::create(welt, pos, this);
-	halt_add(halt);
-	return halt;
-}
-
-
-/**
- * Erzeugt eine neue Haltestelle des Spielers an Position pos
- * @author Hj. Malthaner
- */
-void spieler_t::halt_add(halthandle_t halt)
-{
-	if(!halt_list.is_contained(halt)) {
-		halt_list.append(halt);
-		haltcount ++;
-	}
-}
-
-
-/**
- * Entfernt eine Haltestelle des Spielers aus der Liste
- * @author Hj. Malthaner
- */
-void spieler_t::halt_remove(halthandle_t halt)
-{
-	halt_list.remove(halt);
 }
 
 
@@ -564,6 +580,14 @@ void spieler_t::ai_bankrupt()
 	headquarter_pos = koord::invalid;
 
 	// remove all stops
+	// first generate list of our stops
+	slist_tpl<halthandle_t> halt_list;
+	FOR(slist_tpl<halthandle_t>, const halt, haltestelle_t::get_alle_haltestellen()) {
+		if(  halt->get_besitzer()==this  ) {
+			halt_list.append(halt);
+		}
+	}
+	// ... and destroy them
 	while (!halt_list.empty()) {
 		halthandle_t h = halt_list.remove_first();
 		haltestelle_t::destroy( h );
@@ -633,12 +657,13 @@ void spieler_t::ai_bankrupt()
 							case ding_t::senke:
 							case ding_t::pumpe:
 							case ding_t::wayobj:
+							case ding_t::label:
 								dt->entferne(this);
 								delete dt;
 								break;
 							case ding_t::leitung:
-								if (gr->ist_bruecke()) {
-									add_maintenance( -((leitung_t*)dt)->get_besch()->get_wartung() );
+								if(gr->ist_bruecke()) {
+									maintenance -= ((leitung_t*)dt)->get_besch()->get_wartung();
 									// do not remove powerline from bridges
 									dt->set_besitzer( welt->get_spieler(1) );
 								}
@@ -657,7 +682,7 @@ void spieler_t::ai_bankrupt()
 									w->set_besitzer( NULL );
 								}
 								else if(w->get_waytype()==road_wt  ||  w->get_waytype()==water_wt) {
-									add_maintenance( -w->get_besch()->get_wartung() );
+									maintenance -= w->get_besch()->get_wartung();
 									w->set_besitzer( NULL );
 								}
 								else {
@@ -666,11 +691,11 @@ void spieler_t::ai_bankrupt()
 								break;
 							}
 							case ding_t::bruecke:
-								add_maintenance( -((bruecke_t*)dt)->get_besch()->get_wartung() );
+								maintenance -= ((bruecke_t*)dt)->get_besch()->get_wartung();
 								dt->set_besitzer( NULL );
 								break;
 							case ding_t::tunnel:
-								add_maintenance( -((tunnel_t*)dt)->get_besch()->get_wartung() );
+								maintenance -= ((tunnel_t*)dt)->get_besch()->get_wartung();
 								dt->set_besitzer( NULL );
 								break;
 
@@ -694,6 +719,8 @@ void spieler_t::ai_bankrupt()
 	}
 
 	automat = false;
+	konto = -1;
+
 	cbuffer_t buf;
 	buf.printf( translator::translate("%s\nwas liquidated."), get_name() );
 	welt->get_message()->add_message( buf, koord::invalid, message_t::ai, PLAYER_FLAG|player_nr );
@@ -708,7 +735,6 @@ void spieler_t::ai_bankrupt()
 void spieler_t::rdwr(loadsave_t *file)
 {
 	xml_tag_t sss( file, "spieler_t" );
-	sint32 halt_count=0;
 
 	file->rdwr_longlong(konto);
 	file->rdwr_long(konto_ueberzogen);
@@ -729,10 +755,15 @@ void spieler_t::rdwr(loadsave_t *file)
 		file->rdwr_byte(kennfarbe1);
 		file->rdwr_byte(kennfarbe2);
 	}
+
+	sint32 halt_count=0;
 	if(file->get_version()<99008) {
 		file->rdwr_long(halt_count);
 	}
-	file->rdwr_long(haltcount);
+	if(file->get_version()<=112002) {
+		sint32 haltcount = 0;
+		file->rdwr_long(haltcount);
+	}
 
 	if (file->get_version() < 84008) {
 		// not so old save game
@@ -869,11 +900,6 @@ void spieler_t::rdwr(loadsave_t *file)
 		k.rdwr( file );
 	}
 
-	// Hajo: sanity checks
-	if(halt_count < 0  ||  haltcount < 0) {
-		dbg->fatal("spieler_t::rdwr()", "Halt count is out of bounds: %d -> corrupt savegame?", halt_count|haltcount);
-	}
-
 	if(file->is_loading()) {
 
 		/* prior versions calculated margin incorrectly.
@@ -899,14 +925,7 @@ void spieler_t::rdwr(loadsave_t *file)
 		// halt_count will be zero for newer savegames
 DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this ),halt_count);
 		for(int i=0; i<halt_count; i++) {
-			halthandle_t halt = haltestelle_t::create( welt, file );
-			// it was possible to have stops without ground: do not load them
-			if(halt.is_bound()) {
-				halt_list.insert(halt);
-				if(!halt->existiert_in_welt()) {
-					dbg->warning("spieler_t::rdwr()","empty halt id %i qill be ignored", halt.get_id() );
-				}
-			}
+			haltestelle_t::create( welt, file );
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);
@@ -946,8 +965,13 @@ DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this 
 	}
 
 	// save the name too
-	if(file->get_version()>102003) {
+	if(  file->get_version() > 102003  ) {
 		file->rdwr_str( spieler_name_buf, lengthof(spieler_name_buf) );
+	}
+
+	// save age
+	if(  file->get_version() >= 112002  ) {
+		file->rdwr_short( player_age );
 	}
 }
 
@@ -961,6 +985,20 @@ void spieler_t::laden_abschliessen()
 	display_set_player_color_scheme( player_nr, kennfarbe1, kennfarbe2 );
 	// recalculate vehicle value
 	calc_assets();
+}
+
+
+void spieler_t::add_maintenance(spieler_t *sp, sint32 change)
+{
+	if(sp) {
+#if MULTI_THREAD>1
+		pthread_mutex_lock( &laden_abschl_mutex );
+#endif
+		sp->maintenance += change;
+#if MULTI_THREAD>1
+		pthread_mutex_unlock( &laden_abschl_mutex );
+#endif
+	}
 }
 
 
@@ -1094,10 +1132,11 @@ sint64 spieler_t::undo()
 			cost += gr->weg_entfernen(undo_type,true);
 		}
 		else {
-			leitung_t* lt = gr->get_leitung();
-			cost += lt->get_besch()->get_preis();
-			lt->entferne(NULL);
-			delete lt;
+			if (leitung_t* lt = gr->get_leitung()) {
+				cost += lt->get_besch()->get_preis();
+				lt->entferne(NULL);
+				delete lt;
+			}
 		}
 	}
 	last_built.clear();

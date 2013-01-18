@@ -86,13 +86,18 @@ public:
 
 	convoihandle_t get_convoi(unsigned int icnv) const { return icnv < convoi_count() ? convois.at(icnv) : convoihandle_t(); }
 
-	convoihandle_t add_convoi();
+	convoihandle_t add_convoi(bool local_execution);
 
-	/*
+	slist_tpl<convoihandle_t> const& get_convoy_list() { return convois; }
+
+	// checks if cnv can be copied by using only stored vehicles and non-obsolete purchased vehicles
+	bool check_obsolete_inventory(convoihandle_t cnv);
+
+	/**
 	 * copies convoi and its schedule or line
 	 * @author hsiegeln
 	 */
-	convoihandle_t copy_convoi(convoihandle_t old_cnv);
+	convoihandle_t copy_convoi(convoihandle_t old_cnv, bool local_execution);
 
 	/**
 	 * Let convoi leave the depot.
@@ -103,6 +108,8 @@ public:
 	 */
 	bool start_convoi(convoihandle_t cnv, bool local_execution);
 
+	bool start_all_convoys();
+
 	/**
 	 * Destroy the convoi and put the vehicles in the vehicles list (sell==false),
 	 * or sell all immediately (sell==true).
@@ -112,12 +119,18 @@ public:
 	bool disassemble_convoi(convoihandle_t cnv, bool sell);
 
 	/**
+	 * Remove the convoi from the depot lists
+	 * updating depot gui frame as necessary
+	 */
+	void remove_convoi( convoihandle_t cnv );
+
+	/**
 	 * Remove vehicle from vehicle list and add it to the convoi. Two positions
 	 * are possible - in front or at the rear.
 	 * @author Volker Meyer
 	 * @date  09.06.2003
 	 */
-	void append_vehicle(convoihandle_t cnv, vehikel_t* veh, bool infront);
+	void append_vehicle(convoihandle_t cnv, vehikel_t* veh, bool infront, bool local_execution);
 
 	/**
 	 * Remove the vehicle at given position from the convoi and put it in the
@@ -126,6 +139,7 @@ public:
 	 * @date  09.06.2003
 	 */
 	void remove_vehicle(convoihandle_t cnv, int ipos);
+	void remove_vehicles_to_end(convoihandle_t cnv, int ipos);
 
 	/**
 	 * Access to vehicles not bound to a convoi. They are not ordered
@@ -155,12 +169,6 @@ public:
 	 * @author Volker Meyer
 	 */
 	slist_tpl<vehikel_besch_t const*> const& get_vehicle_type() const;
-
-	/**
-	 * Returns the waytype for a certain vehicle; only way to distinguish differnt depots ...
-	 * @author prissi
-	 */
-	virtual waytype_t get_wegtyp() const { return invalid_wt; }
 
 	/**
 	 * A convoi arrived at the depot and is added to the convoi list.
@@ -202,25 +210,37 @@ public:
 	 */
 	vehikel_t* get_oldest_vehicle(const vehikel_besch_t* besch);
 
-	/*
-	 * sets/gets the line that was selected the last time in the depot dialog
+	/**
+	 * Sets/gets the line that was selected the last time in the depot dialog
 	 */
-	void set_selected_line(const linehandle_t sel_line);
-	linehandle_t get_selected_line();
+	void set_last_selected_line(const linehandle_t last_line) { last_selected_line=last_line; }
+	linehandle_t get_last_selected_line() const { return last_selected_line; }
 
-	/*
+	/**
 	 * Will update all depot_frame_t (new vehicles!)
 	 */
 	static void update_all_win();
 	static void neuer_monat();
 
-	/*
+	/**
 	 * Update the depot_frame_t.
 	 */
 	void update_win();
 
 private:
-	linehandle_t selected_line;
+	linehandle_t last_selected_line;
+
+	/**
+	 * Used to block new actions from depot frame gui when convois are being added to the depot.
+	 * Otherwise lag in multipler results in actions being performed on the wrong convoi.
+	 * Only works for a single client making changes in a depot at once. Multiple clients can still result in wrong convois being changed.
+	 */
+	bool command_pending;
+
+public:
+	bool is_command_pending() const { return command_pending; }
+	void clear_command_pending() { command_pending = false; }
+	void set_command_pending() { command_pending = true; }
 };
 
 
@@ -252,7 +272,6 @@ public:
 	int get_y_grid() const { return 24; }
 	unsigned get_max_convoi_length() const;
 
-	virtual waytype_t get_wegtyp() const {return track_wt;}
 	virtual ding_t::typ get_typ() const { return bahndepot; }
 	virtual const char *get_name() const {return "Bahndepot"; }
 };
@@ -266,7 +285,6 @@ public:
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::tramline; }
 
-	virtual waytype_t get_wegtyp() const {return tram_wt;}
 	virtual ding_t::typ get_typ() const { return tramdepot; }
 	virtual const char *get_name() const {return "Tramdepot"; }
 };
@@ -279,7 +297,6 @@ public:
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::monorailline; }
 
-	virtual waytype_t get_wegtyp() const {return monorail_wt;}
 	virtual ding_t::typ get_typ() const { return monoraildepot; }
 	virtual const char *get_name() const {return "Monoraildepot"; }
 };
@@ -292,7 +309,6 @@ public:
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::maglevline; }
 
-	virtual waytype_t get_wegtyp() const {return maglev_wt;}
 	virtual ding_t::typ get_typ() const { return maglevdepot; }
 	virtual const char *get_name() const {return "Maglevdepot"; }
 };
@@ -305,7 +321,6 @@ public:
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::narrowgaugeline; }
 
-	virtual waytype_t get_wegtyp() const {return narrowgauge_wt;}
 	virtual ding_t::typ get_typ() const { return narrowgaugedepot; }
 	virtual const char *get_name() const {return "Narrowgaugedepot"; }
 };
@@ -342,7 +357,6 @@ public:
 	int get_y_grid() const { return 24; }
 	unsigned get_max_convoi_length() const { return 4; }
 
-	virtual waytype_t get_wegtyp() const {return road_wt; }
 	ding_t::typ get_typ() const { return strassendepot; }
 	const char *get_name() const {return "Strassendepot";}
 };
@@ -379,7 +393,6 @@ public:
 	int get_y_grid() const { return 46; }
 
 	unsigned get_max_convoi_length() const { return 4; }
-	virtual waytype_t get_wegtyp() const {return water_wt; }
 	ding_t::typ get_typ() const { return schiffdepot; }
 	const char *get_name() const {return "Schiffdepot";}
 };
@@ -411,7 +424,6 @@ public:
 	int get_y_grid() const { return 36; }
 	unsigned get_max_convoi_length() const { return 1; }
 
-	virtual waytype_t get_wegtyp() const { return air_wt; }
 	ding_t::typ get_typ() const { return airdepot; }
 	const char *get_name() const {return "Hangar";}
 };

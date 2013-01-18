@@ -105,6 +105,10 @@ void register_image(struct bild_t* bild)
 	bild->bild_nr = 1;
 }
 
+void display_snapshot(int, int, int, int)
+{
+}
+
 void display_get_image_offset(unsigned, KOORD_VAL *, KOORD_VAL *, KOORD_VAL *, KOORD_VAL *)
 {
 }
@@ -176,6 +180,10 @@ display_blend_proc display_blend = display_base_img_blend;
 signed short current_tile_raster_width = 0;
 
 void display_blend_wh(KOORD_VAL, KOORD_VAL, KOORD_VAL, KOORD_VAL, int, int )
+{
+}
+
+void mark_screen_dirty()
 {
 }
 

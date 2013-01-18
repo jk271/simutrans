@@ -175,7 +175,7 @@ class haus_besch_t : public obj_besch_std_name_t { // Daten für ein ganzes Gebäu
 	utyp            utype; // Hajo: if gtyp == gebaeude_t::unbekannt, then this is the real type
 
 	uint16 animation_time;	// in ms
-	uint16 extra_data;      // bauzeit (inhabitants) for city attractions, waytype for depots, player level for headquarters
+	uint32 extra_data;      // bauzeit (inhabitants) for city attractions, waytype for depots, player level for headquarters
 	koord  groesse;
 	flag_t flags;
 	uint16 level;          // or passengers;
@@ -188,6 +188,15 @@ class haus_besch_t : public obj_besch_std_name_t { // Daten für ein ganzes Gebäu
 	// when was this building allowed
 	uint16 intro_date;
 	uint16 obsolete_date;
+
+	/**
+	 * Whether this building can or must be built underground.
+	 * Only relevant for stations (generic_stop).
+	 * 0 = cannot be built underground
+	 * 1 = can only be built underground
+	 * 2 = can be built either underground or above ground.
+	 */
+	uint8 allow_underground;
 
 	bool ist_utyp(utyp u) const {
 		return gtyp == gebaeude_t::unbekannt && utype == u;
@@ -212,7 +221,7 @@ public:
 
 	uint8 get_all_layouts() const { return layouts; }
 
-	uint16 get_extra() const { return extra_data; }
+	uint32 get_extra() const { return extra_data; }
 
 	// ground is transparent
 	bool ist_mit_boden() const { return (flags & FLAG_NEED_GROUND) != 0; }
@@ -335,6 +344,9 @@ public:
 	}
 
 	void calc_checksum(checksum_t *chk) const;
+
+	bool can_be_built_underground() const { return allow_underground > 0; }
+	bool can_be_built_aboveground() const { return allow_underground != 1; }
 };
 
 ENUM_BITSET(haus_besch_t::flag_t)

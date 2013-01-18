@@ -20,6 +20,10 @@
 # ATTENTION!
 # will be only used if this file is located in the program directory at config/simuconf.tab!
 #singleuser_install = 0
+#
+#
+#
+# Do not delete these comment line! (Needed for installer)
 
 # Default pak file path
 # which graphics you want to play?
@@ -160,7 +164,13 @@ beginner_price_factor = 1500
 #industry_increase_every = 2000
 
 # smallest distance between two adjacent factories
-factory_spacing = 6
+min_factory_spacing = 6
+
+# max distance for connected factories
+# if percentage>0, it will be in percent of the largest map dimension
+# percentage also overrides the absolute value
+max_factory_spacing_percentage = 25
+#max_factory_spacing = 40
 
 # allow all possible supplier to connect to your factories?
 # best to leave it in default position. (only on for simuTTD)
@@ -174,10 +184,17 @@ crossconnect_factories_percentage = 33
 electric_promille = 330
 
 # true if transformers are allowed underground (default)
-allow_undergroud_transformers = 1
+allow_underground_transformers = 1
 
 # with this switch on (default), overcrowded factories will not recieve goods any more
 just_in_time = 1
+
+# how much amount in transport is sent before further distribution stops
+# This is only enabled when "just_in_time" is enabled
+# The limit is given in percent of factory storage (0=off)
+# It should be not too low to allow big convois fully loaded at more than one
+# factory (for medium sized maps 500 seems a reasonable number)
+maximum_intransit_percentage = 0
 
 # use beginner mode for new maps (can be switched anyway on the new map dialog)
 first_beginner = 0
@@ -205,6 +222,12 @@ random_player_colors = 0
 # color values range from 0 to 27 for first and second player color
 # and there are 0...15 player in the game
 player_color[1] = 1,4
+
+# remove companies without convois after x month (0=off, 6=default)
+remove_dummy_player_months = 6
+
+# remove password of abandoned companies (wihtout any building activity) after x month (0=off default)
+unprotect_abondoned_player_months = 0
 
 # how long is a diagonal (512: faktor 2=1024/512, old way, 724: sqrt(2)=1024/724
 # THIS WILL BE ONLY USED, WHEN THIS FILE IS IN THE pakxyz/config!
@@ -263,6 +286,10 @@ ground_info = 0
 # Show passenger level of townhalls?
 # (1=on, 0=off)
 townhall_info = 0
+
+# do not show the button to add an inverted schedule for rail based convois
+# (1=hide, 0=show anyway)
+hide_rail_return_ticket = 1
 
 # always open only a single info window for the ground,
 # even if there are more objects on this tile
@@ -414,6 +441,9 @@ toll_waycost_percentage = 0
 # minimum distance between two townhalls
 #minimum_city_distance = 16
 
+# Minimum distance of a city attraction to other special buildings
+#special_building_distance = 3
+
 # Max. length of initial intercity road connections
 # If you want to speed up map creation, lower this value.
 # If you want more initial intercity roads, raise this value.
@@ -531,6 +561,9 @@ bits_per_month = 20
 # bzip2 savegames are smaller than zipped but saving/loading takes longer
 saveformat = bzip2
 
+# Alternate format for faster autosaves
+autosaveformat = zipped
+
 # autosave every x months (0=off)
 autosave = 0
 
@@ -637,3 +670,6 @@ fast_forward = 50
 
 # Nickname when joining network games
 #nickname = John Doe
+
+# Chat window transparency (0=off, 25, 50 75 are possible)
+chat_transparency = 75

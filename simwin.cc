@@ -61,6 +61,10 @@
 #include "gui/fahrplan_gui.h"
 #include "gui/line_management_gui.h"
 #include "gui/schedule_list.h"
+#include "gui/stadt_info.h"
+#include "gui/message_frame_t.h"
+#include "gui/message_option_t.h"
+#include "gui/fabrik_info.h"
 
 
 
@@ -90,7 +94,7 @@ public:
 	koord pos;         // Fensterposition
 	uint32 dauer;        // Wie lange soll das Fenster angezeigt werden ?
 	uint8 wt;	// the flags for the window type
-	long magic_number;	// either magic number or this pointer (which is unique too)
+	ptrdiff_t magic_number;	// either magic number or this pointer (which is unique too)
 	gui_frame_t *gui;
 	bool closing;
 	bool sticky;	// true if window is sticky
@@ -165,7 +169,7 @@ static int display_gadget_box(simwin_gadget_et const  code,
 	display_vline_wh_clip(x+16, y+1, 14, color+1, false);
 
 	if(pushed) {
-		display_fillbox_wh_clip(x+1, y+1, 14, 14, color+1, false);
+		display_fillbox_wh_clip(x+1, y+1, 14, 14, (color & 0xF8) + max(7, (color&0x07)+2), false);
 	}
 
 	image_id img = IMG_LEER;
@@ -206,7 +210,8 @@ static int display_gadget_boxes(
 	int const x, int const y,
 	int const color,
 	bool const close_pushed,
-	bool const sticky_pushed
+	bool const sticky_pushed,
+	bool const goto_pushed
 ) {
     int width = 0;
     const int w=(REVERSE_GADGETS?16:-16);
@@ -233,7 +238,7 @@ static int display_gadget_boxes(
 	    width++;
 	}
 	if(  flags->gotopos  ) {
-	    display_gadget_box( GADGET_GOTOPOS, x + w*width, y, color, false );
+	    display_gadget_box( GADGET_GOTOPOS, x + w*width, y, color, goto_pushed );
 	    width++;
 	}
 	if(  flags->sticky  ) {
@@ -314,6 +319,7 @@ static void win_draw_window_title(const koord pos, const koord gr,
 		const koord3d welt_pos,
 		const bool closing,
 		const bool sticky,
+		const bool goto_pushed,
 		simwin_gadget_flags_t &flags )
 {
 	PUSH_CLIP(pos.x, pos.y, gr.x, gr.y);
@@ -324,7 +330,7 @@ static void win_draw_window_title(const koord pos, const koord gr,
 
 	// Draw the gadgets and then move left and draw text.
 	flags.gotopos = (welt_pos != koord3d::invalid);
-	int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:gr.x-20), pos.y, titel_farbe, closing, sticky );
+	int width = display_gadget_boxes( &flags, pos.x+(REVERSE_GADGETS?0:gr.x-20), pos.y, titel_farbe, closing, sticky, goto_pushed );
 	int titlewidth = display_proportional_clip( pos.x + (REVERSE_GADGETS?width+4:4), pos.y+(16-LINEASCENT)/2, text, ALIGN_LEFT, text_farbe, false );
 	if(  flags.gotopos  ) {
 		display_proportional_clip( pos.x + (REVERSE_GADGETS?width+4:4)+titlewidth+8, pos.y+(16-LINEASCENT)/2, welt_pos.get_2d().get_fullstr(), ALIGN_LEFT, text_farbe, false );
@@ -359,7 +365,7 @@ static void win_draw_window_dragger(koord pos, koord gr)
 
 
 // returns the window (if open) otherwise zero
-gui_frame_t *win_get_magic(long magic)
+gui_frame_t *win_get_magic(ptrdiff_t magic)
 {
 	if(magic!=-1  &&  magic!=0) {
 		// es kann nur ein fenster fuer jede pos. magic number geben
@@ -467,7 +473,10 @@ void rdwr_all_win(loadsave_t *file)
 					case magic_ki_kontroll_t:  w = new ki_kontroll_t(wl); break;
 					case magic_schedule_rdwr_dummy: w = new fahrplan_gui_t(wl); break;
 					case magic_line_schedule_rdwr_dummy: w = new line_management_gui_t(wl); break;
-
+					case magic_city_info_t:    w = new stadt_info_t(wl); break;
+					case magic_messageframe:   w = new message_frame_t(wl); break;
+					case magic_message_options: w = new message_option_t(wl); break;
+					case magic_factory_info:   w = new fabrik_info_t(wl); break;
 
 					default:
 						if(  id>=magic_finances_t  &&  id<magic_finances_t+MAX_PLAYER_COUNT  ) {
@@ -509,13 +518,13 @@ void rdwr_all_win(loadsave_t *file)
 
 
 
-int create_win(gui_frame_t* const gui, wintype const wt, long const magic)
+int create_win(gui_frame_t* const gui, wintype const wt, ptrdiff_t const magic)
 {
 	return create_win( -1, -1, gui, wt, magic);
 }
 
 
-int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, long const magic)
+int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, ptrdiff_t const magic)
 {
 	assert(gui!=NULL  &&  magic!=0);
 
@@ -547,6 +556,8 @@ int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, long cons
 
 		wins.append( simwin_t() );
 		simwin_t& win = wins.back();
+
+		sint16 const menu_height = umgebung_t::iconsize.y;
 
 		// (Mathew Hounsell) Make Sure Closes Aren't Forgotten.
 		// Must Reset as the entries and thus flags are reused
@@ -588,7 +599,7 @@ int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, long cons
 
 		if(x == -1) {
 			// try to keep the toolbar below all other toolbars
-			y = 32;
+			y = menu_height;
 			if(wt & w_no_overlap) {
 				for( uint32 i=0;  i<wins.get_count()-1;  i++  ) {
 					if(wins[i].wt & w_no_overlap) {
@@ -614,8 +625,8 @@ int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, long cons
 		if(x<0) {
 			x = 0;
 		}
-		if(y<32) {
-			y = 32;
+		if(y<menu_height) {
+			y = menu_height;
 		}
 		win.pos = koord(x,y);
 		mark_rect_dirty_wc( x, y, x+gr.x, y+gr.y );
@@ -684,17 +695,18 @@ static void destroy_framed_win(simwin_t *wins)
 
 
 
-void destroy_win(const long magic)
+bool destroy_win(const ptrdiff_t magic)
 {
 	const gui_frame_t *gui = win_get_magic(magic);
 	if(gui) {
-		destroy_win( gui );
+		return destroy_win( gui );
 	}
+	return false;
 }
 
 
 
-void destroy_win(const gui_frame_t *gui)
+bool destroy_win(const gui_frame_t *gui)
 {
 	for(  uint i=0;  i<wins.get_count();  i++  ) {
 		if(wins[i].gui == gui) {
@@ -706,9 +718,11 @@ void destroy_win(const gui_frame_t *gui)
 				wins.remove_at(i);
 				destroy_framed_win(&win);
 			}
+			return true;
 			break;
 		}
 	}
+	return false;
 }
 
 
@@ -794,10 +808,14 @@ void display_win(int win)
 				title_color,
 				komp->get_name(),
 				text_color,
-				komp->get_weltpos(),
+				komp->get_weltpos(false),
 				wins[win].closing,
 				wins[win].sticky,
+				komp->is_weltpos(),
 				wins[win].flags );
+		if(  wins[win].gui->is_dirty()  ) {
+//			mark_rect_dirty_wc( wins[win].pos.x, wins[win].pos.y, wins[win].pos.x+gr.x, wins[win].pos.y+16 );
+		}
 	}
 	// mark top window, if requested
 	if(umgebung_t::window_frame_active  &&  (unsigned)win==wins.get_count()-1) {
@@ -906,9 +924,9 @@ void snap_check_win( const int win, koord *r, const koord from_pos, const koord 
 		if(  i==wins_count  ) {
 			// Allow snap to screen edge
 			other_pos.x = 0;
-			other_pos.y = 32;
+			other_pos.y = werkzeug_t::toolbar_tool[0]->iconsize.y;
 			other_gr.x = display_get_width();
-			other_gr.y = display_get_height()-16-32;
+			other_gr.y = display_get_height()-16-other_pos.y;
 			if(  show_ticker  ) {
 				other_gr.y -= 16;
 			}
@@ -1009,7 +1027,7 @@ void move_win(int win, event_t *ev)
 
 	// CLIP(wert,min,max)
 	to_pos.x = CLIP( to_pos.x, 8-to_gr.x, display_get_width()-16 );
-	to_pos.y = CLIP( to_pos.y, 32, display_get_height()-24 );
+	to_pos.y = CLIP( to_pos.y, werkzeug_t::toolbar_tool[0]->iconsize.y, display_get_height()-24 );
 
 	// delta is actual window movement.
 	const koord delta = to_pos - from_pos;
@@ -1258,8 +1276,11 @@ bool check_pos_win(event_t *ev)
 						break;
 					case GADGET_GOTOPOS:
 						if (IS_LEFTCLICK(ev)) {
-							// change position on map
-							spieler_t::get_welt()->change_world_position( wins[i].gui->get_weltpos() );
+							// change position on map (or follow)
+							koord3d k = wins[i].gui->get_weltpos(true);
+							if(  k!=koord3d::invalid  ) {
+								spieler_t::get_welt()->change_world_position( k );
+							}
 						}
 						break;
 					case GADGET_STICKY:

@@ -83,7 +83,7 @@ void curiositylist_stats_t::get_unique_attractions(curiositylist::sort_mode_t sb
 
 	FOR(weighted_vector_tpl<gebaeude_t*>, const geb, ausflugsziele) {
 		if (geb != NULL &&
-				geb->get_tile()->get_offset() == koord(0, 0) &&
+				geb->get_first_tile() == geb &&
 				geb->get_passagier_level() != 0) {
 			attractions.insert_ordered( geb, compare_curiosities(sortby, sortreverse) );
 		}
@@ -133,7 +133,7 @@ bool curiositylist_stats_t::infowin_event(const event_t * ev)
 void curiositylist_stats_t::recalc_size()
 {
 	// show_scroll_x==false ->> groesse.x not important ->> no need to calc text pixel length
-	set_groesse(koord(210, attractions.get_count()*(LINESPACE+1)-10));
+	set_groesse( koord(210, attractions.get_count() * (LINESPACE+1) ) );
 }
 
 

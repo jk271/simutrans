@@ -43,7 +43,7 @@ settings_t::settings_t() :
 	/* new setting since version 0.85.01
 	 * @author prissi
 	 */
-	land_industry_chains = 4;
+	factory_count = 12;
 	tourist_attractions = 16;
 
 	anzahl_staedte = 16;
@@ -113,6 +113,8 @@ settings_t::settings_t() :
 	minimum_city_distance = 16;
 	industry_increase = 2000;
 
+	special_building_distance = 3;
+
 	factory_worker_percentage = 33;
 	tourist_percentage = 16;
 	for(  int i=0; i<10; i++  ) {
@@ -131,6 +133,8 @@ settings_t::settings_t() :
 
 	factory_enforce_demand = true;
 
+	factory_maximum_intransit_percentage = 0;
+
 	electric_promille = 330;
 
 #ifdef OTTD_LIKE
@@ -144,7 +148,9 @@ settings_t::settings_t() :
 #endif
 
 	/* minimum spacing between two factories */
-	factory_spacing = 6;
+	min_factory_spacing = 6;
+	max_factory_spacing = 40;
+	max_factory_spacing_percentage = 0; // off
 
 	/* prissi: do not distribute goods to overflowing factories */
 	just_in_time = true;
@@ -206,11 +212,17 @@ settings_t::settings_t() :
 		startingmoneyperyear[i].interpol = 0;
 	}
 
+	// six month time frame for starting first conovi
+	remove_dummy_player_months = 6;
+
+	// off
+	unprotect_abondoned_player_months = 0;
+
 	maint_building = 5000;	// normal buildings
 	way_toll_runningcost_percentage = 0;
 	way_toll_waycost_percentage = 0;
 
-	allow_undergroud_transformers = true;
+	allow_underground_transformers = true;
 
 	// stop buildings
 	cst_multiply_dock=-50000;
@@ -293,7 +305,7 @@ void settings_t::rdwr(loadsave_t *file)
 		// to be compatible with previous savegames
 		dummy = 0;
 		file->rdwr_long(dummy );	//dummy!
-		land_industry_chains = 6;
+		factory_count = 12;
 		tourist_attractions = 12;
 
 		// now towns
@@ -326,7 +338,7 @@ void settings_t::rdwr(loadsave_t *file)
 		file->rdwr_long(nummer );
 
 		// industries
-		file->rdwr_long(land_industry_chains );
+		file->rdwr_long(factory_count );
 		if(file->get_version()<99018) {
 			uint32 dummy;	// was city chains
 			file->rdwr_long(dummy );
@@ -455,7 +467,7 @@ void settings_t::rdwr(loadsave_t *file)
 
 			file->rdwr_long(electric_promille );
 
-			file->rdwr_short(factory_spacing );
+			file->rdwr_short(min_factory_spacing );
 			file->rdwr_bool(crossconnect_factories );
 			file->rdwr_short(crossconnect_factor );
 
@@ -710,9 +722,26 @@ void settings_t::rdwr(loadsave_t *file)
 		}
 
 		if(  file->get_version()>=111004  ) {
-			file->rdwr_bool( allow_undergroud_transformers );
+			file->rdwr_bool( allow_underground_transformers );
 		}
 
+		if(  file->get_version()>=111005  ) {
+			file->rdwr_short( special_building_distance );
+		}
+
+		if(  file->get_version()>=112001  ) {
+			file->rdwr_short( factory_maximum_intransit_percentage );
+		}
+
+		if(  file->get_version()>=112002  ) {
+			file->rdwr_short( remove_dummy_player_months );
+			file->rdwr_short( unprotect_abondoned_player_months );
+		}
+
+		if(  file->get_version()>=112003  ) {
+			file->rdwr_short( max_factory_spacing );
+			file->rdwr_short( max_factory_spacing_percentage );
+		}
 		// otherwise the default values of the last one will be used
 	}
 }
@@ -784,6 +813,9 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	umgebung_t::visualize_schedule = contents.get_int("visualize_schedule",umgebung_t::visualize_schedule )!=0;
 	umgebung_t::show_vehicle_states = contents.get_int("show_vehicle_states",umgebung_t::show_vehicle_states );
 
+	umgebung_t::hide_rail_return_ticket = contents.get_int("hide_rail_return_ticket",umgebung_t::hide_rail_return_ticket );
+	umgebung_t::chat_window_transparency = contents.get_int("chat_transparency",umgebung_t::chat_window_transparency );
+
 	// network stuff
 	umgebung_t::server_frames_ahead = contents.get_int("server_frames_ahead", umgebung_t::server_frames_ahead );
 	umgebung_t::additional_client_frames_behind = contents.get_int("additional_client_frames_behind", umgebung_t::additional_client_frames_behind);
@@ -848,7 +880,7 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 
 	drive_on_left = contents.get_int("drive_left", drive_on_left );
 	signals_on_left = contents.get_int("signals_on_left", signals_on_left );
-	allow_undergroud_transformers = contents.get_int( "allow_undergroud_transformers", allow_undergroud_transformers )!=0;
+	allow_underground_transformers = contents.get_int( "allow_underground_transformers", allow_underground_transformers )!=0;
 
 	// up to ten rivers are possible
 	for(  int i = 0;  i<10;  i++  ) {
@@ -977,6 +1009,7 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	max_transfers = contents.get_int("max_transfers", max_transfers );
 	bonus_basefactor = contents.get_int("bonus_basefactor", bonus_basefactor );
 
+	special_building_distance = contents.get_int("special_building_distance", special_building_distance );
 	minimum_city_distance = contents.get_int("minimum_city_distance", minimum_city_distance );
 	industry_increase = contents.get_int("industry_increase_every", industry_increase );
 	passenger_factor = contents.get_int("passenger_factor", passenger_factor ); /* this can manipulate the passenger generation */
@@ -986,6 +1019,8 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	factory_worker_maximum_towns = contents.get_int("factory_worker_maximum_towns", factory_worker_maximum_towns );
 	factory_arrival_periods = clamp( contents.get_int("factory_arrival_periods", factory_arrival_periods), 1, 16 );
 	factory_enforce_demand = contents.get_int("factory_enforce_demand", factory_enforce_demand) != 0;
+	factory_maximum_intransit_percentage  = contents.get_int("maximum_intransit_percentage", factory_maximum_intransit_percentage);
+
 	tourist_percentage = contents.get_int("tourist_percentage", tourist_percentage );
 	seperate_halt_capacities = contents.get_int("seperate_halt_capacities", seperate_halt_capacities ) != 0;
 	pay_for_total_distance = contents.get_int("pay_for_total_distance", pay_for_total_distance );
@@ -1110,7 +1145,9 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 		locality_factor_per_year[j].factor = 0;
 	}
 
-	// player colors
+	// player stuff
+	remove_dummy_player_months = contents.get_int("remove_dummy_player_months", remove_dummy_player_months );
+	unprotect_abondoned_player_months = contents.get_int("unprotect_abondoned_player_months", unprotect_abondoned_player_months );
 	default_player_color_random = contents.get_int("random_player_colors", default_player_color_random ) != 0;
 	for(  int i = 0;  i<MAX_PLAYER_COUNT;  i++  ) {
 		char name[32];
@@ -1154,7 +1191,10 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	// the height in z-direction will only cause pixel errors but not a different behaviour
 	umgebung_t::pak_tile_height_step = contents.get_int("tile_height", umgebung_t::pak_tile_height_step );
 
-	factory_spacing = contents.get_int("factory_spacing", factory_spacing );
+	min_factory_spacing = contents.get_int("factory_spacing", min_factory_spacing );
+	min_factory_spacing = contents.get_int("min_factory_spacing", min_factory_spacing );
+	max_factory_spacing = contents.get_int("max_factory_spacing", max_factory_spacing );
+	max_factory_spacing_percentage = contents.get_int("max_factory_spacing_percentage", max_factory_spacing_percentage );
 	crossconnect_factories = contents.get_int("crossconnect_factories", crossconnect_factories ) != 0;
 	crossconnect_factor = contents.get_int("crossconnect_factories_percentage", crossconnect_factor );
 	electric_promille = contents.get_int("electric_promille", electric_promille );
@@ -1218,6 +1258,22 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 		loadsave_t::set_savemode(loadsave_t::bzip2 );
 	} else if(strcmp(str, "xml_bzip2") == 0) {
 		loadsave_t::set_savemode(loadsave_t::xml_bzip2 );
+	}
+
+	str = contents.get("autosaveformat" );
+	while (*str == ' ') str++;
+	if (strcmp(str, "binary") == 0) {
+		loadsave_t::set_autosavemode(loadsave_t::binary );
+	} else if(strcmp(str, "zipped") == 0) {
+		loadsave_t::set_autosavemode(loadsave_t::zipped );
+	} else if(strcmp(str, "xml") == 0) {
+		loadsave_t::set_autosavemode(loadsave_t::xml );
+	} else if(strcmp(str, "xml_zipped") == 0) {
+		loadsave_t::set_autosavemode(loadsave_t::xml_zipped );
+	} else if(strcmp(str, "bzip2") == 0) {
+		loadsave_t::set_autosavemode(loadsave_t::bzip2 );
+	} else if(strcmp(str, "xml_bzip2") == 0) {
+		loadsave_t::set_autosavemode(loadsave_t::xml_bzip2 );
 	}
 
 	/*

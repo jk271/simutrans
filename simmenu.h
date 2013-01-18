@@ -65,6 +65,7 @@ enum {
 	WKZ_SLICED_AND_UNDERGROUND_VIEW,
 	WKZ_BUY_HOUSE,
 	WKZ_CITYROAD,
+	WKZ_ERR_MESSAGE_TOOL,
 	GENERAL_TOOL_COUNT,
 	GENERAL_TOOL = 0x1000
 };
@@ -169,20 +170,32 @@ public:
 	// for key loockup
 	static vector_tpl<werkzeug_t *>char_to_tool;
 
+	/// cursor image
 	image_id cursor;
-	sint16 ok_sound;
+
+	/// cursor marks this area
+	koord cursor_area;
+
+	/// cursor centered at marked area? default: false
+	bool cursor_centered;
+
+	/// z-offset of cursor, possible values: Z_PLAN and Z_GRID
 	sint8 offset;
 
+	sint16 ok_sound;
+
 	enum {
-		WFL_SHIFT = 1,
-		WFL_CTRL  = 2,
-		WFL_LOCAL = 4
+		WFL_SHIFT  = 1, ///< shift-key was pressed when mouse-click happened
+		WFL_CTRL   = 2, ///< ctrl-key was pressed when mouse-click happened
+		WFL_LOCAL  = 4, ///< tool call was issued by local client
+		WFL_SCRIPT = 8  ///< tool call was issued by script (no password checks)
 	};
 	uint8 flags; // flags are set before init/work/move is called
 
-	bool is_ctrl_pressed() { return flags & WFL_CTRL; }
-	bool is_shift_pressed() { return flags & WFL_SHIFT; }
-	bool is_local_execution() { return flags & WFL_LOCAL; }
+	bool is_ctrl_pressed()    const { return flags & WFL_CTRL; }
+	bool is_shift_pressed()   const { return flags & WFL_SHIFT; }
+	bool is_local_execution() const { return flags & WFL_LOCAL; }
+	bool is_scripted()        const { return flags & WFL_SCRIPT; }
 
 	uint16 command_key;// key to toggle action for this function
 
@@ -203,7 +216,7 @@ public:
 
 	static uint16 const dummy_id = 0xFFFFU;
 
-	werkzeug_t(uint16 const id) : id(id) { cursor = icon = IMG_LEER; ok_sound = NO_SOUND; offset = Z_PLAN; default_param = NULL; command_key = 0; }
+	werkzeug_t(uint16 const id) : id(id), cursor_area(1,1) { cursor = icon = IMG_LEER; ok_sound = NO_SOUND; offset = Z_PLAN; default_param = NULL; command_key = 0; cursor_centered = false;}
 	virtual ~werkzeug_t() {}
 
 	virtual image_id get_icon(spieler_t *) const { return icon; }
@@ -235,8 +248,14 @@ public:
 
 	virtual const char *get_tooltip(const spieler_t *) const { return NULL; }
 
-	// returning false on init will automatically invoke previous tool
+	/**
+	 * Returning false on init will automatically invoke previous tool.
+	 * Returning true will select tool and will make it possible to call work.
+	 */
 	virtual bool init( karte_t *, spieler_t * ) { return true; }
+
+	/// initializes cursor (icon, marked area)
+	void init_cursor( zeiger_t * ) const;
 
 	// returning true on exit will have werkzeug_waehler resets to query-tool on right-click
 	virtual bool exit( karte_t *, spieler_t * ) { return true; }
@@ -251,6 +270,8 @@ public:
 	virtual const char *check_pos( karte_t *, spieler_t *, koord3d );
 	virtual const char *work( karte_t *, spieler_t *, koord3d ) { return NULL; }
 	virtual const char *move( karte_t *, spieler_t *, uint16 /* buttonstate */, koord3d ) { return ""; }
+
+	virtual waytype_t get_waytype() const { return invalid_wt; }
 };
 
 /*

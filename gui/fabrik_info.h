@@ -8,6 +8,8 @@
 #ifndef fabrikinfo_t_h
 #define fabrikinfo_t_h
 
+#include "../simwin.h"
+
 #include "factory_chart.h"
 #include "components/action_listener.h"
 #include "components/gui_scrollpane.h"
@@ -30,11 +32,10 @@ class button_t;
  */
 class gui_fabrik_info_t : public gui_container_t
 {
-private:
+public:
 	const fabrik_t* fab;
 
-public:
-	gui_fabrik_info_t(const fabrik_t* fab);
+	gui_fabrik_info_t() {}
 
 	void zeichnen(koord offset);
 };
@@ -60,7 +61,6 @@ class fabrik_info_t : public gui_frame_t, public action_listener_t
 	ding_view_t view;
 
 	char fabname[256];
-	char fabkoordname[300];
 	gui_textinput_t input;
 
 	button_t *lieferbuttons;
@@ -89,7 +89,9 @@ public:
 
 	virtual bool has_min_sizer() const {return true;}
 
-	virtual koord3d get_weltpos() { return fab->get_pos(); }
+	virtual koord3d get_weltpos(bool) { return fab->get_pos(); }
+
+	virtual bool is_weltpos();
 
 	virtual void set_fenstergroesse(koord groesse);
 
@@ -106,6 +108,13 @@ public:
 
 	// rotated map need new info ...
 	void map_rotate90( sint16 ) { update_info(); }
+
+	// this contructor is only used during loading
+	fabrik_info_t(karte_t *welt);
+
+	void rdwr( loadsave_t *file );
+
+	uint32 get_rdwr_id() { return magic_factory_info; }
 };
 
 #endif

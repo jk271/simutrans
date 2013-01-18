@@ -62,11 +62,13 @@ public:
 
 	/**
 	 * Appends the element at the end of the vector.
-	 * if out of space, extend with by add element(s)
+	 * if out of space, extend it
 	 */
 	void append(T elem, uint8 extend = 1)
 	{
-		if (count >= size) resize(count + extend);
+		if (count >= size) {
+			resize( count > 255-extend ? 255 : count+extend);
+		}
 		data[count++] = elem;
 	}
 
@@ -75,17 +77,6 @@ public:
 	{
 		if (is_contained(elem)) return false;
 		append(elem);
-		return true;
-	}
-
-	/**
-	 * Checks if element is contained. Appends only new elements.
-	 * extend vector if nessesary
-	 */
-	bool append_unique(T elem, uint8 extend)
-	{
-		if (is_contained(elem)) return false;
-		append(elem, extend);
 		return true;
 	}
 

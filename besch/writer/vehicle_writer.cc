@@ -56,7 +56,7 @@ void vehicle_writer_t::write_obj(FILE* fp, obj_node_t& parent, tabfileobj_t& obj
 	int i;
 	uint8  uv8;
 
-	int total_len = 37;
+	int total_len = 39;
 
 	// prissi: must be done here, since it may affect the len of the header!
 	string sound_str = ltrim( obj.get("sound") );
@@ -86,7 +86,7 @@ void vehicle_writer_t::write_obj(FILE* fp, obj_node_t& parent, tabfileobj_t& obj
 	// Hajo: version number
 	// Hajo: Version needs high bit set as trigger -> this is required
 	//       as marker because formerly nodes were unversionend
-	uint16 version = 0x8009;
+	uint16 version = 0x800A;
 	node.write_uint16(fp, version, pos);
 	pos += sizeof(uint16);
 
@@ -112,9 +112,10 @@ void vehicle_writer_t::write_obj(FILE* fp, obj_node_t& parent, tabfileobj_t& obj
 	pos += sizeof(payload);
 
 	// Hajodoc: Total weight of this vehicle in tons
-	uint16 weight = obj.get_int("weight", 0);
-	node.write_uint16(fp, weight, pos);
-	pos += sizeof(uint16);
+	const char *weight_str = obj.get("weight");
+	uint32 weight = (uint32)(atof( weight_str )*1000.0 + 0.5);
+	node.write_uint32(fp, weight, pos);
+	pos += sizeof(uint32);
 
 	// axle_load (determine ways usage)
 	uint16 axle_load = obj.get_int("axle_load", 0);
@@ -246,9 +247,9 @@ void vehicle_writer_t::write_obj(FILE* fp, obj_node_t& parent, tabfileobj_t& obj
 				sprintf(buf, "freightimage[%d][%s]", freight, dir_codes[i]);
 				str = obj.get(buf);
 				if (str.empty()) {
-					printf("*** FATAL ***:\nMissing freightimage[%d][%s]!\n", freight, dir_codes[i]);
+					fprintf( stderr, "*** FATAL ***:\nMissing freightimage[%d][%s]!\n", freight, dir_codes[i]);
 					fflush(NULL);
-					exit(0);
+					exit(1);
 				}
 				freightkeys.at(i).append(str);
 			}
@@ -257,12 +258,12 @@ void vehicle_writer_t::write_obj(FILE* fp, obj_node_t& parent, tabfileobj_t& obj
 
 	// prissi: added more error checks
 	if (has_8_images && emptykeys.get_count() < 8) {
-		printf("*** FATAL ***:\nMissing images (must be either 4 or 8 directions (but %i found)!)\n", emptykeys.get_count());
-		exit(0);
+		fprintf( stderr, "*** FATAL ***:\nMissing images (must be either 4 or 8 directions (but %i found)!)\n", emptykeys.get_count());
+		exit(1);
 	}
 	if (!freightkeys_old.empty() && emptykeys.get_count() != freightkeys_old.get_count()) {
-		printf("*** FATAL ***:\nMissing freigthimages (must be either 4 or 8 directions (but %i found)!)\n", freightkeys_old.get_count());
-		exit(0);
+		fprintf( stderr, "*** FATAL ***:\nMissing freigthimages (must be either 4 or 8 directions (but %i found)!)\n", freightkeys_old.get_count());
+		exit(1);
 	}
 
 	imagelist_writer_t::instance()->write_obj(fp, node, emptykeys);
@@ -336,8 +337,8 @@ void vehicle_writer_t::write_obj(FILE* fp, obj_node_t& parent, tabfileobj_t& obj
 			break;
 		}
 		if (str.size() == 0) {
-			printf("*** FATAL ***:\nMissing freightimagetype[%i] for %i freight_images!\n", i, freight_max + 1);
-			exit(0);
+			fprintf( stderr, "*** FATAL ***:\nMissing freightimagetype[%i] for %i freight_images!\n", i, freight_max + 1);
+			exit(1);
 		}
 		xref_writer_t::instance()->write_obj(fp, node, obj_good, str.c_str(), false);
 	}

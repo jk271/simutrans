@@ -10,12 +10,17 @@
 #include "../besch/writer/root_writer.h"
 #include "../besch/writer/image_writer.h"
 
+// Needed to avoid linking problems
+unsigned long dr_time(void)
+{
+	return 0;
+}
 
 int main(int argc, char* argv[])
 {
 	argv++, argc--;
 
-	init_logging("stderr", true, true, "Makeobj version " MAKEOBJ_VERSION " for Simutrans " VERSION_NUMBER " and higher\n");
+	init_logging("stderr", true, true, "Makeobj version " MAKEOBJ_VERSION " for Simutrans " VERSION_NUMBER " and higher\n", "makeobj");
 
 	if (argc && !STRICMP(argv[0], "quiet")) {
 		argv++, argc--;

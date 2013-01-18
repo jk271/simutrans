@@ -1,6 +1,6 @@
 /**
- * Header Datei für dir convoi_t Klasse für Fahrzeugverbände
- * von Hansjörg Malthaner
+ * @file
+ * Contains definition of convoi_t class
  */
 
 #ifndef simconvoi_h
@@ -32,9 +32,7 @@ class schedule_t;
 class cbuffer_t;
 
 /**
- * Basisklasse für alle Fahrzeugverbände. Convois könnnen über Zeiger
- * oder Handles angesprochen werden. Zeiger sind viel schneller, dafür
- * können Handles geprüft werden, ob das Ziel noch vorhanden ist.
+ * Base class for all vehicle consists. Convoys can be referenced by handles, see halthandle_t.
  *
  * @author Hj. Malthaner
  */
@@ -218,15 +216,16 @@ private:
 	* errechnet beim beladen/fahren.
 	* @author Hj. Malthaner, prissi
 	*/
-	sint32 sum_gewicht;
-	sint32 sum_gesamtgewicht;
+	sint64 sum_gewicht;
+	sint64 sum_gesamtgewicht;
 
 	// cached values
 	// will be recalculated if
 	// recalc_data is true
 	bool recalc_data_front; // true when front vehicle in convoi hops
 	bool recalc_data; // true when any vehicle in convoi hops
-	sint32 sum_friction_weight;
+
+	sint64 sum_friction_weight;
 	sint32 speed_limit;
 
 	/**
@@ -389,9 +388,6 @@ private:
 	// matches two halts; if the pos is not identical, maybe the halt still is
 	bool matches_halt( const koord3d pos1, const koord3d pos2 );
 
-	// updates a line schedule and tries to find the best next station to go
-	void check_pending_updates();
-
 	/**
 	 * Register the convoy with the stops in the schedule
 	 * @author Knightly
@@ -430,6 +426,9 @@ public:
 	* @author hsiegeln
 	*/
 	void set_line(linehandle_t );
+
+	// updates a line schedule and tries to find the best next station to go
+	void check_pending_updates();
 
 	/* changes the state of a convoi via werkzeug_t; mandatory for networkmode! *
 	 * for list of commands and parameter see werkzeug_t::wkz_change_convoi_t
@@ -480,6 +479,11 @@ public:
 	 * @author hsiegeln
 	 */
 	sint32 get_running_cost() const;
+
+	/**
+	 * returns the total new purchase cost for all vehicles in convoy
+	 */
+	sint32 get_purchase_cost() const;
 
 	/**
 	* Constructor for loading from file,
@@ -560,8 +564,12 @@ public:
 	 */
 	const uint32 & get_sum_leistung() const {return sum_leistung;}
 	const sint32 & get_min_top_speed() const {return min_top_speed;}
-	const sint32 & get_sum_gewicht() const {return sum_gewicht;}
-	const sint32 & get_sum_gesamtgewicht() const {return sum_gesamtgewicht;}
+
+	/// @returns weight of the convoy's vehicles (excluding freight)
+	const sint64 & get_sum_gewicht() const {return sum_gewicht;}
+
+	/// @returns weight of convoy including freight
+	const sint64 & get_sum_gesamtgewicht() const {return sum_gesamtgewicht;}
 
 	uint32 get_length() const;
 
@@ -589,12 +597,6 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	void step();
-
-	/**
-	 * Calculates total weight of freight in KG
-	 * @author Hj. Malthaner
-	 */
-	int calc_freight_weight() const;
 
 	/**
 	* setzt einen neuen convoi in fahrt
@@ -668,6 +670,9 @@ public:
 	* @author Hj. Malthaner
 	*/
 	schedule_t * create_schedule();
+
+	// remove wrong freight when schedule changes etc.
+	void check_freight();
 
 	/**
 	* @return Owner of this convoi
@@ -795,6 +800,7 @@ public:
 	* @author hsiegeln
 	*/
 	sint64 get_finance_history(int month, int cost_type) const { return financial_history[month][cost_type]; }
+	sint64 get_stat_converted(int month, int cost_type) const;
 
 	/**
 	* only purpose currently is to roll financial history

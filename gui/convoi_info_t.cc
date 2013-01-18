@@ -213,6 +213,7 @@ void convoi_info_t::zeichnen(koord pos, koord gr)
 		destroy_win(this);
 	}
 	else {
+		// make titlebar dirty to display the correct coordinates
 		if(cnv->get_besitzer()==cnv->get_welt()->get_active_player()) {
 			if(  line_bound  &&  !cnv->get_line().is_bound()  ) {
 				remove_komponente( &line_button );
@@ -265,6 +266,7 @@ enable_home:
 
 		// all gui stuff set => display it
 		gui_frame_t::zeichnen(pos, gr);
+		set_dirty();
 
 		PUSH_CLIP(pos.x+1,pos.y+D_TITLEBAR_HEIGHT,gr.x-2,gr.y-D_TITLEBAR_HEIGHT);
 
@@ -297,9 +299,9 @@ enable_home:
 		info_buf.clear();
 		info_buf.append( translator::translate("Gewicht") );
 		info_buf.append( ": " );
-		info_buf.append( cnv->get_sum_gesamtgewicht(), 0 );
+		info_buf.append( cnv->get_sum_gesamtgewicht()/1000.0, 1 );
 		info_buf.append( "t (" );
-		info_buf.append( cnv->get_sum_gesamtgewicht()-cnv->get_sum_gewicht(), 0 );
+		info_buf.append( (cnv->get_sum_gesamtgewicht()-cnv->get_sum_gewicht())/1000.0, 1 );
 		info_buf.append( "t)" );
 		display_proportional( xpos, ypos, info_buf, ALIGN_LEFT, COL_BLACK, true );
 		ypos += LINESPACE;
@@ -326,6 +328,29 @@ enable_home:
 			display_proportional_clip( xpos+D_BUTTON_HEIGHT+D_H_SPACE+len, ypos, cnv->get_line()->get_name(), ALIGN_LEFT, cnv->get_line()->get_state_color(), true );
 		}
 		POP_CLIP();
+	}
+}
+
+
+bool convoi_info_t::is_weltpos()
+{
+	return (cnv->get_welt()->get_follow_convoi()==cnv);
+}
+
+
+koord3d convoi_info_t::get_weltpos( bool set )
+{
+	if(  set  ) {
+		if(  !is_weltpos()  )  {
+			cnv->get_welt()->set_follow_convoi( cnv );
+		}
+		else {
+			cnv->get_welt()->set_follow_convoi( convoihandle_t() );
+		}
+		return koord3d::invalid;
+	}
+	else {
+		return cnv->get_pos();
 	}
 }
 
@@ -416,7 +441,7 @@ DBG_MESSAGE("convoi_info_t::action_triggered()","convoi state %i => cannot chang
 			koord3d home = koord3d(0,0,0);
 			FOR(slist_tpl<depot_t*>, const depot, depot_t::get_depot_list()) {
 				vehikel_t& v = *cnv->front();
-				if (depot->get_wegtyp()   != v.get_besch()->get_waytype() ||
+				if (depot->get_waytype() != v.get_besch()->get_waytype() ||
 						depot->get_besitzer() != cnv->get_besitzer()) {
 					continue;
 				}
@@ -502,7 +527,7 @@ void convoi_info_t::rename_cnv()
 			werkzeug_t *w = create_tool( WKZ_RENAME_TOOL | SIMPLE_TOOL );
 			w->set_default_param( buf );
 			cnv->get_welt()->set_werkzeug( w, cnv->get_besitzer());
-			// since init always returns false, it is save to delete immediately
+			// since init always returns false, it is safe to delete immediately
 			delete w;
 			// do not trigger this command again
 			tstrncpy(old_cnv_name, t, sizeof(old_cnv_name));

@@ -27,6 +27,7 @@
 
 #include "../simworld.h"
 #include "../simdebug.h"
+#include "../simdepot.h"
 #include "../simunits.h"
 
 #include "../player/simplay.h"
@@ -638,11 +639,14 @@ void vehikel_t::rotate90()
 	alte_fahrtrichtung = ribi_t::rotate90( alte_fahrtrichtung );
 	pos_prev.rotate90( welt->get_groesse_y()-1 );
 	last_stop_pos.rotate90( welt->get_groesse_y()-1 );
+}
+
+
+void vehikel_t::rotate90_freight_destinations(const sint16 y_size)
+{
 	// now rotate the freight
 	FOR(slist_tpl<ware_t>, & tmp, fracht) {
-		koord k = tmp.get_zielpos();
-		k.rotate90( welt->get_groesse_y()-1 );
-		tmp.set_zielpos( k );
+		tmp.rotate90(welt, y_size );
 	}
 }
 
@@ -834,14 +838,38 @@ void vehikel_t::remove_stale_freight()
 		FOR(slist_tpl<ware_t>, & tmp, fracht) {
 			bool found = false;
 
-			FOR(minivec_tpl<linieneintrag_t>, const& i, cnv->get_schedule()->eintrag) {
-				if (haltestelle_t::get_halt( welt, i.pos, cnv->get_besitzer()) == tmp.get_zwischenziel()) {
-					found = true;
-					break;
+			if(  tmp.get_zwischenziel().is_bound()  ) {
+				// the original halt exists, but does we still go there?
+				FOR(minivec_tpl<linieneintrag_t>, const& i, cnv->get_schedule()->eintrag) {
+					if(  haltestelle_t::get_halt( welt, i.pos, cnv->get_besitzer()) == tmp.get_zwischenziel()  ) {
+						found = true;
+						break;
+					}
+				}
+			}
+			if(  !found  ) {
+				// the target halt may have been joined or there is a closer one now, thus our original target is no longer valid
+				const int offset = cnv->get_schedule()->get_aktuell();
+				const int max_count = cnv->get_schedule()->eintrag.get_count();
+				for(  int i=0;  i<max_count;  i++  ) {
+					// try to unload on next stop
+					halthandle_t halt = haltestelle_t::get_halt( welt, cnv->get_schedule()->eintrag[ (i+offset)%max_count ].pos, cnv->get_besitzer() );
+					if(  halt.is_bound()  ) {
+						if(  halt->is_enabled(tmp.get_index())  ) {
+							// ok, lets change here, since goods are accepted here
+							tmp.access_zwischenziel() = halt;
+							if (!tmp.get_ziel().is_bound()) {
+								// set target, to prevent that unload_freight drops cargo
+								tmp.set_ziel( halt );
+							}
+							found = true;
+							break;
+						}
+					}
 				}
 			}
 
-			if (!found) {
+			if(  !found  ) {
 				kill_queue.insert(tmp);
 			}
 			else {
@@ -855,9 +883,11 @@ void vehikel_t::remove_stale_freight()
 		}
 
 		FOR(slist_tpl<ware_t>, const& c, kill_queue) {
+			fabrik_t::update_transit( &c, false );
 			fracht.remove(c);
 		}
 	}
+	sum_weight =  get_fracht_gewicht() + besch->get_gewicht();
 }
 
 
@@ -1316,7 +1346,11 @@ void vehikel_t::get_fracht_info(cbuffer_t & buf) const
 
 void vehikel_t::loesche_fracht()
 {
+	FOR(  slist_tpl<ware_t>, w, fracht ) {
+		fabrik_t::update_transit( &w, false );
+	}
 	fracht.clear();
+	sum_weight =  besch->get_gewicht();
 }
 
 
@@ -1326,7 +1360,7 @@ bool vehikel_t::beladen(halthandle_t halt)
 	if(halt.is_bound()) {
 		ok = load_freight(halt);
 	}
-	sum_weight =  (get_fracht_gewicht()+499)/1000 + besch->get_gewicht();
+	sum_weight =  get_fracht_gewicht() + besch->get_gewicht();
 	calc_bild();
 	return ok;
 }
@@ -1544,6 +1578,10 @@ DBG_MESSAGE("vehicle_t::rdwr_from_convoi()","bought at %i/%i.",(insta_zeit%12)+1
 			ware_t ware(welt,file);
 			if(  (besch==NULL  ||  ware.menge>0)  &&  welt->ist_in_kartengrenzen(ware.get_zielpos())  ) {	// also add, of the besch is unknown to find matching replacement
 				fracht.insert(ware);
+				if(  file->get_version() <= 112000  ) {
+					// restore intransit information
+					fabrik_t::update_transit( &ware, true );
+				}
 			}
 			else if(  ware.menge>0  ) {
 				dbg->error( "vehikel_t::rdwr_from_convoi()", "%i of %s to %s ignored!", ware.menge, ware.get_name(), ware.get_zielpos().get_str() );
@@ -1568,7 +1606,7 @@ DBG_MESSAGE("vehicle_t::rdwr_from_convoi()","bought at %i/%i.",(insta_zeit%12)+1
 		if(besch) {
 			calc_bild();
 			// full weight after loading
-			sum_weight =  (get_fracht_gewicht()+499)/1000 + besch->get_gewicht();
+			sum_weight =  get_fracht_gewicht() + besch->get_gewicht();
 		}
 		// recalc total freight
 		total_freight = 0;
@@ -2152,7 +2190,7 @@ bool automobil_t::ist_weg_frei(int &restart_speed, bool second_check)
 				if(  test_index == route_index + 1u  ) {
 					// no intersections or crossings, we might be able to overtake this one ...
 					overtaker_t *over = dt->get_overtaker();
-					if(over  &&  !over->is_overtaken()) {
+					if(  over  &&  !over->is_overtaken()  ) {
 						if(  over->is_overtaking()  ) {
 							// otherwise we would stop every time being overtaken
 							return true;
@@ -2163,7 +2201,8 @@ bool automobil_t::ist_weg_frei(int &restart_speed, bool second_check)
 							if(  cnv->can_overtake( ocnv, (ocnv->get_state()==convoi_t::LOADING ? 0 : over->get_max_power_speed()), ocnv->get_length_in_steps()+ocnv->get_vehikel(0)->get_steps())  ) {
 								return true;
 							}
-						} else if (stadtauto_t* const caut = ding_cast<stadtauto_t>(dt)) {
+						}
+						else if(  stadtauto_t* const caut = ding_cast<stadtauto_t>(dt)  ) {
 							if(  cnv->can_overtake(caut, caut->get_besch()->get_geschw(), VEHICLE_STEPS_PER_TILE)  ) {
 								return true;
 							}
@@ -2374,6 +2413,11 @@ bool waggon_t::ist_befahrbar(const grund_t *bd) const
 		return false;
 	}
 
+	if (depot_t *depot = bd->get_depot()) {
+		if (depot->get_waytype() != besch->get_waytype()  ||  depot->get_besitzer() != get_besitzer()) {
+			return false;
+		}
+	}
 	// now check for special signs
 	if(sch->has_sign()) {
 		const roadsign_t* rs = bd->find<roadsign_t>();
@@ -3118,6 +3162,10 @@ bool schiff_t::ist_weg_frei(int &restart_speed,bool)
 		if(gr==NULL) {
 			// weg not existent (likely destroyed)
 			cnv->suche_neue_route();
+			return false;
+		}
+		if(  gr->get_top()>251  ) {
+			// too many ships already here ..
 			return false;
 		}
 		weg_t *w = gr->get_weg(water_wt);

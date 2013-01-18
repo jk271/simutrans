@@ -18,6 +18,7 @@
 #include "loadsave.h"
 #include "umgebung.h"
 #include "../simmem.h"
+#include "../utils/cbuffer_t.h"
 #include "../utils/searchfolder.h"
 #include "../utils/simstring.h"
 #include "../unicode.h"
@@ -322,7 +323,9 @@ static void load_language_file_body(FILE* file, stringhashtable_tpl<const char*>
 				// only add line which are actually different
 				const char *raw = recode(buffer1, file_is_utf, false);
 				const char *translated = recode(buffer2, false, convert_to_unicode);
-				table->set( raw, translated );
+				if (cbuffer_t::check_format_strings(raw, translated) ) {
+					table->set( raw, translated );
+				}
 			}
 		}
 	} while (!feof(file));
@@ -558,8 +561,7 @@ const char* translator::get_month_name(uint16 month)
 		"November",
 		"December"
 	};
-	assert(month < lengthof(month_names));
-	return translate(month_names[month]);
+	return translate(month_names[month % lengthof(month_names)]);
 }
 
 

@@ -13,7 +13,7 @@
 
 
 // check assertions
-#undef NDEBUG
+//#undef NDEBUG
 //#define NDEBUG
 
 
@@ -36,7 +36,7 @@ extern log_t *dbg;
  * Inits logging facility.
  * @author Hj. Malthaner
  */
-void init_logging(const char *logname, bool force_flush, bool log_debug, const char *greeting );
+void init_logging(const char *logname, bool force_flush, bool log_debug, const char *greeting, const char* syslogtag );
 
 #ifndef DEBUG
 

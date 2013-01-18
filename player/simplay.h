@@ -53,23 +53,20 @@ class koord3d;
 class werkzeug_t;
 
 /**
+ * convert to displayed value
+ */
+inline sint64 convert_money(sint64 value) { return (value + 50) / 100; }
+
+/**
  * play info for simutrans human and AI are derived from this class
  */
 class spieler_t
 {
 public:
-	enum { MAX_KONTO_VERZUG = 3 };
-
 	enum { EMPTY=0, HUMAN=1, AI_GOODS=2, AI_PASSENGER=3, MAX_AI, PASSWORD_PROTECTED=128 };
 
 protected:
 	char spieler_name_buf[256];
-
-	/*
-	 * holds total number of all halts, ever built
-	 * @author hsiegeln
-	 */
-	sint32 haltcount;
 
 	/**
 	* Finance History - will supercede the finances by Owen Rudge
@@ -83,7 +80,7 @@ protected:
 	 * Monthly maintenance cost
 	 * @author Hj. Malthaner
 	 */
-	sint32 maintenance;
+	sint64 maintenance;
 
 	/**
 	 * Die Welt in der gespielt wird.
@@ -102,14 +99,15 @@ protected:
 	// remember the starting money
 	sint64 starting_money;
 
+	// when was the company founded
+	uint16 player_age;
+
 	/**
 	 * Zählt wie viele Monate das Konto schon ueberzogen ist
 	 *
 	 * @author Hj. Malthaner
 	 */
 	sint32 konto_ueberzogen;
-
-	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
 
 	class income_message_t {
 	public:
@@ -138,18 +136,6 @@ protected:
 	 * @author Hj. Malthaner
 	 */
 	uint8 player_nr;
-
-	/**
-	 * Adds somme amount to the maintenance costs
-	 * @param change the change
-	 * @return the new maintenance costs
-	 * @author Hj. Malthaner
-	 */
-	sint32 add_maintenance(sint32 change)
-	{
-		maintenance += change;
-		return maintenance;
-	}
 
 	/**
 	 * Ist dieser Spieler ein automatischer Spieler?
@@ -227,15 +213,15 @@ public:
 
 	virtual ~spieler_t();
 
-	sint32 get_maintenance() const { return maintenance; }
+	sint64 get_maintenance() const { return maintenance; }
 
-	static sint32 add_maintenance(spieler_t *sp, sint32 change) {
-		if(sp) {
-			sp->maintenance += change;
-			return sp->maintenance;
-		}
-		return 0;
-	}
+	/**
+	 * Adds somme amount to the maintenance costs
+	 * @param player (could be zero too!)
+	 * @param change the change
+	 * @author Hj. Malthaner
+	 */
+	static void add_maintenance(spieler_t *sp, sint32 change);
 
 	// Owen Rudge, finances
 	void buche(sint64 betrag, koord k, player_cost type);
@@ -243,8 +229,16 @@ public:
 	// do the internal accounting (currently only used externally for running costs of convois)
 	void buche(sint64 betrag, player_cost type);
 
-	// this is also save to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
+	// this is also safe to be called with sp==NULL, which may happen for unowned objects like bridges, ways, trees, ...
 	static void accounting(spieler_t* sp, sint64 betrag, koord k, player_cost pc);
+
+	/**
+	 * Cached value of scenario completion percentage.
+	 * To get correct values for clients call scenario_t::get_completion instead.
+	 */
+	sint32 get_scenario_completion() const;
+
+	void set_scenario_completion(sint32 percent);
 
 	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
@@ -273,38 +267,15 @@ public:
 	/**
 	 * Wird von welt nach jedem monat aufgerufen
 	 * @author Hj. Malthaner
+	 * @returns false if player has to be removed (bankrupt/inactive)
 	 */
-	virtual void neuer_monat();
+	virtual bool neuer_monat();
 
 	/**
 	 * Methode fuer jaehrliche Aktionen
 	 * @author Hj. Malthaner
 	 */
 	virtual void neues_jahr() {}
-
-	/**
-	 * Erzeugt eine neue Haltestelle des Spielers an Position pos
-	 * @author Hj. Malthaner
-	 */
-	halthandle_t halt_add(koord pos);
-
-	/**
-	 * needed to transfer ownership
-	 * @author prissi
-	 */
-	void halt_add(halthandle_t h);
-
-	/**
-	 * Entfernt eine Haltestelle des Spielers aus der Liste
-	 * @author Hj. Malthaner
-	 */
-	void halt_remove(halthandle_t halt);
-
-	/**
-	 * Gets haltcount, for naming purposes
-	 * @author hsiegeln
-	 */
-	int get_haltcount() const { return haltcount; }
 
 	/**
 	 * Lädt oder speichert Zustand des Spielers
@@ -326,6 +297,7 @@ public:
 	*/
 	sint64 get_finance_history_year(int year, int type) { return finance_history_year[year][type]; }
 	sint64 get_finance_history_month(int month, int type) { return finance_history_month[month][type]; }
+	sint64 get_finance_history_month_converted(int month, int type);
 
 	/**
 	 * Returns pointer to finance history for player

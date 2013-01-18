@@ -159,15 +159,22 @@ halt_info_t::~halt_info_t()
 		werkzeug_t *w = create_tool( WKZ_RENAME_TOOL | SIMPLE_TOOL );
 		w->set_default_param( buf );
 		halt->get_welt()->set_werkzeug( w, halt->get_besitzer() );
-		// since init always returns false, it is save to delete immediately
+		// since init always returns false, it is safe to delete immediately
 		delete w;
 	}
 }
 
 
-koord3d halt_info_t::get_weltpos()
+koord3d halt_info_t::get_weltpos(bool)
 {
 	return halt->get_basis_pos3d();
+}
+
+
+bool halt_info_t::is_weltpos()
+{
+	return ( welt->get_x_off() | welt->get_y_off()) == 0  &&
+		welt->get_world_position() == welt->calculate_world_position( get_weltpos(false) );
 }
 
 
@@ -189,6 +196,7 @@ void halt_info_t::zeichnen(koord pos, koord gr)
 		}
 
 		gui_frame_t::zeichnen(pos, gr);
+		set_dirty();
 
 		sint16 top = pos.y+36;
 		COLOR_VAL indikatorfarbe = halt->get_status_farbe();
@@ -322,7 +330,7 @@ bool halt_info_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 			werkzeug_t *w = create_tool( WKZ_RENAME_TOOL | SIMPLE_TOOL );
 			w->set_default_param( buf );
 			halt->get_welt()->set_werkzeug( w, halt->get_besitzer() );
-			// since init always returns false, it is save to delete immediately
+			// since init always returns false, it is safe to delete immediately
 			delete w;
 		}
 	}

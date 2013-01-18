@@ -116,11 +116,17 @@ public:
 	void recalc_status();
 
 	/**
-	 * Handles changes of schedules and the resulting rerouting
+	 * Handles changes of schedules and the resulting rerouting.
 	 */
 	static void step_all();
 
 	static uint8 get_rerouting_status() { return status_step; }
+
+	/**
+	 * Resets reconnect_counter.
+	 * The next call to step_all() will start complete reconnecting.
+	 */
+	static void reset_routing();
 
 	/**
 	 * Tries to generate some pedestrians on the sqaure and the
@@ -131,14 +137,8 @@ public:
 	 */
 	static int erzeuge_fussgaenger(karte_t *welt, const koord3d pos, int anzahl);
 
-	/* searches for a stop at the given koordinate
-	 * @return halthandle_t(), if nothing found
-	 * @author prissi
-	 */
-	static halthandle_t get_halt(const karte_t *welt, const koord pos, const spieler_t *sp );
-
-	/* since we allow only for a single stop per planquadrat
-	 * this will always return something even if there is not stop some of the ground level
+	/* we allow only for a single stop per planquadrat
+	 * this will only return something if this stop belongs to same player or is public, or is a dock (when on water)
 	 */
 	static halthandle_t get_halt(const karte_t *welt, const koord3d pos, const spieler_t *sp );
 
@@ -160,7 +160,7 @@ public:
 	* removes a ground tile from a station, deletes the building and, if last tile, also the halthandle
 	* @author prissi
 	*/
-	static bool remove(karte_t *welt, spieler_t *sp, koord3d pos, const char *&msg);
+	static bool remove(karte_t *welt, spieler_t *sp, koord3d pos);
 
 	/**
 	 * Station destruction method.
@@ -253,6 +253,9 @@ private:
 	 */
 	stationtyp station_type;
 
+	// private helper function for recalc_station_type()
+	void add_to_station_type( grund_t *gr );
+
 	/**
 	 * Reconnect and reroute if counter different from welt->get_schedule_counter()
 	 */
@@ -262,11 +265,6 @@ private:
 
 	/* station flags (most what enabled) */
 	uint8 enables;
-
-#ifdef USE_QUOTE
-	// for station rating
-	const char * quote_bezeichnung(int quote) const;
-#endif
 
 	/**
 	 * versucht die ware mit beriets wartender ware zusammenzufassen

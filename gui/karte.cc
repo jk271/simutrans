@@ -4,6 +4,7 @@
 #include "../simworld.h"
 #include "../simdepot.h"
 #include "../simhalt.h"
+#include "../simskin.h"
 #include "../boden/grund.h"
 #include "../simfab.h"
 #include "../simcity.h"
@@ -48,12 +49,18 @@ reliefkarte_t::MAP_MODES reliefkarte_t::mode = MAP_TOWN;
 reliefkarte_t::MAP_MODES reliefkarte_t::last_mode = MAP_TOWN;
 bool reliefkarte_t::is_visible = false;
 
+#define MAX_MAP_TYPE_LAND 31
+#define MAX_MAP_TYPE_WATER 5
 
 // color for the land
-const uint8 reliefkarte_t::map_type_color[MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND] =
+static const uint8 map_type_color[MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND] =
 {
 	97, 99, 19, 21, 23,
-	160, 161, 162, 163, 164, 165, 166, 167, 205, 206, 207, 173, 175, 214
+	160, 161, 162, 163, 164, 165, 166, 167,
+	205, 206, 207, 172, 174,
+	159, 158, 157, 156, /* 155 monorail */ 154,
+	115, 114, 113, 112,
+	216, 217, 218, 219, 220, 221, 222, 223, 224
 };
 
 const uint8 reliefkarte_t::severity_color[MAX_SEVERITY_COLORS] =
@@ -65,7 +72,7 @@ const uint8 reliefkarte_t::severity_color[MAX_SEVERITY_COLORS] =
 #define STRASSE_KENN      (208)
 #define SCHIENE_KENN      (185)
 #define CHANNEL_KENN      (147)
-#define MONORAIL_KENN      (153)
+#define MONORAIL_KENN      (155)
 #define RUNWAY_KENN      (28)
 #define POWERLINE_KENN      (55)
 #define HALT_KENN         COL_RED
@@ -114,7 +121,7 @@ void reliefkarte_t::add_to_schedule_cache( convoihandle_t cnv, bool with_waypoin
 	// ok, add this schedule to map
 	// from here on we have a valid convoi
 	int stops = 0;
-	uint8 old_offset, first_offset, temp_offset = 0;
+	uint8 old_offset = 0, first_offset = 0, temp_offset = 0;
 	koord old_stop, first_stop, temp_stop;
 	bool last_diagonal = false;
 	const bool add_schedule = fpl->get_waytype() != air_wt;
@@ -510,7 +517,7 @@ uint8 reliefkarte_t::calc_severity_color_log(sint32 amount, sint32 max_value)
 {
 	if(  max_value>1  ) {
 		sint32 severity;
-		if(  amount <= 0x003FFFFFu  ) {
+		if(  amount <= 0x003FFFFF  ) {
 			severity = log2( (uint32)( (amount << MAX_SEVERITY_COLORS) / (max_value+1) ) );
 		}
 		else {
@@ -607,7 +614,7 @@ void reliefkarte_t::set_relief_farbe_area(koord k, int areasize, uint8 color)
  */
 uint8 reliefkarte_t::calc_hoehe_farbe(const sint16 hoehe, const sint16 grundwasser)
 {
-	return map_type_color[clamp( (hoehe-grundwasser)+MAX_MAP_TYPE_WATER-1, 0, MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND )];
+	return map_type_color[clamp( (hoehe-grundwasser)+MAX_MAP_TYPE_WATER-1, 0, MAX_MAP_TYPE_WATER+MAX_MAP_TYPE_LAND-1 )];
 }
 
 
@@ -634,7 +641,7 @@ uint8 reliefkarte_t::calc_relief_farbe(const grund_t *gr)
 				color = MN_GREY3;
 				break;
 			case grund_t::tunnelboden:
-				color = MN_GREY0;
+				color = COL_BROWN;
 				break;
 			case grund_t::monorailboden:
 				color = MONORAIL_KENN;
@@ -678,10 +685,11 @@ uint8 reliefkarte_t::calc_relief_farbe(const grund_t *gr)
 						case road_wt: color = STRASSE_KENN; break;
 						case tram_wt:
 						case track_wt: color = SCHIENE_KENN; break;
-						case monorail_wt: color = MONORAIL_KENN; break;
 						case water_wt: color = CHANNEL_KENN; break;
 						case air_wt: color = RUNWAY_KENN; break;
-						default:	// silence compiler!
+						case monorail_wt:
+						default:	// all other ways light red ...
+							color = 135; break;
 							break;
 					}
 				}
@@ -1035,10 +1043,26 @@ bool reliefkarte_t::infowin_event(const event_t *ev)
 }
 
 
+// helper function for finding nearby factory
+const fabrik_t* reliefkarte_t::get_fab( const koord, bool enlarge ) const
+{
+	const fabrik_t *fab = fabrik_t::get_fab(welt, last_world_pos);
+	for(  int i=0;  i<4  && fab==NULL;  i++  ) {
+		fab = fabrik_t::get_fab( welt, last_world_pos+koord::nsow[i] );
+	}
+	if(  enlarge  ) {
+		for(  int i=0;  i<4  && fab==NULL;  i++  ) {
+			fab = fabrik_t::get_fab( welt, last_world_pos+koord::nsow[i]*2 );
+		}
+	}
+	return fab;
+}
+
+
 // helper function for redraw: factory connections
 const fabrik_t* reliefkarte_t::draw_fab_connections(const uint8 colour, const koord pos) const
 {
-	const fabrik_t* const fab = fabrik_t::get_fab(welt, last_world_pos);
+	const fabrik_t* const fab = get_fab( last_world_pos, true );
 	if(fab) {
 		koord fabpos = fab->get_pos().get_2d();
 		karte_to_screen( fabpos );
@@ -1274,7 +1298,7 @@ void reliefkarte_t::zeichnen(koord pos)
 	// since the schedule whitens out the background, we have to draw it first
 	int offset = 1;
 	koord last_start(0,0), last_end(0,0), k1, k2;
-	bool diagonal;
+	bool diagonal = false;
 	if(  showing_schedule  ) {
 		// lighten background
 		if(  isometric  ) {
@@ -1461,12 +1485,27 @@ void reliefkarte_t::zeichnen(koord pos)
 				diagonal_dist = (diagonal_dist*3)-1;
 			}
 
-			if(  stype & haltestelle_t::airstop  ) {
-				display_airport( temp_stop.x+diagonal_dist, temp_stop.y+diagonal_dist, color );
+			// show the mode of transport of the station
+			if(  skinverwaltung_t::station_type  ) {
+				int icon = 0;
+				for(  int type=0;  type<9;  type++  ) {
+					if(  (stype>>type)&1  ) {
+						image_id img = skinverwaltung_t::station_type->get_bild_nr(type);
+						if(  img!=IMG_LEER  ) {
+							display_color_img( img, temp_stop.x+diagonal_dist+4+(icon/2)*12, temp_stop.y+diagonal_dist+4+(icon&1)*12, station->get_besitzer()->get_player_nr(), false, false );
+							icon++;
+						}
+					}
+				}
 			}
+			else {
+				if(  stype & haltestelle_t::airstop  ) {
+					display_airport( temp_stop.x+diagonal_dist, temp_stop.y+diagonal_dist, color );
+				}
 
-			if(  stype & haltestelle_t::dock  ) {
-				display_harbor( temp_stop.x+diagonal_dist, temp_stop.y+diagonal_dist, color );
+				if(  stype & haltestelle_t::dock  ) {
+					display_harbor( temp_stop.x+diagonal_dist, temp_stop.y+diagonal_dist, color );
+				}
 			}
 		}
 
@@ -1560,7 +1599,7 @@ void reliefkarte_t::zeichnen(koord pos)
 	// find tourist spots
 	if(  mode & MAP_TOURIST  ) {
 		FOR(  weighted_vector_tpl<gebaeude_t*>, const gb, welt->get_ausflugsziele()  ) {
-			if(  gb->get_tile()->get_offset()==koord(0,0)  ) {
+			if(  gb->get_first_tile() == gb  ) {
 				koord gb_pos = gb->get_pos().get_2d();
 				karte_to_screen( gb_pos );
 				gb_pos = gb_pos + pos;
@@ -1569,7 +1608,7 @@ void reliefkarte_t::zeichnen(koord pos)
 					max_tourist_ziele = pax;
 				}
 				COLOR_VAL color = calc_severity_color_log(gb->get_passagier_level(), max_tourist_ziele);
-				int radius = number_to_radius( pax*4 );
+				int radius = max( (number_to_radius( pax*4 )*zoom_in)/zoom_out, 1 );
 				display_filled_circle( gb_pos.x, gb_pos.y, radius, color );
 				display_circle( gb_pos.x, gb_pos.y, radius, COL_BLACK );
 			}
@@ -1582,9 +1621,11 @@ void reliefkarte_t::zeichnen(koord pos)
 			koord fab_pos = f->get_pos().get_2d();
 			karte_to_screen( fab_pos );
 			fab_pos = fab_pos + pos;
-//			koord size = f->get_besch()->get_haus()->get_groesse();
-			display_fillbox_wh_clip( fab_pos.x-4, fab_pos.y-4, 9, 9, COL_BLACK, false );
-			display_fillbox_wh_clip( fab_pos.x-3, fab_pos.y-3, 7, 7, f->get_kennfarbe(), false );
+			koord size = f->get_besch()->get_haus()->get_groesse(f->get_rotate());
+			sint16 x_size = max( 5, size.x*zoom_in );
+			sint16 y_size = max( 5, size.y*zoom_in );
+			display_fillbox_wh_clip( fab_pos.x-1, fab_pos.y-1, x_size+2, y_size+2, COL_BLACK, false );
+			display_fillbox_wh_clip( fab_pos.x, fab_pos.y, x_size, y_size, f->get_kennfarbe(), false );
 		}
 	}
 
@@ -1628,7 +1669,7 @@ void reliefkarte_t::zeichnen(koord pos)
 		const fabrik_t* const fab = (mode & MAP_FACTORIES) ?
 			draw_fab_connections(event_get_last_control_shift() & 1 ? COL_RED : COL_WHITE, pos)
 			:
-			fabrik_t::get_fab(welt, last_world_pos);
+			get_fab( last_world_pos, false );
 
 		if(fab) {
 			koord fabpos = fab->get_pos().get_2d();

@@ -59,7 +59,7 @@ endif
 ifeq ($(OSTYPE),mingw)
   CC ?= gcc
   SOURCES += simsys_w32_png.cc
-  CFLAGS  += -DPNG_STATIC -DZLIB_STATIC -march=pentium -DNOMINMAX=1
+  CFLAGS  += -DPNG_STATIC -DZLIB_STATIC -DNOMINMAX=1
   ifeq ($(BACKEND),gdi)
     LIBS += -lunicows
     ifeq  ($(WIN32_CONSOLE),)
@@ -81,7 +81,7 @@ SDL_CONFIG     ?= sdl-config
 
 
 ifneq ($(OPTIMISE),)
-    CFLAGS += -O3 -fno-schedule-insns
+    CFLAGS += -O3
   ifneq ($(OSTYPE),mac)
     ifneq ($(OSTYPE),haiku)
       ifneq ($(OSTYPE),amiga)
@@ -212,6 +212,7 @@ SOURCES += dataobj/network.cc
 SOURCES += dataobj/network_address.cc
 SOURCES += dataobj/network_cmd.cc
 SOURCES += dataobj/network_cmd_ingame.cc
+SOURCES += dataobj/network_cmd_scenario.cc
 SOURCES += dataobj/network_cmp_pakset.cc
 SOURCES += dataobj/network_file_transfer.cc
 SOURCES += dataobj/network_packet.cc
@@ -272,6 +273,7 @@ SOURCES += gui/convoi_detail_t.cc
 SOURCES += gui/convoi_filter_frame.cc
 SOURCES += gui/convoi_frame.cc
 SOURCES += gui/convoi_info_t.cc
+SOURCES += gui/convoy_item.cc
 SOURCES += gui/curiosity_edit.cc
 SOURCES += gui/curiositylist_frame_t.cc
 SOURCES += gui/curiositylist_stats_t.cc
@@ -319,6 +321,7 @@ SOURCES += gui/player_frame_t.cc
 SOURCES += gui/privatesign_info.cc
 SOURCES += gui/savegame_frame.cc
 SOURCES += gui/scenario_frame.cc
+SOURCES += gui/scenario_info.cc
 SOURCES += gui/schedule_list.cc
 SOURCES += gui/server_frame.cc
 SOURCES += gui/settings_frame.cc
@@ -337,6 +340,47 @@ SOURCES += player/ai.cc
 SOURCES += player/ai_goods.cc
 SOURCES += player/ai_passenger.cc
 SOURCES += player/simplay.cc
+SOURCES += script/api_class.cc
+SOURCES += script/api_function.cc
+SOURCES += script/api_param.cc
+SOURCES += script/api/api_city.cc
+SOURCES += script/api/api_const.cc
+SOURCES += script/api/api_convoy.cc
+SOURCES += script/api/api_goods_desc.cc
+SOURCES += script/api/api_gui.cc
+SOURCES += script/api/api_factory.cc
+SOURCES += script/api/api_halt.cc
+SOURCES += script/api/api_player.cc
+SOURCES += script/api/api_scenario.cc
+SOURCES += script/api/api_settings.cc
+SOURCES += script/api/api_tiles.cc
+SOURCES += script/api/api_world.cc
+SOURCES += script/api/export_besch.cc
+SOURCES += script/api/get_next.cc
+SOURCES += script/dynamic_string.cc
+SOURCES += script/export_objs.cc
+SOURCES += script/script.cc
+SOURCES += squirrel/sq_extensions.cc
+SOURCES += squirrel/squirrel/sqapi.cc
+SOURCES += squirrel/squirrel/sqclass.cc
+SOURCES += squirrel/squirrel/sqdebug.cc
+SOURCES += squirrel/squirrel/sqlexer.cc
+SOURCES += squirrel/squirrel/sqobject.cc
+SOURCES += squirrel/squirrel/sqtable.cc
+SOURCES += squirrel/squirrel/sqbaselib.cc
+SOURCES += squirrel/squirrel/sqcompiler.cc
+SOURCES += squirrel/squirrel/sqfuncstate.cc
+SOURCES += squirrel/squirrel/sqmem.cc
+SOURCES += squirrel/squirrel/sqstate.cc
+SOURCES += squirrel/squirrel/sqvm.cc
+SOURCES += squirrel/sqstdlib/sqstdaux.cc
+SOURCES += squirrel/sqstdlib/sqstdio.cc
+SOURCES += squirrel/sqstdlib/sqstdrex.cc
+SOURCES += squirrel/sqstdlib/sqstdstring.cc
+SOURCES += squirrel/sqstdlib/sqstdblob.cc
+SOURCES += squirrel/sqstdlib/sqstdmath.cc
+SOURCES += squirrel/sqstdlib/sqstdstream.cc
+SOURCES += squirrel/sqstdlib/sqstdsystem.cc
 SOURCES += simcity.cc
 SOURCES += simconvoi.cc
 SOURCES += simdebug.cc
@@ -344,11 +388,13 @@ SOURCES += simdepot.cc
 SOURCES += simdings.cc
 SOURCES += simevent.cc
 SOURCES += simfab.cc
+SOURCES += simgraph$(COLOUR_DEPTH).cc
 SOURCES += simhalt.cc
 SOURCES += simintr.cc
 SOURCES += simio.cc
 SOURCES += simline.cc
 SOURCES += simlinemgmt.cc
+SOURCES += simloadingscreen.cc
 SOURCES += simmain.cc
 SOURCES += simmem.cc
 SOURCES += simmenu.cc
@@ -378,8 +424,6 @@ SOURCES += vehicle/movingobj.cc
 SOURCES += vehicle/simpeople.cc
 SOURCES += vehicle/simvehikel.cc
 SOURCES += vehicle/simverkehr.cc
-
-SOURCES += simgraph$(COLOUR_DEPTH).cc
 
 
 ifeq ($(BACKEND),allegro)

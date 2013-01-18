@@ -19,17 +19,6 @@ class loadsave_t;
 class tabfile_t;
 class weg_besch_t;
 
-// these are the only classes, that are allowed to modfy elements from settings_t
-// for all remaing special cases there are the set_...() routines
-class settings_general_stats_t;
-class settings_routing_stats_t;
-class settings_economy_stats_t;
-class settings_costs_stats_t;
-class settings_climates_stats_t;
-class climate_gui_t;
-class welt_gui_t;
-
-
 struct road_timeline_t
 {
 	char name[64];
@@ -40,13 +29,15 @@ struct road_timeline_t
 
 class settings_t
 {
-friend class settings_general_stats_t;
-friend class settings_routing_stats_t;
-friend class settings_economy_stats_t;
-friend class settings_costs_stats_t;
-friend class settings_climates_stats_t;
-friend class climate_gui_t;
-friend class welt_gui_t;
+	// these are the only classes, that are allowed to modfy elements from settings_t
+	// for all remaing special cases there are the set_...() routines
+	friend class settings_general_stats_t;
+	friend class settings_routing_stats_t;
+	friend class settings_economy_stats_t;
+	friend class settings_costs_stats_t;
+	friend class settings_climates_stats_t;
+	friend class climate_gui_t;
+	friend class welt_gui_t;
 
 private:
 	sint32 groesse_x, groesse_y;
@@ -56,7 +47,7 @@ private:
 	 * @author prissi
 	 * not used any more:    sint32 industrie_dichte;
 	 */
-	sint32 land_industry_chains;
+	sint32 factory_count;
 	sint32 electric_promille;
 	sint32 tourist_attractions;
 
@@ -74,6 +65,7 @@ private:
 	sint32 growthfactor_medium;
 	sint32 growthfactor_large;
 
+	sint16 special_building_distance;	// distance between attraction to factory or other special buildings
 	uint32 minimum_city_distance;
 	uint32 industry_increase;
 
@@ -160,7 +152,12 @@ private:
 
 	sint32 passenger_factor;
 
-	sint16 factory_spacing;
+	sint16 min_factory_spacing;
+	sint16 max_factory_spacing;
+	sint16 max_factory_spacing_percentage;
+
+	/*no goods will put in route, when stored>gemax_storage and goods_in_transit*maximum_intransit_percentage/100>max_storage  */
+	uint16 factory_maximum_intransit_percentage;
 
 	/* prissi: crossconnect all factories (like OTTD and similar games) */
 	bool crossconnect_factories;
@@ -262,7 +259,7 @@ private:
 	sint32 way_toll_waycost_percentage;
 
 	// true if transformers are allowed to built underground
-	bool allow_undergroud_transformers;
+	bool allow_underground_transformers;
 
 public:
 	/* the big cost section */
@@ -310,6 +307,10 @@ public:
 	bool default_player_color_random;
 	uint8 default_player_color[MAX_PLAYER_COUNT][2];
 
+	// remove dummy companies and remove password from abandoned companies
+	uint16 remove_dummy_player_months;
+	uint16 unprotect_abondoned_player_months;
+
 public:
 	/**
 	 * If map is read from a heightfield, this is the name of the heightfield.
@@ -335,8 +336,8 @@ public:
 
 	sint32 get_karte_nummer() const {return nummer;}
 
-	void set_land_industry_chains(sint32 d) {land_industry_chains=d;}
-	sint32 get_land_industry_chains() const {return land_industry_chains;}
+	void set_factory_count(sint32 d) { factory_count=d; }
+	sint32 get_factory_count() const {return factory_count;}
 
 	sint32 get_electric_promille() const {return electric_promille;}
 
@@ -372,6 +373,7 @@ public:
 	void set_starting_year( sint16 n ) { starting_year = n; }
 	sint16 get_starting_year() const {return starting_year;}
 
+	void set_starting_month( sint16 n ) { starting_month = n; }
 	sint16 get_starting_month() const {return starting_month;}
 
 	sint16 get_bits_per_month() const {return bits_per_month;}
@@ -412,7 +414,11 @@ public:
 	bool get_random_pedestrians() const { return fussgaenger; }
 	void set_random_pedestrians( bool f ) { fussgaenger = f; }
 
-	sint16 get_factory_spacing() const { return factory_spacing; }
+	sint16 get_special_building_distance() const { return special_building_distance; }
+
+	sint16 get_min_factory_spacing() const { return min_factory_spacing; }
+	sint16 get_max_factory_spacing() const { return max_factory_spacing; }
+	sint16 get_max_factory_spacing_percent() const { return max_factory_spacing_percentage; }
 	sint16 get_crossconnect_factor() const { return crossconnect_factor; }
 	bool is_crossconnect_factories() const { return crossconnect_factories; }
 
@@ -494,6 +500,8 @@ public:
 	// Knightly : whether factory pax/mail demands are enforced
 	bool get_factory_enforce_demand() const { return factory_enforce_demand; }
 
+	uint16 get_factory_maximum_intransit_percentage() const { return factory_maximum_intransit_percentage; }
+
 	uint32 get_locality_factor(sint16 year) const;
 
 	// disallow using obsolete vehicles in depot
@@ -532,7 +540,10 @@ public:
 
 	sint32 get_bonus_basefactor() const { return bonus_basefactor; }
 
-	bool get_allow_undergroud_transformers() const { return allow_undergroud_transformers; }
+	bool get_allow_underground_transformers() const { return allow_underground_transformers; }
+
+	uint16 get_remove_dummy_player_months() const { return remove_dummy_player_months; }
+	uint16 get_unprotect_abondoned_player_months() const { return unprotect_abondoned_player_months; }
 };
 
 #endif

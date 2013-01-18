@@ -32,7 +32,12 @@ static char const* const version[] =
 	"0.110.0",
 	"0.110.1",
 	"0.111.0",
-	"0.111.1"
+	"0.111.1",
+	"0.111.2",
+	"0.111.3",
+	"0.111.4",
+	"0.112.0",
+	"0.112.2"
 };
 
 
@@ -67,6 +72,22 @@ bool settings_general_stats_t::action_triggered(gui_action_creator_t *komp, valu
 void settings_general_stats_t::init(settings_t const* const sets)
 {
 	INIT_INIT
+
+	// combobox for savegame version
+	savegame.set_pos( koord(D_MARGIN_LEFT, ypos) );
+	savegame.set_groesse( koord(70, D_BUTTON_HEIGHT) );
+	for(  uint32 i=0;  i<lengthof(version);  i++  ) {
+		savegame.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( version[i]+2, COL_BLACK ) );
+		if(  strcmp(version[i],umgebung_t::savegame_version_str)==0  ) {
+			savegame.set_selection( i );
+		}
+	}
+	savegame.set_focusable( false );
+	add_komponente( &savegame );
+	savegame.add_listener( this );
+	INIT_LB( "savegame version" );
+	label.back()->set_pos( koord( D_MARGIN_LEFT + 70 + 6, label.back()->get_pos().y + 2 ) );
+	SEPERATOR
 	INIT_BOOL( "drive_left", sets->is_drive_left() );
 	INIT_BOOL( "signals_on_left", sets->is_signals_left() );
 	SEPERATOR
@@ -90,22 +111,7 @@ void settings_general_stats_t::init(settings_t const* const sets)
 	INIT_BOOL( "ground_info", umgebung_t::ground_info );
 	INIT_BOOL( "townhall_info", umgebung_t::townhall_info );
 	INIT_BOOL( "only_single_info", umgebung_t::single_info );
-	SEPERATOR
 
-	// combobox for savegame version
-	savegame.set_pos( koord(2,ypos-2) );
-	savegame.set_groesse( koord(70,D_BUTTON_HEIGHT) );
-	for(  uint32 i=0;  i<lengthof(version);  i++  ) {
-		savegame.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( version[i]+2, COL_BLACK ) );
-		if(  strcmp(version[i],umgebung_t::savegame_version_str)==0  ) {
-			savegame.set_selection( i );
-		}
-	}
-	savegame.set_focusable( false );
-	add_komponente( &savegame );
-	savegame.add_listener( this );
-	INIT_LB( "savegame version" );
-	label.back()->set_pos( koord( 76, label.back()->get_pos().y ) );
 	clear_dirty();
 	set_groesse( settings_stats_t::get_groesse() );
 }
@@ -113,6 +119,12 @@ void settings_general_stats_t::init(settings_t const* const sets)
 void settings_general_stats_t::read(settings_t* const sets)
 {
 	READ_INIT
+
+	int selected = savegame.get_selection();
+	if(  0 <= selected  &&  (uint32)selected < lengthof(version)  ) {
+		umgebung_t::savegame_version_str = version[ selected ];
+	}
+
 	READ_BOOL_VALUE( sets->drive_on_left );
 	vehikel_basis_t::set_overtaking_offsets( sets->drive_on_left );
 	READ_BOOL_VALUE( sets->signals_on_left );
@@ -137,14 +149,9 @@ void settings_general_stats_t::read(settings_t* const sets)
 	READ_BOOL_VALUE( umgebung_t::ground_info );
 	READ_BOOL_VALUE( umgebung_t::townhall_info );
 	READ_BOOL_VALUE( umgebung_t::single_info );
-
-	int selected = savegame.get_selection();
-	if(  0 <= selected  &&  (uint32)selected < lengthof(version)  ) {
-		umgebung_t::savegame_version_str = version[ selected ];
-	}
 }
 
-void settings_display_stats_t::init(settings_t const* const sets)
+void settings_display_stats_t::init(settings_t const* const)
 {
 	INIT_INIT
 	INIT_NUM( "frames_per_second",umgebung_t::fps, 10, 25, gui_numberinput_t::AUTOLINEAR, false );
@@ -172,7 +179,7 @@ void settings_display_stats_t::init(settings_t const* const sets)
 	set_groesse( settings_stats_t::get_groesse() );
 }
 
-void settings_display_stats_t::read(settings_t* const sets)
+void settings_display_stats_t::read(settings_t* const)
 {
 	READ_INIT
 	// all visual stuff
@@ -249,6 +256,9 @@ void settings_routing_stats_t::read(settings_t* const sets)
 void settings_economy_stats_t::init(settings_t const* const sets)
 {
 	INIT_INIT
+	INIT_NUM( "remove_dummy_player_months", sets->get_remove_dummy_player_months(), 0, 144, 12, false );
+	INIT_NUM( "unprotect_abondoned_player_months", sets->get_unprotect_abondoned_player_months(), 0, 144, 12, false );
+	SEPERATOR
 	INIT_COST( "starting_money", sets->get_starting_money(sets->get_starting_year()), 1, 0x7FFFFFFFul, 10000, false );
 	INIT_NUM( "pay_for_total_distance", sets->get_pay_for_total_distance_mode(), 0, 2, gui_numberinput_t::AUTOLINEAR, true );
 	INIT_NUM( "bonus_basefactor", sets->get_bonus_basefactor(), 0, 1000, gui_numberinput_t::AUTOLINEAR, false );
@@ -261,16 +271,20 @@ void settings_economy_stats_t::init(settings_t const* const sets)
 	SEPERATOR
 
 	INIT_BOOL( "just_in_time", sets->get_just_in_time() );
+	INIT_NUM( "maximum_intransit_percentage", sets->get_factory_maximum_intransit_percentage(), 0, 32767, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_BOOL( "crossconnect_factories", sets->is_crossconnect_factories() );
 	INIT_NUM( "crossconnect_factories_percentage", sets->get_crossconnect_factor(), 0, 100, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM( "industry_increase_every", sets->get_industry_increase_every(), 0, 100000, 100, false );
-	INIT_NUM( "factory_spacing", sets->get_factory_spacing(), 1, 32767, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM( "min_factory_spacing", sets->get_min_factory_spacing(), 1, 32767, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM( "max_factory_spacing_percent", sets->get_max_factory_spacing(), 0, 100, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM( "max_factory_spacing", sets->get_max_factory_spacing(), 1, 32767, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM( "electric_promille", sets->get_electric_promille(), 0, 1000, gui_numberinput_t::AUTOLINEAR, false );
-	INIT_BOOL( "allow_undergroud_transformers", sets->get_allow_undergroud_transformers() );
+	INIT_BOOL( "allow_underground_transformers", sets->get_allow_underground_transformers() );
 	SEPERATOR
 
 	INIT_NUM( "passenger_factor",  sets->get_passenger_factor(), 0, 16, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM( "minimum_city_distance", sets->get_minimum_city_distance(), 1, 20000, 10, false );
+	INIT_NUM( "special_building_distance", sets->get_special_building_distance(), 1, 150, 1, false );
 	INIT_NUM( "factory_worker_radius", sets->get_factory_worker_radius(), 0, 32767, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM( "factory_worker_minimum_towns", sets->get_factory_worker_minimum_towns(), 0, 32767, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM( "factory_worker_maximum_towns", sets->get_factory_worker_maximum_towns(), 0, 32767, gui_numberinput_t::AUTOLINEAR, false );
@@ -322,6 +336,8 @@ void settings_economy_stats_t::read(settings_t* const sets)
 {
 	READ_INIT
 	sint64 start_money_temp;
+	READ_NUM_VALUE( sets->remove_dummy_player_months );
+	READ_NUM_VALUE( sets->unprotect_abondoned_player_months );
 	READ_COST_VALUE( start_money_temp );
 	if(  sets->get_starting_money(sets->get_starting_year())!=start_money_temp  ) {
 		// because this will render the table based values invalid, we do this only when needed
@@ -337,15 +353,19 @@ void settings_economy_stats_t::read(settings_t* const sets)
 	READ_NUM_VALUE( sets->way_toll_waycost_percentage );
 
 	READ_BOOL_VALUE( sets->just_in_time );
+	READ_NUM_VALUE( sets->factory_maximum_intransit_percentage );
 	READ_BOOL_VALUE( sets->crossconnect_factories );
 	READ_NUM_VALUE( sets->crossconnect_factor );
 	READ_NUM_VALUE( sets->industry_increase );
-	READ_NUM_VALUE( sets->factory_spacing );
+	READ_NUM_VALUE( sets->min_factory_spacing );
+	READ_NUM_VALUE( sets->max_factory_spacing_percentage );
+	READ_NUM_VALUE( sets->max_factory_spacing );
 	READ_NUM_VALUE( sets->electric_promille );
-	READ_BOOL_VALUE( sets->allow_undergroud_transformers );
+	READ_BOOL_VALUE( sets->allow_underground_transformers );
 
 	READ_NUM_VALUE( sets->passenger_factor );
 	READ_NUM_VALUE( sets->minimum_city_distance );
+	READ_NUM_VALUE( sets->special_building_distance );
 	READ_NUM_VALUE( sets->factory_worker_radius );
 	READ_NUM_VALUE( sets->factory_worker_minimum_towns );
 	READ_NUM_VALUE( sets->factory_worker_maximum_towns );
@@ -471,7 +491,7 @@ void settings_climates_stats_t::init(settings_t* const sets)
 	INIT_NUM_NEW( "forest_map_size_divisor", sets->get_forest_map_size_divisor(), 2, 255, 1, false );
 	INIT_NUM_NEW( "forest_count_divisor", sets->get_forest_count_divisor(), 2, 255, 1, false );
 	INIT_NUM_NEW( "forest_inverse_spare_tree_density", sets->get_forest_inverse_spare_tree_density(), 0, 100, 1, false );
-	INIT_NUM_NEW( "max_no_of_trees_on_square", sets->get_max_no_of_trees_on_square(), 1, 6, 1, true );
+	INIT_NUM( "max_no_of_trees_on_square", sets->get_max_no_of_trees_on_square(), 1, 6, 1, true );
 	INIT_NUM_NEW( "tree_climates", sets->get_tree_climates(), 0, 255, 1, false );
 	INIT_NUM_NEW( "no_tree_climates", sets->get_no_tree_climates(), 0, 255, 1, false );
 
@@ -513,7 +533,7 @@ void settings_climates_stats_t::read(settings_t* const sets)
 	READ_NUM_VALUE_NEW( sets->forest_map_size_divisor );
 	READ_NUM_VALUE_NEW( sets->forest_count_divisor );
 	READ_NUM_VALUE_NEW( sets->forest_inverse_spare_tree_density );
-	READ_NUM_VALUE_NEW( sets->max_no_of_trees_on_square );
+	READ_NUM_VALUE( sets->max_no_of_trees_on_square );
 	READ_NUM_VALUE_NEW( sets->tree_climates );
 	READ_NUM_VALUE_NEW( sets->no_tree_climates );
 }

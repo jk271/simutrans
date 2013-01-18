@@ -57,6 +57,7 @@
  */
 
 #define baum_pri (50)
+#define pillar_pri (7)
 
 // priority of moving things: should be smaller than the priority of powerlines
 #define moving_obj_pri (100)
@@ -77,9 +78,9 @@ static uint8 type_to_pri[256]=
 	5, // smoke generator (not used any more)
 	150, 4, 4, // powerlines
 	6, // roadsign
-	6, // pillar
+	pillar_pri, // pillar
 	1, 1, 1, 1, // depots (must be before tunnel!)
-	7, // way objects (electrification)
+	8, // way objects (electrification)
 	0, // ways (always at the top!)
 	9, // label, indicates ownership: insert before trees
 	3, // field (factory extension)
@@ -170,7 +171,7 @@ dingliste_t::~dingliste_t()
 }
 
 
-void dingliste_t::set_capacity(uint8 new_cap)
+void dingliste_t::set_capacity(uint16 new_cap)
 {
 	// DBG_MESSAGE("dingliste_t::set_capacity()", "old cap=%d, new cap=%d", capacity, new_cap);
 
@@ -237,13 +238,13 @@ bool dingliste_t::grow_capacity()
 		set_capacity( 4 );
 		return true;
 	}
-	else if(capacity>=240) {
+	else if(capacity>=254) {
 		// capacity exceeded ... (and no need for THAT many objects here ... )
 		return false;
 	}
 	else {
-		// size exeeded, needs to extent
-		uint8 new_cap = ((uint16)capacity+4)&0x0FC;
+		// size exceeded, extent
+		uint16 new_cap = (uint16)capacity+4;
 		set_capacity( new_cap );
 		return true;
 	}
@@ -489,6 +490,15 @@ bool dingliste_t::add(ding_t* ding)
 			for(  ;  i<top;  i++) {
 				baum_t const* const tree = ding_cast<baum_t>(obj.some[i]);
 				if (!tree  ||  compare_trees(ding, tree)) {
+					break;
+				}
+			}
+		}
+		else if (pri == pillar_pri) {
+			// pillars have to be sorted wrt their y-offset, too.
+			for(  ;  i<top;  i++) {
+				pillar_t const* const pillar = ding_cast<pillar_t>(obj.some[i]);
+				if (!pillar  ||  ding->get_yoff()  > pillar->get_yoff() ) {
 					break;
 				}
 			}
@@ -908,11 +918,17 @@ void dingliste_t::rdwr(karte_t *welt, loadsave_t *file, koord3d current_pos)
 				case ding_t::baum:
 				{
 					baum_t *b = new baum_t(welt, file);
-					if(!b->get_besch()) {
-						// do not remove from this position, since there will be nothing
-						b->set_flag(ding_t::not_on_map);
-						delete b;
-						b = NULL;
+					if(  !b->get_besch()  ) {
+						// is there a replacement possible
+						if(  const baum_besch_t *besch = baum_t::random_tree_for_climate( welt->get_climate(current_pos.z) )  ) {
+							b->set_besch( besch );
+						}
+						else {
+							// do not remove from map on this position, since there will be nothing
+							b->set_flag(ding_t::not_on_map);
+							delete b;
+							b = NULL;
+						}
 					}
 					else {
 						d = b;

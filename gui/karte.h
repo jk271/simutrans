@@ -19,8 +19,6 @@ class schedule_t;
 class loadsave_t;
 
 
-#define MAX_MAP_TYPE_LAND 14
-#define MAX_MAP_TYPE_WATER 5
 #define MAX_SEVERITY_COLORS 10
 #define MAX_MAP_ZOOM 4
 // set to zero to use the small font
@@ -135,7 +133,6 @@ private:
 	static MAP_MODES mode;
 	static MAP_MODES last_mode;
 	static const uint8 severity_color[MAX_SEVERITY_COLORS];
-	static const uint8 map_type_color[MAX_MAP_TYPE_LAND+MAX_MAP_TYPE_WATER];
 
 	inline void screen_to_karte(koord &) const;
 
@@ -151,6 +148,8 @@ private:
 
 	// true, if full redraw is needed
 	bool needs_redraw;
+
+	const fabrik_t* get_fab(koord pos, bool large_area) const;
 
 	const fabrik_t* draw_fab_connections(uint8 colour, koord pos) const;
 

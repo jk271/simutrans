@@ -976,6 +976,16 @@ void mark_rect_dirty_wc(KOORD_VAL x1, KOORD_VAL y1, KOORD_VAL x2, KOORD_VAL y2)
 
 
 /**
+ * Mark the whole screen as dirty.
+ *
+ */
+void mark_screen_dirty()
+{
+	mark_rect_dirty_nc(0, 0, disp_width-1, disp_height - 1);
+}
+
+
+/**
  * the area of this image need update
  * @author Hj. Malthaner
  */
@@ -1200,6 +1210,8 @@ static void recode_color_img(const unsigned int n, const unsigned char player_nr
 #endif
 
 
+
+// for zoom out
 #define SumSubpixel(p) \
 	if(*(p)<255  &&  valid<255) { \
 	if(*(p)==1) { valid = 255; r = g = b = 0; } else { valid ++; } /* mark special colors */\
@@ -1207,6 +1219,50 @@ static void recode_color_img(const unsigned int n, const unsigned char player_nr
 		g += (p)[2]; \
 		b += (p)[3]; \
 	}
+
+
+// recode 4*bytes into PIXVAL
+PIXVAL inline compress_pixel(uint8* p)
+{
+	return (((p[0]==1 ? 0x8000 : 0 ) | p[1]) + (((uint16)p[2])<<5) + (((uint16)p[3])<<10));
+}
+
+// recode 4*bytes into PIXVAL, respect transparency
+PIXVAL inline compress_pixel_transparent(uint8 *p)
+{
+	return p[0]==255 ? 0x73FE : compress_pixel(p);
+}
+
+// zoomin pixel taking color of above/below and transparency of diagonal neighbor into account
+PIXVAL inline zoomin_pixel(uint8 *p, uint8* pab, uint8 *prl, uint8* pdia)
+{
+	if (p[0] == 255) {
+		if ( (pab[0] | prl[0] | pdia[0])==255) {
+			return 0x73FE; // pixel and one neighbor transparent -> return transparent
+		}
+		// pixel transparent but all three neightbors not -> interpolate
+		uint8 valid=0;
+		uint8 r=0, g=0, b=0;
+		SumSubpixel(pab);
+		SumSubpixel(prl);
+		if(valid==0) {
+			return 0x73FE;
+		}
+		else if(valid==255) {
+			return (0x8000 | r) + (((uint16)g)<<5) + (((uint16)b)<<10);
+		}
+		else {
+			return (r/valid) + (((uint16)(g/valid))<<5) + (((uint16)(b/valid))<<10);
+		}
+	}
+	else {
+		if ( (pab[0] & prl[0] & pdia[0])!=255) {
+			// pixel and one neighbor not transparent
+			return compress_pixel(p);
+		}
+		return 0x73FE;
+	}
+}
 
 
 /**
@@ -1357,45 +1413,63 @@ static void rezoom_img(const image_id n)
 			// now we have the image, we do a repack then
 			dest = baseimage2;
 			switch(zoom_den[zoom_factor]) {
-				case 1:
+				case 1: {
 					assert(zoom_num[zoom_factor]==2);
-					// we just filter (diagonal filter) together with the upscaling
-					for(  sint16 y=0;  y<orgzoomheight;  y++  ) {
+
+					// first half row - just copy values, do not fiddle with neighbor colors
+					uint8 *p1 = baseimage + baseoff;
+					for(  sint16 x=0;  x<orgzoomwidth;  x++  ) {
+						PIXVAL c1 = compress_pixel_transparent(p1 +(x*4) );
+						// now set the pixel ...
+						dest[x*2] = c1;
+						dest[x*2+1] = c1;
+					}
+					// skip one line
+					dest += newzoomwidth;
+
+					for(  sint16 y=0;  y<orgzoomheight-1;  y++  ) {
 						uint8 *p1 = baseimage + baseoff + y*(basewidth*4);
-						uint8 *p2 = p1 + ((y+1<orgzoomheight) ? basewidth*4 : 0);
-						for(  sint16 x=0;  x<orgzoomwidth;  x++  ) {
+						// copy leftmost pixels
+						dest[0] = compress_pixel_transparent(p1);
+						dest[newzoomwidth] = compress_pixel_transparent(p1+basewidth*4);
+						for(  sint16 x=0;  x<orgzoomwidth-1;  x++  ) {
 							uint8 *px1=p1+(x*4);
-							PIXVAL c1 = px1[0]==255 ? 0x73FE : (((px1[0]==1 ? 0x8000 : 0 ) | px1[1]) + (((uint16)px1[2])<<5) + (((uint16)px1[3])<<10));
-							// now set the pixel ...
-							dest[x*2] = c1;
-							dest[x*2+1] = c1;
-							dest[x*2+newzoomwidth] = c1;
-							dest[x*2+newzoomwidth+1] = c1;
-							if(  px1[0]<255  ) {
-								// diagonal filter only for non-transparent ones ...
-								if(  x>0  &&  *(uint32 *)(px1-4)==*(uint32 *)(p2+x*4)  ) {
-									// take this instead
-									px1=p1+(x*4)-4;
-									dest[x*2+newzoomwidth] = px1[0]==255 ? 0x73FE : (((px1[0]==1 ? 0x8000 : 0 ) | px1[1]) + (((uint16)px1[2])<<5) + (((uint16)px1[3])<<10));
-								}
-								else {
-									dest[x*2+newzoomwidth] = c1;
-								}
-								px1=p1+(x*4);
-								if(  x+1<orgzoomwidth  &&  *(uint32 *)(px1+4)==*(uint32 *)(p2+x*4)  ) {
-									// take this instead
-									px1=p1+(x*4)+4;
-									dest[x*2+newzoomwidth+1] = px1[0]==255 ? 0x73FE : (((px1[0]==1 ? 0x8000 : 0 ) | px1[1]) + (((uint16)px1[2])<<5) + (((uint16)px1[3])<<10));
-								}
-								else {
-									dest[x*2+newzoomwidth+1] = c1;
-								}
+							// pixel at 2,2 in 2x2 superpixel
+							dest[x*2+1] = zoomin_pixel(px1, px1+4, px1+basewidth*4, px1+basewidth*4+4);
+
+							// 2x2 superpixel is transparent but original pixel was not
+							// preserve one pixel
+							if( dest[x*2+1]==0x73FE  &&  px1[0]!=255  &&  dest[x*2]==0x73FE
+								&&  dest[x*2-newzoomwidth]==0x73FE  &&  dest[x*2-newzoomwidth-1]==0x73FE) {
+								// preserve one pixel
+								dest[x*2+1] = compress_pixel(px1);
 							}
+
+							// pixel at 2,1 in next 2x2 superpixel
+							dest[x*2+2] = zoomin_pixel(px1+4, px1, px1+basewidth*4+4, px1+basewidth*4);
+
+							// pixel at 1,2 in next row 2x2 superpixel
+							dest[x*2+newzoomwidth+1] = zoomin_pixel(px1+basewidth*4, px1+basewidth*4+4, px1, px1+4);
+
+							// pixel at 1,1 in next row next 2x2 superpixel
+							dest[x*2+newzoomwidth+2] = zoomin_pixel(px1+basewidth*4+4, px1+basewidth*4, px1+4, px1);
 						}
-						// skip one line
+						// copy rightmost pixels
+						dest[2*orgzoomwidth-1] = compress_pixel_transparent(p1+4*(orgzoomwidth-1));
+						dest[2*orgzoomwidth+newzoomwidth-1] = compress_pixel_transparent(p1+4*(orgzoomwidth-1)+basewidth*4);
+						// skip two lines
 						dest += 2*newzoomwidth;
 					}
+					// last half row - just copy values, do not fiddle with neighbor colors
+					p1 = baseimage + baseoff + (orgzoomheight-1)*(basewidth*4);
+					for(  sint16 x=0;  x<orgzoomwidth;  x++  ) {
+						PIXVAL c1 = compress_pixel_transparent(p1 +(x*4) );
+						// now set the pixel ...
+						dest[x*2]   = c1;
+						dest[x*2+1] = c1;
+					}
 					break;
+				}
 				case 2:
 					for(  sint16 y=0;  y<newzoomheight;  y++  ) {
 						uint8 *p1 = baseimage + baseoff + ((y*zoom_den[zoom_factor]+0-y_rem)/zoom_num[zoom_factor])*(basewidth*4);
@@ -1604,12 +1678,12 @@ static void rezoom_img(const image_id n)
 
 				do {
 					// check length of transparent pixels
-					for (i = 0;  line[x] == 0x73FE  &&  x < newzoomwidth;  i++, x++)
+					for (i = 0;  x < newzoomwidth  &&  line[x] == 0x73FE;  i++, x++)
 						{}
 					// first runlength: transparent pixels
 					*dest++ = i;
 					// copy for non-transparent
-					for (i = 0;  line[x] != 0x73FE  &&  x < newzoomwidth;  i++, x++) {
+					for (i = 0;  x < newzoomwidth  &&  line[x] != 0x73FE;  i++, x++) {
 						dest[i + 1] = line[x];
 					}
 
@@ -2186,11 +2260,13 @@ void display_img_aux(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, const sint8 u
 				printf("CImg %i failed!\n", n);
 				return;
 			}
-		} else {
+		}
+		else {
 			if (images[n].recode_flags&FLAG_REZOOM) {
 				rezoom_img(n);
 				recode_normal_img(n);
-			} else if (images[n].recode_flags&FLAG_NORMAL_RECODE) {
+			}
+			else if (images[n].recode_flags&FLAG_NORMAL_RECODE) {
 				recode_normal_img(n);
 			}
 			sp = images[n].data;
@@ -2260,7 +2336,8 @@ void display_img_aux(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, const sint8 u
 						mark_rect_dirty_nc(xp, yp, xp + w - 1, yp + h - 1);
 					}
 					display_img_nc(h, xp, yp, sp);
-				} else if (xp < clip_rect.xx  &&  xp + w > clip_rect.x) {
+				}
+				else if (xp < clip_rect.xx  &&  xp + w > clip_rect.x) {
 					display_img_wc(h, xp, yp, sp);
 					// since height may be reduced, start marking here
 					if (dirty) {
@@ -2460,7 +2537,13 @@ void display_base_img(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, const sint8 
 				} while (*sp);
 				sp++;
 			}
-			display_color_img_wc( sp, x, y, h );
+			// clipping at poly lines?
+			if (number_of_clips>0) {
+				display_img_pc<colored>(h, x, y, sp);
+			}
+			else {
+				display_color_img_wc( sp, x, y, h );
+			}
 		}
 
 	} // number ok
@@ -3850,44 +3933,6 @@ void draw_bezier(KOORD_VAL Ax, KOORD_VAL Ay, KOORD_VAL Bx, KOORD_VAL By, KOORD_V
 }
 
 
-/**
- * Zeichnet eine Fortschrittsanzeige
- * @author Hj. Malthaner
- */
-static const char *progress_text=NULL;
-
-
-void display_set_progress_text(const char *t)
-{
-	progress_text = t;
-}
-
-
-// draws a progress bar and flushes the display
-void display_progress(int part, int total)
-{
-	const int width=disp_actual_width/2;
-	part = (part*width)/total;
-
-	dr_prepare_flush();
-
-	// outline
-	display_ddd_box(width/2-2, disp_height/2-9, width+4, 20, COL_GREY6, COL_GREY4);
-	display_ddd_box(width/2-1, disp_height/2-8, width+2, 18, COL_GREY4, COL_GREY6);
-
-	// inner
-	display_fillbox_wh(width / 2, disp_height / 2 - 7, width, 16, COL_GREY5, true);
-
-	// progress
-	display_fillbox_wh(width / 2, disp_height / 2 - 5, part,  12, COL_BLUE,  true);
-
-	if(progress_text) {
-		display_proportional(width,disp_height/2-4,progress_text,ALIGN_MIDDLE,COL_WHITE,0);
-	}
-	dr_flush();
-}
-
-
 // ------------------- other support routines that actually interface with the OS -----------------
 
 
@@ -4215,7 +4260,7 @@ void reset_textur(void *new_textur)
  * Speichert Screenshot
  * @author Hj. Malthaner
  */
-void display_snapshot()
+void display_snapshot( int x, int y, int w, int h )
 {
 	static int number = 0;
 
@@ -4233,5 +4278,5 @@ void display_snapshot()
 	} while (access(buf, W_OK) != -1);
 	sprintf(buf, SCRENSHOT_PATH_X "simscr%02d.bmp", number-1);
 
-	dr_screenshot(buf);
+	dr_screenshot(buf, x, y, w, h);
 }

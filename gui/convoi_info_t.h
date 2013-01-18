@@ -63,7 +63,7 @@ private:
 	button_t details_button;
 	button_t toggler;
 
-	button_t line_button;	// got to line ...
+	button_t line_button;	// goto line ...
 	bool line_bound;
 
 	convoihandle_t cnv;
@@ -113,6 +113,10 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	virtual void set_fenstergroesse(koord groesse);
+
+	virtual bool is_weltpos();
+
+	virtual koord3d get_weltpos( bool set );
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 

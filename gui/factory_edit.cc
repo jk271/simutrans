@@ -9,14 +9,9 @@
 
 #include <stdio.h>
 
-#include "../simcolor.h"
 #include "../simtools.h"
 #include "../simworld.h"
-#include "../simgraph.h"
-#include "../simskin.h"
 #include "../simwerkz.h"
-
-
 
 #include "../bauer/fabrikbauer.h"
 
@@ -81,7 +76,7 @@ factory_edit_frame_t::factory_edit_frame_t(spieler_t* sp_, karte_t* welt) :
 	bt_left_rotate.add_listener(this);
 	add_komponente(&bt_left_rotate);
 
-	bt_right_rotate.init( button_t::repeatarrowright, NULL, koord(get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2+50, offset_of_comp-4 ) );
+	bt_right_rotate.init( button_t::repeatarrowright, NULL, koord(get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2+50-2, offset_of_comp-4 ) );
 	bt_right_rotate.add_listener(this);
 	add_komponente(&bt_right_rotate);
 
@@ -92,7 +87,7 @@ factory_edit_frame_t::factory_edit_frame_t(spieler_t* sp_, karte_t* welt) :
 	lb_production_info.set_pos( koord( get_tab_panel_width()+2*MARGIN, offset_of_comp-4 ) );
 	add_komponente(&lb_production_info);
 
-	inp_production.set_pos(koord(get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2-16,	offset_of_comp-4 ));
+	inp_production.set_pos(koord(get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2-16,	offset_of_comp-4-2 ));
 	inp_production.set_groesse(koord( 76, 12 ));
 	inp_production.set_limits(0,9999);
 	inp_production.add_listener( this );

@@ -61,7 +61,7 @@ bool line_management_gui_t::infowin_event(const event_t *ev)
 				fpl->sprintf_schedule( buf );
 				w->set_default_param(buf);
 				line->get_besitzer()->get_welt()->set_werkzeug( w, line->get_besitzer() );
-				// since init always returns false, it is save to delete immediately
+				// since init always returns false, it is safe to delete immediately
 				delete w;
 			}
 		}
@@ -104,7 +104,7 @@ void line_management_gui_t::rdwr(loadsave_t *file)
 			// now we can open the window ...
 			koord const& pos = win_get_pos(this);
 			line_management_gui_t *w = new line_management_gui_t( line, sp );
-			create_win(pos.x, pos.y, w, w_info, (long)line.get_rep());
+			create_win(pos.x, pos.y, w, w_info, (ptrdiff_t)line.get_rep());
 			w->set_fenstergroesse( gr );
 			w->fpl->copy_from( fpl );
 		}

@@ -12,11 +12,9 @@
 #include "../simworld.h"
 #include "../simintr.h"
 #include "../simfab.h"
-#include "../simgraph.h"
 #include "../simmesg.h"
 #include "../simtools.h"
 #include "../simcity.h"
-#include "../simskin.h"
 #include "../simhalt.h"
 #include "../player/simplay.h"
 
@@ -35,8 +33,9 @@
 
 #include "../gui/karte.h"	// to update map after construction of new industry
 
-// radius for checking places for construction
-#define DISTANCE 40
+
+
+static int DISTANCE = 40;
 
 
 // all factories and their exclusion areas
@@ -48,7 +47,7 @@ static sint32 fab_map_w=0;
 static void add_factory_to_fab_map(karte_t const* const welt, fabrik_t const* const fab)
 {
 	koord3d      const& pos     = fab->get_pos();
-	sint16       const  spacing = welt->get_settings().get_factory_spacing();
+	sint16       const  spacing = welt->get_settings().get_min_factory_spacing();
 	haus_besch_t const& hbesch  = *fab->get_besch()->get_haus();
 	sint16       const  rotate  = fab->get_rotate();
 	sint16       const  start_y = max(0, pos.y - spacing);
@@ -74,6 +73,12 @@ void init_fab_map( karte_t *welt )
 	}
 	FOR(slist_tpl<fabrik_t*>, const f, welt->get_fab_list()) {
 		add_factory_to_fab_map(welt, f);
+	}
+	if(  welt->get_settings().get_max_factory_spacing_percent()  ) {
+		DISTANCE = (welt->get_groesse_max() * welt->get_settings().get_max_factory_spacing_percent()) / 100l;
+	}
+	else {
+		DISTANCE = welt->get_settings().get_max_factory_spacing();
 	}
 }
 
@@ -286,65 +291,49 @@ const fabrik_besch_t *fabrikbauer_t::finde_hersteller(const ware_besch_t *ware, 
 }
 
 
-
-
 koord3d fabrikbauer_t::finde_zufallsbauplatz(karte_t *welt, const koord3d pos, const int radius, koord groesse, bool wasser, const haus_besch_t *besch, bool ignore_climates)
 {
-	static vector_tpl<koord3d> list(10000);
-	koord k;
 	bool is_fabrik = besch->get_utyp()==haus_besch_t::fabrik;
 
-	list.clear();
 	if(wasser) {
 		groesse += koord(6,6);
 	}
 
 	climate_bits climates = !ignore_climates ? besch->get_allowed_climate_bits() : ALL_CLIMATES;
 
-	// check no factory but otherwise good place
-	for(  k.y=pos.y-radius;  k.y <= pos.y+radius;  k.y++  ) {
-		if(  k.y < 0  ) {
+	uint32 diam   = 2*radius + 1;
+	uint32 size   = diam * diam;
+	uint32 offset = diam*groesse.x*groesse.y + 1;
+	uint32 index  = simrand(size);
+	koord k;
+	for(uint32 i = 0; i<size; i++, index+=offset) {
+		// as offset % size == 1, we are guaranteed that the iteration hits all tiles and does not repeat itself
+		k = koord( pos.x-radius + (index / diam), pos.y-radius + (index % diam));
+
+		if (!welt->ist_in_kartengrenzen(k)) {
 			continue;
 		}
-		if(  k.y >= welt->get_groesse_y()  ) {
-			break;
+		// to close to existing factory
+		if(  is_fabrik  &&  is_factory_at(k.x,k.y)  ) {
+			continue;
 		}
+		// climate check
+		if(  fabrik_t::ist_bauplatz(welt, k, groesse,wasser,climates)  ) {
+			// we accept first hit
+			goto finish;
+		}
+		// next search will be groesse.x rows down, groesse.y+1 columns left
+	}
+	// nothing found
+	return koord3d(-1, -1, -1);
 
-		for(  k.x=pos.x-radius;  k.x <= pos.x+radius;  k.x++  ) {
-			if(  k.x < 0  ) {
-				continue;
-			}
-			if(  k.x >= welt->get_groesse_x()  ) {
-				break;
-			}
-			// to close to existing factory
-			if(  is_fabrik  &&  is_factory_at(k.x,k.y)  ) {
-				continue;
-			}
-			// climate check
-			if(  fabrik_t::ist_bauplatz(welt, k, groesse,wasser,climates)  ) {
-				list.append( welt->lookup_kartenboden(k)->get_pos() );
-				// nicht gleich daneben nochmal suchen
-				k.x += 4;
-				if(  list.get_count() >= 10000  ) {
-					goto finish;
-				}
-			}
-		}
-	}
 finish:
-	// printf("Zufallsbauplatzindex %d\n", index);
-	if (list.empty()) {
-		return koord3d(-1, -1, -1);
+	koord3d p = welt->lookup_kartenboden(k)->get_pos();
+	if(wasser) {
+		// take care of offset
+		p += koord3d(3, 3, 0);
 	}
-	else {
-		koord3d k = pick_any(list);
-		if(wasser) {
-			// take care of offset
-			k += koord3d(3, 3, 0);
-		}
-		return k;
-	}
+	return p;
 }
 
 
@@ -411,16 +400,16 @@ public:
  * Build factory according to instructions in 'info'
  * @author Hj.Malthaner
  */
-fabrik_t* fabrikbauer_t::baue_fabrik(karte_t* welt, koord3d* parent, const fabrik_besch_t* info, int rotate, koord3d pos, spieler_t* spieler)
+fabrik_t* fabrikbauer_t::baue_fabrik(karte_t* welt, koord3d* parent, const fabrik_besch_t* info, sint32 initial_prod_base, int rotate, koord3d pos, spieler_t* spieler)
 {
-	fabrik_t * fab = new fabrik_t(pos, spieler, info);
+	fabrik_t * fab = new fabrik_t(pos, spieler, info, initial_prod_base);
 
 	if(parent) {
 		fab->add_lieferziel(parent->get_2d());
 	}
 
 	// now build factory
-	fab->baue(rotate);
+	fab->baue(rotate, true /*add fields*/, initial_prod_base != -1 /* force initial prodbase ? */);
 	welt->add_fab(fab);
 	add_factory_to_fab_map(welt, fab);
 
@@ -430,7 +419,7 @@ fabrik_t* fabrikbauer_t::baue_fabrik(karte_t* welt, koord3d* parent, const fabri
 		koord dim = besch->get_groesse(rotate);
 
 		koord k;
-		halthandle_t halt = welt->get_spieler(1)->halt_add(pos.get_2d());
+		halthandle_t halt = haltestelle_t::create(welt, pos.get_2d(), welt->get_spieler(1));
 		if(halt.is_bound()) {
 
 			for(k.x=pos.x; k.x<pos.x+dim.x; k.x++) {
@@ -528,7 +517,7 @@ bool fabrikbauer_t::can_factory_tree_rotate( const fabrik_besch_t *besch )
  * Build a full chain of factories
  * Precondition before calling this function: pos is suitable for factory construction
  */
-int fabrikbauer_t::baue_hierarchie(koord3d* parent, const fabrik_besch_t* info, int rotate, koord3d* pos, spieler_t* sp, int number_of_chains )
+int fabrikbauer_t::baue_hierarchie(koord3d* parent, const fabrik_besch_t* info, sint32 initial_prod_base, int rotate, koord3d* pos, spieler_t* sp, int number_of_chains )
 {
 	karte_t* welt = sp->get_welt();
 	int n = 1;
@@ -623,7 +612,7 @@ int fabrikbauer_t::baue_hierarchie(koord3d* parent, const fabrik_besch_t* info, 
 	DBG_MESSAGE("fabrikbauer_t::baue_hierarchie","Construction of %s at (%i,%i).",info->get_name(),pos->x,pos->y);
 	INT_CHECK("fabrikbauer 594");
 
-	const fabrik_t *our_fab=baue_fabrik(welt, parent, info, rotate, *pos, sp);
+	const fabrik_t *our_fab=baue_fabrik(welt, parent, info, initial_prod_base, rotate, *pos, sp);
 
 	INT_CHECK("fabrikbauer 596");
 
@@ -801,7 +790,7 @@ DBG_MESSAGE("fabrikbauer_t::baue_hierarchie","lieferanten %i, lcount %i (need %i
 
 		if(welt->lookup(k)) {
 DBG_MESSAGE("fabrikbauer_t::baue_hierarchie","Try to built lieferant %s at (%i,%i) r=%i for %s.",hersteller->get_name(),k.x,k.y,rotate,info->get_name());
-			n += baue_hierarchie(&parent_pos, hersteller, rotate, &k, sp, 10000 );
+			n += baue_hierarchie(&parent_pos, hersteller, -1 /*random prodbase */, rotate, &k, sp, 10000 );
 			lfound ++;
 
 			INT_CHECK( "fabrikbauer 702" );
@@ -946,22 +935,22 @@ next_ware_check:
 	// ok, nothing to built, thus we must start new
 
 	// first decide, whether a new powerplant is needed or not
-	uint32 total_produktivity = 1;
-	uint32 electric_productivity = 0;
+	uint32 electric_supply = 0;
+	uint32 electric_demand = 1;
 
 	FOR(slist_tpl<fabrik_t*>, const fab, welt->get_fab_list()) {
-		if(fab->get_besch()->is_electricity_producer()) {
-			electric_productivity += fab->get_base_production();
+		if(  fab->get_besch()->is_electricity_producer()  ) {
+			electric_supply += fab->get_scaled_electric_amount() / PRODUCTION_DELTA_T;
 		}
 		else {
-			total_produktivity += fab->get_base_production();
+			electric_demand += fab->get_scaled_electric_amount() / PRODUCTION_DELTA_T;
 		}
 	}
 
 	// now decide producer of electricity or normal ...
-	sint32 promille = (electric_productivity*4000l)/total_produktivity;
+	sint32 promille = (electric_supply*1000l)/electric_demand;
 	int    no_electric = promille > welt->get_settings().get_electric_promille();
-	DBG_MESSAGE( "fabrikbauer_t::increase_industry_density()", "production of electricity/total production is %i/%i (%i o/oo)", electric_productivity, total_produktivity, promille );
+	DBG_MESSAGE( "fabrikbauer_t::increase_industry_density()", "production of electricity/total production is %i/%i (%i o/oo)", electric_supply, electric_demand, promille );
 
 	bool not_yet_too_desperate_to_ignore_climates = false;
 	while(  no_electric<2  ) {
@@ -981,7 +970,7 @@ next_ware_check:
 				}
 				if(welt->lookup(pos)) {
 					// Platz gefunden ...
-					nr += baue_hierarchie(NULL, fab, rotation, &pos, welt->get_spieler(1), 1 );
+					nr += baue_hierarchie(NULL, fab, -1 /*random prodbase */, rotation, &pos, welt->get_spieler(1), 1 );
 					if(nr>0) {
 						fabrik_t *our_fab = fabrik_t::get_fab( welt, pos.get_2d() );
 						reliefkarte_t::get_karte()->calc_map_groesse();

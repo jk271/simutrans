@@ -472,6 +472,14 @@ private:
 	void create_rivers(sint16 number);
 
 	/*
+	 * Will create river in valley.
+	 * @author jk271
+	 * @param spring Place, where spring begins (below the surface)
+	 * @param spring_tile_count How many tiles is spring below surface
+	 */
+
+	void create_river(coord3d_t * detailed_heights, koord spring, int spring_tile_count);
+	/*
 	 * Will create rivers in valleys.
 	 * @author jk271
 	 */

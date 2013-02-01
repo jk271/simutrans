@@ -114,7 +114,8 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
  * @return the new maintenance costs
  * @author Hj. Malthaner
  */
-sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
+sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt)
+{
 	int tmp = 0;
 #if MULTI_THREAD>1
 		pthread_mutex_lock( &laden_abschl_mutex  );
@@ -127,8 +128,8 @@ sint32 spieler_t::add_maintenance(sint32 change, waytype_t const wt) {
 }
 
 
-void spieler_t::add_money_message(const sint64 amount, const koord pos) {
-	if(amount != 0) {
+void spieler_t::add_money_message(const sint64 amount, const koord pos)
+{
 	if(amount != 0  &&  player_nr != 1) {
 		if(  koord_distance(welt->get_world_position(),pos)<2*(uint32)(display_get_width()/get_tile_raster_width())+3  ) {
 			// only display, if near the screen ...
@@ -955,17 +956,20 @@ void spieler_t::book_convoi_number(int count)
 }
 
 
-double spieler_t::get_konto_als_double() const {
+double spieler_t::get_konto_als_double() const
+{
 	return finance->get_account_balance() / 100.0;
 }
 
 
-int spieler_t::get_account_overdrawn() const {
+int spieler_t::get_account_overdrawn() const
+{
 	return finance->get_account_overdrawn();
 }
 
 
-bool spieler_t::has_money_or_assets() const {
+bool spieler_t::has_money_or_assets() const
+{
 	return finance->has_money_or_assets();
 }
 

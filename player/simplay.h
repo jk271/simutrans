@@ -27,7 +27,7 @@ class werkzeug_t;
 class finance_t;
 
 /**
- * play info for simutrans human and AI are derived from this class
+ * Class to hold informations about one player/company. AI players are derived from this class.
  */
 class spieler_t
 {
@@ -79,7 +79,7 @@ protected:
 	uint8 player_nr;
 
 	/**
-	 * Adds somme amount to the maintenance costs
+	 * Adds some amount to the maintenance costs.
 	 * @param change the change
 	 * @return the new maintenance costs
 	 * @author Hj. Malthaner
@@ -105,14 +105,14 @@ protected:
 
 public:
 	/**
-	 * sums up "count" with number of convois in statistics,
-	 * supersedes buche( count, COST_ALL_CONVOIS)
+	 * Sums up "count" with number of convois in statistics,
+	 * supersedes buche( count, COST_ALL_CONVOIS).
 	 * @author jk271
 	 */
 	void book_convoi_number(int count);
 
 	/**
-	 * Adds construction costs to accounting statistics,
+	 * Adds construction costs to accounting statistics.
 	 * @param amount How much does it cost
 	 * @param tt type of transport
 	 * @author jk271
@@ -126,7 +126,7 @@ public:
 	void add_money_message(const sint64 amount, const koord k);
 
 	/**
-	 * Accounts bought/sold vehicles
+	 * Accounts bought/sold vehicles.
 	 * @param price money used for purchase of vehicle,
 	 *              negative value = vehicle bought,
 	 *              negative value = vehicle sold
@@ -149,15 +149,14 @@ public:
 
 	/**
 	 * Adds running costs to accounting statistics.
-	 * this function is called very often --> inline
 	 * @param amount How much does it cost
 	 * @param wt
 	 * @author jk271
 	 */
-        void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
+	void book_running_costs(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
-	 * books toll paid by our company to someone else
+	 * Books toll paid by our company to someone else.
 	 * @param amount money paid to our company
 	 * @param tt type of transport used for assounting statistisc
 	 * @author jk271
@@ -165,7 +164,7 @@ public:
 	void book_toll_paid(const sint64 amount, const waytype_t wt=ignore_wt);
 
 	/**
-	 * books toll paid to out company by someone else
+	 * Books toll paid to our company by someone else.
 	 * @param amount money paid for usage of our roads,railway,channels, ... ; positive sign
 	 * @param tt type of transport used for assounting statistisc
 	 * @author jk271
@@ -173,7 +172,7 @@ public:
 	void book_toll_received(const sint64 amount, waytype_t wt=ignore_wt);
 
 	/**
-	 * Add amount of transported passenger, mail, goods to accounting statistics
+	 * Add amount of transported passenger, mail, goods to accounting statistics.
 	 * @param amount sum of money
 	 * @param wt way type
 	 * @param index 0 = passenger, 1 = mail, 2 = goods
@@ -182,7 +181,7 @@ public:
 	void book_transported(const sint64 amount, const waytype_t wt=ignore_wt, int index=2);
 
 	/**
-	 * Add amount of delivered passenger, mail, goods to accounting statistics
+	 * Add amount of delivered passenger, mail, goods to accounting statistics.
 	 * @param amount sum of money
 	 * @param wt way type
 	 * @param index 0 = passenger, 1 = mail, 2 = goods

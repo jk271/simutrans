@@ -109,7 +109,7 @@ void spieler_t::book_construction_costs(spieler_t * const sp, const sint64 amoun
 
 
 /**
- * Adds somme amount to the maintenance costs
+ * Adds some amount to the maintenance costs.
  * @param change the change
  * @return the new maintenance costs
  * @author Hj. Malthaner

@@ -1,7 +1,7 @@
 /*
  * weg_besch.cc
  *
- * Copyright (c) 1997 - 2012 Hansjörg Malthaner and
+ * Copyright (c) 1997 - 2012 Hj. Malthaner and
  *        the simutrans development team
  *
  * This file is part of the Simutrans project under the artistic license.

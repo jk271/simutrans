@@ -90,44 +90,15 @@ bool ai_t::is_connected( const koord start_pos, const koord dest_pos, const ware
 	// Dario: Check if there's a stop near destination
 	const planquadrat_t* start_plan = welt->lookup(start_pos);
 	const halthandle_t* start_list = start_plan->get_haltlist();
-
-	// Dario: Check if there's a stop near destination
-	const planquadrat_t* dest_plan = welt->lookup(dest_pos);
-	const halthandle_t* dest_list = dest_plan->get_haltlist();
-
-	// suitable end search
-	unsigned dest_count = 0;
-	for (uint16 h = 0; h<dest_plan->get_haltlist_count(); h++) {
-		halthandle_t halt = dest_list[h];
-		if (halt->is_enabled(wtyp)) {
-			for (uint16 hh = 0; hh<start_plan->get_haltlist_count(); hh++) {
-				if (halt == start_list[hh]) {
-					// connected with the start (i.e. too close)
-					return true;
-				}
-			}
-			dest_count ++;
-		}
-	}
-
-	if(dest_count==0) {
-		return false;
-	}
+	const uint16 start_halt_count  = start_plan->get_haltlist_count();
 
 	// now try to find a route
 	// ok, they are not in walking distance
 	ware_t ware(wtyp);
 	ware.set_zielpos(dest_pos);
 	ware.menge = 1;
-	for (uint16 hh = 0; hh<start_plan->get_haltlist_count(); hh++) {
-		if(  haltestelle_t::search_route( start_list+hh, 1u, false, ware ) != haltestelle_t::NO_ROUTE  ) {
-			// ok, already connected
-			return true;
-		}
-	}
 
-	// no connection possible between those
-	return false;
+	return (start_halt_count != 0)  &&  (haltestelle_t::search_route( start_list, start_halt_count, false, ware ) != haltestelle_t::NO_ROUTE);
 }
 
 
@@ -365,8 +336,14 @@ bool ai_t::built_update_headquarter()
 				}
 			}
 			// needs new place?
-			if(place==koord::invalid  &&  !halt_list.empty()) {
-				stadt_t *st = welt->suche_naechste_stadt(halt_list.front()->get_basis_pos());
+			if(place==koord::invalid) {
+				stadt_t *st = NULL;
+				FOR(slist_tpl<halthandle_t>, const halt, haltestelle_t::get_alle_haltestellen()) {
+					if(  halt->get_besitzer()==this  ) {
+						st = welt->suche_naechste_stadt(halt->get_basis_pos());
+						break;
+					}
+				}
 				if(st) {
 					bool is_rotate=besch->get_all_layouts()>1;
 					place = ai_bauplatz_mit_strasse_sucher_t(welt).suche_platz(st->get_pos(), besch->get_b(), besch->get_h(), besch->get_allowed_climate_bits(), &is_rotate);

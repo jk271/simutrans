@@ -76,7 +76,6 @@ spieler_t::spieler_t(karte_t *wl, uint8 nr) :
 	headquarter_pos = koord::invalid;
 	headquarter_level = 0;
 
-	haltcount = 0;
 
 	welt->get_settings().set_default_player_color(this);
 
@@ -449,44 +448,21 @@ void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 }
 
 
+sint32 spieler_t::get_scenario_completion() const
+{
+	return finance_history_month[0][COST_SCENARIO_COMPLETED];
+}
+
+
+void spieler_t::set_scenario_completion(sint32 percent)
+{
+	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = percent;
+}
+
+
 bool spieler_t::check_owner( const spieler_t *owner, const spieler_t *test )
 {
 	return owner == test  ||  owner == NULL  ||  test == welt->get_spieler(1);
-}
-
-
-/**
- * Erzeugt eine neue Haltestelle des Spielers an Position pos
- * @author Hj. Malthaner
- */
-halthandle_t spieler_t::halt_add(koord pos)
-{
-	halthandle_t halt = haltestelle_t::create(welt, pos, this);
-	halt_add(halt);
-	return halt;
-}
-
-
-/**
- * Erzeugt eine neue Haltestelle des Spielers an Position pos
- * @author Hj. Malthaner
- */
-void spieler_t::halt_add(halthandle_t halt)
-{
-	if(!halt_list.is_contained(halt)) {
-		halt_list.append(halt);
-		haltcount ++;
-	}
-}
-
-
-/**
- * Entfernt eine Haltestelle des Spielers aus der Liste
- * @author Hj. Malthaner
- */
-void spieler_t::halt_remove(halthandle_t halt)
-{
-	halt_list.remove(halt);
 }
 
 
@@ -521,6 +497,14 @@ void spieler_t::ai_bankrupt()
 	headquarter_pos = koord::invalid;
 
 	// remove all stops
+	// first generate list of our stops
+	slist_tpl<halthandle_t> halt_list;
+	FOR(slist_tpl<halthandle_t>, const halt, haltestelle_t::get_alle_haltestellen()) {
+		if(  halt->get_besitzer()==this  ) {
+			halt_list.append(halt);
+		}
+	}
+	// ... and destroy them
 	while (!halt_list.empty()) {
 		halthandle_t h = halt_list.remove_first();
 		haltestelle_t::destroy( h );
@@ -671,7 +655,6 @@ void spieler_t::ai_bankrupt()
 void spieler_t::rdwr(loadsave_t *file)
 {
 	xml_tag_t sss( file, "spieler_t" );
-	sint32 halt_count=0;
 
 	if(file->get_version() < PATCH_SAVEGAME_VERSION) {
 		sint64 konto = finance->get_account_balance();
@@ -699,10 +682,15 @@ void spieler_t::rdwr(loadsave_t *file)
 		file->rdwr_byte(kennfarbe1);
 		file->rdwr_byte(kennfarbe2);
 	}
+
+	sint32 halt_count=0;
 	if(file->get_version()<99008) {
 		file->rdwr_long(halt_count);
 	}
-	file->rdwr_long(haltcount);
+	if(file->get_version()<=112002) {
+		sint32 haltcount = 0;
+		file->rdwr_long(haltcount);
+	}
 
 	// save all the financial statistics
 	finance->rdwr( file );
@@ -728,24 +716,12 @@ void spieler_t::rdwr(loadsave_t *file)
 		k.rdwr( file );
 	}
 
-	// Hajo: sanity checks
-	if(halt_count < 0  ||  haltcount < 0) {
-		dbg->fatal("spieler_t::rdwr()", "Halt count is out of bounds: %d -> corrupt savegame?", halt_count|haltcount);
-	}
-
 	if(file->is_loading()) {
 
 		// halt_count will be zero for newer savegames
 DBG_DEBUG("spieler_t::rdwr()","player %i: loading %i halts.",welt->sp2num( this ),halt_count);
 		for(int i=0; i<halt_count; i++) {
-			halthandle_t halt = haltestelle_t::create( welt, file );
-			// it was possible to have stops without ground: do not load them
-			if(halt.is_bound()) {
-				halt_list.insert(halt);
-				if(!halt->existiert_in_welt()) {
-					dbg->warning("spieler_t::rdwr()","empty halt id %i qill be ignored", halt.get_id() );
-				}
-			}
+			haltestelle_t::create( welt, file );
 		}
 		// empty undo buffer
 		init_undo(road_wt,0);

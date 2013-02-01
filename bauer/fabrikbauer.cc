@@ -33,8 +33,9 @@
 
 #include "../gui/karte.h"	// to update map after construction of new industry
 
-// radius for checking places for construction
-#define DISTANCE 40
+
+
+static int DISTANCE = 40;
 
 
 // all factories and their exclusion areas
@@ -46,7 +47,7 @@ static sint32 fab_map_w=0;
 static void add_factory_to_fab_map(karte_t const* const welt, fabrik_t const* const fab)
 {
 	koord3d      const& pos     = fab->get_pos();
-	sint16       const  spacing = welt->get_settings().get_factory_spacing();
+	sint16       const  spacing = welt->get_settings().get_min_factory_spacing();
 	haus_besch_t const& hbesch  = *fab->get_besch()->get_haus();
 	sint16       const  rotate  = fab->get_rotate();
 	sint16       const  start_y = max(0, pos.y - spacing);
@@ -72,6 +73,12 @@ void init_fab_map( karte_t *welt )
 	}
 	FOR(slist_tpl<fabrik_t*>, const f, welt->get_fab_list()) {
 		add_factory_to_fab_map(welt, f);
+	}
+	if(  welt->get_settings().get_max_factory_spacing_percent()  ) {
+		DISTANCE = (welt->get_groesse_max() * welt->get_settings().get_max_factory_spacing_percent()) / 100l;
+	}
+	else {
+		DISTANCE = welt->get_settings().get_max_factory_spacing();
 	}
 }
 
@@ -303,7 +310,7 @@ koord3d fabrikbauer_t::finde_zufallsbauplatz(karte_t *welt, const koord3d pos, c
 		// as offset % size == 1, we are guaranteed that the iteration hits all tiles and does not repeat itself
 		k = koord( pos.x-radius + (index / diam), pos.y-radius + (index % diam));
 
-		if (!welt->ist_in_kartengrenzen(k)) {
+		if (!welt->is_within_limits(k)) {
 			continue;
 		}
 		// to close to existing factory
@@ -402,7 +409,7 @@ fabrik_t* fabrikbauer_t::baue_fabrik(karte_t* welt, koord3d* parent, const fabri
 	}
 
 	// now build factory
-	fab->baue(rotate);
+	fab->baue(rotate, true /*add fields*/, initial_prod_base != -1 /* force initial prodbase ? */);
 	welt->add_fab(fab);
 	add_factory_to_fab_map(welt, fab);
 
@@ -412,12 +419,12 @@ fabrik_t* fabrikbauer_t::baue_fabrik(karte_t* welt, koord3d* parent, const fabri
 		koord dim = besch->get_groesse(rotate);
 
 		koord k;
-		halthandle_t halt = welt->get_spieler(1)->halt_add(pos.get_2d());
+		halthandle_t halt = haltestelle_t::create(welt, pos.get_2d(), welt->get_spieler(1));
 		if(halt.is_bound()) {
 
 			for(k.x=pos.x; k.x<pos.x+dim.x; k.x++) {
 				for(k.y=pos.y; k.y<pos.y+dim.y; k.y++) {
-					if(welt->ist_in_kartengrenzen(k)) {
+					if(welt->is_within_limits(k)) {
 						// add all water to station
 						grund_t *gr = welt->lookup_kartenboden(k);
 						// build only on gb, otherwise can't remove it

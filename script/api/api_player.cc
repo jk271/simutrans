@@ -48,6 +48,14 @@ vector_tpl<sint64> const& get_player_stat(spieler_t *sp, sint32 INDEX, sint32 TT
 	return v;
 }
 
+void_t change_player_account(spieler_t *sp, sint64 delta)
+{
+	if (sp) {
+		sp->buche(delta, COST_INCOME);
+	}
+	return void_t();
+}
+
 
 #define begin_class(c,p) push_class(vm, c);
 #define end_class() sq_pop(vm,1);
@@ -173,6 +181,13 @@ void export_player(HSQUIRRELVM vm)
 	 * @returns array, index [0] corresponds to current month
 	 */
 	register_method_fv(vm, &get_player_stat, "get_way_tolls",         freevariable3<sint32,sint32,bool>(ATV_WAY_TOLL, TT_ALL, true), true);
+
+	/**
+	 * Change bank account of player by given amount @p delta.
+	 * @param delta
+	 * @warning cannot be used in network games.
+	 */
+	register_method(vm, &change_player_account, "book_cash", true);
 
 	end_class();
 }

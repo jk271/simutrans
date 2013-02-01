@@ -32,18 +32,10 @@ class finance_t;
 class spieler_t
 {
 public:
-	enum { MAX_KONTO_VERZUG = 3 };
-
 	enum { EMPTY=0, HUMAN=1, AI_GOODS=2, AI_PASSENGER=3, MAX_AI, PASSWORD_PROTECTED=128 };
 
 protected:
 	char spieler_name_buf[256];
-
-	/*
-	 * holds total number of all halts, ever built
-	 * @author hsiegeln
-	 */
-	sint32 haltcount;
 
 	/* "new" finance history */
 	finance_t *finance;
@@ -57,8 +49,6 @@ protected:
 
 	// when was the company founded
 	uint16 player_age;
-
-	slist_tpl<halthandle_t> halt_list; ///< Liste der Haltestellen
 
 	class income_message_t {
 	public:
@@ -270,6 +260,14 @@ public:
 	}
 
 	/**
+	 * Cached value of scenario completion percentage.
+	 * To get correct values for clients call scenario_t::get_completion instead.
+	 */
+	sint32 get_scenario_completion() const;
+
+	void set_scenario_completion(sint32 percent);
+
+	/**
 	 * @return Kontostand als double (Gleitkomma) Wert
 	 * @author Hj. Malthaner
 	 */
@@ -305,30 +303,6 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	virtual void neues_jahr() {}
-
-	/**
-	 * Erzeugt eine neue Haltestelle des Spielers an Position pos
-	 * @author Hj. Malthaner
-	 */
-	halthandle_t halt_add(koord pos);
-
-	/**
-	 * needed to transfer ownership
-	 * @author prissi
-	 */
-	void halt_add(halthandle_t h);
-
-	/**
-	 * Entfernt eine Haltestelle des Spielers aus der Liste
-	 * @author Hj. Malthaner
-	 */
-	void halt_remove(halthandle_t halt);
-
-	/**
-	 * Gets haltcount, for naming purposes
-	 * @author hsiegeln
-	 */
-	int get_haltcount() const { return haltcount; }
 
 	/**
 	 * Lädt oder speichert Zustand des Spielers

@@ -479,12 +479,12 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	// warning/success messages
 	if(sp->get_player_nr()!=1  &&  sp->get_welt()->get_scenario()->active()) {
 		warn.set_color( COL_BLACK );
-		sint32 percent = sp->get_welt()->get_scenario()->completed( sp->get_player_nr() );
+		sint32 percent = sp->get_welt()->get_scenario()->get_completion(sp->get_player_nr());
 		if (percent >= 0) {
 			sprintf( str_buf[15], translator::translate("Scenario complete: %i%%"), percent );
 		}
 		else {
-			sprintf( str_buf[15], translator::translate("Scenario lost!") );
+			tstrncpy(str_buf[15], translator::translate("Scenario lost!"), lengthof(str_buf[15]) );
 		}
 	}
 	else if(sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)<0) {
@@ -493,7 +493,7 @@ void money_frame_t::zeichnen(koord pos, koord gr)
 	}
 	else if(  sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH)*10 < sp->get_welt()->get_settings().get_starting_money(sp->get_welt()->get_current_month()/12)  ){
 		warn.set_color( MONEY_MINUS );
-		sprintf(str_buf[15], translator::translate("Net wealth near zero"), sp->get_account_overdrawn() );
+		tstrncpy(str_buf[15], translator::translate("Net wealth near zero"), lengthof(str_buf[15]) );
 	}
 	else if(  sp->get_account_overdrawn()  ) {
 		warn.set_color( COL_YELLOW );

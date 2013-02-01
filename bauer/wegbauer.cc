@@ -1594,8 +1594,8 @@ bool wegbauer_t::intern_calc_route_runways(koord3d start3d, const koord3d ziel3d
 	const ribi_t::ribi ribi_gerade = ribi_t::doppelt(ribi);
 
 	// not too close to the border?
-	if(	 !(welt->ist_in_kartengrenzen(start-koord(5,5))  &&  welt->ist_in_kartengrenzen(start+koord(5,5)))  ||
-		 !(welt->ist_in_kartengrenzen(ziel-koord(5,5))  &&  welt->ist_in_kartengrenzen(ziel+koord(5,5)))  ) {
+	if(	 !(welt->is_within_limits(start-koord(5,5))  &&  welt->is_within_limits(start+koord(5,5)))  ||
+		 !(welt->is_within_limits(ziel-koord(5,5))  &&  welt->is_within_limits(ziel+koord(5,5)))  ) {
 		if(sp==welt->get_active_player()) {
 			create_win( new news_img("Zu nah am Kartenrand"), w_time_delete, magic_none);
 			return false;
@@ -2170,7 +2170,7 @@ void wegbauer_t::baue_schiene()
 						(besch->get_styp() == 0 && weg->get_besch()->get_styp() == 7 && gr->has_two_ways())     ||
 						keep_existing_ways                                                                      ||
 						(keep_existing_faster_ways && weg->get_besch()->get_topspeed() > besch->get_topspeed()) ||
-						(gr->get_typ() == grund_t::monorailboden && !(bautyp & elevated_flag))) {
+						(gr->get_typ() == grund_t::monorailboden && !(bautyp & elevated_flag)  &&  gr->get_weg_nr(0)->get_waytype()==besch->get_wtyp())) {
 					//nothing to be done
 					change_besch = false;
 				}

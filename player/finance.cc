@@ -167,8 +167,6 @@ void finance_t::calc_finance_history()
 	com_year [0][ATC_CASH] = account_balance;
 	com_month[0][ATC_NETWEALTH] = veh_month[TT_ALL][0][ATV_NON_FINANCIAL_ASSETS] + account_balance;
 	com_year [0][ATC_NETWEALTH] = veh_year[TT_ALL][0][ATV_NON_FINANCIAL_ASSETS] + account_balance;
-	com_month[0][ATC_SCENARIO_COMPLETED] = com_year[0][ATC_SCENARIO_COMPLETED] = world->get_scenario()->completed(player->get_player_nr());
-
 }
 
 
@@ -317,7 +315,7 @@ void finance_t::roll_history_month()
 		}
 	}
 	for(int i=0; i<ATC_MAX; ++i){
-		if(i != ATC_ALL_CONVOIS){
+		if(i != ATC_ALL_CONVOIS  &&  i != ATC_SCENARIO_COMPLETED){
 			com_month[0][i] = 0;
 		}
 	}
@@ -344,7 +342,7 @@ void finance_t::roll_history_year()
 		}
 	}
 	for(int i=0; i<ATC_MAX; ++i){
-		if(i != ATC_ALL_CONVOIS){
+		if(i != ATC_ALL_CONVOIS  &&  i != ATC_SCENARIO_COMPLETED){
 			com_year[0][i] = 0;
 		}
 	}

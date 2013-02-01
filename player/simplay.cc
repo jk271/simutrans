@@ -450,13 +450,13 @@ void spieler_t::update_assets(sint64 const delta, const waytype_t wt)
 
 sint32 spieler_t::get_scenario_completion() const
 {
-	return finance_history_month[0][COST_SCENARIO_COMPLETED];
+	return finance->get_scenario_completed();
 }
 
 
 void spieler_t::set_scenario_completion(sint32 percent)
 {
-	finance_history_month[0][COST_SCENARIO_COMPLETED] = finance_history_year[0][COST_SCENARIO_COMPLETED] = percent;
+	finance->set_scenario_completed(percent);
 }
 
 

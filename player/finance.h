@@ -389,7 +389,9 @@ public:
 
 	sint64 get_netwealth() const { return com_year[0][ATC_NETWEALTH]; }
 
-	sint64 get_scenario_completed() const { return com_year[0][ATC_SCENARIO_COMPLETED]; }
+	sint64 get_scenario_completed() const { return com_month[0][ATC_SCENARIO_COMPLETED]; }
+
+	void set_scenario_completed(sint64 percent) { com_year[0][ATC_SCENARIO_COMPLETED] = com_month[0][ATC_SCENARIO_COMPLETED] = percent; }
 
 	sint64 get_starting_money() const { return starting_money; }
 

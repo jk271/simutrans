@@ -51,7 +51,7 @@ vector_tpl<sint64> const& get_player_stat(spieler_t *sp, sint32 INDEX, sint32 TT
 void_t change_player_account(spieler_t *sp, sint64 delta)
 {
 	if (sp) {
-		sp->buche(delta, COST_INCOME);
+		sp->get_finance()->book_account(delta);
 	}
 	return void_t();
 }

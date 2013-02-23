@@ -491,7 +491,7 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 
 const char *tunnelbauer_t::remove(karte_t *welt, spieler_t *sp, koord3d start, waytype_t wegtyp)
 {
-	marker_t    marker(welt->get_groesse_x(),welt->get_groesse_y());
+	marker_t    marker(welt->get_size().x, welt->get_size().y);
 	slist_tpl<koord3d>  end_list;
 	slist_tpl<koord3d>  part_list;
 	slist_tpl<koord3d>  tmp_list;
@@ -569,6 +569,13 @@ const char *tunnelbauer_t::remove(karte_t *welt, spieler_t *sp, koord3d start, w
 			if(t) {
 				t->entferne(sp);
 				delete t;
+			}
+			if (leitung_t *lt = gr->get_leitung()) {
+				// remove single powerlines
+				if ( (lt->get_ribi()  & ~ribi_typ(gr->get_grund_hang())) == ribi_t::keine ) {
+					lt->entferne(sp);
+					delete lt;
+				}
 			}
 		}
 		else {

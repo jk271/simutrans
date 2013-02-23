@@ -684,9 +684,9 @@ void nwc_sync_t::do_command(karte_t *welt)
 		bool old_restore_UI = umgebung_t::restore_UI;
 		umgebung_t::restore_UI = true;
 
-		welt->speichern( fn, loadsave_t::autosave_mode, SERVER_SAVEGAME_VER_NR, false );
+		welt->save( fn, loadsave_t::autosave_mode, SERVER_SAVEGAME_VER_NR, false );
 		uint32 old_sync_steps = welt->get_sync_steps();
-		welt->laden( fn );
+		welt->load( fn );
 		umgebung_t::restore_UI = old_restore_UI;
 
 		// pause clients, restore steps
@@ -726,7 +726,7 @@ void nwc_sync_t::do_command(karte_t *welt)
 		sprintf( fn, "server%d-network.sve", umgebung_t::server );
 		bool old_restore_UI = umgebung_t::restore_UI;
 		umgebung_t::restore_UI = true;
-		welt->speichern( fn, loadsave_t::save_mode, SERVER_SAVEGAME_VER_NR, false );
+		welt->save( fn, loadsave_t::save_mode, SERVER_SAVEGAME_VER_NR, false );
 
 		// ok, now sending game
 		// this sends nwc_game_t
@@ -736,7 +736,7 @@ void nwc_sync_t::do_command(karte_t *welt)
 		}
 
 		uint32 old_sync_steps = welt->get_sync_steps();
-		welt->laden( fn );
+		welt->load( fn );
 		umgebung_t::restore_UI = old_restore_UI;
 
 		// restore steps
@@ -845,6 +845,7 @@ void nwc_chg_player_t::rdwr()
 	packet->rdwr_byte(cmd);
 	packet->rdwr_byte(player_nr);
 	packet->rdwr_short(param);
+	packet->rdwr_bool(scripted_call);
 }
 
 
@@ -855,7 +856,13 @@ network_broadcast_world_command_t* nwc_chg_player_t::clone(karte_t *welt)
 	}
 	socket_info_t const& info = socket_list_t::get_client(our_client_id);
 
-	if (!welt->change_player_tool(cmd, player_nr, param, info.is_player_unlocked(1), false)) {
+	// scripts only run on server
+	if (socket_list_t::get_client_id(packet->get_sender()) != 0) {
+		// not sent by server, clear flag
+		scripted_call = false;
+	}
+
+	if (!welt->change_player_tool(cmd, player_nr, param, info.is_player_unlocked(1)  ||  scripted_call, false)) {
 		return NULL;
 	}
 	// now create the new command
@@ -1364,7 +1371,7 @@ bool nwc_service_t::execute(karte_t *welt)
 			break;
 
 		case SRVC_SHUTDOWN: {
-			welt->beenden( true );
+			welt->stop( true );
 			break;
 		}
 

@@ -207,11 +207,11 @@ vehikel_basis_t::vehikel_basis_t(karte_t *welt, koord3d pos):
 void vehikel_basis_t::rotate90()
 {
 	koord3d pos_cur = get_pos();
-	pos_cur.rotate90( welt->get_groesse_y()-1 );
+	pos_cur.rotate90( welt->get_size().y-1 );
 	set_pos( pos_cur );
 	// directions are counterclockwise to ribis!
 	fahrtrichtung = ribi_t::rotate90( fahrtrichtung );
-	pos_next.rotate90( welt->get_groesse_y()-1 );
+	pos_next.rotate90( welt->get_size().y-1 );
 	// new offsets: very tricky ...
 	sint8 new_dx = -dy*2;
 	dy = dx/2;
@@ -255,8 +255,8 @@ void vehikel_basis_t::verlasse_feld()
 		koord k;
 		bool ok = false;
 
-		for(k.y=0; k.y<welt->get_groesse_y(); k.y++) {
-			for(k.x=0; k.x<welt->get_groesse_x(); k.x++) {
+		for(k.y=0; k.y<welt->get_size().y; k.y++) {
+			for(k.x=0; k.x<welt->get_size().x; k.x++) {
 				grund_t *gr = welt->lookup( k )->get_boden_von_obj(this);
 				if(gr && gr->obj_remove(this)) {
 					dbg->warning("vehikel_basis_t::verlasse_feld()","removed vehicle typ %i (%p) from %d %d",get_name(), this, k.x, k.y);
@@ -272,7 +272,7 @@ void vehikel_basis_t::verlasse_feld()
 }
 
 
-void vehikel_basis_t::betrete_feld()
+grund_t* vehikel_basis_t::betrete_feld()
 {
 	grund_t *gr=welt->lookup(get_pos());
 	if(!gr) {
@@ -281,6 +281,7 @@ void vehikel_basis_t::betrete_feld()
 		set_pos( gr->get_pos() );
 	}
 	gr->obj_add(this);
+	return gr;
 }
 
 
@@ -304,6 +305,9 @@ uint32 vehikel_basis_t::fahre_basis(uint32 distance)
 		mark_image_dirty(get_bild(),hoff);
 		set_flag(ding_t::dirty);
 	}
+
+	grund_t *gr = NULL; // if hopped, then this is new position
+
 	uint32 steps_target = steps_to_do + steps;
 
 	if(  steps_target > steps_next  ) {
@@ -320,7 +324,7 @@ uint32 vehikel_basis_t::fahre_basis(uint32 distance)
 			steps_target -= steps_next+1;
 			steps_done += steps_next+1;
 			pos_prev = get_pos();
-			hop();
+			gr = hop();
 			use_calc_height = true;
 			has_hopped = true;
 		}
@@ -373,7 +377,7 @@ uint32 vehikel_basis_t::fahre_basis(uint32 distance)
 	}
 
 	if(use_calc_height) {
-		hoff = calc_height();
+		hoff = calc_height(gr);
 	}
 	// remaining steps
 	return distance_travelled;
@@ -502,12 +506,14 @@ ribi_t::ribi vehikel_basis_t::calc_richtung(koord start, koord ende)
 
 // this routine calculates the new height
 // beware of bridges, tunnels, slopes, ...
-sint8 vehikel_basis_t::calc_height()
+sint8 vehikel_basis_t::calc_height(grund_t *gr)
 {
 	sint8 hoff = 0;
 	use_calc_height = false;	// assume, we are only needed after next hop
 
-	grund_t *gr = welt->lookup(get_pos());
+	if(gr==NULL) {
+		gr = welt->lookup(get_pos());
+	}
 	if(gr==NULL) {
 		// slope changed below a moving thing?!?
 		return 0;
@@ -637,8 +643,8 @@ void vehikel_t::rotate90()
 {
 	vehikel_basis_t::rotate90();
 	alte_fahrtrichtung = ribi_t::rotate90( alte_fahrtrichtung );
-	pos_prev.rotate90( welt->get_groesse_y()-1 );
-	last_stop_pos.rotate90( welt->get_groesse_y()-1 );
+	pos_prev.rotate90( welt->get_size().y-1 );
+	last_stop_pos.rotate90( welt->get_size().y-1 );
 }
 
 
@@ -1084,16 +1090,17 @@ void vehikel_t::verlasse_feld()
 /* this routine add a vehicle to a tile and will insert it in the correct sort order to prevent overlaps
  * @author prissi
  */
-void vehikel_t::betrete_feld()
+grund_t* vehikel_t::betrete_feld()
 {
-	vehikel_basis_t::betrete_feld();
+	grund_t* gr = vehikel_basis_t::betrete_feld();
 	if(ist_erstes  &&  reliefkarte_t::is_visible  ) {
 		reliefkarte_t::get_karte()->calc_map_pixel( get_pos().get_2d() );
 	}
+	return gr;
 }
 
 
-void vehikel_t::hop()
+grund_t* vehikel_t::hop()
 {
 	verlasse_feld();
 
@@ -1126,8 +1133,7 @@ void vehikel_t::hop()
 	}
 	calc_bild();
 
-	betrete_feld();
-	grund_t *gr = welt->lookup(get_pos());
+	grund_t *gr = betrete_feld();
 	const weg_t *weg = gr->get_weg(get_waytype());
 	if(  weg  ) {
 		speed_limit = kmh_to_speed( weg->get_max_speed() );
@@ -1151,6 +1157,7 @@ void vehikel_t::hop()
 	cnv->must_recalc_data();
 
 	calc_akt_speed(gr);
+	return gr;
 }
 
 
@@ -1187,27 +1194,14 @@ void vehikel_t::calc_akt_speed(const grund_t *gr)
 void vehikel_t::rauche() const
 {
 	// raucht ueberhaupt ?
-	if(rauchen  &&  besch->get_rauch()) {
-
-		bool smoke = besch->get_engine_type()==vehikel_besch_t::steam;
-
-		if(!smoke) {
-			// Hajo: only produce smoke when heavily accelerating
-			//       or steam engine
-			sint32 akt_speed = kmh_to_speed(besch->get_geschw());
-			if(akt_speed > speed_limit) {
-				akt_speed = speed_limit;
-			}
-
-			smoke = (cnv->get_akt_speed() < (sint32)((akt_speed*7u)>>3));
-		}
-
-		if(smoke) {
-			grund_t * gr = welt->lookup( get_pos() );
-			if(gr) {
-				wolke_t *abgas =  new wolke_t(welt, get_pos(), get_xoff()+((dx*(sint16)((uint16)steps*OBJECT_OFFSET_STEPS))>>8), get_yoff()+((dy*(sint16)((uint16)steps*OBJECT_OFFSET_STEPS))>>8)+hoff, besch->get_rauch() );
-				if(  !gr->obj_add(abgas)  ) {
-					abgas->set_flag(ding_t::not_on_map);
+	if(  rauchen  &&  besch->get_rauch()  ) {
+		// Hajo: only produce smoke when heavily accelerating or steam engine
+		if(  cnv->get_akt_speed() < (sint32)((cnv->get_speed_limit() * 7u) >> 3)  ||  besch->get_engine_type() == vehikel_besch_t::steam  ) {
+			grund_t* const gr = welt->lookup( get_pos() );
+			if(  gr  ) {
+				wolke_t* const abgas =  new wolke_t( welt, get_pos(), get_xoff() + ((dx * (sint16)((uint16)steps * OBJECT_OFFSET_STEPS)) >> 8), get_yoff() + ((dy * (sint16)((uint16)steps * OBJECT_OFFSET_STEPS)) >> 8) + hoff, besch->get_rauch() );
+				if(  !gr->obj_add( abgas )  ) {
+					abgas->set_flag( ding_t::not_on_map );
 					delete abgas;
 				}
 				else {
@@ -2231,18 +2225,19 @@ bool automobil_t::ist_weg_frei(int &restart_speed, bool second_check)
 }
 
 
-void automobil_t::betrete_feld()
+grund_t* automobil_t::betrete_feld()
 {
-	vehikel_t::betrete_feld();
+	grund_t *gr = vehikel_t::betrete_feld();
 
 	const int cargo = get_fracht_menge();
-	weg_t *str = welt->lookup( get_pos() )->get_weg(road_wt);
+	weg_t *str = gr->get_weg(road_wt);
 	str->book(cargo, WAY_STAT_GOODS);
 	if (ist_erstes)  {
 		str->book(1, WAY_STAT_CONVOIS);
 		cnv->update_tiles_overtaking();
 	}
 	drives_on_left = welt->get_settings().is_drive_left();	// reset driving settings
+	return gr;
 }
 
 
@@ -2684,7 +2679,7 @@ bool waggon_t::is_weg_frei_choose_signal( signal_t *sig, const uint16 start_bloc
 #ifdef MAX_CHOOSE_BLOCK_TILES
 		if(  !target_rt.find_route( welt, cnv->get_route()->position_bei(start_block), this, speed_to_kmh(cnv->get_min_top_speed()), richtung, MAX_CHOOSE_BLOCK_TILES )  ) {
 #else
-		if(  !target_rt.find_route( welt, cnv->get_route()->position_bei(start_block), this, speed_to_kmh(cnv->get_min_top_speed()), richtung, welt->get_groesse_x()+welt->get_groesse_y() )  ) {
+		if(  !target_rt.find_route( welt, cnv->get_route()->position_bei(start_block), this, speed_to_kmh(cnv->get_min_top_speed()), richtung, welt->get_size().x+welt->get_size().y )  ) {
 #endif
 			// nothing empty or not route with less than MAX_CHOOSE_BLOCK_TILES tiles
 			target_halt = halthandle_t();
@@ -3041,11 +3036,11 @@ void waggon_t::verlasse_feld()
 }
 
 
-void waggon_t::betrete_feld()
+grund_t* waggon_t::betrete_feld()
 {
-	vehikel_t::betrete_feld();
+	grund_t *gr = vehikel_t::betrete_feld();
 
-	if(  schiene_t *sch0 = (schiene_t *) welt->lookup(get_pos())->get_weg(get_waytype())  ) {
+	if(  schiene_t *sch0 = (schiene_t *) gr->get_weg(get_waytype())  ) {
 		// way statistics
 		const int cargo = get_fracht_menge();
 		sch0->book(cargo, WAY_STAT_GOODS);
@@ -3054,6 +3049,7 @@ void waggon_t::betrete_feld()
 			sch0->reserve( cnv->self, get_fahrtrichtung() );
 		}
 	}
+	return gr;
 }
 
 
@@ -3838,12 +3834,12 @@ bool aircraft_t::ist_weg_frei( int & restart_speed, bool )
 
 
 // this must also change the internal modes for the calculation
-void aircraft_t::betrete_feld()
+grund_t* aircraft_t::betrete_feld()
 {
-	vehikel_t::betrete_feld();
+	grund_t *gr = vehikel_t::betrete_feld();
 
 	if(  this->is_on_ground()  ) {
-		runway_t *w=(runway_t *)welt->lookup(get_pos())->get_weg(air_wt);
+		runway_t *w=(runway_t *)gr->get_weg(air_wt);
 		if(w) {
 			const int cargo = get_fracht_menge();
 			w->book(cargo, WAY_STAT_GOODS);
@@ -3852,6 +3848,7 @@ void aircraft_t::betrete_feld()
 			}
 		}
 	}
+	return gr;
 }
 
 
@@ -4002,7 +3999,7 @@ uint8 aircraft_t::get_approach_ribi( koord3d start, koord3d ziel )
 #endif
 
 
-void aircraft_t::hop()
+grund_t* aircraft_t::hop()
 {
 	if(  !get_flag(ding_t::dirty)  ) {
 		mark_image_dirty( bild, get_yoff()-flughoehe-hoff-2 );
@@ -4109,10 +4106,11 @@ void aircraft_t::hop()
 	}
 
 	// hop to next tile
-	vehikel_t::hop();
+	grund_t *gr = vehikel_t::hop();
 
 	speed_limit = new_speed_limit;
 	current_friction = new_friction;
+	return gr;
 }
 
 

@@ -801,10 +801,10 @@ const char *wkz_remover_t::work( karte_t *welt, spieler_t *sp, koord3d pos )
 		welt->lookup_kartenboden(pos.get_2d()+koord::nord)->calc_bild();
 	}
 
-	if(pos.x<welt->get_groesse_x()-1) {
+	if(pos.x<welt->get_size().x-1) {
 		welt->lookup_kartenboden(pos.get_2d()+koord::ost)->calc_bild();
 	}
-	if(pos.y<welt->get_groesse_y()-1) {
+	if(pos.y<welt->get_size().y-1) {
 		welt->lookup_kartenboden(pos.get_2d()+koord::sued)->calc_bild();
 	}
 
@@ -2912,7 +2912,7 @@ DBG_MESSAGE("wkz_station_building_aux()", "building mail office/station building
 			for(  sint8 j=3;  j>=0;  j-- ) {
 				bool ok = true;
 				koord offset(((j&1)^1)*(testsize.x-1),((j>>1)&1)*(testsize.y-1));
-				if(welt->ist_platz_frei(pos-offset, testsize.x, testsize.y, NULL, besch->get_allowed_climate_bits())) {
+				if(welt->square_is_free(pos-offset, testsize.x, testsize.y, NULL, besch->get_allowed_climate_bits())) {
 					// first we must check over/under halt
 					halthandle_t last_halt;
 					for(  sint16 x=0;  x<testsize.x;  x++  ) {
@@ -3076,7 +3076,7 @@ DBG_MESSAGE("wkz_station_building_aux()", "building mail office/station building
 		koord testsize = besch->get_groesse(rotation);
 		offsets = koord(0,0);
 
-		if(  !welt->ist_platz_frei(pos, testsize.x, testsize.y, NULL, besch->get_allowed_climate_bits())  ) {
+		if(  !welt->square_is_free(pos, testsize.x, testsize.y, NULL, besch->get_allowed_climate_bits())  ) {
 			return "Tile not empty.";
 		}
 		// check over/under halt
@@ -4408,11 +4408,11 @@ const char *wkz_build_haus_t::work( karte_t *welt, spieler_t *sp, koord3d pos )
 	// process ignore climates switch
 	climate_bits cl = (default_param  &&  default_param[0]=='1') ? ALL_CLIMATES : besch->get_allowed_climate_bits();
 
-	bool hat_platz = welt->ist_platz_frei( pos.get_2d(), besch->get_b(rotation), besch->get_h(rotation), NULL, cl );
+	bool hat_platz = welt->square_is_free( pos.get_2d(), besch->get_b(rotation), besch->get_h(rotation), NULL, cl );
 	if(!hat_platz  &&  size.y!=size.x  &&  besch->get_all_layouts()>1  &&  (default_param==NULL  ||  default_param[1]=='#')) {
 		// try other rotation too ...
 		rotation = (rotation+1) % besch->get_all_layouts();
-		hat_platz = welt->ist_platz_frei( pos.get_2d(), besch->get_b(rotation), besch->get_h(rotation), NULL, cl );
+		hat_platz = welt->square_is_free( pos.get_2d(), besch->get_b(rotation), besch->get_h(rotation), NULL, cl );
 	}
 
 	// Platz gefunden ...
@@ -4500,12 +4500,12 @@ const char *wkz_build_industries_land_t::work( karte_t *welt, spieler_t *sp, koo
 	}
 	else {
 		// and on solid ground
-		hat_platz = welt->ist_platz_frei( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
+		hat_platz = welt->square_is_free( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
 
 		if(!hat_platz  &&  size.y!=size.x  &&  fab->get_haus()->get_all_layouts()>1  &&  (default_param==NULL  ||  default_param[1]=='#')) {
 			// try other rotation too ...
 			rotation = (rotation+1) % fab->get_haus()->get_all_layouts();
-			hat_platz = welt->ist_platz_frei( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
+			hat_platz = welt->square_is_free( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
 		}
 	}
 
@@ -4663,12 +4663,12 @@ const char *wkz_build_factory_t::work( karte_t *welt, spieler_t *sp, koord3d k )
 	}
 	else {
 		// and on solid ground
-		hat_platz = welt->ist_platz_frei( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
+		hat_platz = welt->square_is_free( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
 
 		if(!hat_platz  &&  size.y!=size.x  &&  fab->get_haus()->get_all_layouts()>1  &&  (default_param==NULL  ||  default_param[1]=='#')) {
 			// try other rotation too ...
 			rotation = (rotation+1) % fab->get_haus()->get_all_layouts();
-			hat_platz = welt->ist_platz_frei( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
+			hat_platz = welt->square_is_free( k.get_2d(), fab->get_haus()->get_b(rotation), fab->get_haus()->get_h(rotation), NULL, cl );
 		}
 	}
 
@@ -4862,10 +4862,10 @@ DBG_MESSAGE("wkz_headquarter()", "building headquarter at (%d,%d)", pos.x, pos.y
 		if (!built) {
 			int rotate = 0;
 
-			if(welt->ist_platz_frei(pos.get_2d(), size.x, size.y, NULL, besch->get_allowed_climate_bits())) {
+			if(welt->square_is_free(pos.get_2d(), size.x, size.y, NULL, besch->get_allowed_climate_bits())) {
 				ok = true;
 			}
-			if(!ok  &&  besch->get_all_layouts()>1  &&  size.y != size.x  &&  welt->ist_platz_frei(pos.get_2d(), size.y, size.x, NULL, besch->get_allowed_climate_bits())) {
+			if(!ok  &&  besch->get_all_layouts()>1  &&  size.y != size.x  &&  welt->square_is_free(pos.get_2d(), size.y, size.x, NULL, besch->get_allowed_climate_bits())) {
 				rotate = 1;
 				ok = true;
 			}
@@ -5609,7 +5609,7 @@ bool wkz_rotate90_t::init( karte_t *welt, spieler_t * )
 bool wkz_quit_t::init( karte_t *welt, spieler_t * )
 {
 	destroy_all_win( true );
-	welt->beenden( true );
+	welt->stop( true );
 	return false;
 }
 
@@ -5666,6 +5666,22 @@ bool wkz_zoom_out_t::init( karte_t *welt, spieler_t * )
 }
 
 /************************* internal tools, only need for networking ***************/
+
+static bool scenario_check_schedule(karte_t *welt, spieler_t *sp, schedule_t *schedule, bool local)
+{
+	if (!is_scenario()) {
+		return true;
+	}
+	const char* err = welt->get_scenario()->is_schedule_allowed(sp, schedule);
+	if (err) {
+		if (*err  &&  local) {
+			create_win( new news_img(err), w_time_delete, magic_none);
+		}
+		return false;
+	}
+	return true;
+}
+
 
 /* Handles all action of convois in depots. Needs a default param:
  * [function],[convoi_id],addition stuff
@@ -5745,7 +5761,7 @@ bool wkz_change_convoi_t::init( karte_t *welt, spieler_t *sp )
 			{
 				schedule_t *fpl = cnv->create_schedule()->copy();
 				fpl->eingabe_abschliessen();
-				if (fpl->sscanf_schedule( p )) {
+				if (fpl->sscanf_schedule( p )  &&  scenario_check_schedule(welt, sp, fpl, is_local_execution())) {
 					cnv->set_schedule( fpl );
 				}
 				else {
@@ -5829,7 +5845,7 @@ bool wkz_change_convoi_t::init( karte_t *welt, spieler_t *sp )
  * following simple command exists:
  * 'g' : apply new schedule to line [schedule follows]
  */
-bool wkz_change_line_t::init( karte_t *, spieler_t *sp )
+bool wkz_change_line_t::init( karte_t *welt, spieler_t *sp )
 {
 	uint16 line_id = 0;
 
@@ -5870,6 +5886,8 @@ bool wkz_change_line_t::init( karte_t *, spieler_t *sp )
 				sscanf( p, "%ld", &t );
 				while(  *p  &&  *p++!=','  ) {
 				}
+
+				// no need to check schedule for scenario conditions, as schedule is only copied
 				line->get_schedule()->sscanf_schedule( p );
 				if (is_local_execution()) {
 					fahrplan_gui_t *fg = dynamic_cast<fahrplan_gui_t *>(win_get_magic((ptrdiff_t)t));
@@ -5905,7 +5923,7 @@ bool wkz_change_line_t::init( karte_t *, spieler_t *sp )
 			{
 				if (line.is_bound()) {
 					schedule_t *fpl = line->get_schedule()->copy();
-					if (fpl->sscanf_schedule( p )) {
+					if (fpl->sscanf_schedule( p )  &&  scenario_check_schedule(welt, sp, fpl, is_local_execution()) ) {
 						fpl->eingabe_abschliessen();
 						line->set_schedule( fpl );
 						line->get_besitzer()->simlinemgmt.update_line(line);
@@ -5913,6 +5931,44 @@ bool wkz_change_line_t::init( karte_t *, spieler_t *sp )
 					else {
 						// could not read schedule, do not assign
 						delete fpl;
+					}
+				}
+			}
+			break;
+
+		case 'u':	// unite all lineless convois with similar schedules
+			{
+				array_tpl<vector_tpl<convoihandle_t> > cnvs(welt->convoys().get_count());
+				uint32 max_cnvs=0;
+				FOR(vector_tpl<convoihandle_t>, cnv, welt->convoys()) {
+					// only check lineless convoys
+					if(  !cnv->get_line().is_bound()  ) {
+						bool found = false;
+						// check, if already matches existing convois schedule
+						for(  uint32 i=0;  i<max_cnvs  &&  !found;  i++  ) {
+							FOR(vector_tpl<convoihandle_t>, cnvcomp, cnvs[i] ) {
+								if(  cnvcomp->get_schedule()->matches( welt, cnv->get_schedule() )  ) {
+									found = true;
+									cnvs[i].append( cnv );
+									break;
+								}
+							}
+						}
+						// not added: then may be new line for this?
+						if(  !found  ) {
+							cnvs[max_cnvs++].append( cnv );
+						}
+					}
+				}
+				// now we have an array of one or more lineless convois
+				for(  uint32 i=0;  i<max_cnvs;  i++  ) {
+					// if there is more than one convois => new line
+					if(  cnvs[i].get_count()>1  ) {
+						line = sp->simlinemgmt.create_line( cnvs[i][0]->get_schedule()->get_type(), sp, cnvs[i][0]->get_schedule() );
+						FOR(vector_tpl<convoihandle_t>, cnv, cnvs[i] ) {
+							line->add_convoy( cnv );
+							cnv->set_line( line );
+						}
 					}
 				}
 			}
@@ -5988,6 +6044,7 @@ bool wkz_change_depot_t::init( karte_t *welt, spieler_t *sp )
 	switch(  tool  ) {
 		case 'l': { // create line schedule window
 			linehandle_t selected_line = depot->get_besitzer()->simlinemgmt.create_line(depot->get_line_type(),depot->get_besitzer());
+			// no need to check schedule for scenario conditions, as schedule is only copied
 			selected_line->get_schedule()->sscanf_schedule( p );
 
 			depot_frame_t *depot_frame = dynamic_cast<depot_frame_t *>(win_get_magic( (ptrdiff_t)depot ));

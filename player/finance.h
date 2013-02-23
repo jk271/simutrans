@@ -20,13 +20,11 @@
 /// for compatibility with old versions
 #define OLD_MAX_PLAYER_COST (19)
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_YEARS
-*/
-#define MAX_PLAYER_HISTORY_YEARS  (25) // number of years to keep history
+/// number of years to keep history
+#define MAX_PLAYER_HISTORY_YEARS  (25)
 
-/** this HAS TO be greater or equal than MAX_PLAYER_HISTORY_MONTHS
-*/
-#define MAX_PLAYER_HISTORY_MONTHS  (25) // number of months to keep history
+/// number of months to keep history
+#define MAX_PLAYER_HISTORY_MONTHS (25)
 
 
 /**

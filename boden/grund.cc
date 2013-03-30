@@ -525,12 +525,18 @@ void grund_t::info(cbuffer_t& buf) const
 				buf.append("\n");
 			}
 			obj_bei(0)->info(buf);
+			buf.append("\n");
 			if(flags&has_way2) {
 				buf.append(translator::translate(get_weg_nr(1)->get_name()));
 				buf.append("\n");
 				obj_bei(1)->info(buf);
+				buf.append("\n");
 				if(ist_uebergang()) {
-					find<crossing_t>(2)->get_logic()->info(buf);
+					crossing_t* crossing = find<crossing_t>(2);
+					buf.append(translator::translate(crossing->get_name()));
+					buf.append("\n");
+					crossing->get_logic()->info(buf);
+					buf.append("\n");
 				}
 			}
 		}
@@ -1511,7 +1517,6 @@ DBG_MESSAGE("grund_t::weg_entfernen()","weg %p",weg);
 			// Not all ways (i.e. with styp==7) will imply crossins, so wie hav to check
 			crossing_t* cr = find<crossing_t>(1);
 			if(cr) {
-				dinge.remove(cr);
 				cr->entferne(0);
 				delete cr;
 				// restore speed limit

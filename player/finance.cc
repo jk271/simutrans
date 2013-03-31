@@ -1,9 +1,4 @@
 /*
- * finance.cc
- *
- * Copyright (c) 1997 - 2012 Hj. Malthaner and
- *        the simutrans development team
- *
  * This file is part of the Simutrans project under the artistic license.
  * (see license.txt)
  */
@@ -228,7 +223,7 @@ void finance_t::new_month()
 void finance_t::rdwr(loadsave_t *file)
 {
 	// detailed statistic were introduced in this version
-	if( file->get_version() < PATCH_SAVEGAME_VERSION ) {
+	if( file->get_version() < 112005 ) {
 		rdwr_compatibility(file);
 		return;
 	}
@@ -668,7 +663,7 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 		}
 	}
 
-	if( ( file->get_version() < PATCH_SAVEGAME_VERSION ) && ( ! file->is_loading() ) ) { // for saving of game in old format
+	if( ( file->get_version() < 112005 ) && ( ! file->is_loading() ) ) { // for saving of game in old format
 		export_to_cost_month( finance_history_month );
 		export_to_cost_year( finance_history_year );
 	}
@@ -759,7 +754,7 @@ void finance_t::rdwr_compatibility(loadsave_t *file)
 			}
 		}
 	}
-	else if (  file->get_version() < PATCH_SAVEGAME_VERSION  ) {
+	else if (  file->get_version() < 112005  ) {
 		// savegame version: now with toll
 		for(int year = 0;  year<OLD_MAX_PLAYER_HISTORY_YEARS;  year++  ) {
 			for(  int cost_type = 0;   cost_type<OLD_MAX_PLAYER_COST;   cost_type++  ) {

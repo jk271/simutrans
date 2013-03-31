@@ -1,17 +1,10 @@
 /*
- * finance.h
- *
- * Copyright (c) 1997 - 2012 Hj. Malthaner and
- *        the simutrans development team
- *
  * This file is part of the Simutrans project under the artistic license.
  * (see license.txt)
  */
 
 #ifndef finance_h
 #define finance_h
-
-#define PATCH_SAVEGAME_VERSION (113000)
 
 #include <assert.h>
 

@@ -658,7 +658,7 @@ void spieler_t::rdwr(loadsave_t *file)
 {
 	xml_tag_t sss( file, "spieler_t" );
 
-	if(file->get_version() < PATCH_SAVEGAME_VERSION) {
+	if(file->get_version() < 112005) {
 		sint64 konto = finance->get_account_balance();
 		file->rdwr_longlong(konto);
 		finance->set_account_balance(konto);

@@ -573,7 +573,12 @@ BUILDDIR ?= build/$(CFG)
 PROGDIR  ?= $(BUILDDIR)
 PROG     ?= sim
 
+
 include common.mk
+
+ifeq ($(OSTYPE),mac)
+  include OSX/osx.mk
+endif
 
 
 .PHONY: makeobj

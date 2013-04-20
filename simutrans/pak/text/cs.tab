@@ -2,12 +2,14 @@
 #                                                                              #
 #                Simutrans Scenario Specific Translation File                  #
 #                                Scenario: pak64                               #
-#                             Language: cz Cestina                             #
-#                             Encoding: utf8                                   #
-#                            Font : cyr.bdf                                    #
-#                            Date Created: 1.01 2013                           #
+#                             Language: cz Cestina_utf8                        #
+#                             Encoding: UTF-8                                  #
+#                            Font : prop-latin2.fnt                            #
+#                           Date Created: 20.04 2013                           #
 #                                                                              #
 #                                   authors:                                   #
+#                                    - An_dz                                   #
+#                   note: Verified where all texts are shown                   #
 #                                    - Dwachs                                  #
 #                                    note:                                     #
 #                              Frank Penz - FrankP                             #
@@ -581,7 +583,7 @@ factory_Marketplace_details
 factory_Materialswholesale_details
 title>Velkoobchod s materiálem - detaily</title>\n<h1>Velkoobchod s materiálem</h1> \n<p>Ve zdejším velkoobchodu nakoupíte materiál na stavbu domu. Nic není dokonalé: cihly, písek a vápno zatím nejsou k dostání. </p>
 factory_Nutzwald_details
-<title>Hospodářský les - detaily</title>\n<h1>Hozpodářský les</h1>\n<p>Dřevo je významnou hospodářskou surovinou. Staví se z něj domy, je surovinou pro výrobu papíru, slouží jako topivo.</p>\n<p>V hospodářsky intenzivně využívaných lesích jsou vysazovány především rychle rostoucí stromy. To vede ke vzniku monokultur.</p>\n<p>Nejbližší silná vichřice nás upozorní, jak jsme se mýlili. Na místě lesa je zem pokryta vývratem. A hned je co těžit.</p>
+<title>Hospodářský les - detaily</title>\n<h1>Hospodářský les</h1>\n<p>Dřevo je významnou hospodářskou surovinou. Staví se z něj domy, je surovinou pro výrobu papíru, slouží jako topivo.</p>\n<p>V hospodářsky intenzivně využívaných lesích jsou vysazovány především rychle rostoucí stromy. To vede ke vzniku monokultur.</p>\n<p>Nejbližší silná vichřice nás upozorní, jak jsme se mýlili. Na místě lesa je zem pokryta vývratem. A hned je co těžit.</p>
 factory_Oelbohrinsel_details
 Ropná plošina slouží k těžbě ropy z mořského dna. Může být pevně připevněna ke dnu nebo plovat po hladině.\nPomocí ropných plošin se těží především v mělkých pobřežních vodách pevniského šelfu.
 factory_Oelfeld_details
@@ -715,41 +717,41 @@ Větrná elektrárna
 #_____________________________________good______________________________________
 #_____________________________________good______________________________________
 Autos
-Automobily
+Auta
 beer
-piva
+Pivo
 Bretter
 Prkna
 Buecher
 Knihy
 canned_food
-konzerv
+Konzervy
 Chemicals
 Chemikálie
 Concrete
 Beton
 Eisenerz
-železná ruda
+Železná ruda
 fish
-ryb
+Ryby
 flour
-mouky
+Mouka
 food
-jídla
+Jídlo
 Gasoline
 Benzín
 grain
-obilí
+Obilí
 Holz
 Dřevo
 Kohle
 Uhlí
 meat
-masa
+Maso
 Medicine
 Léky
 milk
-mléka
+Mléko
 Moebel
 Nábytek
 None
@@ -761,7 +763,7 @@ Papír
 Passagiere
 Cestující
 Plastik
-Plast
+Plasty
 Post
 Pošta
 PrintersInk

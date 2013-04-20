@@ -2,12 +2,14 @@
 #                                                                              #
 #                Simutrans Scenario Specific Translation File                  #
 #                               Scenario: pak128                               #
-#                             Language: cz Cestina                             #
-#                                Encoding: utf8                                #
-#                                Font : cyr.bdf                                #
-#                            Date Created: 1.01 2013                           #
+#                             Language: cs Cestina_utf8                        #
+#                             Encoding: UTF-8                                  #
+#                            Font : DejavuSansMono10.bdf                       #
+#                           Date Created: 20.04 2013                           #
 #                                                                              #
 #                                   authors:                                   #
+#                                    - An_dz                                   #
+#                   note: Verified where all texts are shown                   #
 #                                    - Dwachs                                  #
 #                                    note:                                     #
 #                              Frank Penz - FrankP                             #
@@ -18,7 +20,7 @@
 #                                    note:                                     #
 #                                   - hernajs                                  #
 #                                    note:                                     #
-#                              Honza Kobel - jk271                             #
+#                              Honza Korbel - jk271                             #
 #                                    note:                                     #
 #                           Jiri Svoboda - jxsvoboda                           #
 #                                    note:                                     #
@@ -1907,7 +1909,7 @@ Větrná elektrárna
 #_____________________________________good______________________________________
 #_____________________________________good______________________________________
 Autos
-automobily
+auta
 beer
 pivo
 Bretter

@@ -20,7 +20,7 @@
 #                                    note:                                     #
 #                                   - hernajs                                  #
 #                                    note:                                     #
-#                              Honza Kobel - jk271                             #
+#                              Honza Korbel - jk271                            #
 #                                    note:                                     #
 #                           Jiri Svoboda - jxsvoboda                           #
 #                                    note:                                     #
@@ -61,7 +61,7 @@ Nosníkový železniční most
 tb_classic_road
 Betonový most
 ViaductRail
-kamenný most
+Kamenný most
 WoodenRoad
 Dřevěný most
 #___________________________________building____________________________________
@@ -645,7 +645,7 @@ Mlékárna
 Druckerei
 Tiskárna
 Erzbergwerk
-železnorudný důl
+Železnorudný důl
 fish_pond
 Chovný rybník
 fish_swarm
@@ -661,7 +661,7 @@ Mlýn
 grain_windmill
 Větrný mlýn
 Incinerator
-spalovna odpadu
+Spalovna odpadu
 Kohlegrube
 Uhelný důl
 Kohlekraftwerk
@@ -687,7 +687,7 @@ Olejová elektrárna
 Oelpumpe
 Ropný vrt
 old_farm
-stará farma
+Stará farma
 Papierfabrik
 Papírna
 Pharmaceutics
@@ -703,7 +703,7 @@ Stará pila
 Sandquarry
 Písečný lom
 scrap_yard
-sběrný dvůr
+Sběrný dvůr
 Stahlwerk
 Slévárna
 Stonequarry

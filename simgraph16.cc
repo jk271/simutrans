@@ -976,6 +976,16 @@ void mark_rect_dirty_wc(KOORD_VAL x1, KOORD_VAL y1, KOORD_VAL x2, KOORD_VAL y2)
 
 
 /**
+ * Mark the whole screen as dirty.
+ *
+ */
+void mark_screen_dirty()
+{
+	mark_rect_dirty_nc(0, 0, disp_width-1, disp_height - 1);
+}
+
+
+/**
  * the area of this image need update
  * @author Hj. Malthaner
  */
@@ -2250,11 +2260,13 @@ void display_img_aux(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, const sint8 u
 				printf("CImg %i failed!\n", n);
 				return;
 			}
-		} else {
+		}
+		else {
 			if (images[n].recode_flags&FLAG_REZOOM) {
 				rezoom_img(n);
 				recode_normal_img(n);
-			} else if (images[n].recode_flags&FLAG_NORMAL_RECODE) {
+			}
+			else if (images[n].recode_flags&FLAG_NORMAL_RECODE) {
 				recode_normal_img(n);
 			}
 			sp = images[n].data;
@@ -2324,7 +2336,8 @@ void display_img_aux(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, const sint8 u
 						mark_rect_dirty_nc(xp, yp, xp + w - 1, yp + h - 1);
 					}
 					display_img_nc(h, xp, yp, sp);
-				} else if (xp < clip_rect.xx  &&  xp + w > clip_rect.x) {
+				}
+				else if (xp < clip_rect.xx  &&  xp + w > clip_rect.x) {
 					display_img_wc(h, xp, yp, sp);
 					// since height may be reduced, start marking here
 					if (dirty) {
@@ -3339,7 +3352,7 @@ int display_calc_proportional_string_len_width(const char* text, size_t len)
 			if (iUnicode == 0) {
 				return width;
 			}
-			else if(iUnicode>=fnt->num_chars  ||  (w = fnt->screen_width[iUnicode])==0  ) {
+			else if(iUnicode>=fnt->num_chars  ||  (w = fnt->screen_width[iUnicode])>=128  ) {
 				// default width for missing characters
 				w = fnt->screen_width[0];
 			}
@@ -3351,7 +3364,7 @@ int display_calc_proportional_string_len_width(const char* text, size_t len)
 		unsigned int c;
 		while(  *text != 0  &&  len > 0  ) {
 			c = (unsigned char)*text;
-			if(  c>=fnt->num_chars  ||  (char_width=fnt->screen_width[c])==0  ) {
+			if(  c>=fnt->num_chars  ||  (char_width=fnt->screen_width[c])>=128  ) {
 				// default width for missing characters
 				char_width = fnt->screen_width[0];
 			}
@@ -3428,7 +3441,8 @@ int display_text_proportional_len_clip(KOORD_VAL x, KOORD_VAL y, const char* txt
 		cR = clip_rect.xx;
 		cT = clip_rect.y;
 		cB = clip_rect.yy;
-	} else {
+	}
+	else {
 		cL = 0;
 		cR = disp_width;
 		cT = 0;
@@ -3479,14 +3493,15 @@ int display_text_proportional_len_clip(KOORD_VAL x, KOORD_VAL y, const char* txt
 		// decode char
 		if (has_unicode) {
 			c = utf8_to_utf16((utf8 const*)txt + iTextPos, &iTextPos);
-		} else {
+		}
+		else {
 #endif
 			c = (unsigned char)txt[iTextPos++];
 #ifdef UNICODE_SUPPORT
 		}
 #endif
 		// print unknown character?
-		if (c >= fnt->num_chars || fnt->screen_width[c] == 0) {
+		if (c >= fnt->num_chars || fnt->screen_width[c] >= 128) {
 			c = 0;
 		}
 
@@ -3920,44 +3935,6 @@ void draw_bezier(KOORD_VAL Ax, KOORD_VAL Ay, KOORD_VAL Bx, KOORD_VAL By, KOORD_V
 }
 
 
-/**
- * Zeichnet eine Fortschrittsanzeige
- * @author Hj. Malthaner
- */
-static const char *progress_text=NULL;
-
-
-void display_set_progress_text(const char *t)
-{
-	progress_text = t;
-}
-
-
-// draws a progress bar and flushes the display
-void display_progress(int part, int total)
-{
-	const int width=disp_actual_width/2;
-	part = (part*width)/total;
-
-	dr_prepare_flush();
-
-	// outline
-	display_ddd_box(width/2-2, disp_height/2-9, width+4, 20, COL_GREY6, COL_GREY4);
-	display_ddd_box(width/2-1, disp_height/2-8, width+2, 18, COL_GREY4, COL_GREY6);
-
-	// inner
-	display_fillbox_wh(width / 2, disp_height / 2 - 7, width, 16, COL_GREY5, true);
-
-	// progress
-	display_fillbox_wh(width / 2, disp_height / 2 - 5, part,  12, COL_BLUE,  true);
-
-	if(progress_text) {
-		display_proportional(width,disp_height/2-4,progress_text,ALIGN_MIDDLE,COL_WHITE,0);
-	}
-	dr_flush();
-}
-
-
 // ------------------- other support routines that actually interface with the OS -----------------
 
 
@@ -4136,10 +4113,15 @@ void simgraph_init(KOORD_VAL width, KOORD_VAL height, int full_screen)
 		// init, load, and check fonts
 		large_font.screen_width = NULL;
 		large_font.char_data = NULL;
-		display_load_font(FONT_PATH_X "prop.fnt");
+		if(  !display_load_font(FONT_PATH_X "prop.fnt")  ) {
+			puts( "Error: No fonts found!\n" );
+			fprintf(stderr, "Error: No fonts found!");
+			exit(-1);
+		}
 	}
 	else {
-		puts("Error  : can't open window!");
+		puts("Error: can't open window!\n");
+		fprintf(stderr, "Error: can't open window!");
 		exit(-1);
 	}
 

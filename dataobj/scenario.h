@@ -6,11 +6,13 @@
 #include "koord3d.h"
 #include "../utils/plainstring.h"
 #include "../script/dynamic_string.h"
+#include "../dataobj/ribi.h"
 
 class loadsave_t;
 class stadt_t;
 class fabrik_t;
 class karte_t;
+class schedule_t;
 
 /**
  * @class scenario_t
@@ -223,16 +225,19 @@ public:
 	bool is_scripted() const { return what_scenario == SCRIPTED  ||  what_scenario == SCRIPTED_NETWORK; }
 
 	/**
+	 * Get percentage of scenario completion. Does not call script to update this value.
+	 * On clients: call server for update via dynamic_string logic.
+	 *
 	 * @returns percentage of scenario completion:
 	 * if >= 100 then scenario is won
 	 * if < 0 then scenario is lost
 	 */
-	int completed(int player_nr);
+	int get_completion(int player_nr);
 
 	void rotate90(const sint16 y_size);
 
 	/// @{
-	/// @name Coordinate transform between script and world
+	/// @name Coordinate and direction transform between script and world
 	/**
 	 * rotate actual world coordinates back
 	 * coordinates after transform are like in the
@@ -244,6 +249,17 @@ public:
 	 * rotate original coordinates to actual world coordinates
 	 */
 	void koord_sq2w(koord &);
+
+	/**
+	 * rotate original direction to actual world coordinates direction
+	 */
+	void ribi_w2sq(ribi_t::ribi &r) const;
+
+	/**
+	 * rotate actual world coordinates direction to original direction
+	 */
+	void ribi_sq2w(ribi_t::ribi &r) const;
+
 	/// @}
 
 	/**
@@ -279,6 +295,10 @@ public:
 	const char* get_error_text();
 
 
+	/**
+	 * Calls scripted is_scenario_completed. Caches this value in statistics of spieler_t.
+	 * Server sends update of won/lost if necessary.
+	 */
 	void step();
 
 	/// @{
@@ -357,6 +377,12 @@ public:
 	void allow_way_tool_cube(uint8 player_nr, uint16 wkz_id, waytype_t wt, koord3d pos_nw, koord3d pos_se);
 
 	/**
+	 * Clears all rules.
+	 * @ingroup squirrel-api
+	 */
+	void clear_rules();
+
+	/**
 	 * Checks if player can use this tool at all.
 	 * Called for instance in karte_t::local_set_werkzeug to change active tool or when filling toolbars.
 	 * @return true if player can use this tool.
@@ -364,10 +390,21 @@ public:
 	bool is_tool_allowed(spieler_t* sp, uint16 wkz_id, sint16 wt=invalid_wt);
 
 	/**
-	 * Checks if player can use the tool at this position
+	 * Checks if player can use the tool at this position.
 	 * @return NULL if allowed otherwise error message
 	 */
 	const char* is_work_allowed_here(spieler_t* sp, uint16 wkz_id, sint16 wt, koord3d pos);
+
+	/**
+	 * Checks if player can use this schedule.
+	 *
+	 * @param sp player
+	 * @param schedule the schedule
+	 *
+	 * @return null if allowed, an error message otherwise
+	 */
+	const char* is_schedule_allowed(spieler_t* sp, schedule_t* schedule);
+
 
 	/// @return debug dump of forbidden tools
 	const char* get_forbidden_text();

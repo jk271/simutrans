@@ -28,13 +28,15 @@ all_waytypes <- [wt_road, wt_rail, wt_water, wt_monorail, wt_maglev, wt_tram, wt
 // placeholder array for all the map editing tools
 map.editing_tools <- [ tool_add_city, tool_change_city_size, tool_land_chain, tool_city_chain,
                        tool_build_factory, tool_link_factory, tool_lock_game, tool_build_cityroad,
-		       tool_increase_industry, tool_step_year, tool_fill_trees,
+		       tool_increase_industry, tool_step_year, tool_fill_trees, tool_set_traffic_level,
 		       dialog_edit_factory, dialog_edit_attraction, dialog_edit_house, dialog_edit_tree, dialog_enlarge_map]
 
 // forbidden tools
 // default: map editing tools, switch player
-scenario.forbidden_tools <- map.editing_tools
-scenario.forbidden_tools.append( tool_switch_player )
+scenario.forbidden_tools <- [tool_switch_player]
+foreach(tool_id in map.editing_tools) {
+	scenario.forbidden_tools.append(tool_id)
+}
 
 /**
  * Called when filling toolbars, activating tools
@@ -44,7 +46,8 @@ scenario.forbidden_tools.append( tool_switch_player )
  */
 function is_tool_allowed(pl, tool_id, wt)
 {
-	return scenario.forbidden_tools.find( tool_id ) ? false : true
+	if (pl == 1) return true
+	return scenario.forbidden_tools.find( tool_id )==null; // null => not found => allowed
 }
 
 /**
@@ -59,6 +62,13 @@ function is_work_allowed_here(pl, tool_id, pos)
 {
 	return null
 }
+
+
+function is_schedule_allowed(pl, schedule)
+{
+	return null
+}
+
 
 // declare getter functions
 function get_map_file()
@@ -127,7 +137,12 @@ function recursive_save(table, indent, table_stack)
 	foreach(key, val in table) {
 		str += indent
 		if (!isarray) {
-			str += key + " = "
+			if (typeof(key)=="string") {
+				str += key + " = "
+			}
+			else {
+				str += "[" + key + "] = "
+			}
 		}
 		while( typeof(val) == "weakref" )
 			val = val.ref
@@ -155,9 +170,15 @@ function recursive_save(table, indent, table_stack)
 			default:
 				str += "\"unknown\""
 		}
-		str += "\n"
+		if (str.slice(-1) != "\n") {
+			str += ",\n"
+		}
+		else {
+			str = str.slice(0,-1) + ",\n"
+		}
+
 	}
-	str += (isarray ? "]" : "}") + "\n"
+	str += indent.slice(0,-1) + (isarray ? "]" : "}") + "\n"
 	return str
 }
 
@@ -330,6 +351,20 @@ class factory_production_x extends extend_get {
 }
 
 
+/**
+ * class to provide access to the game's list of all factories
+ */
+class factory_list_x {
+
+	/// meta-method to be called in a foreach loop
+	function _nexti(prev_index) {
+	}
+
+	/// meta method to retrieve factory by index in the global C++ array
+	function _get(index) {
+	}
+}
+
 
 /**
  * class that contains data to get access to an in-game player company
@@ -413,7 +448,7 @@ class convoy_x extends extend_get {
 
 
 /**
- * class to provide access to the game's list of all convoys
+ * class to provide access to the game's list of all cities
  */
 class city_list_x {
 
@@ -447,6 +482,76 @@ class city_x extends extend_get {
 class settings {
 }
 
+/**
+ * base class of map objects (ding_t)
+ */
+class map_object_x extends extend_get {
+	/// coordinates
+	x = -1
+	y = -1
+	z = -1
+
+	// do not call this directly
+	constructor(x_, y_, z_) {
+		x = x_
+		y = y_
+		z = z_
+	}
+}
+
+class schedule_x {
+	/// waytype
+	waytype = 0
+	/// the entries
+	entries = null
+
+	constructor(w, e)
+	{
+		waytype = w
+		entries = e
+	}
+}
+
+class schedule_entry_x {
+	/// coordinate
+	x = -1
+	y = -1
+	z = -1
+	/// load percentage
+	load = 0
+	/// waiting
+	wait = 0
+
+	constructor(pos, l, w)
+	{
+		x = pos.x
+		y = pos.y
+		z = pos.z
+		load = l
+		wait = w
+	}
+}
+
+class dir {
+	static none           = 0
+	static north          = 1
+	static east           = 2
+	static northeast      = 3
+	static south          = 4
+	static northsouth     = 5
+	static southeast      = 6
+	static northsoutheast = 7
+	static west           = 8
+	static northwest      = 9
+	static eastwest       = 10
+	static northeastwest  = 11
+	static southwest      = 12
+	static northsouthwest = 13
+	static southeastwest  = 14
+	static all            = 15
+
+	static nsew = [1, 4, 2, 8]
+}
 /**
  * The same metamethod magic as in the class extend_get.
  * Seems to be impossible to achieve for both tables and classes without code duplication.

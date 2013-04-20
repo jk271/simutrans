@@ -38,7 +38,6 @@ ifeq ($(OSTYPE),freebsd)
 endif
 
 ifeq ($(OSTYPE),mac)
-  CFLAGS  += -DUSE_HW
   CCFLAGS += -Os -fast
   LIBS    += -lz -lbz2
 endif
@@ -183,6 +182,7 @@ SOURCES += besch/sound_besch.cc
 SOURCES += besch/tunnel_besch.cc
 SOURCES += besch/vehikel_besch.cc
 SOURCES += besch/ware_besch.cc
+SOURCES += besch/weg_besch.cc
 SOURCES += boden/boden.cc
 SOURCES += boden/brueckenboden.cc
 SOURCES += boden/fundament.cc
@@ -339,6 +339,7 @@ SOURCES += old_blockmanager.cc
 SOURCES += player/ai.cc
 SOURCES += player/ai_goods.cc
 SOURCES += player/ai_passenger.cc
+SOURCES += player/finance.cc
 SOURCES += player/simplay.cc
 SOURCES += script/api_class.cc
 SOURCES += script/api_function.cc
@@ -347,11 +348,15 @@ SOURCES += script/api/api_city.cc
 SOURCES += script/api/api_const.cc
 SOURCES += script/api/api_convoy.cc
 SOURCES += script/api/api_goods_desc.cc
+SOURCES += script/api/api_gui.cc
 SOURCES += script/api/api_factory.cc
 SOURCES += script/api/api_halt.cc
+SOURCES += script/api/api_map_objects.cc
 SOURCES += script/api/api_player.cc
 SOURCES += script/api/api_scenario.cc
+SOURCES += script/api/api_schedule.cc
 SOURCES += script/api/api_settings.cc
+SOURCES += script/api/api_simple.cc
 SOURCES += script/api/api_tiles.cc
 SOURCES += script/api/api_world.cc
 SOURCES += script/api/export_besch.cc
@@ -393,6 +398,7 @@ SOURCES += simintr.cc
 SOURCES += simio.cc
 SOURCES += simline.cc
 SOURCES += simlinemgmt.cc
+SOURCES += simloadingscreen.cc
 SOURCES += simmain.cc
 SOURCES += simmem.cc
 SOURCES += simmenu.cc
@@ -538,7 +544,7 @@ ifeq ($(BACKEND),opengl)
     endif
   endif
   CFLAGS += $(SDL_CFLAGS)
-  LIBS   += $(SDL_LDFLAGS)
+  LIBS   += $(SDL_LDFLAGS) -lglew32
   ifeq ($(OSTYPE),mingw)
     LIBS += -lopengl32
   else
@@ -566,7 +572,12 @@ BUILDDIR ?= build/$(CFG)
 PROGDIR  ?= $(BUILDDIR)
 PROG     ?= sim
 
+
 include common.mk
+
+ifeq ($(OSTYPE),mac)
+  include OSX/osx.mk
+endif
 
 
 .PHONY: makeobj

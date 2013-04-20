@@ -109,8 +109,6 @@ public:
 
 bool simwin_t::operator== (const simwin_t &other) const { return gui == other.gui; }
 
-// true , if windows need to be redraw "dirty" (including title)
-static bool windows_dirty = false;
 
 #define MAX_WIN (64)
 static vector_tpl<simwin_t> wins(MAX_WIN);
@@ -508,9 +506,16 @@ void rdwr_all_win(loadsave_t *file)
 				bool sticky, rollup;
 				file->rdwr_bool( sticky );
 				file->rdwr_bool( rollup );
+				// now load the window
+				uint32 count = wins.get_count();
 				w->rdwr( file );
-				wins.back().sticky = sticky;
-				wins.back().rollup = rollup;
+
+				// restore sticky / rollup status
+				// ensure that the new status is to currently loaded window
+				if (wins.get_count() >= count) {
+					wins.back().sticky = sticky;
+					wins.back().rollup = rollup;
+				}
 			}
 		}
 	}
@@ -690,7 +695,10 @@ static void destroy_framed_win(simwin_t *wins)
 		}
 		delete wins->gui;
 	}
-	windows_dirty = true;
+	// set dirty flag to refill background
+	if(wl) {
+		wl->set_background_dirty();
+	}
 }
 
 
@@ -1033,10 +1041,13 @@ void move_win(int win, event_t *ev)
 	const koord delta = to_pos - from_pos;
 
 	wins[win].pos += delta;
-
 	// need to mark all of old and new positions dirty
 	mark_rect_dirty_wc( from_pos.x, from_pos.y, from_pos.x+from_gr.x, from_pos.y+from_gr.y );
 	mark_rect_dirty_wc( to_pos.x, to_pos.y, to_pos.x+to_gr.x, to_pos.y+to_gr.y );
+	// set dirty flag to refill background
+	if(wl) {
+		wl->set_background_dirty();
+	}
 
 	change_drag_start( delta.x, delta.y );
 }
@@ -1063,6 +1074,10 @@ void resize_win(int win, event_t *ev)
 
 	// since we may be smaller afterwards
 	mark_rect_dirty_wc( from_pos.x, from_pos.y, from_pos.x+from_gr.x, from_pos.y+from_gr.y );
+	// set dirty flag to refill background
+	if(wl) {
+		wl->set_background_dirty();
+	}
 
 	// adjust event mouse koord per snap
 	wev.mx = wev.cx + to_gr.x - from_gr.x;
@@ -1202,7 +1217,7 @@ bool check_pos_win(event_t *ev)
 		if(  IS_LEFTCLICK(ev)  ) {
 			// goto infowin koordinate, if ticker is active
 			koord p = ticker::get_welt_pos();
-			if(wl->ist_in_kartengrenzen(p)) {
+			if(wl->is_within_limits(p)) {
 				wl->change_world_position(koord3d(p,wl->min_hgt(p)));
 			}
 		}
@@ -1362,6 +1377,7 @@ void win_poll_event(event_t* const ev)
 		// main window resized
 		simgraph_resize( ev->mx, ev->my );
 		ticker::redraw_ticker();
+		wl->set_dirty();
 		ev->ev_class = EVENT_NONE;
 	}
 }
@@ -1385,11 +1401,6 @@ void win_display_flush(double konto)
 	main_menu->zeichnen( koord(0,-16), koord(disp_width,menu_height) );
 	inside_event_handling = old_inside_event_handling;
 
-	// redraw all?
-	if(windows_dirty) {
-		mark_rect_dirty_wc( 0, 0, disp_width, disp_height );
-		windows_dirty = false;
-	}
 	display_set_clip_wh( 0, menu_height, disp_width, disp_height-menu_height+1 );
 
 	show_ticker = false;
@@ -1397,7 +1408,9 @@ void win_display_flush(double konto)
 		ticker::zeichnen();
 		if (ticker::empty()) {
 			// set dirty background for removing ticker
-			wl->set_dirty();
+			if(wl) {
+				wl->set_background_dirty();
+			}
 		}
 		else {
 			show_ticker = true;
@@ -1423,11 +1436,17 @@ void win_display_flush(double konto)
 				if(  !tooltip_owner  ||  ((elapsed_time=dr_time()-tooltip_register_time)>umgebung_t::tooltip_delay  &&  elapsed_time<=umgebung_t::tooltip_delay+umgebung_t::tooltip_duration)  ) {
 					const sint16 width = proportional_string_width(tooltip_text)+7;
 					display_ddd_proportional_clip(min(tooltip_xpos,disp_width-width), max(menu_height+7,tooltip_ypos), width, 0, umgebung_t::tooltip_color, umgebung_t::tooltip_textcolor, tooltip_text, true);
+					if(wl) {
+						wl->set_background_dirty();
+					}
 				}
 			}
 			else if(static_tooltip_text!=NULL  &&  *static_tooltip_text) {
 				const sint16 width = proportional_string_width(static_tooltip_text)+7;
 				display_ddd_proportional_clip(min(get_maus_x()+16,disp_width-width), max(menu_height+7,get_maus_y()-16), width, 0, umgebung_t::tooltip_color, umgebung_t::tooltip_textcolor, static_tooltip_text, true);
+				if(wl) {
+					wl->set_background_dirty();
+				}
 			}
 			// Knightly : reset owner and group if no tooltip has been registered
 			if(  !tooltip_text  ) {
@@ -1478,7 +1497,7 @@ void win_display_flush(double konto)
 	// @author prissi - also show date if desired
 	// since seaons 0 is always summer for backward compatibility
 	static char const* const seasons[] = { "q2", "q3", "q4", "q1" };
-	char const* const season = translator::translate(seasons[wl->get_jahreszeit()]);
+	char const* const season = translator::translate(seasons[wl->get_season()]);
 	char const* const month_ = translator::get_month_name(month % 12);
 	switch (umgebung_t::show_month) {
 		case umgebung_t::DATE_FMT_GERMAN_NO_SEASON:
@@ -1532,9 +1551,9 @@ void win_display_flush(double konto)
 	}
 
 	// season color
-	display_color_img( skinverwaltung_t::seasons_icons->get_bild_nr(wl->get_jahreszeit()), 2, disp_height-15, 0, false, true );
+	display_color_img( skinverwaltung_t::seasons_icons->get_bild_nr(wl->get_season()), 2, disp_height-15, 0, false, true );
 	if(  tooltip_check  &&  tooltip_xpos<14  ) {
-		tooltip_text = translator::translate(seasons[wl->get_jahreszeit()]);
+		tooltip_text = translator::translate(seasons[wl->get_season()]);
 		tooltip_check = false;
 	}
 

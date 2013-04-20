@@ -25,6 +25,7 @@
 #include "player/simplay.h"
 #include "simsound.h"
 #include "simintr.h"
+#include "simloadingscreen.h"
 #include "simticker.h"
 #include "simmesg.h"
 #include "simwerkz.h"
@@ -403,6 +404,7 @@ int simu_main(int argc, char** argv)
 			"command line parameters available: \n"
 			" -addons             loads also addons (with -objects)\n"
 			" -async              asynchronic images, only for SDL\n"
+			" -use_hw             hardware double buffering, only for SDL\n"
 			" -debug NUM          enables debuging (1..5)\n"
 			" -freeplay           play with endless money\n"
 			" -fullscreen         starts simutrans in fullscreen mode\n"
@@ -467,6 +469,28 @@ int simu_main(int argc, char** argv)
 	else {
 		strcpy( umgebung_t::program_dir, argv[0] );
 		*(strrchr( umgebung_t::program_dir, path_sep[0] )+1) = 0;
+
+#ifdef __APPLE__
+		// change working directory from binary dir to bundle dir
+		if(  !strcmp((umgebung_t::program_dir + (strlen(umgebung_t::program_dir) - 20 )), ".app/Contents/MacOS/")  ) {
+			umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 20] = 0;
+			while(  umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] != '/'  ) {
+				umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] = 0;
+			}
+		}
+#endif
+
+#ifdef __APPLE__
+		// Detect if the binary is started inside an application bundle
+		// Change working dir to bundle dir if that is the case or the game will search for the files inside the bundle
+		if (!strcmp((umgebung_t::program_dir + (strlen(umgebung_t::program_dir) - 20 )), ".app/Contents/MacOS/"))
+		{
+			umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 20] = 0;
+			while (umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] != '/') {
+				umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] = 0;
+			}
+		}
+#endif
 
 		chdir( umgebung_t::program_dir );
 	}
@@ -701,8 +725,8 @@ int simu_main(int argc, char** argv)
 	}
 
 	int parameter[2];
-	parameter[0] = gimme_arg(argc, argv, "-net",   0)==NULL;
-	parameter[1] = gimme_arg(argc, argv, "-async", 0)==NULL;
+	parameter[0] = gimme_arg( argc, argv, "-async", 0) != NULL;
+	parameter[1] = gimme_arg( argc, argv, "-use_hw", 0) != NULL;
 	if (!dr_os_init(parameter)) {
 		dr_fatal_notify("Failed to initialize backend.\n");
 		return EXIT_FAILURE;
@@ -725,9 +749,11 @@ int simu_main(int argc, char** argv)
 	simgraph_init(disp_width, disp_height, fullscreen);
 	DBG_MESSAGE("simmain", ".. results in disp_width=%d, disp_height=%d", display_get_width(), display_get_height());
 
+	// The loading screen needs to be initialized
+	show_pointer(1);
+
 	// if no object files given, we ask the user
 	if(  umgebung_t::objfilename.empty()  ) {
-		show_pointer(1);
 		ask_objfilename();
 		if(  umgebung_t::quit_simutrans  ) {
 			simgraph_exit();
@@ -750,7 +776,6 @@ int simu_main(int argc, char** argv)
 				return 0;
 			}
 		}
-		show_pointer(0);
 	}
 
 	// now find the pak specific tab file ...
@@ -991,7 +1016,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 
 	karte_t *welt = new karte_t();
 	karte_ansicht_t *view = new karte_ansicht_t(welt);
-	welt->set_ansicht( view );
+	welt->set_view( view );
 
 	// some messages about old vehicle may appear ...
 	welt->get_message()->set_message_flags(0, 0, 0, 0);
@@ -1026,7 +1051,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 	setsimrand(dr_time(), dr_time());
 	clear_random_mode( 7 );	// allow all
 
-	if(  loadgame==""  ||  !welt->laden(loadgame.c_str())  ) {
+	if(  loadgame==""  ||  !welt->load(loadgame.c_str())  ) {
 		// create a default map
 		DBG_MESSAGE("init with default map","(failing will be a pak error!)");
 		// no autosave on initial map during the first six month ...

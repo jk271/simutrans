@@ -62,25 +62,25 @@ void tunnel_t::calc_bild()
 	pthread_mutex_lock( &tunnel_calc_bild_mutex );
 #endif
 	const grund_t *gr = welt->lookup(get_pos());
-	if(gr->ist_karten_boden()) {
+	if(  gr->ist_karten_boden()  ) {
 		hang_t::typ hang = gr->get_grund_hang();
 
 		broad_type = 0;
-		if( besch->has_broad_portals() ) {
+		if(  besch->has_broad_portals()  ) {
 			ribi_t::ribi dir = ribi_t::rotate90( ribi_typ( hang ) );
 			const grund_t *gr_l = welt->lookup(get_pos() + dir);
 			tunnel_t* tunnel_l = gr_l ? gr_l->find<tunnel_t>() : NULL;
-			if( tunnel_l && tunnel_l->get_besch() == besch && gr_l->get_grund_hang() == hang ) {
+			if(  tunnel_l  &&  tunnel_l->get_besch() == besch  &&  gr_l->get_grund_hang() == hang  ) {
 				broad_type += 1;
-				if( !(tunnel_l->get_broad_type() & 2) ) {
+				if(  !(tunnel_l->get_broad_type() & 2)  ) {
 					tunnel_l->calc_bild();
 				}
 			}
 			const grund_t *gr_r = welt->lookup(get_pos() - dir);
 			tunnel_t* tunnel_r = gr_r ? gr_r->find<tunnel_t>() : NULL;
-			if( tunnel_r && tunnel_r->get_besch() == besch && gr_r->get_grund_hang() == hang ) {
+			if(  tunnel_r  &&  tunnel_r->get_besch() == besch  &&  gr_r->get_grund_hang() == hang  ) {
 				broad_type += 2;
-				if( !(tunnel_r->get_broad_type() & 1) ) {
+				if(  !(tunnel_r->get_broad_type() & 1)  ) {
 					tunnel_r->calc_bild();
 				}
 			}
@@ -151,13 +151,13 @@ void tunnel_t::laden_abschliessen()
 		weg_t *weg = gr->get_weg(besch->get_waytype());
 		if(weg) {
 			weg->set_max_speed(besch->get_topspeed());
-			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung());
+			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype());
 		}
 		leitung_t *lt = gr->get_leitung();
 		if(lt) {
-			spieler_t::add_maintenance( sp, -lt->get_besch()->get_wartung());
+			spieler_t::add_maintenance( sp, -lt->get_besch()->get_wartung(), powerline_wt );
 		}
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), powerline_wt );
 	}
 }
 
@@ -165,24 +165,20 @@ void tunnel_t::laden_abschliessen()
 // correct speed and maintenance
 void tunnel_t::entferne( spieler_t *sp2 )
 {
-	if(sp2==NULL) {
-		// only set during destroying of the map
-		return;
-	}
 	spieler_t *sp = get_besitzer();
 	if(sp) {
-		// inside tunnel => do nothing but change maitainance
+		// inside tunnel => do nothing but change maintenance
 		const grund_t *gr = welt->lookup(get_pos());
 		if(gr) {
 			weg_t *weg = gr->get_weg( besch->get_waytype() );
 			if(weg)	{
 				weg->set_max_speed( weg->get_besch()->get_topspeed() );
-				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung());
+				spieler_t::add_maintenance( sp,  weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype());
 			}
-			spieler_t::add_maintenance( sp,  -besch->get_wartung() );
+			spieler_t::add_maintenance( sp,  -besch->get_wartung(), besch->get_finance_waytype() );
 		}
 	}
-	spieler_t::accounting(sp2, -besch->get_preis(), get_pos().get_2d(), COST_CONSTRUCTION );
+	spieler_t::book_construction_costs(sp2, -besch->get_preis(), get_pos().get_2d(), besch->get_finance_waytype() );
 }
 
 

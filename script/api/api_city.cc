@@ -6,6 +6,7 @@
 #include "../api_class.h"
 #include "../api_function.h"
 #include "../../simcity.h"
+#include "../../simmenu.h"
 #include "../../simworld.h"
 #include "../../dataobj/scenario.h"
 
@@ -47,8 +48,19 @@ SQInteger world_get_city_by_index(HSQUIRRELVM vm)
 }
 
 
-#define begin_class(c,p) push_class(vm, c);
-#define end_class() sq_pop(vm,1);
+static void_t set_citygrowth(stadt_t *city, bool allow)
+{
+	static char param[16];
+	sprintf(param,"g%hi,%hi,%hi", city->get_pos().x, city->get_pos().y, allow );
+	karte_t *welt = city->get_welt();
+	werkzeug_t *wkz = werkzeug_t::simple_tool[WKZ_CHANGE_CITY_TOOL];
+	wkz->set_default_param( param );
+	wkz->flags |=  werkzeug_t::WFL_SCRIPT;
+	welt->set_werkzeug( wkz, welt->get_spieler(1) );
+	wkz->flags &= ~werkzeug_t::WFL_SCRIPT;
+	return void_t();
+}
+
 
 void export_city(HSQUIRRELVM vm)
 {
@@ -63,7 +75,7 @@ void export_city(HSQUIRRELVM vm)
 	 * }
 	 * @endcode
 	 */
-	begin_class("city_list_x", 0);
+	begin_class(vm, "city_list_x", 0);
 	/**
 	 * Meta-method to be used in foreach loops. Do not call them directly.
 	 */
@@ -72,12 +84,12 @@ void export_city(HSQUIRRELVM vm)
 	 * Meta-method to be used in foreach loops. Do not call them directly.
 	 */
 	register_function(vm, world_get_city_by_index, "_get",    2, "xi");
-	end_class();
+	end_class(vm);
 
 	/**
 	 * Class to access cities.
 	 */
-	begin_class("city_x", "extend_get,coord");
+	begin_class(vm, "city_x", "extend_get,coord");
 
 	/**
 	 * Constructor.
@@ -214,9 +226,8 @@ void export_city(HSQUIRRELVM vm)
 
 	/**
 	 * Enable or disable city growth.
-	 * @warning cannot be used in network games.
 	 */
-	register_method(vm, &stadt_t::set_citygrowth_yesno, "set_citygrowth_enabled");
+	register_method(vm, &set_citygrowth, "set_citygrowth_enabled", true);
 
 	/**
 	 * Change city name.
@@ -224,5 +235,5 @@ void export_city(HSQUIRRELVM vm)
 	 */
 	register_method(vm, &stadt_t::set_name, "set_name");
 
-	end_class();
+	end_class(vm);
 }

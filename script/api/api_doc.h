@@ -95,7 +95,7 @@
  */
 
 /**
- * @example millionaire.nut
+ * @example millionaire/scenario.nut
  * This example is commented in detail at the page @ref page_script_mill.
  */
 
@@ -105,7 +105,7 @@
  * Let us inspect a sample script file. We will have a look into the pak64 Millionaire scenario.
  * The objective of this scenario is to get rich as fast as possible.
  *
- * @dontinclude millionaire.nut
+ * @dontinclude millionaire/scenario.nut
  * As first the savegame is specified:
  * @skipline map.file
  * Then we provide some meta-information about the ::scenario
@@ -131,7 +131,7 @@
  */
 
 /**
- * @example pharmacy-max.nut
+ * @example pharmacy-max/scenario.nut
  * This example is used to explain translatable texts at the page @ref page_script_pharm.
  */
 
@@ -143,7 +143,7 @@
  *
  * We will learn how to make the translation of the script's output possible.
  *
- * @dontinclude pharmacy-max.nut
+ * @dontinclude pharmacy-max/scenario.nut
  * We do not care about the meta information, and jump right into the @ref get_rule_text method.
  * @skip get_rule_text
  * @until }
@@ -221,5 +221,28 @@
  */
 
 /**
- * @defgroup post-112-1 Functions introduced after 112.1
+ * @page pitfalls Common pitfalls
+ *
+ * @section pitfall_pass_by_reference Tables, arrays, strings, classes, instances etc are passed by reference
+ *
+ * @code
+ * local a = {}  // create an empty table
+ * local b = a   // b refers to the same table as a
+ * a.x <- 1      // b.x is now also 1
+ * b.x <- 2      // a.x is changed to 2
+ * @endcode
+ *
+ *
+ * @section nocalls_in_global_scope Do not call API-functions in global scope in the script
+ *
+ * @code
+ * local start_time = settings.get_start_time() // this call is executed BEFORE the savegame is loaded -> undefined
+ *
+ * local factory_coalmine = null                // we can create the variable ...
+ * function start()
+ * {
+ *        factory_coalmine = factory_x(40, 78)  // ... but we can initialize it safely only in a function
+ * }
+ * @endcode
+ *
  */

@@ -7,6 +7,7 @@
 
 /* Helper routines for AIs */
 
+#include "finance.h"
 #include "ai.h"
 
 #include "../simcity.h"
@@ -89,44 +90,15 @@ bool ai_t::is_connected( const koord start_pos, const koord dest_pos, const ware
 	// Dario: Check if there's a stop near destination
 	const planquadrat_t* start_plan = welt->lookup(start_pos);
 	const halthandle_t* start_list = start_plan->get_haltlist();
-
-	// Dario: Check if there's a stop near destination
-	const planquadrat_t* dest_plan = welt->lookup(dest_pos);
-	const halthandle_t* dest_list = dest_plan->get_haltlist();
-
-	// suitable end search
-	unsigned dest_count = 0;
-	for (uint16 h = 0; h<dest_plan->get_haltlist_count(); h++) {
-		halthandle_t halt = dest_list[h];
-		if (halt->is_enabled(wtyp)) {
-			for (uint16 hh = 0; hh<start_plan->get_haltlist_count(); hh++) {
-				if (halt == start_list[hh]) {
-					// connected with the start (i.e. too close)
-					return true;
-				}
-			}
-			dest_count ++;
-		}
-	}
-
-	if(dest_count==0) {
-		return false;
-	}
+	const uint16 start_halt_count  = start_plan->get_haltlist_count();
 
 	// now try to find a route
 	// ok, they are not in walking distance
 	ware_t ware(wtyp);
 	ware.set_zielpos(dest_pos);
 	ware.menge = 1;
-	for (uint16 hh = 0; hh<start_plan->get_haltlist_count(); hh++) {
-		if(  haltestelle_t::search_route( start_list+hh, 1u, false, ware ) != haltestelle_t::NO_ROUTE  ) {
-			// ok, already connected
-			return true;
-		}
-	}
 
-	// no connection possible between those
-	return false;
+	return (start_halt_count != 0)  &&  (haltestelle_t::search_route( start_list, start_halt_count, false, ware ) != haltestelle_t::NO_ROUTE);
 }
 
 
@@ -220,8 +192,8 @@ bool ai_t::suche_platz(koord &start, koord &size, koord target, koord off)
 	}
 
 	DBG_MESSAGE("ai_t::suche_platz()","at (%i,%i) for size (%i,%i)",xpos,ypos,off.x,off.y);
-	int maxy = min( welt->get_groesse_y(), ypos + off.y + cov );
-	int maxx = min( welt->get_groesse_x(), xpos + off.x + cov );
+	int maxy = min( welt->get_size().y, ypos + off.y + cov );
+	int maxx = min( welt->get_size().x, xpos + off.x + cov );
 	for (int y = max(0,ypos-cov);  y < maxy;  y++) {
 		for (int x = max(0,xpos-cov);  x < maxx;  x++) {
 			platz = koord(x,y);
@@ -346,7 +318,7 @@ bool ai_t::built_update_headquarter()
 	if(besch!=NULL) {
 		// cost is negative!
 		sint64 const cost = welt->get_settings().cst_multiply_headquarter * besch->get_level() * besch->get_b() * besch->get_h();
-		if(  konto+cost > starting_money ) {
+		if(  finance->get_account_balance()+cost > finance->get_starting_money() ) {
 			// and enough money left ...
 			koord place = get_headquarter_pos();
 			if(place!=koord::invalid) {
@@ -449,8 +421,8 @@ bool ai_t::find_harbour(koord &start, koord &size, koord target)
 	int dist=0x7FFFFFFF;
 	koord k;
 	// now find a nice shore next to here
-	for(  k.y=max(1,shore.y-5);  k.y<shore.y+6  &&  k.y<welt->get_groesse_y()-2; k.y++  ) {
-		for(  k.x=max(1,shore.x-5);  k.x<shore.x+6  &&  k.y<welt->get_groesse_x()-2; k.x++  ) {
+	for(  k.y=max(1,shore.y-5);  k.y<shore.y+6  &&  k.y<welt->get_size().y-2; k.y++  ) {
+		for(  k.x=max(1,shore.x-5);  k.x<shore.x+6  &&  k.y<welt->get_size().x-2; k.x++  ) {
 			grund_t *gr = welt->lookup_kartenboden(k);
 			if(gr  &&  gr->get_grund_hang()!=0  &&  hang_t::ist_wegbar(gr->get_grund_hang())  &&  gr->ist_natur()  &&  gr->get_hoehe()==welt->get_grundwasser()  &&  !gr->is_halt()) {
 				koord zv = koord(gr->get_grund_hang());
@@ -517,7 +489,7 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 	bauigel.calc_route(welt->lookup_kartenboden(platz1)->get_pos(),welt->lookup_kartenboden(platz2)->get_pos());
 	INT_CHECK("ai 501");
 
-	if(  bauigel.calc_costs() > finance_history_month[0][COST_NETWEALTH]  ) {
+	if(  bauigel.calc_costs() > finance->get_netwealth()  ) {
 		// too expensive
 		return false;
 	}
@@ -532,7 +504,7 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 
 	// build with terraforming if shorter and enough money is available
 	bool with_tf = (baumaulwurf.get_count() > 2)  &&  (10*baumaulwurf.get_count() < 9*bauigel.get_count()  ||  bauigel.get_count() <= 2);
-	if(  with_tf  &&  baumaulwurf.calc_costs() > finance_history_month[0][COST_NETWEALTH]  ) {
+	if(  with_tf  &&  baumaulwurf.calc_costs() > finance->get_netwealth()  ) {
 		// too expensive
 		with_tf = false;
 	}

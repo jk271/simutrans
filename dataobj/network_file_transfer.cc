@@ -1,12 +1,12 @@
 #include "network_file_transfer.h"
 #include "../simdebug.h"
+#include "../simloadingscreen.h"
 
 #include <string.h>
 #include <errno.h>
 #include "../utils/cbuffer_t.h"
 
 #ifndef NETTOOL
-#include "../simgraph.h"
 #include "../dataobj/translator.h"
 #endif
 #include "../simversion.h"
@@ -22,37 +22,36 @@ char const* network_receive_file(SOCKET const s, char const* const save_as, long
 
 	DBG_MESSAGE("network_receive_file", "File size %li", length );
 
+	if(length>0) {
 #ifndef NETTOOL // no display, no translator available
-	if(is_display_init()  &&  length>0) {
-		display_set_progress_text(translator::translate("Transferring game ..."));
-		display_progress(0, length);
-	}
+		loadingscreen_t ls(translator::translate("Transferring game ..."),length,true,true);
 #endif
 
-	// good place to show a progress bar
-	char rbuf[4096];
-	sint32 length_read = 0;
-	if (FILE* const f = fopen(save_as, "wb")) {
-		while (length_read < length) {
-			int i = recv(s, rbuf, length_read + 4096 < length ? 4096 : length - length_read, 0);
-			if (i > 0) {
-				fwrite(rbuf, 1, i, f);
-				length_read += i;
+		// good place to show a progress bar
+		char rbuf[4096];
+		sint32 length_read = 0;
+		if (FILE* const f = fopen(save_as, "wb")) {
+			while(length_read < length) {
+				int i = recv(s, rbuf, length_read + 4096 < length ? 4096 : length - length_read, 0);
+				if (i > 0) {
+					fwrite(rbuf, 1, i, f);
+					length_read += i;
 #ifndef NETTOOL
-				display_progress(length_read, length);
+					ls.set_progress(length_read);
 #endif
-			}
-			else {
-				if (i < 0) {
-					dbg->warning("network_receive_file", "recv failed with %i", i);
 				}
-				break;
+				else {
+					if (i < 0) {
+						dbg->warning("network_receive_file", "recv failed with %i", i);
+					}
+					break;
+				}
 			}
+			fclose(f);
 		}
-		fclose(f);
-	}
-	if(  length_read<length  ) {
-		return "Not enough bytes transferred";
+		if(  length_read<length  ) {
+			return "Not enough bytes transferred";
+		}
 	}
 	return NULL;
 }
@@ -236,20 +235,20 @@ const char *network_send_file( uint32 client_id, const char *filename )
 	}
 
 	// good place to show a progress bar
-	if(is_display_init()  &&  length>0) {
-		display_set_progress_text(translator::translate("Transferring game ..."));
-		display_progress(0, length);
-	}
+	if(length>0) {
+		loadingscreen_t ls( translator::translate("Transferring game ..."), length, true, true );
 
-	while(  !feof(fp)  ) {
-		int bytes_read = (int)fread( buffer, 1, sizeof(buffer), fp );
-		uint16 dummy;
-		if( !network_send_data(s, buffer, bytes_read, dummy, 250) ) {
-			socket_list_t::remove_client(s);
-			goto error;
+		while(  !feof(fp)  ) {
+			int bytes_read = (int)fread( buffer, 1, sizeof(buffer), fp );
+			uint16 dummy;
+			if( !network_send_data(s, buffer, bytes_read, dummy, 250) ) {
+				socket_list_t::remove_client(s);
+				goto error;
+			}
+			bytes_sent += bytes_read;
+			ls.set_progress( bytes_sent );
 		}
-		bytes_sent += bytes_read;
-		display_progress(bytes_sent, length);
+
 	}
 
 	// ok, new client has savegame

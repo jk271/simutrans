@@ -8,16 +8,13 @@
 #include "../simmem.h"
 #include "../simmenu.h"
 
-#include "../dataobj/tabfile.h"
 #include "../dataobj/loadsave.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/umgebung.h"
 #include "../dataobj/network.h"
 #include "../dataobj/network_cmd_scenario.h"
+#include "../dataobj/fahrplan.h"
 
-#include "../vehicle/simvehikel.h"
-
-#include "../utils/simstring.h"
 #include "../utils/cbuffer_t.h"
 
 // error popup
@@ -29,9 +26,14 @@
 #include "../script/export_objs.h"
 #include "../script/api/api.h"
 
+#include "../tpl/plainstringhashtable_tpl.h"
+
 #include "scenario.h"
 
 #include <stdarg.h>
+
+// cache the scenario text files
+static plainstringhashtable_tpl<plainstring> cached_text_files;
 
 
 scenario_t::scenario_t(karte_t *w) :
@@ -50,6 +52,8 @@ scenario_t::scenario_t(karte_t *w) :
 	won = false;
 	lost = false;
 	rdwr_error = false;
+
+	cached_text_files.clear();
 }
 
 
@@ -59,6 +63,7 @@ scenario_t::~scenario_t()
 		delete script;
 	}
 	clear_ptr_vector(forbidden_tools);
+	cached_text_files.clear();
 }
 
 
@@ -91,7 +96,7 @@ const char* scenario_t::init( const char *scenario_base, const char *scenario_na
 		// savegame location
 		buf.clear();
 		buf.printf("%s%s/%s", scenario_base, scenario_name_, mapfile.c_str());
-		if (!welt->laden( buf )) {
+		if (!welt->load( buf )) {
 			dbg->warning("scenario_t::init", "error loading savegame %s", err, (const char*)buf);
 			return "Could not load scenario map!";
 		}
@@ -104,21 +109,23 @@ const char* scenario_t::init( const char *scenario_base, const char *scenario_na
 
 	// load translations
 	translator::load_files_from_folder( scenario_path.c_str(), "scenario" );
+	cached_text_files.clear();
 
 	what_scenario = SCRIPTED;
 	rotation = 0;
 	// register ourselves
 	welt->set_scenario(this);
+	welt->get_message()->clear();
+
+	// set start time
+	sint32 const time = welt->get_current_month();
+	welt->get_settings().set_starting_year( time / 12);
+	welt->get_settings().set_starting_month( time % 12);
 
 	// now call startup function
 	if ((err = script->call_function("start"))) {
 		dbg->warning("scenario_t::init", "error [%s] calling start", err);
 	}
-
-	sint32 const time = welt->get_current_month();
-	welt->get_settings().set_starting_year( time / 12);
-	welt->get_settings().set_starting_month( time % 12);
-	welt->get_message()->clear();
 
 	return NULL;
 }
@@ -154,9 +161,9 @@ void scenario_t::koord_w2sq(koord &k) const
 {
 	switch( rotation ) {
 		// 0: do nothing
-		case 1: k = koord(k.y, welt->get_groesse_y()-1 - k.x); break;
-		case 2: k = koord(welt->get_groesse_x()-1 - k.x, welt->get_groesse_y()-1 - k.y); break;
-		case 3: k = koord(welt->get_groesse_x()-1 - k.y, k.x); break;
+		case 1: k = koord(k.y, welt->get_size().y-1 - k.x); break;
+		case 2: k = koord(welt->get_size().x-1 - k.x, welt->get_size().y-1 - k.y); break;
+		case 3: k = koord(welt->get_size().x-1 - k.y, k.x); break;
 		default: break;
 	}
 }
@@ -169,6 +176,22 @@ void scenario_t::koord_sq2w(koord &k)
 	koord_w2sq(k);
 	// restore original rotation
 	rotation = 4 - rotation;
+}
+
+
+void scenario_t::ribi_w2sq(ribi_t::ribi &r) const
+{
+	if (rotation) {
+		r = ( ( (r << 4) | r) >> rotation) & 15;
+	}
+}
+
+
+void scenario_t::ribi_sq2w(ribi_t::ribi &r) const
+{
+	if (rotation) {
+		r = ( ( (r << 4) | r) << rotation) >> 4 & 15;
+	}
 }
 
 
@@ -400,6 +423,12 @@ void scenario_t::allow_way_tool_cube(uint8 player_nr, uint16 wkz_id, waytype_t w
 }
 
 
+void scenario_t::clear_rules()
+{
+	clear_ptr_vector(forbidden_tools);
+}
+
+
 bool scenario_t::is_tool_allowed(spieler_t* sp, uint16 wkz_id, sint16 wt)
 {
 	if (what_scenario != SCRIPTED  &&  what_scenario != SCRIPTED_NETWORK) {
@@ -489,6 +518,27 @@ const char* scenario_t::is_work_allowed_here(spieler_t* sp, uint16 wkz_id, sint1
 }
 
 
+const char* scenario_t::is_schedule_allowed(spieler_t* sp, schedule_t* schedule)
+{
+	// sanity checks
+	if (schedule == NULL) {
+		return "";
+	}
+	if (schedule->empty()  ||  umgebung_t::server) {
+		// empty schedule, networkgame: all allowed
+		return NULL;
+	}
+	// call script
+	if (what_scenario == SCRIPTED) {
+		static plainstring msg;
+		const char *err = script->call_function("is_schedule_allowed", msg, (uint8)(sp ? sp->get_player_nr() : PLAYER_UNOWNED), schedule);
+
+		return err == NULL ? msg.c_str() : NULL;
+	}
+	return NULL;
+}
+
+
 const char* scenario_t::get_error_text()
 {
 	if (script) {
@@ -501,6 +551,10 @@ const char* scenario_t::get_error_text()
 void scenario_t::step()
 {
 	if (!script) {
+		// update texts at clients if info window open
+		if (umgebung_t::networkmode  &&  !umgebung_t::server  &&  win_get_magic(magic_scenario_info)) {
+			update_scenario_texts();
+		}
 		return;
 	}
 
@@ -515,6 +569,14 @@ void scenario_t::step()
 		if (sp  &&  (((won | lost) & mask)==0)) {
 			sint32 percentage = 0;
 			script->call_function("is_scenario_completed", percentage, (uint8)(sp ? sp->get_player_nr() : PLAYER_UNOWNED));
+
+			// script might have deleted the player
+			sp = welt->get_spieler(i);
+			if (sp == NULL) {
+				continue;
+			}
+
+			sp->set_scenario_completion(percentage);
 			// won ?
 			if (percentage >= 100) {
 				new_won |= mask;
@@ -580,9 +642,20 @@ void scenario_t::update_scenario_texts()
 
 plainstring scenario_t::load_language_file(const char* filename)
 {
+	if (filename == NULL) {
+		return "(null)";
+	}
 	std::string path = scenario_path.c_str();
 	// try user language
-	FILE* file = fopen((path + translator::get_lang()->iso + "/" + filename).c_str(), "rb");
+	std::string wanted_file = path + translator::get_lang()->iso + "/" + filename;
+
+	const plainstring& cached = cached_text_files.get(wanted_file.c_str());
+	if (cached != NULL) {
+		// file already cached
+		return cached;
+	}
+	// not cached: try to read file
+	FILE* file = fopen(wanted_file.c_str(), "rb");
 	if (file == NULL) {
 		// try English
 		file = fopen((path + "en/" + filename).c_str(), "rb");
@@ -606,6 +679,8 @@ plainstring scenario_t::load_language_file(const char* filename)
 		}
 		fclose(file);
 	}
+	// store text to cache
+	cached_text_files.put(wanted_file.c_str(), text);
 
 	return text;
 }
@@ -661,14 +736,22 @@ void scenario_t::rdwr(loadsave_t *file)
 				script = NULL;
 			}
 			else {
-				// restore paths
-				scenario_path = (umgebung_t::program_dir + umgebung_t::objfilename + "scenario/" + scenario_name.c_str() + "/").c_str();
-
 				// load script
 				cbuffer_t script_filename;
-				script_filename.printf("%s/scenario.nut", scenario_path.c_str());
 
+				// try addon directory first
+				scenario_path = ( std::string("addons/") + umgebung_t::objfilename + "scenario/" + scenario_name.c_str() + "/").c_str();
+				script_filename.printf("%sscenario.nut", scenario_path.c_str());
 				rdwr_error = !load_script(script_filename);
+
+				// failed, try scenario from pakset directory
+				if (rdwr_error) {
+					scenario_path = (umgebung_t::program_dir + umgebung_t::objfilename + "scenario/" + scenario_name.c_str() + "/").c_str();
+					script_filename.clear();
+					script_filename.printf("%sscenario.nut", scenario_path.c_str());
+					rdwr_error = !load_script(script_filename);
+				}
+
 				if (!rdwr_error) {
 					// restore persistent data
 					const char* err = script->eval_string(str);
@@ -727,7 +810,7 @@ void scenario_t::rotate90(const sint16 y_size)
 
 
 // return percentage completed
-int scenario_t::completed(int player_nr)
+int scenario_t::get_completion(int player_nr)
 {
 	if ( what_scenario == 0  ||  player_nr < 0  ||  player_nr >= PLAYER_UNOWNED) {
 		return 0;
@@ -741,17 +824,24 @@ int scenario_t::completed(int player_nr)
 		return -1;
 	}
 
-	// call script to get precise numbers
 	sint32 percentage = 0;
+	spieler_t *sp = welt->get_spieler(player_nr);
 
 	if ( what_scenario == SCRIPTED ) {
-		script->call_function("is_scenario_completed", percentage, pl);
+		// take cached value
+		if (sp) {
+			percentage = sp->get_scenario_completion();
+		}
 	}
 	else if ( what_scenario == SCRIPTED_NETWORK ) {
 		cbuffer_t buf;
 		buf.printf("is_scenario_completed(%d)", pl);
 		const char *ret = dynamic_string::fetch_result((const char*)buf, NULL, NULL);
 		percentage = ret ? atoi(ret) : 0;
+		// cache value
+		if (sp) {
+			sp->set_scenario_completion(percentage);
+		}
 	}
 	return min( 100, percentage);
 }

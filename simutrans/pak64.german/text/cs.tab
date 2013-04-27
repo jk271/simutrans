@@ -1,0 +1,626 @@
+§################################################################################
+#                                                                              #
+#                Simutrans Scenario Specific Translation File                  #
+#                            Scenario: pak64.german                            #
+#                             Language: cz Cestina                             #
+#                             Encoding: UTF-8                                  #
+#                            Font : prop-latin2.fnt                            #
+#                           Date Created: 27.04 2013                           #
+#                                                                              #
+#                                   authors:                                   #
+#                                    - An_dz                                   #
+#                   note: Verified where all texts are shown                   #
+#                                    - Dwachs                                  #
+#                                    note:                                     #
+#                              Frank Penz - FrankP                             #
+#                                    note:                                     #
+#                                    - JOHNY                                   #
+#                                    note:                                     #
+#                        Václav Macůrek - VaclavMacurek                        #
+#                                    note:                                     #
+#                                   - hernajs                                  #
+#                                    note:                                     #
+#                             Honza Korbel - jk271                             #
+#                                    note:                                     #
+#                           Jiri Svoboda - jxsvoboda                           #
+#                                    note:                                     #
+#                              Tomáš Kubeš - napik                             #
+#                                    note:                                     #
+#                          Markus Pristovsek - prissi                          #
+#                                    note:                                     #
+#                            Oliver Mayer - rakishly                           #
+#                                    note:                                     #
+#                         Tomáš Vrbický - vrbicky_tomas                        #
+#                     note: Don´thurry up! Death is faster.                    #
+#                            Vladimír Slávik - vsys                            #
+#                                    note:                                     #
+#                                                                              #
+################################################################################
+#____________________________________bridge_____________________________________
+#____________________________________bridge_____________________________________
+ClassicRail
+Betonový železniční most
+ClassicRoad
+Betonový silniční most
+Hochbahn_Bruecke96
+Most pro úzkokolejku
+Hochbahn_Ramp
+Rampa pro úzkokolejku
+Kanalbruecke
+Most pro lodě
+koka_Bridge_single
+Ocelový železniční most
+ModernRoad
+Moderní silniční most z předpjatého betonu
+PowerBridge
+Most pro dráty vysokého napětí
+railBetonbruecke_modern
+Betonový železniční most
+Schiffhebewerk
+Lodní zdviž
+Stahlbruecke
+Ocelový most
+Stahlbruecke_kurz
+Krátký ocelový most
+Transrapid_Bruecke
+Most pro rychlodráhu
+TransrapidRamp
+Nájezd rychlodráhy
+ViaductRail
+Železniční viadukt
+ViaductRoad
+Kamenný silniční most
+WoodenRoad
+Dřevěný most
+#___________________________________building____________________________________
+#___________________________________building____________________________________
+00_01_CITY
+Radnice
+01_CITY
+Městská radnice
+02_CITY
+Radnice
+03_CITY
+Radnice
+04_CITY
+Radnice
+1930AirDepot
+Hangár (1930)
+1950_AirDepot
+hangár (1950)
+1headquarter
+Sídlo vaší spolenosti (1. úroveň)
+2headquarter
+Sídlo vaší společnosti (2. úroveň)
+AirDepot
+Hangár (1900)
+AirportShed1930
+Letištní poštovní sklad
+Bibliothek
+Knihovna
+BigPostOffice
+Velká pošta
+BigTerminal477
+Velký moderní terminál
+BTor
+Braniborská brána
+Burgruine
+Zřícenina hradu
+BusStop
+Autobusová zastávka
+CarDepot
+Depo pro silniční vozidla
+ChannelEndStop
+Koncové molo na vodním kanále
+ChannelStop
+Molo na vodním kanále
+Control_StationBlg
+Železniční hradlo
+Feuerwache
+Hasičská stanice
+Freibad_1
+Koupaliště
+FreightTrainStop
+Nakládací stanice s betonovou podlahou
+Friedhof
+Hřbitov
+Kindergarten
+Mateřská školka
+Kinosaal
+Biograf
+Kirche_1
+Kostel
+Kirche_2
+Kostel
+Kirche_3
+Kostel
+Kirche_4
+Kostel
+Kirchenruine
+Zřícenina kostela
+kleineBibliothek
+Malá knihovna
+Kloster
+Klášter
+Klosterschule
+Klášterní škola
+LargeShipStop
+Nákladní přístav
+MainTerminal1930
+Hlavní terminál (1930)
+ModernAirTerminal477
+Moderní letištní hala
+Museum
+Muzeum
+Parkhaus
+Parkoviště
+Parkplatz
+Parkoviště
+PlainAirStop
+Stání pro letadlo
+Polizeiwache
+Policejní stanice
+PostOffice
+Pošta
+PostStop
+Schránka na poštu
+PSFreightTrainStop
+Nakldac stanice s dlážděnou podlahou
+SandStationMHz
+Stanice bez perónu
+Schule
+Škola
+ShipDepot
+Loděnice
+ShipStop
+Postavit přístav
+Stadion_1
+Stadion
+Stadion_2
+Stadion
+Sternwarte
+Hvězdárna
+Tennis_Court
+Tenisový kurt\n\n
+Tower1930
+Letištní věž (1930)
+TowerMoistboy
+Letištní věž (by Moistboy)
+TrainDepot
+Železniční depo
+TramDepot
+Vozovna tramvají\n
+Turnhalle
+Tělocvična
+VictorianStation
+Zastávka ve viktoriánském stylu
+Vorplatz
+Místo před zastávkou
+#____________________________________citycar____________________________________
+#____________________________________citycar____________________________________
+Ambulanz
+Sanitka
+Motorrad
+Motorka
+orange_bus
+Oranžový autobus
+Pickup
+Pick-up
+yellow_car
+žluté auto
+#__________________________________dummy_info___________________________________
+#__________________________________dummy_info___________________________________
+#____________________________________factory____________________________________
+#____________________________________factory____________________________________
+Apotheke
+Lékárna
+Autohaus
+Autosalón
+Autohersteller
+Automobilka
+Bauernhof_1
+Selský dvůr
+Bauernhof_2
+Selský dvůr
+Bauernhof_3
+Selský dvůr
+Bauernhof_4
+Selský dvůr
+brewery
+Pivovar
+Buchladen
+Knihkupectví
+ChemicalPlant
+Chemička
+Druckerei
+Tiskárna
+Erzbergwerk
+Železnorudný důl
+Erzbergwerk2
+Železnorudný důl
+Gasthaus_1a
+Hostinec
+Gasthaus_2
+Hostinec
+Getraenkehandel
+Obchod s nápoji
+Heizkraftwerk
+Teplárna s kogenerací elektrické enegie
+Heizwerk
+Teplárna
+Hopfenhof
+Chmelnice
+Kelterei
+Vinařství
+Kelterei_1822
+Vinařství
+kleiner_Bauernhof
+Malá zemědělská usedlost
+Klosterbrauerei
+Klášterní pivovar
+Kohlebergwerk
+Uhelný důl
+Kohlegrube
+Uhelný důl
+Kohlegrube_1822
+Uhelný důl
+Kohlekraftwerk
+Elektrárna
+Markt
+Trh s potravinami
+Moebelfabrik
+Truhlárna
+Moebelhaus
+Obchod s nábytkem
+Muellkraftwerk
+Spalovna odpadu
+Nutzwald
+Les
+Nutzwald_1
+Les
+Nutzwald_2
+Les
+Oelbohrinsel
+Ropná plošina
+Oelfeld
+Ropné pole
+Oelkraftwerk
+Olejová elektrárna
+Papierfabrik
+Papírna
+Pharmawerk
+Továrna na léky
+Raffinerie
+Rafinerie
+Saegewerk
+Pila
+scrap_yard
+Sběrný dvůr
+Stahlwerk
+Slévárna
+TANKE
+Čerpací stanice
+Weingut
+Vinice
+Windkraftwerk
+Větrná elektrárna
+#_____________________________________field_____________________________________
+#_____________________________________field_____________________________________
+wald_01
+les
+#_____________________________________good______________________________________
+#_____________________________________good______________________________________
+Autos
+Auta
+beer
+Pivo
+Bier
+Pivo
+Bretter
+Prkna
+Buecher
+Knihy
+Chemicals
+Chemikálie
+Diesel
+Nafta
+Eisenerz
+Železná ruda
+Gasoline
+Benzín
+Gerste
+Ječmen
+grain
+Obilí
+Holz
+Dřevo
+Hopfen
+Chmel
+Kohle
+Uhlí
+Medicine
+Léky
+Moebel
+Nábytek
+Oel
+Ropa
+Papier
+Papír
+Plastik
+Plasty
+Plastikteile
+Plastové součástky
+PrintersInk
+Tisk. inkoust
+Sand
+Písek
+Stahl
+Ocel
+Stone
+Kámen
+Trauben
+Hrozny
+waste
+Odpadky
+Wein
+Víno v lahvích
+Wine
+Sudové víno
+#__________________________________ground_obj___________________________________
+#__________________________________ground_obj___________________________________
+deco_rock
+balvan
+Hochsitz
+Posed
+Hochsitz_2
+Posed
+Klee_1
+Jetel
+Moor
+rašeliniště
+Pferdekoppel
+Stádo koní
+Reh
+Srna
+Rehe
+Srny
+Rehe_2
+Srny
+Rehe_3
+Srny
+Rehe_5
+srny
+Rodung
+paseka
+Steine_1
+kameny
+Steine_2
+kameny
+Steine_3
+kameny
+Steine_4
+kameny
+Steine_6
+kameny
+Steine_7
+kameny
+Steine_8
+kameny
+Steine_9
+kameny
+#___________________________________menu_text___________________________________
+#___________________________________menu_text___________________________________
+#__________________________________pedestrian___________________________________
+#__________________________________pedestrian___________________________________
+Couple
+Milenci
+Cyclist
+Cyklista
+pedestrian_1
+Chodec 1
+pedestrian_2
+Chodec 2
+pedestrian_3
+Chodec 3
+pedestrian_4
+Chodec 4
+pedestrian_child
+Chodec s dítětem
+pedestrian_dog
+Chodec se psem
+Woman
+žena
+#_________________________________program_text__________________________________
+#_________________________________program_text__________________________________
+CATEGORY_01
+kus. zboží\n
+CATEGORY_02
+sypké zboží\n
+CATEGORY_03
+ropa/benzín
+CATEGORY_04
+mražené zboží\n
+CATEGORY_05
+tkaniny
+CATEGORY_06
+Dřevo
+#___________________________________roadsign____________________________________
+#___________________________________roadsign____________________________________
+choose_point
+Značka vyber příští zastávku
+ChooseSignals
+Návěstidlo volby staniční koleje
+Minimum80
+Minimální rychlost 80 km/h
+NoEntry
+Jednosměrná ulice
+preSignals
+Před-návěstidla
+Privatstrasse
+Soukromá cesta
+Signals
+Návěstidlo traťového bloku
+traffic_light
+Semafory
+#_____________________________________tree______________________________________
+#_____________________________________tree______________________________________
+Ahorn-1
+javor
+Ahorn-2
+javor
+Ahorn-Gruppe
+skupina javorů
+Birke-1
+bříza\n\n
+Kastanie_1
+kaštan
+Kastanie_2
+kaštan
+Kastanie_3
+kaštan
+Kastanie_4
+kaštan
+Kiefer_1
+borovice
+Kiefer_2
+borovice
+Kiefer_3
+borovice
+Kiefer_4
+borovice
+Kiefer_5
+borovice
+Obstbaum_1
+ovocný strom
+Pappel-1
+Topol
+Pappel-2
+topol
+Tanne_1
+jedle
+Tanne_2
+jedle
+Tanne_3
+jedle
+Tanne_4
+jedle
+Tanne_5
+jedle
+Tanne_6
+jedle
+#____________________________________tunnel_____________________________________
+#____________________________________tunnel_____________________________________
+NarrowTunnel_1
+Tunel pro úzkokolejku
+RailTunnel_1
+Železniční tunel
+RailTunnel_2
+Železniční tunel
+RailTunnel_3
+Železniční tunel
+RailTunnel_4
+Železniční tunel
+RoadTunnel_1
+Silniční tunel
+RoadTunnel_2
+Silniční tunel
+RoadTunnel_3
+Silniční tunel
+RoadTunnel_4
+Silniční tunel
+#____________________________________vehicle____________________________________
+#____________________________________vehicle____________________________________
+1Ben140
+Bennhardt BR140
+1Diesellokomotive
+H-Trans BR212
+AdlerPersonenwagen
+Adler - osobní vagón
+Autotransportwagen
+TPI Lopomo vagón na auta
+Bretterwagen
+VT-V nákladní vagón na prkna
+Buchwagen
+VT-V nákl. vagón na kusové zboží
+Cargosprinter-Front
+CargoSprinter - přední vůz
+Cargosprinter-Mittel
+CargoSprinter - vagón
+Cargosprinter-Steuer
+CargoSprinter - zadní vůz
+DC-3
+Dacota DC-3
+Doubledeck_city_bus
+Dvoupatrový městský autobus
+EinheitsTender
+tendr
+Erzwagen
+H-Trans nákl. vagón na sypké zboží
+FastFerry
+O.Bang Fast Ferry vznášedlo
+Heavy_ore_truck
+Těžký sklápěč
+Holzwagen
+H-Trans nákladní vagón na dřevo
+Horsepassengerscariage
+Kor
+Horsewoodcariage
+Vozík na dřevo
+Lowa_Anhaenger
+Tramvaj Lowa (vlek)
+Oelwagen
+VT Vienna cisterna na ropu/benzín
+Oilbarge
+Nákladní člun na ropu
+OldOil
+Cisterna na ropu/benzín (18m2)
+Sandanhaenger
+WF Ultd. přívěs na sypké zboží
+Sandtransporter
+WF Ultd. nákl. auto na sypké zboží
+SlowFerry
+H-Trans osobní trajekt
+Stahlwagen
+VT Vienna nákladní vagón na ocel
+Tatra-T4_Wagon
+Tatra T4 (vlek)
+Tugboat
+remorkér
+Zeppelin
+Hindenburg
+#______________________________________way______________________________________
+#______________________________________way______________________________________
+asphalt_road
+Asfaltová silnice
+city_road
+Městská silnice
+cobblestone_road
+Dlážděná silnice
+dirt_road
+Blátivá cesta
+gavel_road
+štěrková silnice
+Kanal
+Průplav
+mip_cobblestone_road
+Dláděná silnice 2
+Powerline
+Elektrické vedení\n
+Rillenschienen
+Tramvajová trať\n
+runway_grass
+Travnatá ranvej
+runway_modern
+Moderní ranvej
+taxiway
+Pojížděcí dráha
+#__________________________________way-object___________________________________
+#__________________________________way-object___________________________________
+HighSpeedOverheadpower
+Vysokorychlostní trolej
+HighSpeedOverheadpower_v
+Trolej pro vysoké rychlosti
+OldOverheadpower
+Stará trolej pro nízké rychlosti
+SlowOverheadpower
+Trolej pro nízké rychlosti

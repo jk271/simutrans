@@ -1,0 +1,284 @@
+§################################################################################
+#                                                                              #
+#                Simutrans Scenario Specific Translation File                  #
+#                              Scenario: pak128.cz                             #
+#                             Language: cz Cestina                             #
+#                             Encoding: ISO-8859-2                             #
+#                            Font : prop-latin2.fnt                            #
+#                            Date Created: 1.05 2013                           #
+#                                                                              #
+#                                   authors:                                   #
+#                                    - An_dz                                   #
+#                   note: Verified where all texts are shown                   #
+#                                    - Dwachs                                  #
+#                                    note:                                     #
+#                              Frank Penz - FrankP                             #
+#                                    note:                                     #
+#                                    - JOHNY                                   #
+#                                    note:                                     #
+#                        Václav Macůrek - VaclavMacurek                        #
+#                                    note:                                     #
+#                                   - hernajs                                  #
+#                                    note:                                     #
+#                              Honza Korbel - jk271                            #
+#                                    note:                                     #
+#                           Jiri Svoboda - jxsvoboda                           #
+#                                    note:                                     #
+#                              Tomáš Kubeš - napik                             #
+#                                    note:                                     #
+#                          Markus Pristovsek - prissi                          #
+#                                    note:                                     #
+#                            Oliver Mayer - rakishly                           #
+#                                    note:                                     #
+#                         Tomáš Vrbický - vrbicky_tomas                        #
+#                     note: Don´thurry up! Death is faster.                    #
+#                            Vladimír Slávik - vsys                            #
+#                                    note:                                     #
+#                                                                              #
+################################################################################
+#___________________________________building____________________________________
+#___________________________________building____________________________________
+rotunda_Znojmo128
+Rotunda
+#_____________________________________good______________________________________
+#_____________________________________good______________________________________
+Autos
+Auta
+beer
+Pivo
+Bretter
+Prkna
+Bucher
+Knihy
+canned_food
+Konzervy
+Chemicals
+Chemikálie
+Concrete
+Beton
+corn
+Kukuřice
+cotton
+Bavlna
+Eisenerz
+Železná ruda
+electronics
+Elektronika
+Ethanol
+Etanol
+fertilizer
+Hnojivo
+fish
+Ryby
+flour
+Mouka
+food
+Jídlo
+Gasoline
+Benzín
+glass
+Sklo
+goods_
+Zboží
+grain
+Obilí
+Holz
+Dřevo
+Kohle
+Uhlí
+meat
+Maso
+milk
+Mléko
+Moebel
+Nábytek
+Oel
+Ropa
+Papier
+Papír
+Passagiere
+Cestující
+Plastik
+Plasty
+Post
+Pošta
+Sand
+Písek
+Stahl
+Ocel\n
+Stone
+Kámen
+textile
+Textil
+waste
+Odpadky
+wool
+Vlna
+#____________________________________vehicle____________________________________
+#____________________________________vehicle____________________________________
+autobusovy_naves
+Autobusový návěs Karosa NO 80
+CD_AB_balkan
+CD AB349 balkan (1. a 2. trida)
+Ikarus_260_BKV
+Autobus Ikarus 206 BKV
+ikarus_e91
+Městský autobus Ikarus E91
+Irisbus_Citelis_12_M
+Městský autobus Karosa/Irisbus Citelis 12M
+Irisbus_Citelis_18_M
+Městský autobus Karosa/Irisbus Citelis 18M
+Irisbus_Citelis_18_M_zadek
+Karosa/Irisbus 18M zadní část
+irisbus_citybus_18m
+Městský autobus Irisbus Citybus 18M
+irisbus_citybus_18m_b
+Městský autobus Irisbus Citybus 18M (zadní část)
+irisbus_crossway_le_12,8
+Autobus Irisbus Crossway 12,8
+irisbus_crossway_le_12,8_b
+úložný prostor Irisbus Crossway 12,8
+Jelcz_043_cabrio
+Vyhlídkový autobus Jelcz 043 Cabrio
+Jelcz_P_01
+Autobusový vlek Jelcz P 01
+Karosa_B_731
+Městský autobus Karosa B 731
+Karosa_B_741_
+Městský autobus Karosa B 741
+Karosa_B_741__zadek
+Karosa B 741 zadní část
+Karosa_B_931
+Městský autobus Karosa B 931
+Karosa_B_941
+Městský autobus Karosa B 941
+Karosa_B_941_zadek
+Karosa B 941 zadní část
+Karosa_B961[1]
+Kloubový městský autobus Karosa B 961
+Karosa_B961[2]
+Karosa B 961 (zadní část)
+Karosa_C_734
+Linkový autobus Karosa C 734
+Karosa_C_744
+Linkový autobus Karosa C 744
+Karosa_C_744_zadek
+Karosa C 744 zadní část
+Karosa_C_934
+Linkový autobus Karosa C 934
+Karosa_C_943
+Linkový autobus Karosa C 943
+Karosa_C_943_zadek
+Karosa C 943 zadní část
+Karosa_Citybus_12_M
+Městský autobus Karosa Citybus 12M
+Karosa_Citybus_18_M
+Městský autobus Karosa Citybus 18M
+Karosa_Citybus_18_M_zadek
+Karosa Citybus 18M zadní část
+Karosa_Crossway_10,6
+Linkový autobus Karosa/Iveco Crossway 10,6
+Karosa_Crossway_12,8
+Linkový autobus Karosa/Iveco Crossway 12,6
+Karosa_LC_735
+Dálkový autobus Karosa LC 735
+Karosa_SD_11
+Dálkový autobus Karosa/Skoda SD 11
+Karosa_SL_11
+Linkový autobus Karosa/Škoda SL 11
+Karosa_SM_11
+Městský autobus Karosa/Škoda SM 11
+Laurin_a_Klement_model_545_(autobus)
+Městský autobus Laurin a Klement model 545
+obb_setra_s431dt
+Meziměstský autobus Setra S 431 DT
+Praga_NO
+Městský autobus Praga NO
+Praga_TN
+Městský autobus Praga TN
+Praga_TO
+Městský autobus Praga TO
+Praga_TO_II
+Městský autoubus Praga TO (modernizovaný)
+Praga_VT6
+Městský autobus Praga VT6
+skoda_21_ab
+Městský autobus Škoda 21AB
+skoda_706_RO_linkovy
+Linkový autobus Škoda 706 RO
+skoda_706_RO_mestsky
+Městský autobus Škoda 706 RO
+skoda_706_RTO
+Linkový autobus Škoda 706 RTO
+skoda_706_RTO_LUX
+Dálkový autobus Škoda 706 RTO
+skoda_706_RTO_MEZ
+Městský autobus Škoda 706 RTO
+Skoda_model_505_(autobus)
+Městský autobus Škoda model 505
+Skoda_model_506N_(autobus-polotrambus)
+Městský autobus Skoda 506N polotrambusova karoserie
+Skoda_model_506N_(autobus-trambus)
+Městsky autobus Škoda 506N trambusova karoserie
+Skoda_model_506N_(autobus)
+Městský autobus Škoda 506N
+Skoda_model_656_(autobus)
+Městský autobus Škoda model 656
+Skoda_model_656D_(autobus)
+Městský autobus Škoda model 656D
+Skoda_model_656D_II_(autobus)
+Městský autobus Skoda 656D (modernizovaný)
+Skrin_na_lyze
+Autobusová skříň na lyže
+Solaris_Urbino_10
+Městský autobus Solaris Urbino 10M
+Solaris_Urbino_12
+Městský autobus Solaris Urbino 12M
+Solaris_Urbino_15
+Městský autobus Solaris Urbino 15M
+Solaris_Urbino_18
+Městský autobus Solaris Urbino 18M
+Solaris_Urbino_18_zadek
+Solaris Urbino 18M zadni cast
+SOR_B_7.5
+Autobus Sor B 7,5
+SOR_B_9.5
+Autobus Sor B 9,5
+SOR_B_9.5_PMDP
+Autobus Sor B 9,5 (PMDP)
+SOR_BN_10.5
+Autobus Sor BN 10,5
+SOR_BN_12
+Autobus Sor BN 12
+SOR_BN_8.5
+Autobus Sor BN 8,5
+SOR_BN_9.5
+Autobus Sor BN 9,5
+SOR_C_10.5
+Autobus Sor C 10,5
+SOR_C_12
+Autobus Sor C 12
+SOR_C_7.5
+Autobus Sor C 7,5
+SOR_C_9.5
+Autobus Sor C 9,5
+SOR_CN_10.5
+Autobus Sor CN 10,5
+SOR_CN_12
+Autobus Sor CN 12
+SOR_CN_13.5
+Autobus Sor CN 13,5
+SOR_CN_8.5
+Autobus Sor CN 8,5
+SOR_CN_9.5
+Autobus Sor CN 9,5
+sor_ebn_10,5
+Autobus Sor EBN 10,5 (elektrický autobus)
+SOR_NB_12
+Mestsky autobus Sor NB 12
+sor_nb_12_city
+Autobus Sor NB 12 City
+TATRA_500_HB
+Horský bus Tatra 500 HB
+TATRA_815_Bus
+Horský bus Tatra 815

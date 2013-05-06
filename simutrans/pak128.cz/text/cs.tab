@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                            Date Created: 1.05 2013                           #
+#                            Date Created: 5.05 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -118,8 +118,392 @@ Vlna
 #____________________________________vehicle____________________________________
 autobusovy_naves
 Autobusový návěs Karosa NO 80
+BD_I.
+BEB I. "Kladno" (parní lokomotiva)
+CD_081
+ČD 081-Ampz 1. třída "Pendolino" (vložený vůz)
+CD_082
+ČD 082-Bmpz 2. třída "Pendolino" (vložený vůz)
+CD_084
+ČD 084-Bmpz 2. třída "Pendolino" (vložený vůz)
+CD_100_Kapesni_Bobina
+ČD 100 "Kapesní Bobina" (elektrická lokomotiva =1,5kV)
+CD_110_Zehlicka
+ČD 110 "Žehlička" (elektrická lokomotiva =3kV)
+CD_111_Tyristorka
+ČD 111 "Tyristorka" (elektrická lokomotiva =3kV)
+CD_111_Tyristorka_(balkan)
+ČD 111 "Tyristorka" balkán (elektrická lokomotiva =3kV)
+CD_113_Zehlicka
+ČD 113 "Žehlička" (elektrická lokomotiva =1,5kV)
+CD_121_Kostitras
+ČD 121 "Kostitřas" (elektrická lokomotiva =3kV)
+CD_122_Uhelka
+ČD 122 "Uhelka" (elektrická lokomotiva =3kV)
+CD_123_Trojka
+ČD 123 "Trojka" (elektrická lokomotiva =3kV)
+CD_124
+ČD 124 (elektrická lokomotiva =3kV)
+CD_130_Hrbata
+ČD 130 "Hrbatá" (elektrická lokomotiva =3kV)
+CD_140_Bobina
+ČD 140 "Bobina" (elektrická lokomotiva =3kV)
+CD_141_Bobina
+ČD 141 "Bobina" (elektrická lokomotiva =3kV)
+CD_150_Banan
+ČD 150 "Banán" (elektrická lokomotiva =3kV)
+CD_150.2_Banan
+ČD 150.2 "Banán" (elektrická lokomotiva =3kV)
+CD_150.2_Banan_(balkan)
+ČD 150.2 "Banán" balkán (elektrická lokomotiva =3kV)
+CD_151_Krysa
+ČD 151 "Krysa" (elektrická lokomotiva =3kV)
+CD_151_Krysa_(balkan)
+ČD 151 "Krysa" balkán (elektrická lokomotiva =3kV)
+CD_162_Rychly_Pershing
+ČD 162 "Rychlý Pershing" (elektrická lokomotiva =3kV)
+CD_162_Rychly_Pershing_(balkan)
+ČD 162 "Rychlý Pershing" balkán (elektrická lokomotiva =3kV)
+CD_163_Pershing
+ČD 163 "Pershing" (elektrická lokomotiva =3kV)
+CD_163_Pershing_(balkan)
+ČD 163 "Pershing" balkán (elektrická lokomotiva =3kV)
+CD_180_Sestikolak
+ČD 180 "Šestikolák" (elektrická lokomotiva =3kV)
+CD_181_Sestikolak
+ČD 181 "Šestikolák" (elektrická lokomotiva =3kV)
+CD_182_Sestikolak
+ČD 182 "Šestikolák" (elektrická lokomotiva =3kV)
+CD_210_Jezevec
+ČD 210 "Jezevec" (elektrická lokomotiva ~25kV/50Hz)
+CD_230_Laminatka
+ČD 230 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+CD_240_Laminatka
+ČD 240 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+CD_242_Plechac
+ČD 242 "Plecháč" (elektrická lokomotiva ~25kV/50Hz)
+CD_242_Plechac_(balkan)
+ČD 242 "Plecháč" balkán (elektrická lokomotiva ~25kV/50Hz)
+CD_263_Princezna
+ČD 263 "Princezna" (elektrická lokomotiva ~25kV/50Hz)
+CD_340_Modra_Laminatka
+ČD 340 "Modrá Laminátka" (elektrická dvousystémová lokomotiv
+CD_362_Rychle_Eso
+ČD 362 "Rychlé Eso" (elektrická dvousystémová lokomotiva =3k
+CD_362_Rychle_Eso_(balkan)
+ČD 362 "Rychlé Eso" balkán (elektrická dvousystémová lokomot
+CD_363_Eso
+ČD 363 "Eso" (elektrická dvousystémová lokomotiva =3kV + ~25
+CD_363_Eso_(balkan)
+ČD 363 "Eso" balkán (elektrická dvousystémová lokomotiva =3k
+CD_371_Bastard
+ČD 371 "Bastard" (elektrická dvousystémová lokomotiva =3kV +
+CD_371_Bastard_(balkan)
+ČD 371 "Bastard" balkán (elektrická dvousystémová lokomotiva
+CD_372_Bastard
+ČD 372 "Bastard" (elektrická dvousystémová lokomotiva =3kV +
+CD_380_Messerschmitt
+ČD 380 "Zázrak" (elektrická vícesystémová lokomotiva =3kV + 
+CD_380_Messerschmitt_(balkan)
+ČD 380 "Zázrak" balkan (elektrická vícesystémová lokomotiva 
+CD_471_Esus_I.
+ČD 471 "Ledovec" (elektrický vůz =3kV)
+CD_471_Esus_I._071
+ČD 071 "Ledovec" (vložený vůz)
+CD_471_Esus_I._971
+ČD 971 "Ledovec" (řídící vůz)
+CD_471_Esus_II.
+ČD 471 "City Elephant" (elektrický vůz =3kV)
+CD_471_Esus_II._(balkan)
+ČD 471 "Ešus" balkán (elektrický vůz =3kV)
+CD_471_Esus_II._071
+ČD 071 "City Elephant" (vložený vůz)
+CD_471_Esus_II._071_(balkan)
+ČD 071 "Ešus" (vložený vůz)
+CD_471_Esus_II._971
+ČD 971 "City Elephant" (řídící vůz)
+CD_471_Esus_II._971_(balkan)
+ČD 971 "Ešus" (řídící vůz)
+CD_681
+ČD 681-Ampz 1. třída "Pendolino" (přední vicesystemový elekt
+CD_682
+ČD 682-Bmpz 2. třída "Pendolino (zadní vícesystémový elektri
+CD_683
+ČD 683-BRmpz 2.třída/barový vůz "Pendolino" (vložený vícesys
+CD_684
+ČD 684-Bmpz 2. třída "Pendolino (vložený vícesystémový elekt
+CD_708_Mala_krava
+ČD 708 "Malá Kráva" (motorová lokomotiva)
+CD_709
+ČD 709 (motorová lokomotiva)
+CD_714_Velka_krava__
+ČD 714 "Velká kráva" (motorová lokomotiva)
+CD_715_Rakusanka
+ČD 715 "Rakušanka" (motorová lokomotiva)
+CD_720_Hektor
+ČD 720 "Hektor" (motorová lokomotiva)
+CD_721_Velky_Hektor
+ČD 721 "Velký Hektor" (motorová lokomotiva)
+CD_731_Spagetka
+ČD 731 "Špagetka" (motorová lokomotiva)
+CD_735_Pielstick
+ČD 735 "Pielstick" (motorová lokomotiva)
+CD_736_Papouch
+ČD 736 "Papouch" (motorová lokomotiva)
+CD_740_Bangaldeska
+ČD 740 "Bangladéška" (motorová lokomotiva)
+CD_742_Kocour__
+ČD 742 "Kocour" (motorová lokomotiva)
+CD_743_Tranzistor
+ČD 743 "Tranzistor" (motorová lokomotiva)
+CD_749_Zamracena
+ČD 749 "Zamračená" (motorová lokomotiva)
+CD_750_Brejlovec
+ČD 750 "Brejlovec" (motorová lokomotiva)
+CD_751_Bardotka
+ČD 751 "Bardotka" (motorová lokomotiva)
+CD_752_Berta
+ČD 752 "Berta" (motorová lokomotiva)
+CD_752_Brejlovec
+ČD 752 "Brejlovec" (motorová lokomotiva)
+CD_753_Brejlovec
+ČD 753 "Brejlovec" (motorová lokomotiva)
+CD_754_Brejlovec
+ČD 754 "Brejlovec" (motorová lokomotiva)
+CD_755_Brejlovec
+ČD 755 "Brejlovec" (motorová lokomotiva)
+CD_799_Adela
+ČD 799 "Adéla" (motorová lokomotiva)
 CD_AB_balkan
 CD AB349 balkan (1. a 2. trida)
+CD_Cargo_122_Uhelka
+ČD Cargo 122 "Uhelka" (elektrická lokomotiva =3kV)
+CD_Cargo_123_Trojka
+ČD Cargo 123 "Trojka" (elektrická lokomotiva =3kV)
+CD_Cargo_130_Hrbata
+ČD Cargo 130 "Hrbatá" (elektrická lokomotiva =3kV)
+CD_Cargo_210_Jezevec
+ČD Cargo 210 "Jezevec" (elektrická lokomotiva ~25kV/50Hz)
+CD_Cargo_240_Laminatka
+ČD Cargo 240 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+CD_Cargo_363_Eso
+ČD Cargo 363 "Eso" (elektrická dvousystémová lokomotiva =3kV
+CD_Cargo_372_Bastard
+ČD Cargo 372 "Bastard" (elektrická dvousystémová lokomotiva 
+CD_Cargo_742_Kocour__
+ČD Cargo 742 "Kocour"
+CD_Cargo_749_Zamracena
+ČD Cargo 749 "Zamračená" (motorová lokomotiva)
+CD_Cargo_752_Berta
+ČD Cargo 752 "Berta" (motorová lokomotiva)
+CD_Cargo_753_Brejlovec_
+ČD Cargo 753 "Brejlovec" (motorová lokomotiva)
+CSD_233_0
+ČSD 233.0 (parní lokomotiva)
+CSD_275.0_Nohata
+ČSD 275.0 "Nohatá" (parní lokomotiva)
+CSD_300.0_Kafemlejnek
+ČSD 300.0 "Kafemlejnek" (parní lokomotiva)
+CSD_309_4
+ČSD 309.4 (tendr)
+CSD_310.0_Kafemlejnek
+ČSD 310.0 "Kafemlejnek" (parní lokomotiva)
+CSD_333_0
+ČSD 333.0 "Prachárny" (parní lokomotiva)
+CSD_354.1_Vsudybylka
+ČSD 354.1 "Všudybylka" (parní lokomotiva)
+CSD_354.1_Vsudybylka_otoc
+ČSD 351.1 "Všudybylka" (parní lokomotiva, otočená)
+CSD_386.0
+ČSD 386.0 (parní lokomotiva)
+CSD_386.0_Proudnicova_lokomotiva
+ČSD 386.0 "Proudnicová lokomotiva" (parní lokomotiva)
+CSD_387.0_Mikado
+ČSD 387.0 "Mikado" (parní lokomotiva)
+CSD_422.0_Malej_Bejcek
+ČSD 422.0 "Malej Bejček" (parní lokomotiva)
+CSD_422.0_Malej_Bejcek_otoc
+ČSD 422.0 "Malej Bejček" (parní lokomotiva, otočená)
+CSD_423.0_Velkej_Bejcek
+ČSD 423.0 "Velkej Bejček" (parní lokomotiva)
+CSD_423.0_Velkej_Bejcek_otoc
+ČSD 423.0 "Velkej Bejček" (parní lokomotiva, otočená)
+CSD_464.0_Usata
+ČSD 464.0 "Ušatá" (parní lokomotiva)
+CSD_464.1_Usata
+ČSD 464.1 "Ušatá" (parní lokomotiva)
+CSD_464.2_Rosnicka
+ČSD 464.2 "Rosnička" (parní lokomotiva)
+CSD_464.2_Rosnicka_otoc
+ČSD 464.2 "Rosnička" (parní lokomotiva, otočená)
+CSD_475.1_Slechticna
+ČSD 475.1 "Šlechtična" (parní lokomotiva)
+CSD_476.0_Inzenyrska_Lokomotiva
+ČSD 476.0 "Rudý ďábel" (parní lokomotiva)
+CSD_477.0_Papousek
+ČSD 477.0 "Papoušek" (parní lokomotiva)
+CSD_477.0_Papousek_otoc
+ČSD 477.0 "Papoušek" (parní lokomotiva, otočená)
+CSD_486.0_Zeleny_Anton
+ČSD 486.0 "Zelený Anton" (parní lokomotiva)
+CSD_498.0_Albatros
+ČSD 498.0 "Albatros nulka" (parní lokomotiva)
+CSD_498.1_Albatros
+ČSD 498.1 "Albatros jednička" (parní lokomotiva)
+CSD_516.0
+ČSD 516.0 (tendr)
+CSD_517_0
+ČSD 517.0 (tendr)
+CSD_523_0
+kkStB 180 (parní lokomotiva)
+CSD_524_0
+ČSD 524.0 (parní lokomotiva)
+CSD_524_2
+ČSD 524.2 (parní lokomotiva)
+CSD_524.1
+ČSD 524.1 "Pětsetčtyřiadvacítka" (parní lokomotiva)
+CSD_524.1_otoc
+ČSD 524.1 "Pětsetčtyřiadvacítka" (parní lokomotiva, otočena)
+CSD_526.0
+ČSD 526.0 (tendr)
+CSD_534.0_Kremak
+ČSD 534.0 "Kremák" (parní lokomotiva)
+CSD_534.0_Kremak_(pozdni)
+ČSD 534.0 "Kremák" (parní lokomotiva-pozdní verze)
+CSD_555.0_Nemka
+ČSD 555.0 "Němka" (parní lokomotiva)
+CSD_555.1
+ČSD 555.1 (parní lokomotiva)
+CSD_556.0_Stokr
+ČSD 556.0 "Štokr" (parní lokomotiva)
+CSD_621.0
+ČSD 621.0 (tendr)
+CSD_636.0_Mamut
+ČSD 636.0 "Mamut" (parní lokomotiva)
+CSD_818.0
+ČSD 818.0 (tendr)
+CSD_923.0
+CSD 923.0 (tendr)
+CSD_923.0_proudnicovy
+ČSD 923.0 (proudnicový tendr)
+CSD_930.0
+ČSD 930.0 (tendr)
+CSD_930.2
+ČSD 930.2 (tendr)
+CSD_932.3
+ČSD 932.0 (tendr)
+CSD_935.0
+ČSD 935.0 (tendr)
+CSD_935.2
+ČSD 935.2 (tendr-černý)
+CSD_935.2_modry
+ČSD 935.2 (tendr-modrý)
+CSD_E_422.0_Kapesni_Bobina
+ČSD E 422.0 "Kapesní Bobina" (elektrická lokomotiva =1,5kV)
+CSD_E_424.0
+ČSD E 424.0 (elektrická lokomotiva =1,5kV)
+CSD_E_426.0_Zehlicka
+ČSD E 426.0 "Žehlicka" (elektrická lokomotiva =1,5kV)
+CSD_E_458.0_Zehlicka
+ČSD E 458.0 "Žehlička" (elektrická lokomotiva =3kV)
+CSD_E_458.1_Tyristorka
+ČSD E 458.1 "Tyristorka" (elektrická lokomotiva =3kV)
+CSD_E_467.0
+ČSD E 467.0 (elektrická lokomotiva =1,5kV)
+CSD_E_469.1_Kostitras
+ČSD E 469.1 "Kostitřas" (elektrická lokomotiva =3kV)
+CSD_E_469.2_Uhelka
+ČSD E 469.2 "Uhelka" (elektrická lokomotiva =3kV)
+CSD_E_469.3
+ČSD E 469.3 (elektrická lokomotiva =3kV)
+CSD_E_469.3_Trojka
+ČSD E 469.3 "Trojka" (elektrická lokomotiva =3kV)
+CSD_E_469.5_Stare_Dvojce_1
+ČSD E 469.5 "Dvojička" (elektrická lokomotiva =3kV) 1
+CSD_E_469.5_Stare_Dvojce_2
+ČSD E 469.5 "Dvojička (elektrická lokomotiva =3kV) 2
+CSD_E_479.0_Hrbata
+ČSD E 479.0 "Hrbatá" (elektrická lokomotiva =3kV)
+CSD_E_479.1_Dvojce_1
+ČSD E 479.1 "Dvojče" (elektrická lokomotiva =3kV) 1
+CSD_E_479.1_Dvojce_2
+ČSD E 479.1 "Dvojče" (elektrická lokomotiva =3kV) 2
+CSD_E_499.0_Bobina
+ČSD E 499.0 "Bobina" (elektrická lokomotiva =3kV)
+CSD_E_499.1_Bobina
+ČSD E 499.1 "Bobina" (elektrická lokomotiva =3kV)
+CSD_E_499.2_Banan
+ČSD E 499.2 "Banán" (elektrická lokomotiva =3kV)
+CSD_E_499.3_Pershing
+ČSD E 499.3 "Pershing" (elektrická lokomotiva =3kV)
+CSD_E_669.0_Sestikolak
+ČSD E 669.0 "Šestikolák" (elektrická lokomotiva =3kV)
+CSD_E_669.1_Sestikolak
+ČSD E 669.1 "Šestikolák" (elektrická lokomotiva =3kV)
+CSD_E_669.2_Sestikolak
+ČSD E 669.2 "Šestikolák" (elektrická lokomotiva =3kV)
+CSD_E_669.3_Sestikolak
+ČSD E 669.3 "Rakana" (elektrická lokomotiva =3kV)
+CSD_ES_499.0_Gorila
+ČSD ES 499.0 "Gorila" (elektrická dvousystémová lokomotiva =
+CSD_ES_499.1_Eso
+ČSD ES 499.1 "Eso" (elektrická dvousystémová lokomotiva =3kV
+CSD_ES_499.2_Bastard
+ČSD ES 499.2 "Bastard" (elektrická dvousystémová lokomotiva 
+CSD_R_(tendr)
+ČSD R (kotlový vůz s topným olejem)
+CSD_S_479.0
+ČSD S 479.0 (elektrická lokomotiva ~25kV/50Hz)
+CSD_S_489.0_Laminatka
+ČSD S 489.0 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+CSD_S_499.0_Laminatka
+ČSD S 499.0 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+CSD_S_499.02_Plechac
+ČSD S 499.02 "Plecháč" (elektrická lokomotiva ~25kV/50Hz)
+CSD_S_499.2_Princezna
+ČSD S 499.2 "Princezna" (elektrická lokomotiva ~25kV/50Hz)
+CSD_S_699.0_Velka_Laminatka
+ČSD S 699.0 "Velká Laminátka" (elektrická lokomotiva ~25kV/5
+CSD_T_426.0_Rakusanka
+ČSD T 426.0 "Rakušanka" (motorová lokomotiva)
+CSD_T_435.0_Hektor
+ČSD T 435.0 "Hektor" (motorová lokomotiva)
+CSD_T_448.0_Bangaldeska
+ČSD T 448.0 "Bangladéška" (motorová lokomotiva)
+CSD_T_458.1_Velky_Hektor
+ČSD T 458.1 "Velký Hektor" (motorová lokomotiva)
+CSD_T_466.0_Pielstick
+ČSD T 466.0 "Pielstick" (motorová lokomotiva)
+CSD_T_466.2_Kocour__
+ČSD T 466.2 "Kocour" (motorová lokomotiva)
+CSD_T_478.1_Bardotka
+ČSD T 478.1 "Bardotka" (motorová lokomotiva)
+CSD_T_478.1_Brejlovec
+ČSD T 478.1 "Brejlovec" (motorová lokomotiva)
+CSD_T_478.2_Berta
+ČSD T 478.2 "Berta" (motorová lokomotiva)
+CSD_T_478.2_Brejlovec
+ČSD T 478.2 "Brejlovec" (motorová lokomotiva)
+CSD_T_478.3_Brejlovec
+ČSD T 478.3 "Brejlovec" (motorová lokomotiva)
+CSD_T_499.0_Kyklop
+ČSD T 499.0 "Kyklop" (motorová lokomotiva)
+CSD_T_678.0_Pomeranc
+ČSD T 678.0 "Pomeranč" (motorová lokomotiva)
+CSD_T_679.0_Pomeranc
+ČSD T 679.0 "Pomeranč" (motorová lokomotiva)
+CSD_T_679.1_Sergej
+ČSD T 679.1 "Sergej" (motorová lokomotiva)
+CSD_T_679.2_Ragulin
+ČSD T 679.2 "Ragulin" (motorová lokomotiva)
+CSD_T_698.0_Kokakola_1
+ČSD T 698.0 "Kokakola" (motorová lokomotiva) 1
+CSD_T_698.0_Kokakola_2
+ČSD T 698.0 "Kokakola" (motorová lokomotiva) 2
+CSD_TL659.001_Turbinka
+ČSD TL 659.001 "Turbínka" (turbínová lokomotiva)
+CSD_TL659.002_Turbinka
+ČSD TL 659.002 "Turbínka" (turbínová lokomotiva)
 Ikarus_260_BKV
 Autobus Ikarus 206 BKV
 ikarus_e91
@@ -183,15 +567,115 @@ Linkový autobus Karosa/Iveco Crossway 12,6
 Karosa_LC_735
 Dálkový autobus Karosa LC 735
 Karosa_SD_11
-Dálkový autobus Karosa/Skoda SD 11
+Dálkový autobus Karosa/Škoda SD 11
 Karosa_SL_11
 Linkový autobus Karosa/Škoda SL 11
 Karosa_SM_11
 Městský autobus Karosa/Škoda SM 11
+Laurin_125_autobus
+Lehký městský autobus Laurin a Klement (Škoda) 125
+Laurin_125_benzin
+Lehký náklaďák Laurin a Klement (Škoda) 125 (sudy s benzínem
+Laurin_125_beton
+Lehký náklaďák Laurin a Klement (Škoda) 125 (betonové skruže
+Laurin_125_cement
+Lehký náklaďák Laurin a Klement (Škoda) 125 (pytlovaný cemen
+Laurin_125_drevo
+Lehký náklaďák Laurin a Klement (Škoda) 125 (valník s dřevěn
+Laurin_125_maso
+Lehký náklaďák Laurin a Klement (Škoda) 125 (řeznická dodávk
+Laurin_125_mleko
+Lehký náklaďák Laurin a Klement (Škoda) 125 (mlékárenská dod
+Laurin_125_obili
+Lehký náklaďák Laurin a Klement (Škoda) 125 (obilniny)
+Laurin_125_ocel
+Lehký náklaďák Laurin a Klement (Škoda) 125 (ocelové díly)
+Laurin_125_sypke_zbozi
+Lehký náklaďák Laurin a Klement (Škoda) 125 (uhlí)
+Laurin_125_zbozi
+Lehký náklaďák Laurin a Klement (Škoda) 125 (paletované zbož
+Laurin_505_benzin
+Lehký náklaďák Škoda model 505 (sudy s benzínem)
+Laurin_505_beton
+Lehký náklaďák Škoda model 505 (betonové skruže)
+Laurin_505_cement
+Lehký náklaďák Škoda model 505 (pytlovaný cement)
+Laurin_505_drevo
+Lehký náklaďák Škoda model 505 (dřevěné latě)
+Laurin_505_maso
+Lehký náklaďák Škoda model 505 (řeznický vůz)
+Laurin_505_mleko
+Lehký náklaďák Škoda model 505 (mlékařský vůz)
+Laurin_505_obili
+Lehký náklaďák Škoda model 505 (obiloviny)
+Laurin_505_ocel
+Lehký náklaďák Škoda model 505 (ocelové díly)
+Laurin_505_sypke_zbozi
+Lehký náklaďák Škoda model 505 (uhlí)
+Laurin_505_zbozi
+Lehký náklaďák Škoda model 505 (paletované zboží)
 Laurin_a_Klement_model_545_(autobus)
 Městský autobus Laurin a Klement model 545
+Liaz_110.010_mleko
+Náklaďák Liaz 110.010 (cisterna na mléko)
+Liaz_110.010_ropa
+Náklaďák Liaz 110.010 (cisterna na ropné produkty)
+Liaz_110.073_beton
+Náklaďák Liaz 110.073 (valník s betonovými skružemi)
+Liaz_110.073_cement
+Náklaďák Liaz 110.073 (valník na přepravu paletovaného cemen
+Liaz_110.073_zbozi
+Náklaďák Liaz 110.073 (valník na přepravu paletovaného zboží
+Liaz_111.800_drevo
+Tahač Liaz 111.800 (manipulační ruka, převoz dřeva)
+Liaz_150.261_uhli
+Náklaďák Liaz 151.261 (sklápěč, sypké zboží)
+Liaz_151.261_obili
+Náklaďák Liaz 151.261 (sklápěč, zemědělské produkty)
+Liaz_18.29_SB_agro
+Náklaďák Liaz 18.29 SB (sklápěč, zemědělské produkty)
+Liaz_18.29_SB_uhli
+Náklaďák Liaz 18.29 SB (sklápěč, sypké zboží)
+liaz_18.29_TB_HR
+Tahač Liaz 18.29 TB HR (tahač s manipulační rukou, dřevo)
+liaz_18.33_PB_beton
+Náklaďák Liaz 18.33 PB (valník, betonové skruže)
+liaz_18.33_PB_cement
+Náklaďák Liaz 18.33 PB (valník, paletovaný cement)
+liaz_18.33_PB_zbozi
+Náklaďák Liaz 18.33 PB (valník, paletované zboží)
+Liaz_18.33_XB_ADR_ropa
+Náklaďák Liaz 18.33 XB ADR (cisterna na ropné produkty)
+Liaz_18.33_XB_mleko
+Náklaďák Liaz 18.33 XB (cisterna na mléko)
+Liaz_19.40_Skoda_Xena
+Tahač Škoda Xena (Liaz 19.40)
+Liaz_250.261_uhli
+Náklaďák Liaz 251.261 (sklápěč, sypké zboží)
+Liaz_251.261_obili
+Náklaďák Liaz 251.261 (sklápěč, zemedělské produkty)
 obb_setra_s431dt
 Meziměstský autobus Setra S 431 DT
+Praga_N_benzin
+Praga N (sudy s benzínem)
+Praga_N_beton
+Praga N (betonové skruže)
+Praga_N_cement
+Praga N (přeprava cementu)
+Praga_N_drevo
+Praga N (laťky)
+Praga_N_maso
+Praga N (řeznický vůz)
+Praga_N_mleko
+Praga N (mlékařský vůz)
+Praga_N_obili
+Praga N (zemědělské produkty)
+Praga_N_ocel
+Praga N (vůz na ocel)
+Praga_N_sypke_zbozi
+Praga N (sypké zboží)
+Praga_N_zbozi
+Praga N (paletované zboží)
 Praga_NO
 Městský autobus Praga NO
 Praga_TN
@@ -202,6 +686,8 @@ Praga_TO_II
 Městský autoubus Praga TO (modernizovaný)
 Praga_VT6
 Městský autobus Praga VT6
+Skoda_109E_Messerschmitt
+Škoda 109E "Messerschmitt" (elektrická vícesystémová lokomot
 skoda_21_ab
 Městský autobus Škoda 21AB
 skoda_706_RO_linkovy
@@ -217,9 +703,9 @@ Městský autobus Škoda 706 RTO
 Skoda_model_505_(autobus)
 Městský autobus Škoda model 505
 Skoda_model_506N_(autobus-polotrambus)
-Městský autobus Skoda 506N polotrambusova karoserie
+Městský autobus Škoda 506N polotrambusová karoserie
 Skoda_model_506N_(autobus-trambus)
-Městsky autobus Škoda 506N trambusova karoserie
+Městský autobus Škoda 506N trambusová karoserie
 Skoda_model_506N_(autobus)
 Městský autobus Škoda 506N
 Skoda_model_656_(autobus)
@@ -227,7 +713,7 @@ Městský autobus Škoda model 656
 Skoda_model_656D_(autobus)
 Městský autobus Škoda model 656D
 Skoda_model_656D_II_(autobus)
-Městský autobus Skoda 656D (modernizovaný)
+Městský autobus Škoda 656D (modernizovaný)
 Skrin_na_lyze
 Autobusová skříň na lyže
 Solaris_Urbino_10
@@ -239,7 +725,7 @@ Městský autobus Solaris Urbino 15M
 Solaris_Urbino_18
 Městský autobus Solaris Urbino 18M
 Solaris_Urbino_18_zadek
-Solaris Urbino 18M zadni cast
+Solaris Urbino 18M zadní část
 SOR_B_7.5
 Autobus Sor B 7,5
 SOR_B_9.5
@@ -275,10 +761,164 @@ Autobus Sor CN 9,5
 sor_ebn_10,5
 Autobus Sor EBN 10,5 (elektrický autobus)
 SOR_NB_12
-Mestsky autobus Sor NB 12
+Městský autobus Sor NB 12
 sor_nb_12_city
 Autobus Sor NB 12 City
+Tatra_23_benzin
+Náklaďák Tatra 23 (sudy s benzínem)
+Tatra_23_beton
+Náklaďák Tatra 23 (betonové skruže)
+Tatra_23_cement
+Náklaďák Tatra 23 (pytlovaný cement)
+Tatra_23_drevo
+Náklaďák Tatra 23 (lesovůz)
+Tatra_23_maso
+Náklaďák Tatra 23 (řeznický vůz)
+Tatra_23_mleko
+Náklaďák Tatra 23 (mlékárenský vůz)
+Tatra_23_obili
+Náklaďák Tatra 23 (obilniny)
+Tatra_23_ocel
+Náklaďák Tatra 23 (ocelové díly)
+Tatra_23_sypke_zbozi
+Náklaďák Tatra 23 (uhlí)
+Tatra_23_zbozi
+Náklaďák Tatra 23 (paletové zboží)
+Tatra_24_benzin
+Náklaďák Tatra 24 (sudy s benzínem)
+Tatra_24_beton
+Náklaďák Tatra 24 (betonové skruže)
+Tatra_24_cement
+Náklaďák Tatra 24 (pytlovaný cement)
+Tatra_24_drevo
+Náklaďák Tatra 24 (lesovůz)
+Tatra_24_maso
+Náklaďák Tatra 24 (řeznický vůz)
+Tatra_24_mleko
+Náklaďák Tatra 24 (mlékárenský vůz)
+Tatra_24_obili
+Náklaďák Tatra 24 (obilný vůz)
+Tatra_24_ocel
+Náklaďák Tatra 24 (ocelové díly)
+Tatra_24_sypke_zbozi
+Náklaďák Tatra 24 (uhlí)
+Tatra_24_zbozi
+Náklaďák Tatra 24 (stěhovací skříň)
+Tatra_24-58_benzin
+Náklaďák Tatra 24/58 (sudy s benzínem)
+Tatra_24-58_beton
+Náklaďák Tatra 24/58 (betonové skruže)
+Tatra_24-58_cement
+Náklaďák Tatra 24/58 (pytlovaný cement)
+Tatra_24-58_drevo
+Náklaďák Tatra 24/58 (lesovůz)
+Tatra_24-58_maso
+Náklaďák Tatra 24/58 (řeznický vůz)
+Tatra_24-58_mleko
+Náklaďák Tatra 24/58 (mlékárenský vůz)
+Tatra_24-58_obili
+Náklaďák Tatra 24/58 (obilný vůz)
+Tatra_24-58_ocel
+Náklaďák Tatra 24/58 (ocelové díly)
+Tatra_24-58_sypke_zbozi
+Náklaďák Tatra 24/58 (uhlí)
+Tatra_24-58_zbozi
+Náklaďák Tatra 24/58 (stěhovací skřín)
+Tatra_24-67_benzin
+Náklaďák Tatra 24/67 (sudy s benzínem)
+Tatra_24-67_beton
+Náklaďák Tatra 24/67 (betonové skruže)
+Tatra_24-67_cement
+Náklaďák Tatra 24/67 (pytlovaný cement)
+Tatra_24-67_drevo
+Náklaďák Tatra 24/67 (lesovůz)
+Tatra_24-67_maso
+Náklaďák Tatra 24/67 (řeznický vůz)
+Tatra_24-67_mleko
+Náklaďák Tatra 24/67 (mlékárenský vůz)
+Tatra_24-67_obili
+Náklaďák Tatra 24/67 (obilný vůz)
+Tatra_24-67_ocel
+Náklaďák Tatra 24/67 (ocelové díly)
+Tatra_24-67_sypke_zbozi
+Náklaďák Tatra 24/67 (uhlí)
+Tatra_24-67_zbozi
+Náklaďák Tatra 24/67 (stěhovací skříň)
 TATRA_500_HB
 Horský bus Tatra 500 HB
 TATRA_815_Bus
 Horský bus Tatra 815
+vlek_drevo
+Vlek na převoz dřeva
+ZSR_110_Zehlicka
+ŽSR 110 "Žehlička" (elektrická lokomotiva =3kV)
+ZSR_125_Stvoricka_1
+ŽSR 125 "Stvořická" (elektrická lokomotiva =3kV) 1
+ZSR_125_Stvoricka_2
+ŽSR 125 "Stvořická" (elektrická lokomotiva =3kV) 2
+ZSR_131_Dvojicka_1
+ŽSR 131 "Dvojička" (elektrická lokomotiva =3kV) 1
+ZSR_131_Dvojicka_2
+ŽSR 131 "Dvojička" (elektrická lokomotiva =3kV) 2
+ZSR_140_Bobina
+ŽSR 140 "Bobina" (elektrická lokomotiva =3kV)
+ZSR_162_Persing
+ŽSR 162 "Pershing" (elektrická lokomotiva =3kV)
+ZSR_163_Persing
+ŽSR 163 "Pershing" (elektrická lokomotiva =3kV)
+ZSR_182_Rakana
+ŽSR 182 "Rakana" (elektrická lokomotiva =3kV)
+ZSR_183_Sestkolak
+ŽSR 183 "Šestkolák" (elektrická lokomotiva =3kV)\n\n
+ZSR_210_Jezevec
+ŽSR 210 "Jezevec" (elektrická lokomotiva ~25kV/50Hz)
+ZSR_240_Laminatka
+ŽSR 240 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+ZSR_263_Princezna
+ŽSR 263 "Princezna" (elektrická lokomotiva ~25kV/50Hz)
+ZSR_350_Gorila
+ŽSR 350 "Gorila" (elektrická dvousystémová lokomotiva =3kV +
+ZSR_362_Persing
+ŽSR 362 "Persing" (elektrická dvousystémová lokomotiva =3kV 
+ZSR_363_Persing
+ŽSR 363 "Persing" (elektrická dvousystémová lokomotiva =3kV 
+ZSSK_071
+ZSSK 071 "Jánošík" (vložený vůz)
+ZSSK_110_Zehlicka
+ZSSK 110 "Žehlička" (elektrická lokomotiva =3kV)
+ZSSK_125_Stvoricka_1
+ZSSK 125 "Stvořická" (elektrická lokomotiva =3kV) 1
+ZSSK_125_Stvoricka_2
+ZSSK 125 "Stvořická" (elektrická lokomotiva =3kV) 2
+ZSSK_131_Dvojicka_1
+ZSSK 131 "Dvojička" (elektrická lokomotiva =3kV) 1
+ZSSK_131_Dvojicka_2
+ZSSK 131 "Dvojička" (elektrická lokomotiva =3kV) 2
+ZSSK_140_Bobina
+ZSSK 140 "Bobina" (elektrická lokomotiva =3kV)
+ZSSK_162_Persing
+ZSSK 162 "Pershing" (elektrická lokomotiva =3kV)
+ZSSK_163_Persing
+ZSSK 163 "Pershing" (elektrická lokomotiva =3kV)
+ZSSK_182_Rakana
+ZSSK 182 "Rakana" (elektrická lokomotiva =3kV)
+ZSSK_183_Sestkolak
+ZSSK 183 "Šestkolák" (elektrická lokomotiva =3kV)
+ZSSK_210_Jezevec
+ZSSK 210 "Jezevec" (elektrická lokomotiva ~25kV/50Hz)
+ZSSK_240_Laminatka
+ZSSK 240 "Laminátka" (elektrická lokomotiva ~25kV/50Hz)
+ZSSK_263_Princezna
+ZSSK 263 "Princezna" (elektrická lokomotiva ~25kV/50Hz)
+ZSSK_350_Gorila
+ZSSK 350 "Gorila" (elektrická dvousystémová lokomotiva =3kV 
+ZSSK_362_Persing
+ZSSK 362 "Persing" (elektrická dvousystémová lokomotiva =3kV
+ZSSK_363_Persing
+ZSSK 363 "Persing" (elektrická dvousystémová lokomotiva =3kV
+ZSSK_381_Messerschmitt
+ZSSK 381 (elektrická vícesystémova lokomotiva =3kV + ~25kV/5
+ZSSK_671
+ZSSK 671 "Jánošík" (elektrická vícesystémová jednotka =3kV +
+ZSSK_971
+ZSSK 971 "Jánošík" (řídící vůz)

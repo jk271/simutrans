@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                            Date Created: 5.05 2013                           #
+#                           Date Created: 12.05 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -116,10 +116,90 @@ wool
 Vlna
 #____________________________________vehicle____________________________________
 #____________________________________vehicle____________________________________
+Arriva_223
+Arriva 223 Alex "Herkules"
+Arriva_ABvmz_39-95
+Arriva ABvmz 39-95 Alex (1. a 2. třída)
+Arriva_Avmz_19-94
+Arriva Avmz 19-94 Alex (1. třída)
+Arriva_Bm_22-90
+Arriva Bm 22-90 Alex (2. třída)
+Arriva_Bm_22-90_cyklo-1
+Arriva Bm 22-90 Alex (2. třída s přepravou jízdních kol) 1/2
+Arriva_Bm_22-90_cyklo-2
+Arriva Bm 22-90 Alex (2. třída s přepravou jízdních kol) 2/2
+Arriva_Bnd_22-54-1
+Arriva Bnd 22-54 Alex (2. třída s přepravou jízdních kol) 1/
+Arriva_Bnd_31-33-1
+Arriva Bnd 31-33 Alex (2. třída s přepravou jízdních kol) 1/
+Arriva_Bomz_20-95
+Arriva Bomz 20-95 Alex (2. třída)
+Arriva_Bomz_21-95
+Arriva Bomz 21-95 Alex (2. třída)
+Arriva_Bomz_21-95_cyklo-1
+Arriva Bomz 21-95 Alex (2. třída s přepravou jízdních kol) 1
+Arriva_Bomz_21-95_cyklo-2
+Arriva Bomz 21-95 Alex (2. třída s přepravou jízdních kol) 2
+Arriva_BR_85-92
+Arriva BR 85-92 Alex (2. třída/barový vůz)
+Arriva_DBpz_26-75
+Arriva DBpz 26-75 Alex (2.třída)
+Arriva_DBpz_26-75_cyklo-1
+Arriva DBpz 26-75 Alex (2. třída s přepravou jízdních kol) 1
+Arriva_DBpz_26-75_cyklo-2
+Arriva DBpz 26-75 Alex (2. třída s přepravou jízdních kol) 2
 autobusovy_naves
 Autobusový návěs Karosa NO 80
 BD_I.
 BEB I. "Kladno" (parní lokomotiva)
+CD_014
+ČD 014 "Regionova trio" (vložený vůz - 2. třída)
+CD_020
+ČD Btx / 020 (2. třída)
+CD_021-1
+ČD Btx / 021 (2. třída s přepravou jízdních kol) 1/2
+CD_021-2
+ČD Btx / 021 (2. třída s přepravou jízdních kol) 2/2
+CD_022-1
+ČD BDdtx / 022 (2. třída/služební s přepravou jízdních kol) 
+CD_022-2
+ČD BDdtx / 022 (2. třída/služební s přepravou jízdních kol) 
+CD_043
+ČD Btn753 / 043 (2. třída)
+CD_050
+ČD Bmx / 050 (2. třída)
+CD_050_balkan-1
+ČD Bmx765 balkán (2. třída s přepravou jízdních kol) 1/2
+CD_050_balkan-2
+ČD Bmx765 balkán (2. třída s přepravou jízdních kol) 2/2
+CD_050_cyklo-1
+ČD Bmx cyklo / 050 (2. třída s přepravou jízdních kol) 1/2
+CD_050_cyklo-2
+CD Bmx cyklo / 050 (2. třída s přepravou jízdních kol) 2/2
+CD_051
+ČD 051 "Žabotlam" (vložený vůz)
+CD_051_(balkan)
+ČD 051 "Žabotlam" balkán (vložený vůz)
+CD_052
+ČD 052 "Lochneska" (vloženy vůz)
+CD_052_(balkan)
+ČD 052 "Lochneska" balkán (vloženy vůz)
+CD_053
+ČD Btn / 053 (2. třída)
+CD_054
+ČD Bn / 054 (2. třída)
+CD_054_2-1
+ČD Bdtn / 054.2 (2. třída s přepravou jízdních kol) 1/2
+CD_054_2-2
+ČD Bdtn / 054.2 (2. třída s přepravou jízdních kol) 2/2
+CD_056-1
+ČD Bdt754 / 056 (2. třída s přepravou jízdních kol) 1/2
+CD_056-2
+ČD Bdt754 / 056 (2. třída s přepravou jízdních kol) 2/2
+CD_070_modry
+ČD 070 "Kraken" modrý (vložený vůz - 2. třída)
+CD_070_zeleny
+ČD 070 "Kraken" zelený (vložený vůz - 2. třída)
 CD_081
 ČD 081-Ampz 1. třída "Pendolino" (vložený vůz)
 CD_082
@@ -206,6 +286,44 @@ CD_380_Messerschmitt
 ČD 380 "Zázrak" (elektrická vícesystémová lokomotiva =3kV + 
 CD_380_Messerschmitt_(balkan)
 ČD 380 "Zázrak" balkan (elektrická vícesystémová lokomotiva 
+CD_440
+ČD 440 "Regio Panther" (přední elektrický vůz =3kV)
+CD_441
+ČD 441 "Regio Panther" (zadní elektrický vůz =3kV)
+CD_442
+ČD 442 "Regio Panther" (vložený elektrický vůz =3kV)
+CD_451_2
+ČD 451 "Žabotlam" (zadní elektrický vůz =3kV)
+CD_451_2_(balkan)
+ČD 451 "Žabotlam" balkán (zadní elektrický vůz =3kV)
+CD_451_Zabotlam
+ČD 451 "Žabotlam" (přední elektrický vůz =3kV)
+CD_451_Zabotlam_(balkan)
+ČD 451 "Žabotlam" balkán (přední elektrický vůz =3kV)
+CD_452_2
+ČD 452 "Lochneska" (zadní elektrický vůz =3kV)
+CD_452_2_(balkan)
+ČD 452 "Lochneska" balkán (zadní elektrický vůz =3kV)
+CD_452_Lochneska
+ČD 452 "Lochneska" (přední elektrický vůz =3kV)
+CD_452_Lochneska_(balkan)
+ČD 452 "Lochneska" balkán (přední elektrický vůz =3kV)
+CD_470_modry_predni-1
+ČD 470 "Kraken" modrý (přední elektrický vůz - 2. třída se z
+CD_470_modry_predni-2
+ČD 470 "Kraken" modrý (přední elektrický vůz - 2. třída se z
+CD_470_modry_zadni-1
+ČD 470 "Kraken" modrý (zadní elektrický vůz - 2. třída se za
+CD_470_modry_zadni-2
+ČD 470 "Kraken" modrý (zadní elektrický vůz - 2. třída se za
+CD_470_zeleny_predni-1
+ČD 470 "Kraken" zelený (přední elektrický vůz - 2. třída se 
+CD_470_zeleny_predni-2
+ČD 470 "Kraken" zelený (přední elektrický vůz - 2. třída se 
+CD_470_zeleny_zadni-1
+ČD 470 "Kraken" zelený (zadní elektrický vůz - 2. třída se z
+CD_470_zeleny_zadni-2
+ČD 470 "Kraken" zelený (zadní elektrický vůz - 2. třída se z
 CD_471_Esus_I.
 ČD 471 "Ledovec" (elektrický vůz =3kV)
 CD_471_Esus_I._071
@@ -224,6 +342,18 @@ CD_471_Esus_II._971
 ČD 971 "City Elephant" (řídící vůz)
 CD_471_Esus_II._971_(balkan)
 ČD 971 "Ešus" (řídící vůz)
+CD_640
+ČD 640 "Regio Panther" (přední vícesystémový elektrický vůz 
+CD_641
+ČD 641 "Regio Panther" (zadní vícesystémový elektrický vůz =
+CD_642
+ČD 642 "Regio Panther" (vložený vícesystémový elektrický vůz
+CD_650
+ČD 650 "Regio Panther" (přední vícesystémový elektrický vůz 
+CD_650_promo
+ČD 650 "Regioshuttle" automat. spřáhlo - propagační akce (mo
+CD_651
+ČD 651 "Regio Panther" (zadní vícesystémový elektrický vůz =
 CD_681
 ČD 681-Ampz 1. třída "Pendolino" (přední vicesystemový elekt
 CD_682
@@ -274,8 +404,444 @@ CD_755_Brejlovec
 ČD 755 "Brejlovec" (motorová lokomotiva)
 CD_799_Adela
 ČD 799 "Adéla" (motorová lokomotiva)
+CD_809
+ČD 809 (motorový vůz - 2. třída, samoobsluha)
+CD_809_balkan
+ČD 809 balkán (motorový vůz - 2. třída, samoobsluha)
+CD_810
+ČD 810 (motorový vůz - 2. třída)
+CD_810_balkan
+ČD 810 balkán (motorový vůz - 2. třída)
+CD_810_modry
+ČD 810 modrý (motorový vůz - 2. třída)
+CD_811_balkan-1
+ČD 811 balkán (přední motorový vůz - 2. třída)
+CD_811_balkan-2
+ČD 811 balkán (zadní motorový vůz - 2. třída)
+CD_811-1
+ČD 811 (přední motorový vůz - 2. třída)
+CD_811-2
+ČD 811 (zadní motorový vůz - 2. třída)
+CD_812-1
+ČD 812 "Esmeralda" (motorový vůz - 2. třída)
+CD_812-2
+ČD 812 "Esmeralda" (zadní motorový vůz - 2. třída)
+CD_814-1
+ČD 814 "Regionova trio" (motorový vůz přední - 2. třída)
+CD_814-2
+ČD 814 "Regionova" (motorový vůz zadní - 2. třída)
+CD_820
+ČD 820 "Singrovka" (motorový vůz - 2. třída)
+CD_820-1
+ČD 820 "Singrovka" (motorový vůz - 2. třída/služební) 1/2
+CD_820-2
+ČD 820 "Singrovka" (motorový vůz - 2. třída/služební) 2/2
+CD_831-1
+ČD 831 "Loďák" (motorový vůz - 2. třída/služební) 1/2
+CD_831-2
+ČD 831 "Loďák" (motorový vůz - 2. třída/služební) 2/2
+CD_840
+ČD 840 "Regioshuttle" Liberec (motorový vůz - 2. třída)
+CD_840_cyklo-1
+ČD 840 "Regioshuttle" Liberec (motorový vůz - 2. třída s pře
+CD_840_cyklo-2
+ČD 840 "Regioshuttle" Liberec (motorový vůz - 2. třída s pře
+CD_841
+ČD 841 "Regioshuttle" Vysočina (motorový vůz - 2. třída)
+CD_841_cyklo-1
+ČD 841 "Regioshuttle" Vysočina (motorový vůz - 2. třída s př
+CD_841_cyklo-2
+ČD 841 "Regioshuttle" Vysočina (motorový vůz - 2. třída s př
+CD_842
+ČD 842 "Kvatro" (motorový vůz - 2. třída)
+CD_842_balkan
+ČD 842 "Kvatro - reko" balkán (motorový vůz - 2. třída)
+CD_842_balkan-1
+ČD 842 "Kvatro - reko" balkán (motorový vůz - 2. třída/služe
+CD_842_balkan-2
+ČD 842 "Kvatro - reko" balkán (motorový vůz - 2. třída/služe
+CD_842-1
+ČD 842 "Kvatro" (motorový vůz - 2. třída/služební) 1/2
+CD_842-2
+ČD 842 "Kvatro" (motorový vůz - 2. třída/služební) 2/2
+CD_843
+ČD 843 "Rakev" (motorový vůz - 2. třída)
+CD_843_balkan
+ČD 843 "Rakev" balkán (motorový vůz - 2. třída)
+CD_843_balkan-1
+ČD 843 "Rakev" balkán (motorový vůz - 2. třída/služební) 1/2
+CD_843_balkan-2
+ČD 843 "Rakev" balkán (motorový vůz - 2. třída/služební) 2/2
+CD_843-1
+ČD 843 "Rakev" (motorový vůz - 2. třída/služební) 1/2
+CD_843-2
+ČD 843 "Rakev" (motorový vůz - 2. třída/služební) 2/2
+cd_844
+ČD 844 "RegioShark" (motorová jednotka - přední díl - 2. tří
+cd_844_2
+ČD 844 "RegioShark" (motorová jednotka - zadní díl - 1. a 2.
+CD_850
+ČD 850 "Krokodýl" (motorový vůz - 2. třída)
+CD_850_otoc
+ČD 850 "Krokodýl" (zadní motorovy vůz - 2. třída)
+CD_850_otoc-1
+ČD 850 "Krokodýl" (zadní motorový vůz - 2. třída/služební) 1
+CD_850_otoc-2
+ČD 850 "Krokodýl" (zadní motorový vůz - 2. třída/služební) 2
+CD_850-1
+ČD 850 "Krokodýl" (motorový vůz - 2. třída/služební) 1/2
+CD_850-2
+ČD 850 "Krokodýl" (motorový vůz - 2. třída/služební) 2/2
+CD_851
+ČD 851 "Krokodýl" (motorový vůz - 2. třída)
+CD_851_balkan
+ČD 851 balkán "Krokodýl" (motorový vůz - 2. třída)
+CD_851_balkan_otoc
+ČD 851 balkán "Krokodýl" (zadní motorový vůz - 2. třída)
+CD_851_balkan_otoc-1
+ČD 851 balkán "Krokodýl" (zadní motorový vůz - 2. třída/služ
+CD_851_balkan_otoc-2
+ČD 851 balkán "Krokodýl" (zadní motorový vůz - 2. třída/služ
+CD_851_balkan-1
+ČD 851 balkán "Krokodýl" (motorový vůz - 2. třída/služební) 
+CD_851_balkan-2
+ČD 851 balkán "Krokodýl" (motorový vůz - 2. třída/služební) 
+CD_851_otoc
+ČD 851 "Krokodýl" (zadní motorový vůz - 2. třída)
+CD_851_otoc-1
+ČD 851 "Krokodýl" (zadní motorový vůz - 2. třída/služební) 1
+CD_851_otoc-2
+ČD 851 "Krokodýl" (zadní motorový vůz - 2. třída/služební) 2
+CD_851-1
+ČD 851 "Krokodýl" (motorovy vůz - 2. třída/sluzební) 1/2
+CD_851-2
+ČD 851 "Krokodýl" (motorový vůz - 2. třída/služebni) 2/2
+CD_854
+ČD 854 "Hydra" (motorový vůz - 2. třída)
+CD_854_balkan
+ČD 854 "Hydra" balkán (motorový vůz - 2. třída)
+CD_854_balkan-1
+ČD 854 "Hydra" balkán (motorový vůz - 2. třída/služební) 1/2
+CD_854_balkan-2
+ČD 854 "Hydra" balkán (motorový vůz - 2. třída/služební) 2/2
+CD_854_balkan-otoc
+ČD 854 "Hydra" balkán (zadní motorový vůz - 2. třída)
+CD_854_balkan-otoc-1
+ČD 854 "Hydra" balkán (zadní motorový vůz - 2. třída/služebn
+CD_854_balkan-otoc-2
+ČD 854 "Hydra" balkán (zadní motorový vůz - 2. třída/služebn
+CD_854-1
+ČD 854 "Hydra" (motorový vůz - 2. třída/služební) 1/2
+CD_854-2
+ČD 854 "Hydra" (motorový vůz - 2. třída/služební) 2/2
+CD_854-otoc
+ČD 854 "Hydra" (zadní motorový vůz - 2. třída)
+CD_854-otoc-1
+ČD 854 "Hydra" (zadní motorový vůz - 2. třída/služební) 1/2
+CD_854-otoc-2
+ČD 854 "Hydra" (zadní motorový vůz - 2. třída/služební) 2/2
+CD_912-1
+ČD Bfbdtax / 912 "Kasandra" (přední řídící vůz - 2. třída)
+CD_912-2
+ČD Bfbdtax / 912 "Kasandra" (řídící vůz - 2. třída)
+CD_914
+ČD 914 "Regionova" (řídící vůz - 2. třída)
+CD_943
+ČD Bftn / 943 (řídící vůz - 2. třída)
+CD_943-otoc
+ČD Bftn / 943 (přední řídící vůz - 2. třída)
+CD_954
+ČD Bfbrdtn / 954 (řídící vůz - 2. třída)
+CD_954_2
+ČD ABfbrdtn / 954.2 (řídící vůz - 1. a 2. třída)
+CD_954_2_balkan
+ČD ABfbrdtn795 / 954.2 balkán (řídící vůz - 1. a 2. třída)
+CD_954_2_balkan-1
+ČD ABfbrdtn795 / 954.2 balkán (řídící vůz - 1. a 2. třída s 
+CD_954_2_balkan-2
+ČD ABfbrdtn795 / 954.2 balkán (řídící vůz - 1. a 2. třída s 
+CD_954_2_balkan-otoc
+ČD ABfbrdtn795 / 954.2 balkán (přední řídící vůz - 1. a 2. t
+CD_954_2_balkan-otoc-1
+ČD ABfbrdtn795 / 954.2 balkán (přední řídící vůz - 1. a 2. t
+CD_954_2_balkan-otoc-2
+ČD ABfbrdtn795 / 954.2 balkán (přední řídící vůz - 1. a 2. t
+CD_954_2-1
+ČD ABfbrdtn / 954.2 (řídící vůz - 1. a 2. třída s přepravou 
+CD_954_2-2
+ČD ABfbrdtn / 954.2 (řídící vůz - 1. a 2. třída s přepravou 
+CD_954_2-otoc
+ČD ABfbrdtn / 954.2 (přední řídící vůz - 1. a 2. třída)
+CD_954_2-otoc-1
+ČD ABfbrdtn / 954.2 (přední řídící vůz - 1. a 2. třída s pře
+CD_954_2-otoc-2
+ČD ABfbrdtn / 954.2 (přední řídící vůz - 1. a 2. třída s pře
+CD_954_balkan
+ČD Bfbrdtn794 / 954 balkán (řídící vůz - 2. třída)
+CD_954_balkan-1
+ČD Bfbrdtn794 / 954 balkán (řídící vůz - 2. třída s přepravo
+CD_954_balkan-2
+ČD Bfbrdtn794 / 954 balkán (řídící vůz - 2. třída s přepravo
+CD_954_balkan-otoc
+ČD Bfbrdtn794 / 954 balkán (přední řídící vůz - 2. třída)
+CD_954_balkan-otoc-1
+ČD Bfbrdtn794 / 954 balkán (přední řídící vůz - 2. třída s p
+CD_954_balkan-otoc-2
+ČD Bfbrdtn794 / 954 balkán (přední řídící vůz - 2. třída s p
+CD_954-1
+ČD Bfbrdtn / 954 (řídící vůz - 2. třída s přepravou jízdních
+CD_954-2
+ČD Bfbrdtn / 954 (řídící vůz - 2. třída s přepravou jízdních
+CD_954-otoc
+ČD Bfbrdtn / 954 (přední řídící vůz - 2. třída)
+CD_954-otoc-1
+ČD Bfbrdtn / 954 (přední řídící vůz - 2. třída s přepravou j
+CD_954-otoc-2
+ČD Bfbrdtn / 954 (přední řídící vůz - 2. třída s přepravou j
+CD_A
+ČD A (1. třída)
+CD_A_balkan
+ČD A149 balkán  (1. třída)
+CD_AB
+ČD AB (1. a 2. třída)
 CD_AB_balkan
-CD AB349 balkan (1. a 2. trida)
+ČD AB349 balkán (1. a 2. třída)
+CD_Aee
+ČD Aee (1. třída)
+CD_Aee142
+ČD Aee142 ING (1. třída)
+CD_Aee142_balkan
+ČD Aee142 balkán (1. třída)
+CD_Aee147
+ČD Aee147 (1. třída)
+CD_Aee152_balkan
+ČD Aee152 balkán (1. třída)
+CD_Ampz
+ČD Ampz (1. třída)
+CD_Ampz_balkan
+ČD Ampz balkán (1. třída)
+CD_Apee
+ČD Apee (1. třída)
+CD_Apee141
+ČD Apee141 ING (1. třída)
+CD_Apee141_balkan
+ČD Apee141 balkán (1. třída)
+CD_ARmpee61_balkan
+ČD ARmpee832 balkán (1.třída/barový vůz)
+CD_B
+ČD B (2. třída)
+CD_B_balkan
+ČD B249 balkán (2. třída)
+CD_Bc
+ČD Bc (lehatkový vůz 2. třída)
+CD_Bc833
+ČD Bc833 (lehátkový vůz 2. třída)
+CD_Bc833_balkan
+ČD Bc833 balkán (lehatkový vůz 2. třída)
+CD_Bc842_balkan
+ČD Bc842 balkán (lehatkový vůz 2. třída)
+CD_BDbmsee_balkan-1
+ČD BDbmsee balkán (služební/2. třída) 1/2
+CD_BDbmsee_balkan-2
+CD BDbmsee balkán (služební/2. třída) 2/2
+CD_BDbmsee-1
+ČD BDbmsee (služební/2. třída) 1/2
+CD_BDbmsee-2
+ČD BDbmsee (služební/2. třída) 2/2
+CD_Bdmpee
+ČD Bdmpee (2. třída)
+CD_Bdmpee_cyklo-1
+ČD Bdmpee (2. třída s přepravou jízdních kol) 1/2
+CD_Bdmpee_cyklo-2
+ČD Bdmpee (2. třída s přepravou jízdních kol) 2/2
+CD_Bdmpee253_balkan
+ČD Bdmpee253 balkán (2. třída)
+CD_Bdmpee253_cyklo_balkan-1
+ČD Bdmpee253 balkán (2. třída s přepravou jízdních kol) 1/2
+CD_Bdmpee253_cyklo_balkan-2
+ČD Bdmpee253 balkán (2. třída s přepravou jízdních kol) 2/2
+CD_Bdmtee
+ČD Bdmtee (2. třída)
+CD_Bdmtee_balkan
+ČD Bdmtee281 balkán (2. třída)
+CD_Bdmtee_cyklo-1
+ČD Bdmtee (2. třída s přepravou jízdních kol) 1/2
+CD_Bdmtee_cyklo-2
+ČD Bdmtee (2. třída s přepravou jízdních kol) 2/2
+CD_Bdmtee263
+ČD Bdmtee263 (2. třída)
+CD_Bdmtee263_balkan
+ČD Bdmtee263 balkán (2. třída)
+CD_Bdmtee263_cyklo_balkan-1
+ČD Bdmtee263 balkán (2. třída s přepravou jízdních kol) 1/2
+CD_Bdmtee263_cyklo_balkan-2
+ČD Bdmtee263 balkán (2. třída s přepravou jízdních kol) 2/2
+CD_Bdmtee263_cyklo-1
+ČD Bdmtee263 (2. třída s přepravou jízdních kol) 1/2
+CD_Bdmtee263_cyklo-2
+ČD Bdmtee263 (2. třída s přepravou jízdních kol) 2/2
+CD_Bdmtee281_cyklo_balkan-1
+ČD Bdmtee281 balkán (2. třída s přepravou jízdních kol) 1/2
+CD_Bdmtee281_cyklo_balkan-2
+ČD Bdmtee281 balkán (2. třída s přepravou jízdních kol) 2/2
+CD_Bdmteeo294_balkan
+ČD Bdmteeo294 balkán (2. třída)
+CD_BDs_balkan-1
+ČD BDs450 balkán (služební/2. třída) 1/2
+CD_BDs_balkan-2
+ČD BDs450 balkán (služební/2. třída) 2/2
+CD_BDs-1
+ČD BDs (služební/2. třída) 1/2
+CD_BDs-2
+ČD BDs (služební/2. třída) 2/2
+CD_BDsee454-1
+ČD BDsee454 (služební/2. třída) 1/2
+CD_BDsee454-2
+ČD BDsee454 (služební/2. třída) 2/2
+CD_Bdt-1
+ČD Bdt (2. třída s přepravou jízdních kol) 1/2
+CD_Bdt-2
+ČD Bdt (2. třída s přepravou jízdních kol) 2/2
+CD_Bdt279_balkan-1
+ČD Bdt279 balkán (2. třída s přepravou jízdních kol) 1/2
+CD_Bdt279_balkan-2
+ČD Bdt279 balkán (2. třída s přepravou jízdních kol) 2/2
+CD_Bdtax_015-1
+ČD Bdtax / 015 (2. třída + přeprava jízdních kol) 1/2
+CD_Bdtax_015-2
+ČD Bdtax / 015 (2. třída + přeprava jízdních kol) 2/2
+CD_BDtax-1
+ČD BDtax / 012 (2. třída se služebním oddílem) 1/2
+CD_BDtax-2
+ČD BDtax / 012 (2. třída se služebním oddílem) 2/2
+CD_BDtax782_balkan-1
+ČD BDtax782 / 012 balkán (2. třída se služebním oddílem) 1/2
+CD_BDtax782_balkan-2
+ČD BDtax782 / 012 balkán (2. třída se služebním oddílem) 2/2
+CD_BDtax783-1
+ČD BDtax783 / 016 (vložený vůz - 2. třída/služební) 1/2
+CD_BDtax783-2
+ČD BDtax783 / 016 (vložený vůz - 2. třída/služební) 2/2
+CD_Bdtax785_balkan-1
+ČD Bdtax785 / 015 balkán (2. třída + přeprava jízdních kol) 
+CD_Bdtax785_balkan-2
+ČD Bdtax785 / 015 balkán (2. třída + přeprava jízdních kol) 
+CD_Bdtn756_balkan-1
+ČD Bdtn756 balkan (2. třída s přepravou jízdních kol) 1/2
+CD_Bdtn756_balkan-2
+ČD Bdtn756 balkan (2. třída s přepravou jízdních kol) 2/2
+CD_Bee
+ČD Bee (2. třída)
+CD_Bee240
+ČD Bee240 ING (2. třída)
+CD_Bee240_balkan
+ČD Bee240 balkán (2. třída)
+CD_Bee246
+ČD Bee246 (2. třída)
+CD_Bee272_balkan
+ČD Bee272 balkán (2. třída)
+CD_Beer
+ČD Beer (2. třída)
+CD_Bftn791_balkan
+ČD Bftn791 balkán (řídící vůz - 2. třída)
+CD_Bftn791_balkan-otoc
+ČD Bftn791 balkán (přední řídící vůz - 2. třída)
+CD_Bmee
+ČD Bmee (2. třída)
+CD_Bmee_balkan
+ČD Bmee balkán (2. třída)
+CD_Bmpz_balkan
+ČD Bmpz balkán (2. třída)
+CD_Bmto
+ČD Bmto (2. třída)
+CD_Bmz
+ČD Bmz (2. třída)
+CD_Bmz_balkan
+ČD Bmz balkán (2. třída)
+CD_Bp
+ČD Bp (2. třída)
+CD_Bp_cyklo-1
+ČD Bp cyklo (2. třída s přepravou jízdních kol) 1/2
+CD_Bp_cyklo-2
+ČD Bp cyklo (2. třída s přepravou jízdních kol) 2/2
+CD_Bp282_balkan
+ČD Bp282 balkán (2. třída)
+CD_Bp282_cyklo_balkan-1
+ČD Bp282 cyklo balkán (2. třída s přepravou jízdních kol) 1/
+CD_Bp282_cyklo_balkan-2
+ČD Bp282 cyklo balkán (2. třída s přepravou jízdních kol) 2/
+CD_Bpee
+ČD Bpee (2. třída)
+CD_Bpee239
+ČD Bpee239 ING (2. třída)
+CD_Bpee239_balkan
+ČD Bpee239 balkán (2. třída)
+CD_BRm
+ČD BRm (2. třída/barový vůz)
+CD_Bt
+ČD Bt (2. třída)
+CD_Bt278_balkan
+ČD Bt278 balkán (2. třída)
+CD_Btax
+ČD Btax / 010 (2. třída)
+CD_Btax_modry
+ČD Btax / 010 modrý (2. třída)
+CD_Btax_modry-1
+ČD Btax / 010 modrý (2. třída se zavazadlovým oddílem) 1/2
+CD_Btax_modry-2
+ČD Btax / 010 modrý (2. třída se zavazadlovým oddílem) 2/2
+CD_Btax_zeleny-1
+ČD Btax781 / 011 zelený (vložený vůz - 2. třída/služební) 1/
+CD_Btax_zeleny-2
+ČD Btax781 / 011 zelený (vložený vůz - 2. třída/služební) 2/
+CD_Btax_zeleny-3
+ČD Btax781 / 011 zelený (vložený vůz - 2. třída/služební) 1/
+CD_Btax_zeleny-4
+ČD Btax781 / 011 zelený (vložený vůz - 2. třída/služební) 2/
+CD_Btax-1
+ČD Btax / 010 (2. třída se zavazadlovým oddílem) 1/2
+CD_Btax-2
+ČD Btax / 010 (2. třída se zavazadlovým oddílem) 2/2
+CD_Btax780_balkan
+ČD Btax780 / 010 balkán (2. třída)
+CD_Btax780_balkan-1
+ČD Btax780 / 010 balkán (2. třída se zavazadlovým oddílem) 1
+CD_Btax780_balkan-2
+ČD Btax780 / 010 balkán (2. třída se zavazadlovým oddílem) 2
+CD_Btax781_balkan-1
+ČD Btax781 / 011 balkán (vložený vůz - 2. třída se zavazadlo
+CD_Btax781_balkan-2
+ČD Btax781 / 011 balkán (vloženy vůz - 2. třída se zavazadlo
+CD_Btax781_balkan-3
+ČD Btax781 / 011 balkán (koncový přípojný vůz - 2. třída se 
+CD_Btax781_balkan-4
+ČD Btax781 / 011 balkán (koncový přípojný vůz - 2. třída se 
+CD_Btax781-1
+ČD Btax781 / 011 (vložený vůz - 2. třída se zavazadlovým odd
+CD_Btax781-10
+ČD Btax781 / 011 (koncový přípojný vůz - 2. třída se zavazad
+CD_Btax781-2
+ČD Btax781 / 011 (vložený vůz - 2. třída se zavazadlovým odd
+CD_Btax781-3
+ČD Btax781 / 011 (zadní vložený vůz - 2. třída se zavazadlov
+CD_Btax781-4
+ČD Btax781 / 011 (zadní vložený vůz - 2. třída se zavazadlov
+CD_Btax781-5
+ČD Btax781 / 011 (vložený vůz - 2. třída se zavazadlovým odd
+CD_Btax781-6
+ČD Btax781 / 011 (vložený vůz - 2. třída se zavazadlovým odd
+CD_Btax781-7
+ČD Btax781 / 011 (vložený vůz - 2. třída se zavazadlovým odd
+CD_Btax781-8
+ČD Btax781 / 011 (vložený vůz - 2. třída se zavazadlovým odd
+CD_Btax781-9
+ČD Btax781 / 011 (koncový přípojný vůz - 2. třída se zavazad
+CD_Btn753_balkan
+ČD Btn753 balkán (2. třída)
+CD_Bvt-1
+ČD Bvt (2. třída s přepravou jízdních kol) 1/2
+CD_Bvt-2
+ČD Bvt (2. třída s přepravou jízdních kol) 2/2
 CD_Cargo_122_Uhelka
 ČD Cargo 122 "Uhelka" (elektrická lokomotiva =3kV)
 CD_Cargo_123_Trojka
@@ -298,6 +864,94 @@ CD_Cargo_752_Berta
 ČD Cargo 752 "Berta" (motorová lokomotiva)
 CD_Cargo_753_Brejlovec_
 ČD Cargo 753 "Brejlovec" (motorová lokomotiva)
+CD_Ddax
+ČD Ddax / 013 (přeprava jízdních kol)
+CD_Dmsz_balkan
+ČD Dmsz balkán (služební)
+CD_Ds
+ČD Ds (služební vůz)
+CD_Ds952_balkan
+ČD Ds952 balkán (služební vůz)
+CD_Ds953
+ČD Ds953 (služební vůz)
+CD_Ds953_balkan
+ČD Ds953 balkán (služební vůz)
+CD_Eas
+ČD Eas (sypké zbozí)
+CD_Eas_drevo
+ČD Eas (dřevo)
+CD_Eas_drevo_dvojice
+ČD Eas dvojice vozů (dřevo)
+CD_Eas_dvojice
+ČD Eas dvojice vozů (sypké zboží)
+CD_Eas-u
+ČD Eas-u (sypké zboží)
+CD_Eas-u_dvojice
+ČD Eas-u dvojice vozů (sypké zboží)
+CD_Es
+ČD Es (sypké zboží)
+CD_Es_drevo
+ČD Es (dřevo)
+CD_Es_drevo_dvojice
+ČD Es dvojice vozů (dřevo)
+CD_Es_dvojice
+ČD Es dvojice vozů (sypké zboží)
+CD_Gbkkqss
+ČD Gbkkqss (poštovní vůz)
+CD_Postw
+ČD Postw (poštovní vůz)
+CD_Tams_beton
+ČD Tams (beton)
+CD_Tams_ocel
+ČD Tams (ocel)
+CD_WLAB
+ČD WLAB (lůžkový vůz)
+CD_WLABee
+ČD WLABee (lůžkový vůz)
+CD_WLABmee
+ČD WLABmee (lůžkový vůz)
+CD_WLABmz
+ČD WLABmz (lužkový vůz)
+CD_WR
+ČD WR (jídelní vůz)
+CD_WRm
+ČD WRm (jídelní vůz)
+CD_WRmee
+ČD WRmee (jídelní vůz)
+CD_WRmz
+ČD WRmz (jídelní vůz)
+CD_WRmz_balkan
+ČD WRmz balkán (jídelní vůz)
+CDC_Eas
+ČD Cargo Eas (sypké zboží)
+CDC_Eas_drevo
+ČD Cargo Eas (dřevo)
+CDC_Eas_drevo_dvojice
+ČD Cargo Eas dvojice vozů (dřevo)
+CDC_Eas_dvojice
+ČD Cargo Eas dvojice vozů (sypké zboží)
+CDC_Eas-u
+ČD Cargo Eas-u (sypké zboží)
+CDC_Eas-u_dvojice
+ČD Cargo Eas-u dvojice vozů (sypké zboží)
+CDC_Es
+ČD Cargo Es (sypké zboží)
+CDC_Es_drevo
+ČD Cargo Es (dřevo)
+CDC_Es_drevo_dvojice
+ČD Cargo Es dvojice vozů (dřevo)
+CDC_Es_dvojice
+ČD Cargo Es dvojice vozů (sypké zboží)
+CDC_St_Talbot
+ČD Cargo St Talbot (sypké zboží)
+CDC_Zkks_mleko
+ČD Cargo Zkks (mléko)
+CKD_Vetra
+Trolejbus ČKD Vektra
+CSD_051
+ČSD 051 "Žabotlam" (vložený vůz)
+CSD_052
+ČSD 052 "Lochneska" (vloženy vůz)
 CSD_233_0
 ČSD 233.0 (parní lokomotiva)
 CSD_275.0_Nohata
@@ -328,6 +982,14 @@ CSD_423.0_Velkej_Bejcek
 ČSD 423.0 "Velkej Bejček" (parní lokomotiva)
 CSD_423.0_Velkej_Bejcek_otoc
 ČSD 423.0 "Velkej Bejček" (parní lokomotiva, otočená)
+CSD_451_2
+ČSD 451 "Žabotlam" (zadní elektrický vůz =3kV)
+CSD_451_Zabotlam
+ČSD 451 "Žabotlam" (přední elektrický vůz =3kV)
+CSD_452_2
+ČSD 452 "Lochneska" (zadní elektrický vůz =3kV)
+CSD_452_Lochneska
+ČSD 452 "Lochneska" (přední elektrický vůz =3kV)
 CSD_464.0_Usata
 ČSD 464.0 "Ušatá" (parní lokomotiva)
 CSD_464.1_Usata
@@ -398,6 +1060,294 @@ CSD_935.2
 ČSD 935.2 (tendr-černý)
 CSD_935.2_modry
 ČSD 935.2 (tendr-modrý)
+CSD_Aa
+ČSD Aa (1. třída)
+CSD_Aa_1120
+ČSD Aa 1120 (1. třída)
+CSD_Aa_1160
+ČSD Aa 1160 (1. třída)
+CSD_Aa150
+ČSD Aa150 (1. třída)
+CSD_Aalm-d_prototyp
+ČSD Aalm-d prototyp (1. třída)
+CSD_Aam
+ČSD Aam (1. třída)
+CSD_ABa
+ČSD ABa (1. a 2. třída)
+CSD_ABa_2150
+ČSD ABa 2150 (1. a 2. třída)
+CSD_Ae_Be_R_II
+ČSD Ae Rybak II/Be (1. třída)
+CSD_Ai_2-2000
+ČSD Ai 2-2000 (1. třída)
+CSD_Amee
+ČSD Amee (1. třída)
+CSD_Ba
+ČSD Ba (2. třída)
+CSD_Ba_3400
+ČSD Ba 3400 (2. třída)
+CSD_Ba_4-5070
+ČSD Ba 4-5070 (2. třída)
+CSD_Ba250
+ČSD Ba250 (2. třída)
+CSD_Bac
+ČSD Bac (lehátkový vůz 2. třída)
+CSD_Bac_4900
+ČSD Bac 4900 (lehatkový vůz)
+CSD_Bai
+ČSD Bai (2. třída)
+CSD_Bai_4-3690
+ČSD Bai 4-3690 (2. třída)
+CSD_Baim
+ČSD Baim (2. třída)
+CSD_Balm-d
+ČSD Balm-d (2. třída)
+CSD_Balm-d_prototyp
+ČSD Balm-d prototyp (2. třída)
+CSD_Balm-k
+ČSD Balm-k (2. třída)
+CSD_Bam
+ČSD Bam (2. třída)
+CSD_Bam_49
+ČSD Bam Tatra 49 (2. třída)
+CSD_Bam-e_(N_488.0)_(vlozeny_vuz_-_2._trida)
+ČSD Bam-e (N 488.0) (vložený vůz - 2. třída)
+CSD_Bap
+ČSD Bap (2. třída)
+CSD_BCa_2-8000
+ČSD BCa 2-8000 (2. a 3. třída)
+CSD_BCi_2-75
+ČSD BCi 2-7587 (2. a 3. třída)
+CSD_BCi_2-76
+ČSD BCi 2-7621 (2. a 3. třída)
+CSD_BCi_2-7653
+ČSD BCi 2-7653 (2. a 3. třída)
+CSD_BDa-1
+ČSD BDa (služební/2. třída) 1/2
+CSD_BDa-2
+ČSD BDa (služební/2. třída) 2/2
+CSD_BDFlm_5_35-1
+ČSD BDFlm 5,3 35 (2. třída/poštovní) 1/2
+CSD_BDFlm_5_35-2
+ČSD BDFlm 5,3 35 (2. třída/poštovní) 2/2
+CSD_BDFlm_5_40-1
+ČSD BDFlm 5,3 40 (2. třída/poštovní) 1/2
+CSD_BDFlm_5_40-2
+ČSD BDFlm 5,3 40 (2. třída/poštovní) 2/2
+CSD_BDFlm_6_36-1
+ČSD BDFlm 6,5 36 (2. třída/poštovní) 1/2
+CSD_BDFlm_6_36-2
+ČSD BDFlm 6,5 36 (2. třída/poštovní) 2/2
+CSD_BDlm_5_36-1
+ČSD BDlm 5,3 36 (2. třída/služební) 1/2
+CSD_BDlm_5_36-2
+ČSD BDlm 5,3 36 (2. třída/služební) 2/2
+CSD_BDlm_5_40-1
+ČSD BDlm 5,3 40 (2. třída/služební) 1/2
+CSD_BDlm_5_40-2
+ČSD BDlm 5,3 40 (2. třída/služební) 2/2
+CSD_BDlm_6_35-1
+ČSD BDlm 6,5 35 (2. třída/služební) 1/2
+CSD_BDlm_6_35-2
+ČSD BDlm 6,5 35 (2. třída/služebné) 2/2
+CSD_BDlm_6_50-1
+ČSD BDlm 50 (2. třída/služební) 1/2
+CSD_BDlm_6_50-2
+ČSD BDlm 50 (2. třída/služební) 2/2
+CSD_BDlm_6_56-1
+ČSD BDlm 56 (2. třída/služební) 1/2
+CSD_BDlm_6_56-2
+ČSD BDlm 56 (2. třída/služební) 2/2
+CSD_BDmee-1
+ČSD BDmee (služební/2. třída) 1/2
+CSD_BDmee-2
+ČSD BDmee (služební/2. třída) 2/2
+CSD_Be_1-4050
+ČSD Be 1-4050 (2. třída)
+CSD_Be_3-8400
+ČSD Be 3-8400 (2. třída)
+CSD_Be_Ce_R_II
+ČSD Be Rybák II/Ce (2. třída)
+CSD_Be_R_I
+ČSD Be Rybák I (2. třída)
+CSD_Be_R_II
+ČSD Be Rybák II (2. třída)
+CSD_BFalm-1
+ČSD BFalm (2. třída/služební) 1/2
+CSD_BFalm-2
+ČSD BFalm (2. třída/služební) 2/2
+CSD_Bg
+ČSD Bg (2. třída)
+CSD_Bi_2-2000
+ČSD Bi 2-2000 (2. třída)
+CSD_Bi_2-2655
+ČSD Bi 2-2655 (2. třída)
+CSD_Bi_3-9200
+ČSD Bi 3-9200 (2. třída)
+CSD_Bi_Ci_R_I
+ČSD Bi Rybák I/Ci (2. třída)
+CSD_Blm
+ČSD Blm (2. třída)
+CSD_Blm_5_35
+ČSD Blm 5,3 35 (3. třída)
+CSD_Blm_6_48
+ČSD Blm 48 (2. třída)
+CSD_Blm_6_53
+ČSD Blm 53 (2. třída)
+CSD_Blm_6_54
+ČSD Blm 54 (2. třída)
+CSD_Blm-1
+ČSD Blm (2. třída se zavazadlovým oddílem) 1/2
+CSD_Blm-2
+ČSD Blm (2. třída se zavazadlovým oddílem) 2/2
+CSD_Bmee
+ČSD Bmee (2. třída)
+CSD_Bp_2-1-1
+ČSD Bp II. (přední vůz - 2. třída/služební) 1/2
+CSD_Bp_2-1-2
+ČSD Bp II. (přední vůz - 2. třída/služební) 2/2
+CSD_Bp_2-2
+ČSD Bp II. (vložený přední vůz - 2. třída)
+CSD_Bp_2-3
+ČSD Bp II. (vloženy zadní vůz - 2. třída)
+CSD_Bp_2-4
+ČSD Bp II. (zadní vůz - 2. třída)
+CSD_Bp-1
+ČSD Bp (přední vůz - 2. třída)
+CSD_Bp-2
+ČSD Bp (vložený přední vůz - 2. třída)
+CSD_Bp-3
+ČSD Bp (vložený zadní vůz - 2. třída)
+CSD_Bp-4
+ČSD Bp (zadní vůz - 2. třída)
+CSD_BRa_550
+ČSD BRa 550 (2. třída/bufetový vůz)
+CSD_BRam
+ČSD BRam (2. třída / jídelní vůz)
+CSD_BRcm
+ČSD BRcm (lehátkový/barový vůz)
+CSD_Bymme
+ČSD Bymme (2. třída)
+CSD_Bymme_cyklo-1
+ČSD Bymme (2. třída s přepravou jízdních kol) 1/2
+CSD_Bymme_cyklo-2
+ČSD Bymme (2. třída s přepravou jízdních kol) 2/2
+CSD_Ca_4-5070
+ČSD Ca 4-5070 (3. třída)
+CSD_Ca_4-5201
+ČSD Ca 4-5201 (3. třída)
+CSD_Cai_4-3550
+ČSD Cai 4-3550 (3. třída)
+CSD_Calm_39
+ČSD Calm Tatra 39 (3. třída)
+CSD_Calm_49
+ČSD Calm Tatra 49 (3. třída)
+CSD_CDa_4-9380-1
+ČSD CDa 4-9380 (3. třída/služební) 1/2
+CSD_CDa_4-9380-2
+ČSD CDa 4-9380 (3. třída/služební) 2/2
+CSD_CDFlm_34-1
+ČSD CDFlm 34 (3. třída/poštovní) 1/2
+CSD_CDFlm_34-2
+ČSD CDFlm 34 (3. třída/poštovní) 2/2
+CSD_CDFlm_5_35-1
+ČSD CDFlm 5,3 35 (3. třída/poštovní) 1/2
+CSD_CDFlm_5_35-2
+ČSD CDFlm 5,3 35 (3. třída/poštovní) 2/2
+CSD_CDFlm_5_40-1
+ČSD CDFlm 5,3 40 (3. třída/poštovní) 1/2
+CSD_CDFlm_5_40-2
+ČSD CDFlm 5,3 40 (3. třída/poštovní) 2/2
+CSD_CDFlm_6_36-1
+ČSD CDFlm 6,5 36 (2. třída/poštovní) 1/2
+CSD_CDFlm_6_36-2
+ČSD CDFlm 6,5 36 (3. třída/poštovní) 2/2
+CSD_CDl_4-9400-1
+ČSD CDl 4-9400 (služební/3. třída) 1/2
+CSD_CDl_4-9400-2
+ČSD CDl 4-9400 (služební/3. třída) 2/2
+CSD_CDl_4-9402-1
+ČSD CDl 4-9402 (služební/3. třída) 1/2
+CSD_CDl_4-9402-2
+ČSD CDl 4-9402 (služební/3. třída) 2/2
+CSD_CDlm_34-1
+ČSD CDlm 34 (3. třída/služební) 1/2
+CSD_CDlm_34-2
+ČSD CDlm 34 (3. třída/služební) 2/2
+CSD_CDlm_5_36-1
+ČSD CDlm 5,3 36 (3. třída/služební) 1/2
+CSD_CDlm_5_36-2
+ČSD CDlm 5,3 36 (3. třída/služební) 2/2
+CSD_CDlm_5_40-1
+ČSD CDlm 5,3 40 (3. třída/služební) 1/2
+CSD_CDlm_5_40-2
+ČSD CDlm 5,3 40 (3. třída/služební) 2/2
+CSD_CDlm_6_35-1
+ČSD CDlm 6,5 35 (3. třída/služební) 1/2
+CSD_CDlm_6_35-2
+ČSD CDlm 6,5 35 (3. třída/služební) 2/2
+CSD_CDlm_6_50-1
+ČSD CDlm 50 (3. třída/služební) 1/2
+CSD_CDlm_6_50-2
+ČSD CDlm 50 (3. třída/služební) 2/2
+CSD_CDv-1
+ČSD CDv (3. třída/služební) 1/2
+CSD_CDv-2
+ČSD CDv (3. třída/služební) 2/2
+CSD_Ce_3-8400
+ČSD Ce 3-8400 (3. třída)
+CSD_Ce_R_I
+ČSD Ce Rybák I (3. třída)
+CSD_Ce_R_II
+ČSD Ce Rybák II (3. třída)
+CSD_Ci_3-9200
+ČSD Ci 3-9200 (3. třída)
+CSD_Ci_4-15
+ČSD Ci 4-1543 (3. třída)
+CSD_Ci_4-17
+ČSD Ci 4-1707 (3. třída)
+CSD_Ci_4-18
+ČSD Ci 4-1808 (3. třída)
+CSD_Ci_4-20
+ČSD Ci 4-2034 (3. třída)
+CSD_Ci_R_I
+CSD Ci Rybák I (3. třída)
+CSD_Cl_4-6000
+ČSD Cl 4-6000 (3. třída)
+CSD_Cl_4-6006
+ČSD Cl 4-6006 (3. třída)
+CSD_Clm_32
+ČSD Clm 32 (3. třída)
+CSD_Clm_34
+ČSD Clm 34 (3. třída)
+CSD_Clm_5_35
+ČSD Clm 5,3 35 (3. třída)
+CSD_Clm_6_35
+ČSD Clm 6,5 35 (3. třída)
+CSD_Clm_6_48
+ČSD Clm 48 (3. třída)
+CSD_Clm_6_53
+ČSD Clm 53 (3. třída)
+CSD_D_6-1832
+ČSD D 6-1832 (služební vůz)
+CSD_Da_6-5010
+ČSD Da 6-5010 (služební vůz)
+CSD_Da_7100
+ČSD Da 7100 (služební)
+CSD_Da_7161
+ČSD Da 7161 (služební)
+CSD_Dd_6-4240
+ČSD Dd 6-4240 (služební vůz)
+CSD_Ddo_6-4900
+ČSD Ddo 6-4900 (služební vůz)
+CSD_Dsa
+ČSD Dsa (služební vůz)
+CSD_Dsd_6-4510
+ČSD Dsd 6-4510 (služební vůz)
+CSD_Dsd_R_I
+ČSD Dsd Rybák I (služební vůz)
+CSD_Dsd_R_II
+ČSD Dsd Rybák II (služební vůz)
 CSD_E_422.0_Kapesni_Bobina
 ČSD E 422.0 "Kapesní Bobina" (elektrická lokomotiva =1,5kV)
 CSD_E_424.0
@@ -444,14 +1394,228 @@ CSD_E_669.2_Sestikolak
 ČSD E 669.2 "Šestikolák" (elektrická lokomotiva =3kV)
 CSD_E_669.3_Sestikolak
 ČSD E 669.3 "Rakana" (elektrická lokomotiva =3kV)
+CSD_Eas
+ČSD Eas (sypké zboží)
+CSD_Eas_drevo
+ČSD Eas (dřevo)
+CSD_Eas_drevo_dvojice
+ČSD Eas dvojice vozů (dřevo)
+CSD_Eas_dvojice
+ČSD Eas dvojice vozů (sypké zboží)
+CSD_EM_475.1_Zabotlam
+ČSD EM 475.1 "Žabotlam" (přední elektrický vůz =3kV)
+CSD_EM_475.1_zadni
+ČSD EM 475.1 "Žabotlam" (zadní elektrický vůz =3kV)
+CSD_EM_475.2_Lochneska
+ČSD EM 475.2 "Lochneska" (přední elektrický vůz =3kV)
+CSD_EM_475.2_zadni
+ČSD EM 475.2 "Lochneska" (zadní elektrický vůz =3kV)
+CSD_EM_488.0_Tornado_(elektricky_vuz_-_2._trida/sluzebni)_1/2
+ČSD EM 488.0 Tornado (přední elektrický vůz - 2. třída/služe
+CSD_EM_488.0_Tornado_(elektricky_vuz_-_2._trida/sluzebni)_2/2
+ČSD EM 488.0 Tornado (přední elektrický vůz - 2. třída/služe
+CSD_EM_488.0_Tornado_(zadni_elektricky_vuz_-_2._trida/sluzebni)_1/2
+ČSD EM 488.0 Tornado (zadní elektrický vůz - 2. třída/služeb
+CSD_EM_488.0_Tornado_(zadni_elektricky_vuz_-_2._trida/sluzebni)_2/2
+ČSD EM 488.0_Tornado_(zadní elektrický vůz - 2. třída/služeb
+CSD_Es
+ČSD Es (sypké zboží)
 CSD_ES_499.0_Gorila
 ČSD ES 499.0 "Gorila" (elektrická dvousystémová lokomotiva =
 CSD_ES_499.1_Eso
 ČSD ES 499.1 "Eso" (elektrická dvousystémová lokomotiva =3kV
 CSD_ES_499.2_Bastard
 ČSD ES 499.2 "Bastard" (elektrická dvousystémová lokomotiva 
+CSD_Es_drevo
+ČSD Es (dřevo)
+CSD_Es_drevo_dvojice
+ČSD Es dvojice vozů (dřevo)
+CSD_Es_dvojice
+ČSD Es dvojice vozů (sypké zboží)
+CSD_F_R_I
+ČSD F Rybák I (poštovní vůz)
+CSD_F_R_II
+ČSD F Rybák II (poštovní vůz)
+CSD_Fa
+ČSD Fa (poštovní vůz)
+CSD_Gbkkqs
+ČSD Gbkkqs (poštovní vůz)
+CSD_Gp_Prazdroj
+ČSD Gp Prazdroj (chladicí vůz na pivo)
+CSD_L
+ČSD L (chladicí vůz na maso)
+CSD_Laz
+ČSD Laz (mražené potraviny)
+CSD_Lm
+ČSD Lm (chladicí vůz na maso)
+CSD_Lp
+ČSD Lp (chladicí vůz na pivo)
+CSD_Lp_Budvar
+ČSD Lp Budvar (chladicí vůz na pivo)
+CSD_Lp_Ferdinand
+ČSD Lp Ferdinand (chladicí vůz na pivo)
+CSD_Lp_Prazdroj
+ČSD Lp Prazdroj (chladicí vůz na pivo)
+CSD_M_120.0_Autobus
+ČSD M 120.0 "Autobus"
+CSD_M_295.0a_Hargita
+ČSD M 295.0 "Hargita" (přední vůz motorové jednotky)
+CSD_M_295.0b_Hargita
+ČSD M 295.0 "Hargita" (zadní vůz motorové jednotky)
+CSD_M_295.0c
+ČSD M 295.0 "Hargita" (střední vůz motorové jednotky)
+CSD_M120_2
+ČSD M120.2 (motorový vůz - 3. třída)
+CSD_M120_3
+ČSD M120.3 "Malý věžák" (motorový vůz - 3. třída)
+CSD_M120_4
+ČSD M120.4 "Věžák" (motorový vůz - 3. třída)
+CSD_M120_5-1
+ČSD M120.5 (motorový vůz - 3. třída s přepravou zavazadel) 1
+CSD_M120_5-2
+ČSD M120.5 (motorový vůz - 3. třída s přepravou zavazadel) 2
+CSD_M122_0
+ČSD M122.0 (motorový vůz - 3. třída)
+CSD_M124_0-1
+ČSD M124.0 "Komárek" (parní motorový vůz - 2. a 3. třída s p
+CSD_M124_0-2
+ČSD M124.0 "Komárek" (parní motorový vůz - 2. a 3. třída s p
+CSD_M130_1_1
+ČSD M130.1 I. (motorový vůz - 3. třída)
+CSD_M130_1_2
+ČSD M130.1 II. (motorový vůz - 3. třída)
+CSD_M130_2
+ČSD M130.2 "Rychlý věžák" (motorový vůz - 3. třída)
+CSD_M130_4
+ČSD M130.4 (motorový vůz - 3. třída)
+CSD_M131_1
+ČSD M131.1 "Hurvínek" (motorový vůz - 3. třída)
+CSD_M131_1_2tr
+ČSD M131.1 "Hurvínek" (motorový vůz - 2. třída)
+CSD_M132_0
+ČSD M132.0 (motorový vůz - 3. třída)
+CSD_M134_0_posta
+ČSD M134.0 (motorový vůz - přeprava zavazadel)
+CSD_M134_0_zbozi
+ČSD M134.0 (motorový vůz - kusové zboží)
+CSD_M140_1
+ČSD M140.1 "Raketa" (motorový vůz - přeprava novin)
+CSD_M152_0
+ČSD M152.0 (motorový vůz - 2. třída)
+CSD_M210_0
+ČSD M210.0 (motorový vůz - 3. třída)
+CSD_M232_1
+ČSD M232.1 (motorový vůz - 3. třída)
+CSD_M232_1_cerveny
+ČSD M232.1 červený (motorový vůz - 3. třída)
+CSD_M240_0
+ČSD M240.0 "Singrovka" (motorový vůz - 2. třída)
+CSD_M240_0-1
+ČSD M240.0 "Singrovka" (motorový vůz - 2. třída/služební) 1/
+CSD_M240_0-2
+ČSD M240.0 "Singrovka" (motorový vůz - 2. třída/služební) 2/
+CSD_M242_0
+ČSD M242.0 (motorový vůz - 3. třída)
+CSD_M242_0_cerveny
+ČSD M242.0 červený (motorový vůz - 3. třída)
+CSD_M260_0-1
+ČSD M260.0 "Stříbrný šíp" (motorový vůz - 3. třída/služební)
+CSD_M260_0-2
+ČSD M260.0 "Stříbrný šíp" (motorový vůz - 3. třída/služební)
+CSD_M262_0-1
+ČSD M262.0 "Ponorka" (motorový vůz - 2. třída/služební) 1/2
+CSD_M262_0-2
+ČSD M262.0 "Ponorka" (motorový vůz - 2. třída/služební) 2/2
+CSD_M262_1-1
+ČSD M262.1 "Loďák" (motorový vůz - 2. třída/služební) 1/2
+CSD_M262_1-2
+ČSD M262.1 "Loďák" (motorový vůz - 2. třída/služební) 2/2
+CSD_M283_1_prototyp
+ČSD M283.1 prototyp "Krokodýl" (motorový vůz - 2. třída)
+CSD_M283_1_prototyp_otoc
+ČSD M283.1 prototyp "Krokodýl" (zadní motorový vůz - 2. tříd
+CSD_M283_1_prototyp_otoc-1
+ČSD M283.1 prototyp "Krokodýl" (zadní motorový vůz - 2. tříd
+CSD_M283_1_prototyp_otoc-2
+ČSD M283.1 prototyp "Krokodýl" (zadní motorový vůz - 2. tříd
+CSD_M283_1_prototyp-1
+CSD M283.1 prototyp "Krokodýl" (motorový vůz - 2. třída/služ
+CSD_M283_1_prototyp-2
+ČSD M283.1 prototyp "Krokodýl" (motorový vůz - 2. třída/služ
+CSD_M284_1-1
+ČSD M284.1 (motorový vůz - 3. třída/služební) 1/2
+CSD_M284_1-2
+ČSD M284.1 (motorový vůz - 3. třída/služební) 2/2
+CSD_M286_0
+ČSD M286.0 "Krokodýl" (motorový vůz - 2. třída)
+CSD_M286_0_otoc
+ČSD M286.0 "Krokodýl" (zadní motorový vůz - 2. třída)
+CSD_M286_0_otoc-1
+ČSD M286.0 "Krokodýl" (zadní motorový vůz - 2. třída/služebn
+CSD_M286_0_otoc-2
+ČSD M286.0 "Krokodýl" (zadní motorový vůz - 2. třída/služebn
+CSD_M286_0-1
+ČSD M286.0 "Krokodýl" (motorový vůz - 2. třída/služební) 1/2
+CSD_M286_0-2
+ČSD M286.0 "Krokodýl" (motorový vůz - 2. třída/služební) 2/2
+CSD_M286_1
+ČSD M286.1 "Krokodýl" (motorový vůz - 2. třída)
+CSD_M286_1_otoc
+ČSD M286.1 "Krokodýl" (zadní motorový vůz - 2. třída)
+CSD_M286_1_otoc-1
+ČSD M286.1 "Krokodýl" (zadní motorový vůz - 2. třída/služebn
+CSD_M286_1_otoc-2
+ČSD M286.1 "Krokodýl" (zadní motorový vůz - 2. třída/služebn
+CSD_M286_1-1
+ČSD M286.1 "Krokodýl" (motorový vůz - 2. třída/služební) 1/2
+CSD_M286_1-2
+ČSD M286.1 "Krokodýl" (motorový vůz - 2. třída/služební) 2/2
+CSD_M290_0
+ČSD M290.0 "Slovenská Strela" (motorový vůz - 2. třída)
+CSD_M296_1
+ČSD M296.1 "Hydra" (motorový vůz - 2. třída)
+CSD_M296_1-1
+ČSD M296.1 "Hydra" (motorový vůz - 2. třída/služební) 1/2
+CSD_M296_1-2
+ČSD M296.1 "Hydra" (motorový vůz - 2. třída/služební) 2/2
+CSD_M296_1-otoc
+ČSD M296.1 "Hydra" (zadní motorový vůz - 2. třída)
+CSD_M296_1-otoc-1
+ČSD M296.1 "Hydra" (zadní motorový vůz - 2. třída/služební) 
+CSD_M296_1-otoc-2
+ČSD M296.1 "Hydra" (zadní motorový vůz - 2. třída/služební) 
+CSD_M296_2
+ČSD M296.2 "Hydra" (motorový vůz - 2. třída)
+CSD_M296_2-1
+ČSD M475.0 "Chrochtadlo" (motorovy vůz - 2. třída/služební) 
+CSD_M296_2-2
+ČSD M296.2 "Hydra" (motorovy vůz - 2. třída/služební) 2/2
+CSD_M296_2-otoc
+ČSD M296.2 "Hydra" (zadní motorový vůz - 2. třída)
+CSD_M296_2-otoc-1
+ČSD M296.2 "Hydra" (zadní motorový vůz - 2. třída/služební) 
+CSD_M296_2-otoc-2
+ČSD M296.2 "Hydra" (zadní motorový vůz - 2. třída/služební) 
+CSD_M475_0
+ČSD M475.0 "Chrochtadlo" (motorový vůz - 2. třída)
+CSD_M475_0-1
+ČSD M475.0 "Chrochtadlo" (motorový vůz - 2. třída/služební) 
+CSD_M475_0-2
+ČSD M475.0 "Chrochtadlo" (motorový vůz - 2. třída/služební) 
+CSD_N_475.1
+ČSD N 475.1 "Žabotlam" (vložený vůz)
+CSD_N_475.2
+ČSD N 475.2 "Lochneska" (vložený vůz)
+CSD_N_488.0_(vlozeny_vuz_-_2._trida)
+ČSD N 488.0 (vložený vůz - 2. třída)
+CSD_R
+ČSD R (ropné produkty)
 CSD_R_(tendr)
 ČSD R (kotlový vůz s topným olejem)
+CSD_R_mleko
+ČSD R (mléko)
+CSD_Rt_mleko
+ČSD Rt (mléko)
 CSD_S_479.0
 ČSD S 479.0 (elektrická lokomotiva ~25kV/50Hz)
 CSD_S_489.0_Laminatka
@@ -464,6 +1628,18 @@ CSD_S_499.2_Princezna
 ČSD S 499.2 "Princezna" (elektrická lokomotiva ~25kV/50Hz)
 CSD_S_699.0_Velka_Laminatka
 ČSD S 699.0 "Velká Laminátka" (elektrická lokomotiva ~25kV/5
+csd_S458_0
+ČSD S458.0 (elektrická lokomotiva ~25kV/50Hz)
+CSD_SM_488.0_Tornado_(elektricky_vuz_-_2._trida/sluzebni)_1/2
+ČSD SM 488.0 Tornado (přední elektrický vůz - 2. třída/služe
+CSD_SM_488.0_Tornado_(elektricky_vuz_-_2._trida/sluzebni)_2/2
+ČSD SM 488.0 Tornado (přední elektrický vůz - 2. třída/služe
+CSD_SM_488.0_Tornado_(zadni_elektricky_vuz_-_2._trida/sluzebni)_1/2
+ČSD SM 488.0 Tornado (zadní elektrický vůz - 2. třída/služeb
+CSD_SM_488.0_Tornado_(zadni_elektricky_vuz_-_2._trida/sluzebni)_2/2
+ČSD SM 488.0 Tornado (zadní elektrický vůz - 2. třída/služeb
+CSD_St_Talbot
+ČSD St Talbot (sypké zboží)
 CSD_T_426.0_Rakusanka
 ČSD T 426.0 "Rakušanka" (motorová lokomotiva)
 CSD_T_435.0_Hektor
@@ -500,10 +1676,428 @@ CSD_T_698.0_Kokakola_1
 ČSD T 698.0 "Kokakola" (motorová lokomotiva) 1
 CSD_T_698.0_Kokakola_2
 ČSD T 698.0 "Kokakola" (motorová lokomotiva) 2
+CSD_T324_0
+ČSD T324.0 prototyp (dieselová posunovací lokomotiva)
+CSD_T334_0_cervena
+ČSD T334.0 "Rosnička" červená (dieselová posunovací lokomoti
+CSD_T334_0_zelena
+ČSD T334.0 "Rosnička" zelená (dieselová posunovací lokomotiv
+CSD_T334_0_zelena_svetla
+ČSD T334.0 "Rosnička" zelená světlá (dieselová posunovací lo
+csd_t669_0
+ČSD T669.0 "Čmelák" (dieselová lokomotiva)
+csd_t669_0_otoc
+ČSD T669.0 "Čmelák" otočená (dieselová lokomotiva)
+csd_t669_001
+ČSD T669.001 "Čmelák" prototyp (dieselová lokomotiva)
 CSD_TL659.001_Turbinka
 ČSD TL 659.001 "Turbínka" (turbínová lokomotiva)
 CSD_TL659.002_Turbinka
 ČSD TL 659.002 "Turbínka" (turbínová lokomotiva)
+CSD_Ut
+ČSD Ut (sypké zboží)
+CSD_Ut_drevo
+ČSD Ut (dřevo)
+CSD_Uz
+ČSD Uz (cement)
+CSD_Vssa
+ČSD Vssa (sypké zboží)
+CSD_Vssa_dvojice
+ČSD Vssa dvojice vozů (sypké zboží)
+CSD_Vte
+ČSD Vte (sypké zboží)
+CSD_Vte_drevo
+ČSD Vte (dřevo)
+CSD_Vte_drevo_dvojice
+ČSD Vte dvojice vozů (dřevo)
+CSD_Vte_dvojice
+ČSD Vte dvojice vozů (sypké zboží)
+CSD_Vtr
+ČSD Vtr (sypké zboží)
+CSD_Vtr_drevo
+ČSD Vtr (dřevo)
+CSD_Vtr_drevo_dvojice
+ČSD Vtr dvojice vozů (dřevo)
+CSD_Vtr_dvojice
+ČSD Vtr dvojice vozů (sypké zbožé)
+CSD_Vu
+ČSD Vu (sypké zboží)
+CSD_Vut
+ČSD Vut (sypké zboží)
+CSD_Vut_drevo
+ČSD Vut (dřevo)
+CSD_Wa
+ČSD Wa (sypké zboží)
+CSD_Wa_dvojice
+ČSD Wa dvojice vozů (sypké zboží)
+CSD_WLA_120
+ČSD WLA 120 (lůžkový vůz, 1. třída)
+CSD_WLAB
+ČSD WLAB (lůžkový vůz)
+CSD_WLB_300
+ČSD WLB 300 (lůžkový vůz, 2. třída)
+CSD_WR
+ČSD WR (jídelní vůz)
+CSD_WR_400
+ČSD WR 400 (jídelní vůz)
+CSD_WRab
+ČSD WRab (jídelní vůz)
+CSD_Z
+ČSD Z (kusové zboží)
+CSD_Z_cement
+ČSD Z (cement)
+CSD_Z_dvojice
+ČSD Z dvojice vozů (kusové zboží)
+CSD_Z_lidi
+ČSD Z (přeprava osob)
+CSD_Z_obili
+ČSD Z (obiloviny)
+CSD_Z_obili_dvojice
+ČSD Z dvojice vozů (obiloviny)
+CSD_Z1
+ČSD Z 1 (kusové zboží)
+CSD_Z1_lidi
+ČSD Z 1 (přeprava osob)
+CSD_Z1_obili
+ČSD Z 1 (obiloviny)
+CSD_Zav
+ČSD Zav (kusové zboží)
+CSD_Zav_obili
+ČSD Zav (lehké zboží)
+CSD_Ztr
+ČSD Ztr (kusové zboží)
+CSD_Ztr_dvojice
+ČSD Ztr dvojice vozů (kusové zboží)
+CSD_Ztr_obili
+ČSD Ztr (obiloviny)
+CSD_Ztr_obili_dvojice
+ČSD Ztr dvojice vozů (obiloviny)
+CSD_ZZdv-1
+ČSD ZZdv (spěšinová jednotka - přední část)
+CSD_ZZdv-2
+ČSD ZZdv (spěšinová jednotka - zadní část)
+CSD_Zzv
+ČSD Zzv (cement)
+CSD_Zzv_dvojice
+ČSD Zzv dvojice vozů (cement)
+db_038
+DB 038 (parní osobní lokomotiva)
+db_038_otoc
+DB 038 otočená (parní osobní lokomotiva)
+DB_103
+DB 103 (elektrická expresní lokomotiva ~15kV/16,7Hz)
+DB_110
+DB 110 modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_110_TEE_blue
+DB 110 TEE modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_111_blue
+DB 111 oceánova modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_111_Lufthansa
+DB 111 Lufthansa (elektrická lokomotiva ~15kV/16,7Hz)
+DB_111_orientrot
+DB 111 orientální červená (elektrická lokomotiva ~15kV/16,7H
+DB_111_red
+DB 111 červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_111_S-Bahn
+DB 111 S-Bahn (elektrická lokomotiva ~15kV/16,7Hz)
+DB_112_TEE_blue
+DB 112 TEE modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_112_TEE_red
+DB 112 TEE červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_113_orientrot
+DB 113 orientální červená (elektrická lokomotiva ~15kV/16,7H
+DB_113_red
+DB 113 červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_113_TEE_red
+DB 113 TEE červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_116
+DB 116 (elektrická lokomotiva ~15kV/16,7Hz)
+DB_132
+DB 132 (elektrická lokomotiva ~15kV/16,7Hz)
+DB_140
+DB 140 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_140_blue
+DB 140 oceanová modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_140_orientrot
+DB 140 orientální červená (elektrická lokomotiva ~15kV/16,7H
+DB_140_red
+DB 140 červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_141
+DB 141 modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_141_blue
+DB 141 oceánová modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_141_green
+DB 141 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_141_orientrot
+DB 141 orientální červená (elektrická lokomotiva ~15kV/16,7H
+DB_141_red
+DB 141 červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_141_S-Bahn
+DB 141 S-Bahn (elektrická lokomotiva ~15kV/16,7Hz)
+DB_141_wendezug
+DB 141 kyvadlový vlak Karlsruhe (elektrická lokomotiva ~15kV
+DB_141_wendezug_otoc
+DB 141 kyvadlový vlak Karlsruhe (zadní elektrická lokomotiva
+DB_150
+DB 150 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_150_blue
+DB 150 oceánová modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_150_orientrot
+DB 150 orientální červená (elektrická lokomotiva ~15kV/16,7H
+DB_150_red
+DB 150 červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_151
+DB 151 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_151_blue
+DB 151 oceánová modrá (elektrická lokomotiva ~15kV/16,7Hz)
+DB_151_orientrot
+DB 151 orientální červená (elektrická lokomotiva ~15kV/16,7H
+DB_151_railion
+DB 151 Railion (elektrická lokomotiva ~15kV/16,7Hz)
+DB_151_red
+DB 151 červená (elektrická lokomotiva ~15kV/16,7Hz)
+DB_169_002
+DB 169.002 "Pauline" (elektrická lokomotiva ~15kV/16,7Hz)
+DB_169_003
+DB 169.003 "Hermine" (elektrická lokomotiva ~15kV/16,7Hz)
+DB_181_2
+DB 181.2 zelená (elektrická dvousystémová lokomotiva ~15kV/1
+DB_181_2_blue
+DB 181.2 oceánová modrá (elektrická dvousystémová lokomotiva
+DB_181_2_orientrot
+DB 181.2 orientální červená (elektrická dvousystémová lokomo
+DB_181_2_red
+DB 181.2 červená (elektrická dvousystémová lokomotiva ~15kV/
+db_2'2't21,5
+DB 2´2´ T 21,5 (tendr)
+db_2'2't21,5_otoc
+DB 2´2´ T 21,5 otočená (tendr)
+db_2'2't30
+DB 2´2´ T 30 (tendr)
+db_2'2't30_otoc
+DB 2´2´ T 30 otočená (tendr)
+db_210
+DB 210 (dieselová lokomotiva)
+db_211
+DB 211 (dieselová lokomotiva)
+db_212
+DB 212 (dieselová lokomotiva)
+db_220
+DB 220 (dieselová lokomotiva)
+db_220_bb
+DB 220 oceanova modrá (dieselová lokomotiva)
+db_221
+DB 221 (dieselová lokomotiva)
+db_221_bb
+DB 221 oceánová modrá (dieselová lokomotiva)
+db_230
+DB 230 (dieselová lokomotiva)
+db_236
+DB 236 (dieselová lokomotiva)
+db_270
+DB 270 (dieselová lokomotiva)
+db_290
+DB 290 (dieselová lokomotiva)
+db_38
+DB 38 (parní osobní lokomotiva)
+db_38_otoc
+DB 38 otočená (parní osobní lokomotiva)
+DB_627_0_blue
+DB 627.0 oceánová modrá (motorový vůz - 2. třída)
+DB_627_0_blue_as
+DB 627.0 oceánová modrá automat. spřáhlo (motorový vůz - 2. 
+DB_627_0_cyklo_blue_as-1
+DB 627.0 oceánová modrá automat. spřáhlo (motorový vůz - 2. 
+DB_627_0_cyklo_blue_as-2
+DB 627.0 oceánová modrá automat. spřáhlo (motorový vůz - 2. 
+DB_627_0_cyklo_blue-1
+DB 627.0 oceánová modrá (motorový vůz - 2. třída s přepravou
+DB_627_0_cyklo_blue-2
+DB 627.0 oceánová modrá (motorový vůz - 2. třída s přepravou
+DB_627_0_cyklo_red-1
+DB 627.0 červená (motorový vůz - 2. třída s přepravou jízdní
+DB_627_0_cyklo_red-2
+DB 627.0 červená (motorový vůz - 2. třída s přepravou jízdní
+DB_627_0_red
+DB 627.0 červená (motorový vůz - 2. třída)
+DB_627_1_blue
+DB 627.1 oceánová modrá (motorový vůz - 2. třída)
+DB_627_1_cyklo_blue-1
+DB 627.1 oceánová modrá (motorový vůz - 2. třída s přepravou
+DB_627_1_cyklo_blue-2
+DB 627.1 oceánová modrá (motorový vůz - 2. třída s přepravou
+DB_627_1_cyklo_red-1
+DB 627.1 červená (motorový vůz - 2. třída s přepravou jízdní
+DB_627_1_cyklo_red-2
+DB 627.1 červená (motorový vůz - 2. třída s přepravou jízdní
+DB_627_1_red
+DB 627.1 červená (motorový vůz - 2. třída)
+DB_628_0_blue
+DB 628.0 oceánová modrá (přední motorový vůz - 2. třída)
+DB_628_0_blue_as
+DB 628.0 oceánová modrá automat. spřáhlo (přední motorový vů
+DB_628_0_blue_as_otoc
+DB 628.0 oceánová modrá automat. spřáhlo (zadní motorový vůz
+DB_628_0_blue_otoc
+DB 628.0 oceánová modrá (zadní motorový vůz - 2. třída)
+DB_628_0_cyklo_blue_as_otoc-1
+DB 628.0 oceánová modrá automat. spřáhlo (zadní motorový vůz
+DB_628_0_cyklo_blue_as_otoc-2
+DB 628.0 oceánová modrá automat. spřáhlo (zadní motorový vůz
+DB_628_0_cyklo_blue-1
+DB 628.0 oceánová modrá (přední motorový vůz - 2. třída s př
+DB_628_0_cyklo_blue-2
+DB 628.0 oceánová modrá (přední motorový vůz - 2. třída s př
+DB_628_0_mint
+DB 628.0 mentolová (přední motorový vůz - 2. třída)
+DB_628_0_mint_otoc
+DB 628.0 mentolová (zadní motorový vůz - 2. třída)
+DB_628_2_cyklo_mint-1
+DB 628.2 mentolová (přední motorový vůz - 2. třída s přeprav
+DB_628_2_cyklo_mint-2
+DB 628.2 mentolová (přední motorový vůz - 2. třída s přeprav
+DB_628_2_cyklo_red-1
+DB 628.2 červená (zadní motorový vůz - 2. třída s přepravou 
+DB_628_2_cyklo_red-2
+DB 628.2 červená (zadní motorový vůz - 2. třída s přepravou 
+DB_628_2_mint
+DB 628.2 mentolová (zadní motorový vůz - 2. třída)
+DB_628_2_red
+DB 628.2 červená (přední motorový vůz - 2. třída)
+DB_628_4_cyklo_mint-1
+DB 628.4 mentolova (zadní motorový vůz - 2. třída s přepravo
+DB_628_4_cyklo_mint-2
+DB 628.4 mentolová (zadní motorový vůz - 2. třída s přepravo
+DB_628_4_cyklo_red-1
+DB 628.4 červená (přední motorový vůz - 2. třída s přepravou
+DB_628_4_cyklo_red-2
+DB 628.4 červená (přední motorový vůz - 2. třída s přepravou
+DB_628_4_mint
+DB 628.4 mentolová (přední motorový vůz - 2. třída)
+DB_628_4_red
+DB 628.4 červená (zadní motorový vůz - 2. třída)
+DB_628_9_cyklo_red-1
+DB 628.9 červená (zadní motorový vůz - 2. třída s přepravou 
+DB_628_9_cyklo_red-2
+DB 628.9 červená (zadní motorový vůz - 2. třída s přepravou 
+DB_628_9_red
+DB 628.9 červená (přední motorový vůz - 2. třída)
+DB_629_cyklo_red-1
+DB 629 červená (přední motorový vůz - 1. a 2. třída s přepra
+DB_629_cyklo_red-2
+DB 629 červená (přední motorový vůz - 1. a 2. třída s přepra
+DB_629_red
+DB 629 červená (zadní motorový vůz - 1. a 2. třída)
+DB_650
+DB 650 "Regioshuttle" (motorový vůz - 2. třída)
+DB_650_as
+DB 650 "Regioshuttle" automat. spřáhlo (motorový vůz - 2. tř
+DB_650_as-1
+DB 650 "Regioshuttle" automat. spřáhlo (motorový vůz - 2. tř
+DB_650_as-2
+DB 650 "Regioshuttle" automat. spřáhlo (motorový vůz - 2. tř
+DB_650-1
+DB 650 "Regioshuttle" (motorový vůz - 2. třída s přepravou j
+DB_650-2
+DB 650 "Regioshuttle" (motorový vůz - 2. třída s přepravou j
+DB_928_2_cyklo_mint-1
+DB 928.2 mentolová (zadní řídící vůz - 1. a 2. třída s přepr
+DB_928_2_cyklo_mint-2
+DB 928.2 mentolová (zadní řídící vůz - 1. a 2. třída s přepr
+DB_928_2_cyklo_red-1
+DB 928.2 červená (přední řídící vůz - 1. a 2. třída s přepra
+DB_928_2_cyklo_red-2
+DB 928.2 červená (přední řídící vůz - 1. a 2. třída s přepra
+DB_928_2_mint
+DB 928.2 mentolová (přední řídící vůz - 1. a 2. třída)
+DB_928_2_red
+DB 928.2 červená (zadní řídící vůz - 1. a 2. třída)
+DB_928_4_cyklo_mint-1
+DB 928.4 mentolová (přední řídící vůz - 1. a 2. třída s přep
+DB_928_4_cyklo_mint-2
+DB 928.4 mentolová (přední řídící vůz - 1. a 2. třída s přep
+DB_928_4_cyklo_red-1
+DB 928.4 červená (zadní řídící vůz - 1. a 2. třída s přeprav
+DB_928_4_cyklo_red-2
+DB 928.4 červená (zadní řídící vůz - 1. a 2. třída s přeprav
+DB_928_4_mint
+DB 928.4 mentolová (zadní řídící vůz - 1. a 2. třída)
+DB_928_4_red
+DB 928.4 červená (přední řídící vůz - 1. a 2. třída)
+DB_A4um-54
+DB A4um-54 (1. třída)
+DB_A4um-61
+DB A4um-61 (1. třída)
+DB_A4ymb-54
+DB A4ymb-54 (1. třída)
+DB_e16
+DB E16 (elektrická lokomotiva ~15kV/16,7Hz)
+DB_e32
+DB E32 (elektrická lokomotiva ~15kV/16,7Hz)
+DB_e69_002
+DB E69.002 "Pauline" (elektrická lokomotiva ~15kV/16,7Hz)
+DB_e69_003
+DB E69.003 "Hermine" (elektrická lokomotiva ~15kV/16,7Hz)
+db_v100
+DB V100 (dieselová lokomotiva)
+db_v100_006
+DB V100.006 (dieselová lokomotiva)
+db_v100_1
+DB V100.1 (dieselová lokomotiva)
+db_v100_2
+DB V100.2 (dieselová lokomotiva)
+db_v100_prototyp
+DB V100 prototyp (dieselová lokomotiva)
+db_v20
+DB V20 (dieselová lokomotiva)
+db_v200
+DB V200 (dieselová lokomotiva)
+db_v200_1
+DB V200.1 (dieselová lokomotiva)
+db_v200_prototyp
+DB V200 prototyp (dieselová lokomotiva)
+db_v300
+DB V300 (dieselová lokomotiva)
+db_v36
+DB V36 (dieselová lokomotiva)
+db_v90
+DB V90 (dieselová lokomotiva)
+db_v90_prototyp
+DB V90 prototyp (dieselová lokomotiva)
+DBC_Eas
+DB Cargo Eas (sypké zboží)
+DBC_Eas_dvojice
+DB Cargo Eas dvojice vozů (sypké zboží)
+DBC_Es
+DB Cargo Es (sypké zboží)
+DBC_Es_dvojice
+DB Cargo Es dvojice vozů (sypké zboží)
+DBC_Fcc_Talbot
+DB Cargo Fcc Talbot (sypké zboží)
+DR_120
+DR 120 "Sergej" (dieselová nákladní lokomotiva)
+DR_130
+DR 130 "Ragulin" (dieselová nákladní lokomotiva)
+EPPK_Ob_Prazdroj
+EPPK Ob Prazdroj (chladicí vůz na pivo)
+GW_010
+GW 010 (2. třída)
+GW_010-1
+GW 010 (2. třída se zavazadlovým oddílem) 1/2
+GW_010-2
+GW 010 (2. třída se zavazadlovým oddílem) 2/2
+GW_813p
+GW 813 (přední motorový vůz - 2. třída)
+GW_813z_cyklo-1
+GW 813 (zadní motorový vůz - 2. třída se zavazadlovým oddíle
+GW_813z_cyklo-2
+GW 813 (zadní motorový vůz - 2. třída se zavazadlovým oddíle
+GW_913p_cyklo-1
+GW 913 (přední řídící vůz - 2. třída s přepravou jízdních ko
+GW_913p_cyklo-2
+GW 913 (přední řídící vůz - 2. třída s přepravou jízdních ko
+GW_913z
+GW 913 (zadní řídící vůz - 2. třída)
 Ikarus_260_BKV
 Autobus Ikarus 206 BKV
 ikarus_e91
@@ -572,6 +2166,52 @@ Karosa_SL_11
 Linkový autobus Karosa/Škoda SL 11
 Karosa_SM_11
 Městský autobus Karosa/Škoda SM 11
+kkStB_ABeg_4-600
+kkStB ABeg 4-600 (1. a 2. třída)
+kkStB_ABi_5-098
+kkStB ABi 5-098 (1. a 2. třída)
+kkStB_BCi_2-75
+kkStB BCi 2-7587 (2. a 3. třída)
+kkStB_BCi_2-76
+kkStB BCi 2-7621 (2. a 3. třída)
+kkStB_BCi_2-7653
+kkStB BCi 2-7653 (2. a 3. třída)
+kkStB_Ceg_27-006
+kkStB Ceg 27-006 (3. třída)
+kkStB_Ci_4-15
+kkStB Ci 4-1543 (3. třída)
+kkStB_Ci_4-18
+kkStB Ci 4-1808 (3. třída)
+kkStB_Ci_4-20
+kkStB Ci 29-546 (3. třída)
+kkStB_D
+kkStB D (služební vůz)
+kkStB_Ded
+kkStB Ded (služební vůz)
+kkStB_G
+kkStB G (kusové zboží)
+kkStB_G_obili
+kkStB G (obiloviny)
+kkStB_G10
+kkStB G 10 (kusové zboží)
+kkStB_Ga
+kkStB Ga (kusové zboží)
+kkStB_Ga_obili
+kkStB Ga (lehké zboží)
+kkStB_Gb_3_Gambrinus
+kkStB Gb Gambrinus (tříosý chladicí vůz na pivo)
+kkStB_Gb_3_Prazdroj
+kkStB Gb Prazdroj (tříosý chladicí vůz na pivo)
+kkStB_Gb_Budvar
+kkStB Gb Budvar (chladicí vůz na pivo)
+kkStB_Gb_Litovel
+kkStB Gb Litovel (chladicí vůz na pivo)
+kkStB_Gb_Prazdroj
+kkStB Gb Prazdroj (chladicí vůz na pivo)
+kkStB_Gb_Staropramen
+kkStB Gb Staropramen (chladicí vůz na pivo)
+kkStB_Gfn
+kkStB Gfn (chladicí vůz na maso)
 Laurin_125_autobus
 Lehký městský autobus Laurin a Klement (Škoda) 125
 Laurin_125_benzin
@@ -626,6 +2266,8 @@ Liaz_110.073_cement
 Náklaďák Liaz 110.073 (valník na přepravu paletovaného cemen
 Liaz_110.073_zbozi
 Náklaďák Liaz 110.073 (valník na přepravu paletovaného zboží
+liaz_110.581
+Tahač Liaz 110.581
 Liaz_111.800_drevo
 Tahač Liaz 111.800 (manipulační ruka, převoz dřeva)
 Liaz_150.261_uhli
@@ -644,6 +2286,8 @@ liaz_18.33_PB_cement
 Náklaďák Liaz 18.33 PB (valník, paletovaný cement)
 liaz_18.33_PB_zbozi
 Náklaďák Liaz 18.33 PB (valník, paletované zboží)
+liaz_18.33_TBV
+Tahač Liaz 18.33 TBV
 Liaz_18.33_XB_ADR_ropa
 Náklaďák Liaz 18.33 XB ADR (cisterna na ropné produkty)
 Liaz_18.33_XB_mleko
@@ -654,8 +2298,30 @@ Liaz_250.261_uhli
 Náklaďák Liaz 251.261 (sklápěč, sypké zboží)
 Liaz_251.261_obili
 Náklaďák Liaz 251.261 (sklápěč, zemedělské produkty)
+MAV_M62
+MAV M62 "Sergej" (dieselová nákladní lokomotiva)
+Mercedes_Benz_Actros
+Tahač Mercedes Benz Actros (žlutý)
+nhkg_t669_2501
+NHKG T669.2501 prototyp (dieselová lokomotiva)
+nhkg_t669_2501_2
+NHKG T669.2501 prototyp pozdejší provedení (dieselová lokomo
 obb_setra_s431dt
 Meziměstský autobus Setra S 431 DT
+OZVD_Ci_R_I
+OZVD Ci Rybák I (3. třída)
+podval_P-32_auta
+Střední podvalník Transporta P-32 (auta)
+podval_P-32_beton
+Střední podvalník Transporta P-32 (beton)
+podval_P-32_ocel
+Střední podvalník Transporta P-32 (ocel)
+podval_P-50_auta
+Těžký podvalník Transporta P-50 (auta)
+podval_P-50_beton
+Těžký podvalník Transporta P-50 (beton)
+podval_P-50_ocel
+Těžký podvalník Transporta P-50 (ocel)
 Praga_N_benzin
 Praga N (sudy s benzínem)
 Praga_N_beton
@@ -678,28 +2344,278 @@ Praga_N_zbozi
 Praga N (paletované zboží)
 Praga_NO
 Městský autobus Praga NO
+Praga_RN_autobus
+Městský autobus Praga RN "Erena"
+Praga_RN_autobus_CSD
+Linkový autobus Praga RN "Erena" (ČSD)
+Praga_RN_benzin
+Lehký náklaďák Praga RN "Erena" (sudy s benzínem)
+Praga_RN_beton
+Lehký náklaďák Praga RN "Erena" (betonové skruže)
+Praga_RN_cement
+Lehký náklaďák Praga RN "Erena" (pytlovaný cement)
+Praga_RN_drevo
+Lehký náklaďák Praga RN "Erena" (dřevo)
+Praga_RN_maso
+Lehký náklaďák Praga RN "Erena" (řeznický vůz)
+Praga_RN_mleko
+Lehký náklaďák Praga RN "Erena" (mléko)
+Praga_RN_obili
+Lehký náklaďák Praga RN "Erena" (obilí)
+Praga_RN_ocel
+Lehký náklaďák Praga RN "Erena" (ocelové díly)
+Praga_RN_sypke_zbozi
+Lehký náklaďák Praga RN "Erena" (uhlí)
+Praga_RN_zbozi
+Lehký náklaďák Praga RN "Erena" (paletované zboží)
+Praga_S5T_benzin
+Náklaďák Praga S5T (sudy s benzínem)
+Praga_S5T_maso
+Náklaďák Praga S5T (řeznický vůz)
+Praga_S5T_mleko
+Náklaďák Praga S5T (mlékárenský vůz)
+Praga_S5T_obili
+Náklaďák Praga S5T (obilniny)
+Praga_S5T_sypke_zbozi
+Náklaďák Praga S5T (uhlí)
+Praga_S5T_zbozi
+Náklaďák Praga S5T (paletované zboží)
 Praga_TN
 Městský autobus Praga TN
 Praga_TO
 Městský autobus Praga TO
 Praga_TO_II
 Městský autoubus Praga TO (modernizovaný)
+Praga_TOT
+Trolejbus Praga TOT
+Praga_v3s_benzin
+Lehký náklaďák Praga V3S (sudy s benzínem)
+Praga_v3s_beton
+Lehký náklaďák Praga V3S (betonové skruže)
+Praga_v3s_cement
+Lehký náklaďák Praga V3S (pytlovaný cement)
+Praga_v3s_drevo
+Lehký náklaďák Praga V3S (oplenový lesovůz, dřevo)
+Praga_v3s_obili
+Lehký náklaďák Praga V3S (obilí)
+Praga_v3s_ocel
+Lehký náklaďák Praga V3S (ocelové díly)
+Praga_v3s_sypke_zbozi
+Lehký náklaďák Praga V3S (uhlí)
+Praga_v3s_zbozi
+Lehký náklaďák Praga V3S (paletované zboží)
 Praga_VT6
 Městský autobus Praga VT6
+RBG_650_oberpfalzbahn
+RBG 650 "Regioshuttle" Oberfalzbahn (motorový vůz - 2. třída
+RBG_650_oberpfalzbahn-1
+RBG 650 "Regioshuttle" Oberfalzbahn (motorový vůz - 2. třída
+RBG_650_oberpfalzbahn-2
+RBG 650 "Regioshuttle" Oberfalzbahn (motorový vůz - 2. třída
+RBG_650_waldbahn
+RBG 650 "Regioshuttle" Waldbahn (motorový vůz - 2. třída)
+RBG_650_waldbahn_gy
+RBG 650 "Regioshuttle" Waldbahn zelenožlutý (motorový vůz - 
+RBG_650_waldbahn_gy-1
+RBG 650 "Regioshuttle" Waldbahn zelenožlutý (motorový vůz - 
+RBG_650_waldbahn_gy-2
+RBG 650 "Regioshuttle" Waldbahn zelenožlutý (motorový vůz - 
+RBG_650_waldbahn-1
+RBG 650 "Regioshuttle" Waldbahn (motorový vůz - 2. třída s p
+RBG_650_waldbahn-2
+RBG 650 "Regioshuttle" Waldbahn (motorový vůz - 2. třída s p
+renault_magnum
+Tahač Renault Magnum
+RJ_070
+RegioJet 070 (vložený vůz - 2. třída)
+RJ_162
+RegioJet 162 (elektrická lokomotiva =3kV)
+RJ_721_151
+RegioJet 721.151 (motorová lokomotiva)
+RJ_970_predni-1
+RegiolJet 970 (přední řídící vůz - 1. třída s bufetovym a za
+RJ_970_predni-2
+RegiolJet 970 (přední řídící vůz - 1. třída s bufetovým a za
+RJ_970_zadni-1
+RegioJet 970 (řídící vůz - 1. třída s bufetovým a zavazadlov
+RJ_970_zadni-2
+RegioJet 970 (řídící vůz - 1. třída s bufetovým a zavazadlov
+RJ_ABmz_3090
+RegioJet ABmz 30-90 (2. třída)
+RJ_Ampz_1891
+RegioJet Ampz 18-91 (2. třída)
+skoda_1_tr
+Trolejbus Škoda 1Tr
+skoda_10_tr
+Kloubový Trolejbus Škoda 10Tr
+skoda_10_tr_zadek
+Škoda 10Tr zadní část
 Skoda_109E_Messerschmitt
 Škoda 109E "Messerschmitt" (elektrická vícesystémová lokomot
+skoda_11_tr
+Trolejbus Škoda 11Tr
+skoda_12_tr
+Trolejbus Škoda 12Tr
+skoda_13_tr
+Trolejbus Škoda 13Tr
+skoda_14_tr
+Trolejbus Škoda 14Tr
+skoda_15_tr
+Kloubový trolejbus Škoda 15Tr
+skoda_15_tr_zadek
+Škoda 15 Tr zadní část
+skoda_16_tr
+Trolejbus Škoda 16Tr
+skoda_17_tr
+Trolejbus Škoda 17Tr
+skoda_18_tr
+Kloubový trolejbus Škoda 18Tr
+skoda_18_tr_zadek
+Škoda 18Tr zadní část
+skoda_19_tr
+Kloubový trolejbus Škoda 19Tr
+skoda_19_tr_stred
+Škoda 19Tr střední část
+skoda_19_tr_zadek
+Škoda 19Tr zadní část
+skoda_2_tr
+Trolejbus Škoda 2Tr
+skoda_20_tr
+Kloubový trolejbus Škoda 20Tr
+skoda_20_tr_stred
+Škoda 20Tr střední část
+skoda_20_tr_zadek
+Škoda 20Tr zadní část
 skoda_21_ab
 Městský autobus Škoda 21AB
+skoda_21_tr
+Trolejbus Škoda 21TrACI
+skoda_22_tr
+Kloubový trolejbus Škoda 22Tr
+skoda_22_tr_zadek
+Škoda 22Tr zadní část
+skoda_23_tr
+Kloubový trolejbus Škoda 23Tr
+skoda_23_tr_stred
+Škoda 23Tr střední část
+skoda_23_tr_zadek
+Škoda 23Tr zadní část
+skoda_24_tr
+Trolejbus Škoda 24Tr
+skoda_25_tr
+Kloubový trolejbus Škoda 25Tr
+skoda_25_tr_zadek
+Škoda 25Tr zadní část
+skoda_26_tr
+Trolejbus Škoda/Solaris 26Tr
+skoda_27_tr
+Kloubový trolejbus Škoda/Solaris 27Tr
+skoda_27_tr_zadek
+Škoda 27Tr zadní část
+skoda_28_tr
+Trolejbus Škoda/Solaris 28Tr
+skoda_3_tr
+Trolejbus Škoda 3Tr
+skoda_30_tr
+Trolejbus Škoda/Sor 30Tr
+skoda_31_tr
+Kloubový trolejbus Škoda/Sor 31Tr
+skoda_31_tr_zadek
+Škoda/Sor 31Tr zadní část
+skoda_4_tr
+Trolejbus Škoda 4Tr
+skoda_5_tr
+Trolejbus Škoda 5Tr
+skoda_6_tr
+Trolejbus Škoda 6Tr
+skoda_7_tr
+Trolejbus Škoda 7Tr
+Skoda_706_benzin
+Náklaďák Škoda 706 (sudy s benzínem)
+Skoda_706_beton
+Náklaďák Škoda 706 (betonové skruže)
+Skoda_706_cement
+Náklaďák Škoda 706 (pytlovaný cement)
+Skoda_706_drevo
+Náklaďák Škoda 706 (dřevo)
+Skoda_706_maso
+Náklaďák Škoda 706 (řeznický vůz)
+Skoda_706_mleko
+Náklaďák Škoda 706 (mléko)
+skoda_706_MTS
+Náklaďák Škoda 706 MTS (sklápěč)
+skoda_706_MTS_Agro
+Náklaďák Škoda 706 MT (sklápěč pro zemědělství)
+skoda_706_MTS_cisterna_na_mleko
+Náklaďák Škoda 706 MT (cisterna na mléko)
+skoda_706_MTS_cisterna_na_ropu
+Náklaďák Škoda 706 MT (cisterna na ropné produkty)
+skoda_706_MTS_valnik_s_plachtou
+Náklaďák Škoda 706 MT (valník s plachtou na paletované zboží
+skoda_706_MTTN
+Tahač Škoda 706 MTTN
+Skoda_706_obili
+Náklaďák Škoda 706 (obilí)
+Skoda_706_ocel
+Náklaďák Škoda 706 (ocelové díly)
+Skoda_706_R_benzin
+Náklaďák Škoda 706 R "Barča"(sudy s benzínem)
+Skoda_706_R_beton
+Náklaďák Škoda 706 R "Barča"(betonové skruže)
+Skoda_706_R_cement
+Náklaďák Škoda 706 R "Barča"(pytlovaný cement)
+Skoda_706_R_drevo
+Náklaďák Škoda 706 R "Barča"(dřevo)
+Skoda_706_R_maso
+Náklaďák Škoda 706 R "Barča"(řeznický vůz)
+Skoda_706_R_mleko
+Náklaďák Škoda 706 R "Barča"(mléko)
+Skoda_706_R_obili
+Náklaďák Škoda 706 R "Barča"(obilí)
+Skoda_706_R_ocel
+Náklaďák Škoda 706 R "Barča"(ocelové díly)
+Skoda_706_R_sypke_zbozi
+Náklaďák Škoda 706 R "Barča"(uhlí)
+Skoda_706_R_zbozi
+Náklaďák Škoda 706 R "Barča"(paletované zboží)
 skoda_706_RO_linkovy
 Linkový autobus Škoda 706 RO
 skoda_706_RO_mestsky
 Městský autobus Škoda 706 RO
+skoda_706_RT
+Náklaďák Škoda 706 RT (sklápěč)
+skoda_706_RT_Agro
+Náklaďák Škoda 706 RT (valník pro zemedělství)
+skoda_706_RT_cisterna_na_mleko
+Náklaďák Škoda 706 RT (cisterna na mléko)
+skoda_706_RT_cisterna_na_ropu
+Náklaďák Škoda 706 RT (cisterna na ropné produkty)
+skoda_706_RT_valnik_s_plachtou
+Náklaďák Škoda 706 RT (valník s plachtou na paletované zboží
 skoda_706_RTO
 Linkový autobus Škoda 706 RTO
+skoda_706_RTO_K
+Kloubový autobus Škoda 706 RTO K
+skoda_706_RTO_K__zadek
+Autobus Škoda 706 RTO K (zadní část)
 skoda_706_RTO_LUX
 Dálkový autobus Škoda 706 RTO
 skoda_706_RTO_MEZ
 Městský autobus Škoda 706 RTO
+skoda_706_RTO_mrazak
+Nákladní automobil Škoda 706 RTO (mrazírenský vůz)
+skoda_706_RTO_stehovak
+Nákladní automobil Škoda 706 RTO (stěhovací vůz)
+skoda_706_RTTN
+Tahač Škoda 706 RTTN
+Skoda_706_sypke_zbozi
+Náklaďák Škoda 706 (uhlí)
+Skoda_706_zbozi
+Náklaďák Škoda 706 (paletované zboží)
+skoda_8_tr
+Trolejbus Škoda 8Tr
+skoda_9_tr
+Trolejbus Škoda 9Tr
 Skoda_model_505_(autobus)
 Městský autobus Škoda model 505
 Skoda_model_506N_(autobus-polotrambus)
@@ -714,8 +2630,42 @@ Skoda_model_656D_(autobus)
 Městský autobus Škoda model 656D
 Skoda_model_656D_II_(autobus)
 Městský autobus Škoda 656D (modernizovaný)
+skoda_sanos_115_tr
+Trolejbus Škoda/Sanos 115Tr
+skoda_sanos_200_tr
+Kloubový trolejbus Škoda/Sanos 200Tr
+skoda_sanos_200_tr_zadek
+Škoda/Sanos 200Tr zadní část
+Skoda_Sentinel_benzin
+Parní nákladní automobil Škoda Sentinel (sudy s benzínem)
+Skoda_Sentinel_beton
+Parní nákladní automobil Škoda Sentinel (betonové skruže)
+Skoda_Sentinel_cement
+Parní nákladní automobil Škoda Sentinel (pytlovaný cement)
+Skoda_Sentinel_drevo
+Parní nákladní automobil Škoda Sentinel (dřevěné latě)
+Skoda_Sentinel_maso
+Parní nákladní automobil Škoda Sentinel (řeznický vůz)
+Skoda_Sentinel_mleko
+Parní nákladní automobil Škoda Sentinel (mlékařsky vůz)
+Skoda_Sentinel_obili
+Parní nákladní automobil Škoda Sentinel (obilniny)
+Skoda_Sentinel_ocel
+Parní nákladní automobil Škoda Sentinel (ocelové díly)
+Skoda_Sentinel_sypke_zbozi
+Parní nákladní automobil Škoda Sentinel (uhlí)
+Skoda_Sentinel_zbozi
+Parní nákladní automobil Škoda Sentinel (paletované zboží)
 Skrin_na_lyze
 Autobusová skříň na lyže
+solaris_trollino_12
+Trolejbus Solaris Trollino 12M
+Solaris_Trollino_15
+Trolejbus Solaris Trollino 15M
+Solaris_Trollino_18
+Kloubový trolejbus Solaris Trollino 18M
+Solaris_Trollino_18_zadek
+Solaris Trollino 18M zadní část
 Solaris_Urbino_10
 Městský autobus Solaris Urbino 10M
 Solaris_Urbino_12
@@ -764,6 +2714,70 @@ SOR_NB_12
 Městský autobus Sor NB 12
 sor_nb_12_city
 Autobus Sor NB 12 City
+StEG_Ci_4-17
+StEG Ci 4-1707 (3. třída)
+T_211.0
+ČSD T211.0 (dieselová posunovací lokomotiva)
+TATRA_111_(beton)
+Těžký náklaďák Tatra 111 (valník s betonovými skružemi)
+TATRA_111_(drevo)
+Těžký náklaďák Tatra 111 (přepravník dřeva s klanicemi)
+TATRA_111_(obili)
+Těžký náklaďák Tatra 111 (valník na převoz obilí)
+TATRA_111_(Preprava_cementu)
+Těžký náklaďák Tatra 111 (přepravník cementu)
+TATRA_111_(sypke_zbozi)
+Těžký náklaďák Tatra 111 (valník na sypké zboží)
+TATRA_111_(zbozi)
+Těžký náklaďák Tatra 111 (valník na paletované zboží)
+TATRA_138_(cisterna_na_mleko)
+Těžký náklaďák Tatra 138 (cisterna na mléko)
+TATRA_138_(cisterna_na_ropu)
+Těžký náklaďák Tatra 138 (cisterna na ropné produkty)
+TATRA_138_(Drevarska_nastavba)
+Těžký náklaďák Tatra 138 (dřevařská nástavba)
+TATRA_138_(Preprava_cementu)
+Těžký náklaďák Tatra 138 (přeprava cementu)
+TATRA_138_(Prepravnik_betonovych_panelu)
+Těžký náklaďák Tatra 138 (přepravník betonových panelů)
+TATRA_138_(Prepravnik_ocelovych_profilu)
+Těžký náklaďák Tatra 138 (přepravník ocelových profilů)
+TATRA_138_(Valnik_s_plachtou)
+Těžký náklaďák Tatra 138 (valník s plachtou na paletované zb
+TATRA_138_S1_(jednostranny_sklapec,_sypke_zbozi)
+Těžký náklaďák Tatra 138 S1 (jednostranný sklápěč)
+TATRA_138_S3_(tristranny_sklapec,_obili)
+Těžký náklaďák Tatra 138 S3 (třístranný sklápěč pro zeměděls
+TATRA_138_S3_(tristranny_sklapec,_sypke_zbozi)
+Těžký náklaďák Tatra 138 S3 (třístranný sklápěč)
+TATRA_141
+Těžký tahač Tatra 141
+TATRA_147_DC_(dampr)
+Těžký náklaďák Tatra 147 DC (těžký sklápěč)
+TATRA_148_(cisterna_na_mleko)
+Těžký náklaďák Tatra 148 (cisterna na mléko)
+TATRA_148_(cisterna_na_ropu)
+Těžký náklaďák Tatra 148 (cisterna na ropné produkty)
+TATRA_148_(Drevarska_nastavba)
+Těžký náklaďák Tatra 148 (dřevařská nástavba)
+TATRA_148_(Preprava_cementu)
+Těžký náklaďák Tatra 148 (přepravník cementu)
+TATRA_148_(Prepravnik_betonovych_panelu)
+Těžký náklaďák Tatra 148 (přepravník betonových panelů)
+TATRA_148_(Prepravnik_ocelovych_profilu)
+Těžký náklaďák Tatra 148 (přepravník ocelových profilů)
+TATRA_148_(Valnik_s_plachtou)
+Těžký náklaďák Tatra 148 (valník s plachtou na paletované zb
+TATRA_148_S1_(jednostranny_sklapec,_sypke_zbozi)
+Těžký náklaďák Tatra 148 S1 (jednostranný sklápěč)
+TATRA_148_S3_(tristranny_sklapec,_obili)
+Těžký náklaďák Tatra 148 S3 (třístranný sklápěč pro zeměděls
+TATRA_148_S3_(tristranny_sklapec,_sypke_zbozi)
+Těžký náklaďák Tatra 148 S3 (třístranný sklápěč)
+TATRA_148_TP
+Tězký tahač Tatra 148 TP
+TATRA_163_Jamal
+Těžký náklaďák Tatra 163 Jamal
 Tatra_23_benzin
 Náklaďák Tatra 23 (sudy s benzínem)
 Tatra_23_beton
@@ -844,12 +2858,124 @@ Tatra_24-67_sypke_zbozi
 Náklaďák Tatra 24/67 (uhlí)
 Tatra_24-67_zbozi
 Náklaďák Tatra 24/67 (stěhovací skříň)
+TATRA_400_T
+Trolejbus Tatra 400 T
+TATRA_401_T
+Trolejbus Tatra 401 T
 TATRA_500_HB
 Horský bus Tatra 500 HB
+TATRA_813_8x8_Kolos_(beton)
+Těžký náklaďák Tatra 813 8x8 Kolos (betonové potrubí)
+TATRA_813_8x8_Kolos_(obili)
+Těžký náklaďák Tatra 813 8x8 Kolos (zemědělský náklaďák)
+TATRA_813_8x8_Kolos_(pytlovany_cement)
+Těžký náklaďák Tatra 813 8x8 Kolos (pytlovaný cement)
+TATRA_813_8x8_Kolos_(zbozi)
+Těžký náklaďák Tatra 813 8x8 Kolos (paletované zboží)
+TATRA_813_S1_8x8
+Těžký náklaďák Tatra 813 8x8 S1 (jednostranný sklápěč)
+TATRA_813_TP_6x6
+Těžký tahač Tatra 813 TP 6x6
+TATRA_815_260N51
+Tahač Tatra 815 260N51
+TATRA_815_Agro_S
+Těžký náklaďák Tatra 815 6x6 Agro S (zemědělská nástavba)
+TATRA_815_AM369_(autodomichavac)
+Těžký náklaďák Tatra 815 6x6 AM369 (automíchačka betonu)
 TATRA_815_Bus
 Horský bus Tatra 815
+TATRA_815_CA-18_(cisterna)
+Těžký náklaďák Tatra 815 6x6 CA-18 (aumobilová cisterna-ropn
+TATRA_815_Lesovuz
+Těžký náklaďák Tatra 815 6x6 Lesovůz (přeprava dřeva)
+TATRA_815_Multilift_8x8+kontejner_na_zbozi
+Těžký náklaďák Tatra 815 Multilift 8x8 (kontejner na paletov
+TATRA_815_S1
+Těžký náklaďák Tatra 815 S1 (jednostranný sklápěč)
+TATRA_815_S3
+Těžký náklaďák Tatra 815 S3 (třístranný sklápěč)
+TATRA_815_Terrno_8x8_S1
+Těžký náklaďák Tatra 815 8x8 Terrno S1 (jednostranný sklápěč
+TATRA_815_Terrno_AM_7_FHC_6x6_(autodomichavac)
+Těžký náklaďák Tatra 815 Terrno 6x6 Am 7 FHC (automíchačka b
+TATRA_815_Terrno_AM_9_FHC_8x8_(autodomichavac)
+Těžký náklaďák Tatra 815 Terrno 8x8 AM 9 FHC (automíchačka b
+TATRA_815_Terrno_S3_6x6
+Těžký náklaďák Tatra 815 6x6 Terrno S3 (třístranný sklápěč)
+TATRA_815_TP_6x6
+Těžký tahač Tatra 815 TP 6x6
+TATRA_86_T
+Trolejbus Tatra 86 T
+Tatra_Typ_R_beton
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (beton)
+Tatra_Typ_R_cement
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (balený ce
+Tatra_Typ_R_drevo
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (palivové 
+Tatra_Typ_R_maso
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (řeznický 
+Tatra_Typ_R_mleko
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (mlékárens
+Tatra_Typ_R_obili
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (senný vůz
+Tatra_Typ_R_ocel
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (ocelové s
+Tatra_Typ_R_palety
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (paletové 
+Tatra_Typ_R_ropa
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (petrolej)
+Tatra_Typ_R_sypke
+Nesselsdorfer Wagenbau-Fabriks-Gesellschaft Typ R (uhlí)
+Viamont_010_r
+Viamont 010 (přední řídící vůz - 2. třída)
+Viamont_010_v
+Viamont 010 (2. třída)
+Viamont_010-1
+Viamont 010 (přední řídící vůz - 2. třída s přepravou jízdní
+Viamont_010-2
+Viamont 010 (předni řídící vůz - 2. třída s přepravou jízdní
+Viamont_010-3
+Viamont 010 (2. třída se zavazadlovým oddílem) 1/2
+Viamont_010-4
+Viamont 010 (2. třída se zavazadlovým oddílem) 2/2
+Viamont_810
+Viamont 810 (motorový vůz - 2. třída)
+Viamont_Es
+Viamont Es (sypké zboží)
+Viamont_Es_drevo
+Viamont Es (dřevo)
+Viamont_Es_drevo_dvojice
+Viamont Es dvojice vozů (dřevo)
+Viamont_Es_dvojice
+Viamont Es dvojice vozů (sypké zboží)
 vlek_drevo
 Vlek na převoz dřeva
+ZD_010
+Železnice Desná 010 (2. třída)
+ZD_010-1
+Železnice Desná 010 (2. třída se zavazadlovym oddílem) 1/2
+ZD_010-2
+Železnice Desná 010 (2. třída se zavazadlovým oddílem) 2/2
+ZD_810
+Železnice Desná 810 (motorový vůz - 2. třída)
+ZD_814_5
+Železnice Desná 814.5 "Desná" (motorový vůz - 2. třída)
+ZD_914_5
+Železnice Desná 914.5 "Desná" (řídící vůz - 2. třída)
+ZSR_011
+ŽSR 011 (2. třída)
+ZSR_011_orange
+ŽSR 011 (2. třída)
+ZSR_011_orange-1
+ŽSR 011 (2. třída se zavazadlovým oddílem) 1/2
+ZSR_011_orange-2
+ŽSR 011 (2. třída se zavazadlovým oddílem) 2/2
+ZSR_011-1
+ŽSR 011 (2. třída se zavazadlovým oddílem) 1/2
+ZSR_011-2
+ŽSR 011 (2. třída se zavazadlovým oddílem) 2/2
+ZSR_050
+ŽSR 050 (2. třída)
 ZSR_110_Zehlicka
 ŽSR 110 "Žehlička" (elektrická lokomotiva =3kV)
 ZSR_125_Stvoricka_1
@@ -882,6 +3008,82 @@ ZSR_362_Persing
 ŽSR 362 "Persing" (elektrická dvousystémová lokomotiva =3kV 
 ZSR_363_Persing
 ŽSR 363 "Persing" (elektrická dvousystémová lokomotiva =3kV 
+ZSR_810
+ŽSR 810 (motorový vůz - 2. třída)
+ZSR_811
+ŽSR 811 (motorový vůz - 2. třída)
+ZSR_812_lux
+ŽSR 812 lux (motorový vůz - 2. třída)
+ZSR_812-1
+ŽSR 812 (motorový vůz - 2. třída s přepravou jízdních kol) 1
+ZSR_812-2
+ŽSR 812 (motorový vůz - 2. třída s přepravou jízdních kol) 2
+ZSR_850
+ŽSR 850 "Krokodýl" (motorový vůz - 2. třída)
+ZSR_850_otoc
+ŽSR 850 "Krokodýl" (zadní motorový vůz - 2. třída)
+ZSR_850_otoc-1
+ŽSR 850 "Krokodýl" (zadní motorový vůz - 2. třída/služební) 
+ZSR_850_otoc-2
+ŽSR 850 "Krokodýl" (zadní motorový vůz - 2. třída/služební) 
+ZSR_850-1
+ŽSR 850 "Krokodýl" (motorový vůz - 2. třída/služební) 1/2
+ZSR_850-2
+ŽSR 850 "Krokodýl" (motorový vůz - 2. třída/služební) 2/2
+ZSR_912
+ŽSR 912 (přední řídící vůz - 2. třída)
+ZSR_A
+ŽSR A (1. třída)
+ZSR_AB
+ŽSR AB (1. a 2. třída)
+ZSR_Apee_IC
+ŽSR Apee InterCity (1. třída)
+ZSR_B
+ŽSR B (2. třída)
+ZSR_Bc
+ŽSR Bc (lehátkový vůz 2. třída)
+ZSR_BDs_regio-1
+ŽSR BDs regio (služební/2. třída) 1/2
+ZSR_BDs_regio-2
+ŽSR BDs regio (služební/2. třída) 2/2
+ZSR_BDs-1
+ŽSR BDs (služební/2. třída) 1/2
+ZSR_BDs-2
+ŽSR BDs (služební/2. třída) 2/2
+ZSR_BDshmee-1
+ŽSR BDshmee (služební/2. třída) 1/2
+ZSR_BDshmee-2
+ŽSR BDshmee (služební/2. třída) 2/2
+ZSR_Bdtmee
+ŽSR Bdtmee (2. třída)
+ZSR_Bdtmee_cyklo-1
+ŽSR Bdtmee (2. třída s přepravou jízdních kol) 1/2
+ZSR_Bdtmee_cyklo-2
+ŽSR Bdtmee (2. třída s přepravou jízdních kol) 2/2
+ZSR_Bmee
+ŽSR Bmee (2. třída)
+ZSR_Bpee_IC
+ŽSR Bpee InterCity (2. třída)
+ZSR_Bt
+ŽSR Bt (2. třída)
+ZSR_Ds
+ŽSR Ds (služební vůz)
+ZSSK_011_Blonski
+ZSSK 011 Blonski (2. třída)
+ZSSK_011_Blonski-1
+ZSSK 011 Blonski (2. třída se zavazadlovým oddílem) 1/2
+ZSSK_011_Blonski-2
+ZSSK 011 Blonski (2. třída se zavazadlovým oddílem) 2/2
+ZSSK_011_red
+ZSSK 011 (2. třída)
+ZSSK_011_red-1
+ZSSK 011 (2. třída se zavazadlovým oddílem) 1/2
+ZSSK_011_red-2
+ZSSK 011 (2. třída se zavazadlovým oddílem) 2/2
+ZSSK_012_Blonski-1
+ZSSK 012 Blonski (2. třída s přepravou jízdních kol) 1/2
+ZSSK_012_Blonski-2
+ZSSK 012 Blonski (2. třída s přepravou jízdních kol) 2/2
 ZSSK_071
 ZSSK 071 "Jánošík" (vložený vůz)
 ZSSK_110_Zehlicka
@@ -920,5 +3122,97 @@ ZSSK_381_Messerschmitt
 ZSSK 381 (elektrická vícesystémova lokomotiva =3kV + ~25kV/5
 ZSSK_671
 ZSSK 671 "Jánošík" (elektrická vícesystémová jednotka =3kV +
+ZSSK_810_Blonski
+ZSSK 810 Blonski (motorový vůz - 2. třída)
+ZSSK_811_Blonski
+ZSSK 811 Blonski (motorový vůz - 2. třída)
+ZSSK_812_Blonski-1
+ZSSK 812 Blonski (motorový vůz - 2. třída s přepravou jízdní
+ZSSK_812_Blonski-2
+ZSSK 812 Blonski (motorový vůz - 2. třída s přepravou jízdní
+ZSSK_812-1
+ZSSK 812 (motorový vůz - 2. třída s přepravou jízdních kol) 
+ZSSK_812-2
+ZSSK 812 (motorový vůz - 2. třída s přepravou jízdních kol) 
+ZSSK_813-1
+ZSSK 813 Bageta (zadní motorový vůz - 2. třída s přepravou j
+ZSSK_813-2
+ZSSK 813 Bageta (zadní motorový vůz - 2. třída s přepravou j
+ZSSK_912_Blonski
+ZSSK 912 Blonski (přední řídící vůz - 2. třída)
+ZSSK_913
+ZSSK 913 Bageta (přední řídící vůz - 2. třída)
 ZSSK_971
 ZSSK 971 "Jánošík" (řídící vůz)
+ZSSK_A
+ZSSK A (1. třída)
+ZSSK_A_Blonski
+ZSSK A Blonski (1. třída)
+ZSSK_AB
+ZSSK AB (1. a 2. třída)
+ZSSK_AB_Blonski
+ZSSK AB Blonski (1. a 2. třída)
+ZSSK_B
+ZSSK B (2. třída)
+ZSSK_B_Blonski
+ZSSK B Blonski (2. třída)
+ZSSK_Bc
+ZSSK Bc (lehátkový vůz 2. třída)
+ZSSK_Bc_Blonski
+ZSSK Bc Blonski (lehátkový vůz 2. třída)
+ZSSK_Bcee_Blonski
+ZSSK Bcee Blonski (lehátkový vůz 2. třída)
+ZSSK_Bdgtmee_Blonski
+ZSSK Bdgtmee Blonski (2. třída)
+ZSSK_Bdgtmee_cyklo_Blonski-1
+ZSSK Bdgtmee Blonski (2. třída s přepravou jízdních kol) 1/2
+ZSSK_Bdgtmee_cyklo_Blonski-2
+ZSSK Bdgtmee Blonski (2. třída s přepravou jízdních kol) 2/2
+ZSSK_BDs_Blonski-1
+ZSSK BDs Blonski (služební/2. třída) 1/2
+ZSSK_BDs_Blonski-2
+ZSSK BDs Blonski (služební/2. třída) 2/2
+ZSSK_BDs_regio-1
+ZSSK BDs regio (služební/2. třída) 1/2
+ZSSK_BDs_regio-2
+ZSSK BDs regio (služební/2. třída) 2/2
+ZSSK_BDs-1
+ZSSK BDs (služební/2. třída) 1/2
+ZSSK_BDs-2
+ZSSK BDs (služební/2. třída) 2/2
+ZSSK_BDshmee_Blonski-1
+ZSSK BDshmee Blonski (služební/2. třída) 1/2
+ZSSK_BDshmee_Blonski-2
+ZSSK BDshmee Blonski (služební/2. třída) 2/2
+ZSSK_BDshmee-1
+ZSSK BDshmee (služební/2. třída) 1/2
+ZSSK_BDshmee-2
+ZSSK BDshmee (služební/2. třída) 2/2
+ZSSK_Bdtmee
+ZSSK Bdtmee (2. třída)
+ZSSK_Bdtmee_Blonski
+ZSSK Bdtmee Blonski (2. třída)
+ZSSK_Bdtmee_cyklo_Blonski-1
+ZSSK Bdtmee Blonski (2. třída s přepravou jízdních kol) 1/2
+ZSSK_Bdtmee_cyklo_Blonski-2
+ZSSK Bdtmee Blonski (2. třída s přepravou jízdních kol) 2/2
+ZSSK_Bdtmee_cyklo-1
+ZSSK Bdtmee (2. třída s přepravou jízdních kol) 1/2
+ZSSK_Bdtmee_cyklo-2
+ZSSK Bdtmee (2. třída s přepravou jízdních kol) 2/2
+ZSSK_Bmee
+ZSSK Bmee (2. třída)
+ZSSK_Bmeer_Blonski
+ZSSK Bmeer Blonski (2. třída)
+ZSSK_Bt
+ZSSK Bt (2. třída)
+ZSSK_Bt_Blonski
+ZSSK Bt Blonski (2. třída)
+ZSSK_Ds
+ZSSK Ds (služební vůz)
+ZSSK_Ds_Blonski
+ZSSK Ds Blonski (služební vůz)
+ZSSK_Tms_beton
+ZSSK Tms (beton)
+ZSSK_Tms_ocel
+ZSSK Tms (ocel)

@@ -402,30 +402,6 @@ grund_t::~grund_t()
 }
 
 
-uint8 grund_t::get_border_direction() const
-{
-	uint8 border=0;
-
-	if( pos.x == 0 ) {
-		border |= ribi_t::west;
-	}
-
-	if( pos.y == 0 ) {
-		border |= ribi_t::nord;
-	}
-
-	if( pos.x == welt->get_size().x-1 ) {
-		border |= ribi_t::ost;
-	}
-
-	if( pos.y == welt->get_size().y-1 ) {
-		border |= ribi_t::sued;
-	}
-
-	return border;
-}
-
-
 void grund_t::sort_trees()
 {
 	if (get_typ() != boden) {
@@ -713,150 +689,141 @@ void grund_t::calc_back_bild(const sint8 hgt,const sint8 slope_this)
 	bool left_back_is_building = false;
 
 	// check for foundation
-	if(k.x>0  &&  k.y>0) {
-		const grund_t *gr=welt->lookup_kartenboden(k+koord(-1,-1));
-		if(gr) {
-			const sint16 left_hgt=gr->get_disp_height();
-			const sint8 slope=gr->get_disp_slope();
+	if(  const grund_t *gr=welt->lookup_kartenboden(k+koord(-1,-1))  ) {
+		const sint16 left_hgt=gr->get_disp_height();
+		const sint8 slope=gr->get_disp_slope();
 
-			const sint8 diff_from_ground = left_hgt+corner2(slope)-hgt-corner4(slope_this);
-			// up slope hiding something ...
-			if(diff_from_ground<0)  {
-				set_flag(grund_t::draw_as_ding);
-			}
-			else if(gr->get_flag(grund_t::draw_as_ding)  ||  gr->obj_count()>0) {
-				left_back_is_building = true;
-			}
+		const sint8 diff_from_ground = left_hgt+corner2(slope)-hgt-corner4(slope_this);
+		// up slope hiding something ...
+		if(diff_from_ground<0)  {
+			set_flag(grund_t::draw_as_ding);
+		}
+		else if(gr->get_flag(grund_t::draw_as_ding)  ||  gr->obj_count()>0) {
+			left_back_is_building = true;
 		}
 	}
 
 	// now enter the left two height differences
-	if(k.x>0) {
-		const grund_t *gr=welt->lookup_kartenboden(k+koord(-1,0));
-		if(gr) {
-			const sint16 left_hgt=gr->get_disp_height();
-			const sint8 slope=gr->get_disp_slope();
+	if(  const grund_t *gr=welt->lookup_kartenboden(k+koord(-1,0))  ) {
+		const sint16 left_hgt=gr->get_disp_height();
+		const sint8 slope=gr->get_disp_slope();
 
-			sint8 diff_from_ground_1 = left_hgt+corner2(slope)-hgt;
-			sint8 diff_from_ground_2 = left_hgt+corner3(slope)-hgt;
+		sint8 diff_from_ground_1 = left_hgt+corner2(slope)-hgt;
+		sint8 diff_from_ground_2 = left_hgt+corner3(slope)-hgt;
 
-			if (underground_mode==ugm_level) {
-				// if exactly one of (this) and (gr) is visible, show full walls
-				if ( isvisible && !gr->is_visible()){
-					diff_from_ground_1 += 1;
-					diff_from_ground_2 += 1;
-					set_flag(grund_t::draw_as_ding);
-					fence_west = corner1(slope_this)==corner4(slope_this);
-				}
-				else if ( !isvisible && gr->is_visible()){
-					diff_from_ground_1 = 1;
-					diff_from_ground_2 = 1;
-				}
-				// avoid walls that cover the tunnel mounds
-				if ( gr->is_visible() && (gr->get_typ()==grund_t::tunnelboden) && ist_karten_boden() && gr->get_pos().z==underground_level && gr->get_grund_hang()==hang_t::west) {
-					diff_from_ground_1 = 0;
-					diff_from_ground_2 = 0;
-				}
-				if ( is_visible() && (get_typ()==grund_t::tunnelboden) && ist_karten_boden() && pos.z==underground_level && get_grund_hang()==hang_t::ost) {
-					diff_from_ground_1 = 0;
-					diff_from_ground_2 = 0;
-				}
-			}
-
-			// up slope hiding something ...
-			if(diff_from_ground_1-corner1(slope_this)<0  ||  diff_from_ground_2-corner4(slope_this)<0)  {
+		if (underground_mode==ugm_level) {
+			// if exactly one of (this) and (gr) is visible, show full walls
+			if ( isvisible && !gr->is_visible()){
+				diff_from_ground_1 += 1;
+				diff_from_ground_2 += 1;
 				set_flag(grund_t::draw_as_ding);
-				if(  corner1(slope_this)==corner4(slope_this)  ) {
-					// ok, we need a fence here, if there is not a vertical bridgehead
-					weg_t const* w;
-					fence_west = !(w = get_weg_nr(0)) || (
-						!(w->get_ribi_unmasked() & ribi_t::west) &&
-						(!(w = get_weg_nr(1)) || !(w->get_ribi_unmasked() & ribi_t::west))
-					);
-				}
+				fence_west = corner1(slope_this)==corner4(slope_this);
 			}
-			// no fences between water tiles or between invisible tiles
-			if (fence_west && ( (ist_wasser() && gr->ist_wasser()) || (!isvisible && !gr->is_visible()) ) ) {
-				fence_west = false;
+			else if ( !isvisible && gr->is_visible()){
+				diff_from_ground_1 = 1;
+				diff_from_ground_2 = 1;
 			}
-			// any height difference AND something to see?
-			if(  (diff_from_ground_1-corner1(slope_this)>0  ||  diff_from_ground_2-corner4(slope_this)>0)
-				&&  (diff_from_ground_1>0  ||  diff_from_ground_2>0)  ) {
-				back_bild_nr = get_backbild_from_diff( diff_from_ground_1, diff_from_ground_2 );
+			// avoid walls that cover the tunnel mounds
+			if ( gr->is_visible() && (gr->get_typ()==grund_t::tunnelboden) && ist_karten_boden() && gr->get_pos().z==underground_level && gr->get_grund_hang()==hang_t::west) {
+				diff_from_ground_1 = 0;
+				diff_from_ground_2 = 0;
 			}
-			// avoid covering of slope by building ...
-			if(  (left_back_is_building  ||  gr->get_flag(draw_as_ding))  &&  (back_bild_nr>0  ||  gr->get_back_bild(1)!=IMG_LEER)) {
-				set_flag(grund_t::draw_as_ding);
+			if ( is_visible() && (get_typ()==grund_t::tunnelboden) && ist_karten_boden() && pos.z==underground_level && get_grund_hang()==hang_t::ost) {
+				diff_from_ground_1 = 0;
+				diff_from_ground_2 = 0;
 			}
-			is_building = gr->get_typ()==grund_t::fundament;
 		}
+
+		// up slope hiding something ...
+		if(diff_from_ground_1-corner1(slope_this)<0  ||  diff_from_ground_2-corner4(slope_this)<0)  {
+			set_flag(grund_t::draw_as_ding);
+			if(  corner1(slope_this)==corner4(slope_this)  ) {
+				// ok, we need a fence here, if there is not a vertical bridgehead
+				weg_t const* w;
+				fence_west = !(w = get_weg_nr(0)) || (
+					!(w->get_ribi_unmasked() & ribi_t::west) &&
+					(!(w = get_weg_nr(1)) || !(w->get_ribi_unmasked() & ribi_t::west))
+				);
+			}
+		}
+		// no fences between water tiles or between invisible tiles
+		if(  fence_west  &&  ( (ist_wasser() && gr->ist_wasser()) || (!isvisible && !gr->is_visible()) )  ) {
+			fence_west = false;
+		}
+		// any height difference AND something to see?
+		if(  (diff_from_ground_1-corner1(slope_this)>0  ||  diff_from_ground_2-corner4(slope_this)>0)
+			&&  (diff_from_ground_1>0  ||  diff_from_ground_2>0)  ) {
+			back_bild_nr = get_backbild_from_diff( diff_from_ground_1, diff_from_ground_2 );
+		}
+		// avoid covering of slope by building ...
+		if(  (left_back_is_building  ||  gr->get_flag(draw_as_ding))  &&  (back_bild_nr>0  ||  gr->get_back_bild(1)!=IMG_LEER)) {
+			set_flag(grund_t::draw_as_ding);
+		}
+		is_building = gr->get_typ()==grund_t::fundament;
 	}
 
 	// now enter the back two height differences
-	if(k.y>0) {
-		const grund_t *gr=welt->lookup_kartenboden(k+koord(0,-1));
-		if(gr) {
-			const sint16 back_hgt=gr->get_disp_height();
-			const sint8 slope=gr->get_disp_slope();
+	if(  const grund_t *gr=welt->lookup_kartenboden(k+koord(0,-1))  ) {
+		const sint16 back_hgt=gr->get_disp_height();
+		const sint8 slope=gr->get_disp_slope();
 
-			sint8 diff_from_ground_1 = back_hgt+corner1(slope)-hgt;
-			sint8 diff_from_ground_2 = back_hgt+corner2(slope)-hgt;
+		sint8 diff_from_ground_1 = back_hgt+corner1(slope)-hgt;
+		sint8 diff_from_ground_2 = back_hgt+corner2(slope)-hgt;
 
-			if (underground_mode==ugm_level) {
-				// if exactly one of (this) and (gr) is visible, show full walls
-				if ( isvisible && !gr->is_visible()){
-					diff_from_ground_1 += 1;
-					diff_from_ground_2 += 1;
-					set_flag(grund_t::draw_as_ding);
-					fence_north = corner4(slope_this)==corner3(slope_this);
-				}
-				else if ( !isvisible && gr->is_visible()){
-					diff_from_ground_1 = 1;
-					diff_from_ground_2 = 1;
-				}
-				// avoid walls that cover the tunnel mounds
-				if ( gr->is_visible() && (gr->get_typ()==grund_t::tunnelboden) && ist_karten_boden() && gr->get_pos().z==underground_level && gr->get_grund_hang()==hang_t::nord) {
-					diff_from_ground_1 = 0;
-					diff_from_ground_2 = 0;
-				}
-				if ( is_visible() && (get_typ()==grund_t::tunnelboden) && ist_karten_boden() && pos.z==underground_level && get_grund_hang()==hang_t::sued) {
-					diff_from_ground_1 = 0;
-					diff_from_ground_2 = 0;
-				}
-			}
-
-			// up slope hiding something ...
-			if(diff_from_ground_1-corner4(slope_this)<0  ||  diff_from_ground_2-corner3(slope_this)<0) {
+		if (underground_mode==ugm_level) {
+			// if exactly one of (this) and (gr) is visible, show full walls
+			if ( isvisible && !gr->is_visible()){
+				diff_from_ground_1 += 1;
+				diff_from_ground_2 += 1;
 				set_flag(grund_t::draw_as_ding);
-				if(  corner3(slope_this)==corner4(slope_this)  ) {
-					// ok, we need a fence here, if there is not a vertical bridgehead
-					weg_t const* w;
-					fence_north = !(w = get_weg_nr(0)) || (
-						!(w->get_ribi_unmasked() & ribi_t::nord) &&
-						(!(w = get_weg_nr(1)) || !(w->get_ribi_unmasked() & ribi_t::nord))
-					);
-				}
+				fence_north = corner4(slope_this)==corner3(slope_this);
 			}
-			// no fences between water tiles or between invisible tiles
-			if (fence_north && ( (ist_wasser() && gr->ist_wasser()) || (!isvisible && !gr->is_visible()) ) ) {
-				fence_north = false;
+			else if ( !isvisible && gr->is_visible()){
+				diff_from_ground_1 = 1;
+				diff_from_ground_2 = 1;
 			}
-			// any height difference AND something to see?
-			if(  (diff_from_ground_1-corner4(slope_this)>0  ||  diff_from_ground_2-corner3(slope_this)>0)
-				&&  (diff_from_ground_1>0  ||  diff_from_ground_2>0)  ) {
-				back_bild_nr += get_backbild_from_diff( diff_from_ground_1, diff_from_ground_2 )*11;
+			// avoid walls that cover the tunnel mounds
+			if ( gr->is_visible() && (gr->get_typ()==grund_t::tunnelboden) && ist_karten_boden() && gr->get_pos().z==underground_level && gr->get_grund_hang()==hang_t::nord) {
+				diff_from_ground_1 = 0;
+				diff_from_ground_2 = 0;
+			}
+			if ( is_visible() && (get_typ()==grund_t::tunnelboden) && ist_karten_boden() && pos.z==underground_level && get_grund_hang()==hang_t::sued) {
+				diff_from_ground_1 = 0;
+				diff_from_ground_2 = 0;
+			}
+		}
 
+		// up slope hiding something ...
+		if(diff_from_ground_1-corner4(slope_this)<0  ||  diff_from_ground_2-corner3(slope_this)<0) {
+			set_flag(grund_t::draw_as_ding);
+			if(  corner3(slope_this)==corner4(slope_this)  ) {
+				// ok, we need a fence here, if there is not a vertical bridgehead
+				weg_t const* w;
+				fence_north = !(w = get_weg_nr(0)) || (
+					!(w->get_ribi_unmasked() & ribi_t::nord) &&
+					(!(w = get_weg_nr(1)) || !(w->get_ribi_unmasked() & ribi_t::nord))
+				);
 			}
-			is_building |= gr->get_typ()==grund_t::fundament;
-			// avoid covering of slope by building ...
-			if(  (left_back_is_building  ||  gr->get_flag(draw_as_ding))  &&  (back_bild_nr>11  ||  gr->get_back_bild(0)!=IMG_LEER)) {
-				set_flag(grund_t::draw_as_ding);
-			}
+		}
+		// no fences between water tiles or between invisible tiles
+		if (fence_north && ( (ist_wasser() && gr->ist_wasser()) || (!isvisible && !gr->is_visible()) ) ) {
+			fence_north = false;
+		}
+		// any height difference AND something to see?
+		if(  (diff_from_ground_1-corner4(slope_this)>0  ||  diff_from_ground_2-corner3(slope_this)>0)
+			&&  (diff_from_ground_1>0  ||  diff_from_ground_2>0)  ) {
+			back_bild_nr += get_backbild_from_diff( diff_from_ground_1, diff_from_ground_2 )*11;
+
+		}
+		is_building |= gr->get_typ()==grund_t::fundament;
+		// avoid covering of slope by building ...
+		if(  (left_back_is_building  ||  gr->get_flag(draw_as_ding))  &&  (back_bild_nr>11  ||  gr->get_back_bild(0)!=IMG_LEER)) {
+			set_flag(grund_t::draw_as_ding);
 		}
 	}
 
 	// not ground -> then not draw first ...
-	if(welt->lookup_kartenboden(k)!=this) {
+	if(  welt->lookup_kartenboden(k) != this  ) {
 		clear_flag(grund_t::draw_as_ding);
 	}
 
@@ -976,81 +943,76 @@ void grund_t::display_boden(const sint16 xpos, const sint16 ypos, const sint16 r
 }
 
 
-void grund_t::display_border(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const uint8 border_direction)
+void grund_t::display_border( sint16 xpos, sint16 ypos, const sint16 raster_tile_width )
 {
-	if(!ist_karten_boden()){
+	if(  pos.z < welt->get_grundwasser()  ) {
+		// we do not display below water (yet)
 		return;
 	}
 
-	const sint16 halfwidth = raster_tile_width>>1;
+	const sint16 hgt_step = tile_raster_scale_y( TILE_HEIGHT_STEP, raster_tile_width);
 
-#ifndef DOUBLE_GROUNDS
-	const sint16 y_imp_offset = 0;
-#else
-	const sint16 y_imp_offset = tile_raster_scale_y( TILE_HEIGHT_STEP*3, raster_tile_width);
-#endif
+	// fixme for double slopes!
+	static sint8 lookup_hgt[5] = { 6, 3, 0, 1, 2 };
 
-	// We'll paint 8*height from the center of the tile upwards, size width/2 on top borders (west and north)
-	if( border_direction & ribi_t::west ) {
-		const int height_to_paint = tile_raster_scale_y( TILE_HEIGHT_STEP*8, raster_tile_width);
-		const int corner_height = tile_raster_scale_y( corner1(slope)*TILE_HEIGHT_STEP,raster_tile_width);
-
-		const int y_origin = ypos + y_imp_offset - corner_height - tile_raster_scale_y( TILE_HEIGHT_STEP*5, raster_tile_width);
-
-		display_fillbox_wh_clip(xpos, y_origin, halfwidth, height_to_paint, umgebung_t::background_color, false);
-
-
-		set_flag(dirty);
+	if(  pos.y-welt->get_size().y+1 == 0  ) {
+		// move slopes to front of tile
+		sint16 x = xpos - raster_tile_width/2;
+		sint16 y = ypos + raster_tile_width/4 + (pos.z-welt->get_grundwasser())*hgt_step;
+		// left side border
+		sint16 diff = corner1(slope)-corner2(slope);
+		image_id slope_img = grund_besch_t::slopes->get_bild( lookup_hgt[ 2+diff ]+11 );
+		if(  diff  ) {
+			diff = abs(diff)-1;
+		}
+		else if(  corner2(slope)  ) {
+			// no difference but a slope at the front => need an extra flat height step
+			diff = -corner2(slope);
+		}
+		diff ++;
+		// ok, now we have the height; since the slopes may end with a fence they are drawn in reverse order
+		for(  sint16 zz = pos.z-welt->get_grundwasser();  diff <= zz;  diff ++  ) {
+			display_normal( grund_besch_t::slopes->get_bild(15), x, y, 0, true, false );
+			y -= hgt_step;
+		}
+		display_normal( slope_img, x, y, 0, true, false );
 	}
 
-	if( border_direction & ribi_t::nord ) {
-
-		const int height_to_paint = tile_raster_scale_y( TILE_HEIGHT_STEP*8, raster_tile_width);
-		const int corner_height = tile_raster_scale_y( corner3(slope)*TILE_HEIGHT_STEP,raster_tile_width);
-
-		const int y_origin = ypos + y_imp_offset - corner_height  - tile_raster_scale_y( TILE_HEIGHT_STEP*5, raster_tile_width);
-
-		display_fillbox_wh_clip(xpos + halfwidth, y_origin, halfwidth, height_to_paint, umgebung_t::background_color, false);
-
-		set_flag(dirty);
-	}
-
-	// We'll paint 8*height from the center of the tile downwards, size width/2 on bottom borders (south and east)
-	if( border_direction & ribi_t::ost ) {
-		const int height_to_paint = tile_raster_scale_y( TILE_HEIGHT_STEP*8, raster_tile_width);
-		const int corner_height = tile_raster_scale_y( corner3(slope)*TILE_HEIGHT_STEP,raster_tile_width);
-
-		const int y_origin = ypos + y_imp_offset - corner_height  + tile_raster_scale_y( TILE_HEIGHT_STEP*3, raster_tile_width);
-
-		display_fillbox_wh_clip(xpos + halfwidth, y_origin, halfwidth, height_to_paint, umgebung_t::background_color, false);
-
-		set_flag(dirty);
-	}
-
-	if( border_direction & ribi_t::sued ) {
-		const int height_to_paint = tile_raster_scale_y( TILE_HEIGHT_STEP*8, raster_tile_width);
-		const int corner_height = tile_raster_scale_y( corner1(slope)*TILE_HEIGHT_STEP,raster_tile_width);
-
-		const int y_origin = ypos + y_imp_offset - corner_height  + tile_raster_scale_y( TILE_HEIGHT_STEP*3, raster_tile_width);
-
-		display_fillbox_wh_clip(xpos, y_origin, halfwidth, height_to_paint, umgebung_t::background_color, false);
-
-		set_flag(dirty);
+	if(  pos.x-welt->get_size().x+1 == 0  ) {
+		// move slopes to front of tile
+		sint16 x = xpos + raster_tile_width/2;
+		sint16 y = ypos + raster_tile_width/4 + (pos.z-welt->get_grundwasser())*hgt_step;
+		// right side border
+		sint16 diff = corner2(slope)-corner3(slope);
+		image_id slope_img = grund_besch_t::slopes->get_bild( lookup_hgt[ 2+diff ] );
+		if(  diff  ) {
+			diff = abs(diff)-1;
+		}
+		else if(  corner2(slope)  ) {
+			// no difference but a slope at the front => need an extra flat height step
+			diff = -corner2(slope);
+		}
+		diff ++;
+		// ok, now we have the height; since the slopes may end with a fence they are drawn in reverse order
+		for(  sint16 zz = pos.z-welt->get_grundwasser();  diff <= zz;  diff ++  ) {
+			display_normal( grund_besch_t::slopes->get_bild(4), x, y, 0, true, false );
+			y -= hgt_step;
+		}
+		display_normal( slope_img, x, y, 0, true, false );
 	}
 }
 
 
-void grund_t::display_if_visible(sint16 xpos, sint16 ypos, sint16 raster_tile_width)
+void grund_t::display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_tile_width)
 {
 
-	if(!is_karten_boden_visible()) {
+	if(  !is_karten_boden_visible()  ) {
 		return;
 	}
 
-	const uint8 border = get_border_direction();
-
-	if(border) {
-		display_border(xpos, ypos, raster_tile_width, border);
+	if(  umgebung_t::draw_earth_border  &&  (pos.x-welt->get_size().x+1 == 0  ||  pos.y-welt->get_size().y+1 == 0)  ) {
+		// the last tile. might need a border
+		display_border( xpos, ypos, raster_tile_width );
 	}
 
 	if(!get_flag(grund_t::draw_as_ding)) {

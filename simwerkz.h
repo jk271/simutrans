@@ -91,6 +91,8 @@ public:
 	 * @return true if this tool operates over the grid, not the map tiles.
 	 */
 	bool is_grid_tool() const {return true;}
+
+	bool update_pos_after_use() const OVERRIDE { return true; }
 };
 
 class wkz_raise_t : public wkz_raise_lower_base_t {
@@ -398,7 +400,7 @@ public:
 	void set_values(spieler_t *sp, uint8 spacing, bool remove, bool replace );
 	void get_values(spieler_t *sp, uint8 &spacing, bool &remove, bool &replace );
 	bool is_init_network_save() const OVERRIDE { return true; }
-	void draw_after(karte_t*, koord) const OVERRIDE;
+	void draw_after(karte_t*, koord, bool dirty) const OVERRIDE;
 	char const* get_default_param(spieler_t*) const OVERRIDE;
 	waytype_t get_waytype() const OVERRIDE;
 };
@@ -600,6 +602,9 @@ public:
 	bool is_selected(karte_t const* const welt) const OVERRIDE { return welt->is_fast_forward(); }
 	bool init( karte_t *welt, spieler_t * ) {
 		if(  !umgebung_t::networkmode  ) {
+			if(  welt->is_fast_forward()  &&  umgebung_t::simple_drawing_fast_forward  ) {
+				welt->set_dirty();
+			}
 			welt->set_pause(0);
 			welt->set_fast_forward( welt->is_fast_forward()^1 );
 		}
@@ -796,7 +801,7 @@ public:
 	static sint8 save_underground_level;
 	char const* get_tooltip(spieler_t const*) const OVERRIDE;
 	bool is_selected(karte_t const*) const OVERRIDE;
-	void draw_after(karte_t*, koord) const OVERRIDE;
+	void draw_after(karte_t*, koord, bool dirty) const OVERRIDE;
 	bool init( karte_t *welt, spieler_t * );
 	char const* work(karte_t*, spieler_t*, koord3d) OVERRIDE;
 	bool exit( karte_t *, spieler_t * ) { return false; }

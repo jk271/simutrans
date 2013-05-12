@@ -167,12 +167,6 @@ protected:
 	 */
 	uint8 slope;
 
-	/**
-	 * Indicates if this tile is in a border position, and in which direction.
-	 * @return A ribi_t style mask indicating in which direction spans the lack of neighbour tiles.
-	 */
-	uint8 get_border_direction() const;
-
 public:
 	/**
 	 * setzt die Bildnr. des anzuzeigenden Bodens
@@ -476,17 +470,16 @@ public:
 	void display_boden(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width) const;
 
 	/**
-	 * Display black background on border tiles.
-	 * @note at the moment, it just displays background on north and west tiles.
-	 * @note Can't be a const function because it will mark the tile as dirty if it draws something.
+	 * Displays the earth at the border
+	 * @author prissi
 	 */
-	void display_border(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const uint8 border_direction);
+	void display_border( sint16 xpos, sint16 ypos, const sint16 raster_tile_width );
 
 	/**
 	 * Displays the tile if it's visible.
 	 * @see is_karten_boden_visible()
 	 */
-	void display_if_visible(sint16 xpos, sint16 ypos, sint16 raster_tile_width);
+	void display_if_visible(sint16 xpos, sint16 ypos, const sint16 raster_tile_width);
 
 	/**
 	 * displays everything that is on a tile - the main display routine for objects on tiles

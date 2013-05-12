@@ -29,6 +29,7 @@
 #include "simsys.h"
 #include "simticker.h"
 #include "simwin.h"
+#include "simintr.h"
 #include "simhalt.h"
 #include "simworld.h"
 
@@ -829,10 +830,10 @@ void display_win(int win)
 	if(umgebung_t::window_frame_active  &&  (unsigned)win==wins.get_count()-1) {
 		const int y_off = wins[win].flags.title ? 0 : 16;
 		if(!wins[win].rollup) {
-			display_ddd_box( wins[win].pos.x-1, wins[win].pos.y-1 + y_off, gr.x+2, gr.y+2 - y_off, title_color, title_color+1 );
+			display_ddd_box( wins[win].pos.x-1, wins[win].pos.y-1 + y_off, gr.x+2, gr.y+2 - y_off, title_color, title_color+1, wins[win].gui->is_dirty() );
 		}
 		else {
-			display_ddd_box( wins[win].pos.x-1, wins[win].pos.y-1 + y_off, gr.x+2, 18 - y_off, title_color, title_color+1 );
+			display_ddd_box( wins[win].pos.x-1, wins[win].pos.y-1 + y_off, gr.x+2, 18 - y_off, title_color, title_color+1, wins[win].gui->is_dirty() );
 		}
 	}
 	if(!wins[win].rollup) {
@@ -1255,7 +1256,8 @@ bool check_pos_win(event_t *ev)
 					case GADGET_CLOSE :
 						if (IS_LEFTCLICK(ev)) {
 							wins[i].closing = true;
-						} else if  (IS_LEFTRELEASE(ev)) {
+						}
+						else if  (IS_LEFTRELEASE(ev)) {
 							if (  ev->my>=wins[i].pos.y  &&  ev->my<wins[i].pos.y+16  &&  decode_gadget_boxes( ( & wins[i].flags ), wins[i].pos.x + (REVERSE_GADGETS?0:wins[i].gui->get_fenstergroesse().x-20), ev->mx )==GADGET_CLOSE) {
 								destroy_win(wins[i].gui);
 							} else {
@@ -1316,6 +1318,9 @@ bool check_pos_win(event_t *ev)
 							gui_frame_t *gui = wins[i].gui;
 							koord gr = gui->get_fenstergroesse();
 							mark_rect_dirty_wc( wins[i].pos.x, wins[i].pos.y, wins[i].pos.x+gr.x, wins[i].pos.y+gr.y );
+							if(  wins[i].rollup  ) {
+								wl->set_background_dirty();
+							}
 						}
 
 				}
@@ -1465,79 +1470,7 @@ void win_display_flush(double konto)
 		}
 	}
 
-	koord3d pos;
-	uint32 ticks=1, month=0, year=0;
-
-	const ding_t *dt = wl->get_zeiger();
-	pos = dt->get_pos();
-	month = wl->get_last_month();
-	year = wl->get_last_year();
-	ticks = wl->get_zeit_ms();
-
-	// calculate also days if desired
-	const uint32 ticks_this_month = ticks % wl->ticks_per_world_month;
-	uint32 tage, stunden, minuten;
-	if (umgebung_t::show_month > umgebung_t::DATE_FMT_MONTH) {
-		static sint32 tage_per_month[12]={31,28,31,30,31,30,31,31,30,31,30,31};
-		tage = (((sint64)ticks_this_month*tage_per_month[month]) >> wl->ticks_per_world_month_shift) + 1;
-		stunden = (((sint64)ticks_this_month*tage_per_month[month]) >> (wl->ticks_per_world_month_shift-16));
-		minuten = (((stunden*3) % 8192)*60)/8192;
-		stunden = ((stunden*3) / 8192)%24;
-	}
-	else {
-		tage = 0;
-		stunden = (ticks_this_month * 24) >> wl->ticks_per_world_month_shift;
-		minuten = ((ticks_this_month * 24 * 60) >> wl->ticks_per_world_month_shift)%60;
-	}
-
-	char time [128];
-
-//DBG_MESSAGE("umgebung_t::show_month","%d",umgebung_t::show_month);
-	// @author hsiegeln - updated to show month
-	// @author prissi - also show date if desired
-	// since seaons 0 is always summer for backward compatibility
-	static char const* const seasons[] = { "q2", "q3", "q4", "q1" };
-	char const* const season = translator::translate(seasons[wl->get_season()]);
-	char const* const month_ = translator::get_month_name(month % 12);
-	switch (umgebung_t::show_month) {
-		case umgebung_t::DATE_FMT_GERMAN_NO_SEASON:
-			sprintf(time, "%d. %s %d %d:%02dh", tage, month_, year, stunden, minuten);
-			break;
-
-		case umgebung_t::DATE_FMT_US_NO_SEASON: {
-			uint32 hours_ = stunden % 12;
-			if (hours_ == 0) hours_ = 12;
-			sprintf(time, "%s %d %d %2d:%02d%s", month_, tage, year, hours_, minuten, stunden < 12 ? "am" : "pm");
-			break;
-		}
-
-		case umgebung_t::DATE_FMT_JAPANESE_NO_SEASON:
-			sprintf(time, "%d/%s/%d %2d:%02dh", year, month_, tage, stunden, minuten);
-			break;
-
-		case umgebung_t::DATE_FMT_GERMAN:
-			sprintf(time, "%s, %d. %s %d %d:%02dh", season, tage, month_, year, stunden, minuten);
-			break;
-
-		case umgebung_t::DATE_FMT_US: {
-			uint32 hours_ = stunden % 12;
-			if (hours_ == 0) hours_ = 12;
-			sprintf(time, "%s, %s %d %d %2d:%02d%s", season, month_, tage, year, hours_, minuten, stunden < 12 ? "am" : "pm");
-			break;
-		}
-
-		case umgebung_t::DATE_FMT_JAPANESE:
-			sprintf(time, "%s, %d/%s/%d %2d:%02dh", season, year, month_, tage, stunden, minuten);
-			break;
-
-		case umgebung_t::DATE_FMT_MONTH:
-			sprintf(time, "%s, %s %d %2d:%02dh", month_, season, year, stunden, minuten);
-			break;
-
-		case umgebung_t::DATE_FMT_SEASON:
-			sprintf(time, "%s %d", season, year);
-			break;
-	}
+	char const *time = tick_to_string( wl->get_zeit_ms(), true );
 
 	// bottom text background
 	display_set_clip_wh( 0, 0, disp_width, disp_height );
@@ -1553,6 +1486,7 @@ void win_display_flush(double konto)
 	// season color
 	display_color_img( skinverwaltung_t::seasons_icons->get_bild_nr(wl->get_season()), 2, disp_height-15, 0, false, true );
 	if(  tooltip_check  &&  tooltip_xpos<14  ) {
+		static char const* const seasons[] = { "q2", "q3", "q4", "q1" };
 		tooltip_text = translator::translate(seasons[wl->get_season()]);
 		tooltip_check = false;
 	}
@@ -1599,6 +1533,7 @@ void win_display_flush(double konto)
 		}
 	}
 
+	koord3d pos = wl->get_zeiger()->get_pos();
 
 	static cbuffer_t info;
 	info.clear();

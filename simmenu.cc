@@ -637,12 +637,12 @@ void werkzeug_t::update_toolbars(karte_t *welt)
 }
 
 
-void werkzeug_t::draw_after( karte_t *welt, koord pos ) const
+void werkzeug_t::draw_after(karte_t *welt, koord pos, bool dirty) const
 {
 	// default action: grey corner if selected
 	image_id id = get_icon( welt->get_active_player() );
 	if(  id!=IMG_LEER  &&  is_selected(welt)  ) {
-		display_img_blend( id, pos.x, pos.y, TRANSPARENT50_FLAG|OUTLINE_FLAG|COL_BLACK, false, true );
+		display_img_blend( id, pos.x, pos.y, TRANSPARENT50_FLAG|OUTLINE_FLAG|COL_BLACK, false, dirty );
 	}
 }
 
@@ -656,6 +656,14 @@ const char *werkzeug_t::check_pos( karte_t *welt, spieler_t *, koord3d pos )
 	grund_t *gr = welt->lookup(pos);
 	return (gr  &&  !gr->is_visible()) ? "" : NULL;
 }
+
+bool werkzeug_t::check_valid_pos( karte_t *w, koord k ) const
+{
+	if(is_grid_tool()) {
+		return w->is_within_grid_limits(k);
+	}
+	return w->is_within_limits(k);
+};
 
 /**
  * Initializes cursor object: image, y-offset, size of marked area,

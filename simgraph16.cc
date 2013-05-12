@@ -3597,15 +3597,15 @@ int display_text_proportional_len_clip(KOORD_VAL x, KOORD_VAL y, const char* txt
  * Zeichnet schattiertes Rechteck
  * @author Hj. Malthaner
  */
-void display_ddd_box(KOORD_VAL x1, KOORD_VAL y1, KOORD_VAL w, KOORD_VAL h, PLAYER_COLOR_VAL tl_color, PLAYER_COLOR_VAL rd_color)
+void display_ddd_box(KOORD_VAL x1, KOORD_VAL y1, KOORD_VAL w, KOORD_VAL h, PLAYER_COLOR_VAL tl_color, PLAYER_COLOR_VAL rd_color, bool dirty)
 {
-	display_fillbox_wh(x1, y1,         w, 1, tl_color, true);
-	display_fillbox_wh(x1, y1 + h - 1, w, 1, rd_color, true);
+	display_fillbox_wh(x1, y1,         w, 1, tl_color, dirty);
+	display_fillbox_wh(x1, y1 + h - 1, w, 1, rd_color, dirty);
 
 	h -= 2;
 
-	display_vline_wh(x1,         y1 + 1, h, tl_color, true);
-	display_vline_wh(x1 + w - 1, y1 + 1, h, rd_color, true);
+	display_vline_wh(x1,         y1 + 1, h, tl_color, dirty);
+	display_vline_wh(x1 + w - 1, y1 + 1, h, rd_color, dirty);
 }
 
 
@@ -3911,25 +3911,21 @@ void draw_bezier(KOORD_VAL Ax, KOORD_VAL Ay, KOORD_VAL Bx, KOORD_VAL By, KOORD_V
 	  }
 */
 
-	sint32 a, b, rx, ry, oldx, oldy;
+	sint32 rx = Ax*32*32*32; // init with a=0, b=32
+	sint32 ry = Ay*32*32*32; // init with a=0, b=32
 	// fixed point: we cycle between 0 and 32, rather than 0 and 1
-	for(  sint32 t=0;  t<=32;  t++  ) {
-		a = t;
-		b = 32 - t;
-		if(  t > 0  ) {
-			oldx = rx;
-			oldy = ry;
-		}
+	for(  sint32 a=1;  a<=32;  a++  ) {
+		const sint32 b = 32 - a;
+		const sint32 oldx = rx;
+		const sint32 oldy = ry;
 		rx = Ax*b*b*b + 3*Cx*b*b*a + 3*Dx*b*a*a + Bx*a*a*a;
 		ry = Ay*b*b*b + 3*Cy*b*b*a + 3*Dy*b*a*a + By*a*a*a;
 		//fixed point: due to cycling between 0 and 32 (2<<5), we divide by 32^3=2>>15 because of cubic interpolation
-		if( t > 0  ) {
-			if(  !draw  &&  !dontDraw  ) {
-				display_direct_line( rx>>15, ry>>15, oldx>>15, oldy>>15, colore );
-			}
-			else {
-				display_direct_line_dotted( rx>>15, ry>>15, oldx>>15, oldy>>15, draw, dontDraw, colore );
-			}
+		if(  !draw  &&  !dontDraw  ) {
+			display_direct_line( rx>>15, ry>>15, oldx>>15, oldy>>15, colore );
+		}
+		else {
+			display_direct_line_dotted( rx>>15, ry>>15, oldx>>15, oldy>>15, draw, dontDraw, colore );
 		}
 	}
 }

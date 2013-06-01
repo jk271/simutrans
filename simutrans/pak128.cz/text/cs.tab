@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                           Date Created: 12.05 2013                           #
+#                           Date Created: 31.05 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -40,6 +40,120 @@
 #___________________________________building____________________________________
 rotunda_Znojmo128
 Rotunda
+#__________________________________dummy_info___________________________________
+#__________________________________dummy_info___________________________________
+factory_recycling_factory_details
+<title>Třídírna odpadu - detaily</title>\n<h1>Třídírna odpadu</h1><p>V této továrně se z odpadu vybírají druhotné suroviny - sklo, papír, kovy a plasty. Automatizace není možná, všechno se musí třídit ručně, ale jsou lidi, kteří radši pracují zde než aby žebrali na ulici. Zbylý odpad po vytřídění se háže do tajné černé díry ve sklepě. Bohužel při tom už došlo k několika ošklivým úrazům a záhadným zmizením inspektorů bezpečnosti práce.</p>
+#____________________________________factory____________________________________
+#____________________________________factory____________________________________
+autoshop3
+Autosalon
+bakery
+Pekárna
+brewery
+Pivovar
+cannery
+Konzervárna
+car_assembly_plant
+Automobilka
+car_dealer
+Autosalon
+Cementmill
+Cementárna
+chicken_farm
+Líhně kuřat
+classical_goods_factory
+Továrna
+Concretefactory
+Betonárka
+cornfield
+Kukuřičné pole
+cotton_farm_w_fields
+Bavlníková plantáž
+cotton_field
+Bavlníkové pole
+cow_farm
+Kravín
+dairy
+Mlékárna
+Druckerei
+Tiskárna
+electronics_factory
+Továrna na elektroniku
+Erzbergwerk
+Důl na železnou rudu
+ethanol_plant
+Kvasný závod
+fish_pond
+Chovný rybník
+fish_swarm
+Sádky
+food_processing_plant
+Potravinářský závod
+Glass_factory
+Sklárna
+grain_farm
+JZD
+grain_farm_w_fields
+JZD
+grain_mill
+Mlýn
+Kohlekraftwerk
+Uhelná elektrárna
+Materialswholesale
+Stavebniny
+modern_fuel_station
+Čerpací stanice
+Moebelfabrik
+Truhlárna
+Moebelhaus
+Prodejna domácích potřeb
+Nutzwald
+Průmyslový les 
+Oelbohrinsel
+Ropná plošina
+Oelfeld
+Ropné pole
+oilkraftwerk
+Elektrárna na mazut
+old_powerplant_kraftwerk
+Uhelná elektrárna
+open_coal_mine
+Povrchový uhelný důl
+Papierfabrik
+Papírna
+publisher
+Nakladatelství
+Raffinerie
+Rafinerie
+recycling_factory
+Třídírna odpadu
+Saegewerk
+Pila
+Sandquarry
+Pískovna
+shaft_coal_mine
+Uhelný důl
+sheep_farm
+Ovčín
+shopping_mall
+Obchodní centrum
+steel_mill
+Slévárna
+Stonequarry
+Kamenolom
+supermarket
+Supermarket
+TANKE1
+Čerpací stanice
+textile_factory
+Oděvní závody
+waste_disposal
+Sběrna odpadů
+waste_incinerator_kraftwerk
+Spalovna odpadů
+wind_kraftwerk
+Větrná elektrárna
 #_____________________________________good______________________________________
 #_____________________________________good______________________________________
 Autos
@@ -114,6 +228,132 @@ waste
 Odpadky
 wool
 Vlna
+#___________________________________roadsign____________________________________
+#___________________________________roadsign____________________________________
+choose_point_Zn
+Značka vyber příští zastávku
+choosesign_digital_jp
+Značka vyber příští zastávku
+Customs
+Celnice
+Endofchooseroad
+Zákaz výběru zastávky
+Endofchooseroad_Zn
+Zákaz výběru zastávky
+Minimum30
+Minimální rychlost 30 km/h
+Minimum30_Zn
+Minimální rychlost 30 km/h
+Minimum50
+Minimální rychlost 50 km/h
+Minimum50_Zn
+Minimální rychlost 50 km/h
+Minimum80
+Minimální rychlost 80 km/h
+Minimum80_Zn
+Minimální rychlost 80 km/h
+NoEntry_Zn
+Jednosměrka
+OneWay
+Jednosměrka
+OneWay_Zn
+Jednosměrka
+privroad
+Soukromá cesta
+privroad_Zn
+Soukromá cesta
+RisingBollards
+Výsuvné sloupky
+RoadClosed_Zn
+Uzávěra
+Roundabout
+Kruhový objezd
+Roundabout_Zn
+Kruhový objezd
+TollGate
+Mýtnice
+#_____________________________________tree______________________________________
+#_____________________________________tree______________________________________
+palm010
+palma
+palm011
+palma
+tree020
+Bříza
+tree021
+Bříza
+tree022
+Jabloň
+tree023
+Strom
+tree024
+Strom
+tree025
+Strom
+tree030
+Strom
+tree031
+Javor
+tree032
+Strom
+tree040
+Hrušeň
+tree041
+Strom
+tree042
+Strom
+tree050
+Strom
+tree051
+Topol
+tree052
+Topol
+tree060
+Strom
+tree061
+Strom
+tree062
+Strom
+tree063
+Strom
+tree070
+Strom
+tree071
+Strom
+tree072
+Strom
+tree080
+Osika
+tree081
+Strom
+tree082
+Bříza
+tree083
+Douglaska
+tree090
+Javor
+tree091
+Modřín
+tree100
+Smrk sivý
+tree110
+Smrk pichlavý
+tree120
+Jedle
+tree121
+Smrk
+tree122
+Smrk
+tree130
+Strom
+tree131
+Strom
+tree132
+Strom
+tree133
+Horský smrk
+tree140
+Smrk
 #____________________________________vehicle____________________________________
 #____________________________________vehicle____________________________________
 Arriva_223
@@ -130,8 +370,12 @@ Arriva_Bm_22-90_cyklo-2
 Arriva Bm 22-90 Alex (2. třída s přepravou jízdních kol) 2/2
 Arriva_Bnd_22-54-1
 Arriva Bnd 22-54 Alex (2. třída s přepravou jízdních kol) 1/
+Arriva_Bnd_22-54-2
+Arriva Bnd 22-54 Alex (2. třída s přepravou jízdních kol) 1/
 Arriva_Bnd_31-33-1
 Arriva Bnd 31-33 Alex (2. třída s přepravou jízdních kol) 1/
+Arriva_Bnd_31-33-2
+Arriva Bnd 31-33 Alex (2. třída s přepravou jízdních kol) 2/
 Arriva_Bomz_20-95
 Arriva Bomz 20-95 Alex (2. třída)
 Arriva_Bomz_21-95
@@ -150,6 +394,16 @@ Arriva_DBpz_26-75_cyklo-2
 Arriva DBpz 26-75 Alex (2. třída s přepravou jízdních kol) 2
 autobusovy_naves
 Autobusový návěs Karosa NO 80
+bbo_1080
+BBO 1080 (elektrická lokomotiva ~15kV/16,7Hz)
+bbo_1100-1_a
+BBO 1100-1 (přední díl - tříčlánková elektrická lokomotiva ~
+bbo_1100-1_b
+BBO 1100-1 (střední díl - tříčlánková elektrická lokomotiva 
+bbo_1100-1_c
+BBO 1100-1 (zadní díl - tříčlánková elektrická lokomotiva ~1
+bbo_1870_gruen
+BBO 1870 (elektrická lokomotiva ~15kV/16,7Hz)
 BD_I.
 BEB I. "Kladno" (parní lokomotiva)
 CD_014
@@ -2024,12 +2278,624 @@ DB_928_4_mint
 DB 928.4 mentolová (zadní řídící vůz - 1. a 2. třída)
 DB_928_4_red
 DB 928.4 červená (přední řídící vůz - 1. a 2. třída)
+db_a4um
+DB A4um (1. třída)
 DB_A4um-54
 DB A4um-54 (1. třída)
 DB_A4um-61
 DB A4um-61 (1. třída)
 DB_A4ymb-54
 DB A4ymb-54 (1. třída)
+db_ab3yg
+DB AB3yg (1. třída)
+DB_AB4nb-58
+DB AB4nb-58 (1. a 2. třída)
+DB_AB4nb-59_silber-blau
+DB AB4nb-59 stříbrná s modrým rámem (1. a 2. třída)
+DB_AB4nb-59_silber-schwarz
+DB AB4nb-59 stříbrná s černým rámem (1. a 2. třída)
+DB_AB4um-55
+DB AB4um-55 (1. a 2. třída)
+DB_AB4um-63
+DB AB4um-63 (1. a 2. třída)
+DB_AB4ym-51
+DB AB4ym-51 (1. a 2. třída)
+DB_ABdb_406_1_mint-1
+DB ABdb406.1 mentolová (1. a 2. třída s přepravou jízdních k
+DB_ABdb_406_1_mint-2
+DB ABdb406.1 mentolová (1. a 2. třída s přepravou jízdních k
+DB_ABdb_406_1_red-1
+DB ABdb406.1 červená (1. a 2. třída s přepravou jízdních kol
+DB_ABdb_406_1_red-2
+DB ABdb406.1 červená (1. a 2. třída s přepravou jízdních kol
+DB_ABi_29
+DB ABi 29 (1. a 2. třída)
+DB_ABi_29_rot
+DB ABi 29 červená (1. a 2. třída)
+DB_ABm_225_160_blue
+DB ABm225 oceánová modrá kotouč. brzdy (1. a 2. třída)
+DB_ABm_225_blue
+DB ABm225 oceánová modrá (1. a 2. třída)
+DB_ABm_225_pop_orange
+DB ABm225 pop-oranžová (1. a 2. třída)
+DB_ABn_417_mint
+DB ABn417 mentolová (1. a 2. třída)
+DB_ABn_417_red
+DB ABn417 červená (1. a 2. třída)
+DB_ABn_703_blue
+DB ABn703 oceánová modrá (1. a 2. třída)
+DB_ABnr_704_silber-blau
+DB ABnr704 stříbrná s modrým rámem (1. a 2. třída)
+DB_ABnrz_708
+DB ABnrz708 kyvadlový vlak Karlsruhe (1. a 2. třída)
+DB_ABnrzb_400_citybahn
+DB ABnrzb400 City Bahn (1. a 2. třída)
+DB_ABom_222_mint
+DB ABom222 mentolová (1. a 2. třída)
+DB_ABom_222_red
+DB ABom222 červená (1. a 2. třída)
+DB_ABomz_229_1_fernblau
+DB ABomz229.1 InterRegio (1. a 2. třída)
+DB_ABvmz_227_blue
+DB ABvmz227 oceánová modrá (1. a 2. třída)
+DB_ABvmz_227_orientrot
+DB ABvmz227 orientální červená (1. a 2. třída)
+DB_ABvmz_227_pop_orange
+DB ABvmz227 pop-oranžová (1. a 2. třída)
+DB_ABy_407_mint
+DB ABy407 mentolová (1. a 2. třída)
+DB_ABy_407_red
+DB ABy407 červená (1. a 2. třída)
+DB_AByl_411_blue
+DB AByl411 oceánová modrá (1. a 2. třída)
+DB_AD4um-63_TEE_blue-1
+DB AD4um-63 TEE modrá (vyhlídkový vůz 1. třída se zavazadlov
+DB_AD4um-63_TEE_blue-2
+DB AD4um-63 TEE modrá (vyhlídkový vůz 1. třída se zavazadlov
+DB_AD4um-63_TEE_red-1
+DB AD4um-63 TEE červená (vyhlídkový vůz 1. třída se zavazadl
+DB_AD4um-63_TEE_red-2
+DB AD4um-63 TEE červená (vyhlídkový vůz 1. třída se zavazadl
+db_admh
+DB ADmh (1. třída)
+DB_Ai_29
+DB Ai 29 (1. třída)
+DB_Aimz_261_7
+DB Aimz261.7 ICE albino (1. třída)
+DB_Aimz_261_7_fernblau
+DB Aimz261.7 InterRegio (1. třída)
+DB_Aimz_261_7_red
+DB Aimz261.7 červená (1. třída)
+DB_Am_201_1_mint
+DB Am201.1 mentolova (1. třída)
+DB_Am_201_1_red
+DB Am201.1 červená (1. třída)
+DB_Am_203_1_blue
+DB Am203.1 oceánová modrá mag. brzdy (1. třída)
+DB_Am_203_160_blue
+DB Am203 oceánová modrá kotouč. brzdy (1. třída)
+DB_Am_203_blue
+DB Am203 oceánová modrá (1. třída)
+DB_Am_203_pop_orange
+DB Am203 pop-oranžová (1. třída)
+DB_Ap4um-63_TEE_blue
+DB Ap4um-63 TEE modrá (1. třída)
+DB_Ap4um-63_TEE_red
+DB Ap4um-63 TEE červená (1. třída)
+DB_Apmz_117_orientrot
+DB Apmz117 orientální červená (1. třída)
+DB_Apmz_117_rot-weiss
+DB Apmz117 červená (1. třída)
+DB_Apmz_119_5
+DB Apmz119.5 ICE albino (1. třída)
+DB_Apmz_121_orientrot
+DB Apmz121 orientální červená (1. třída)
+DB_Apmz_121_rot-weiss
+DB Apmz121 červená (1. třída)
+DB_Apmz_123_orientrot
+DB Apmz123 orientální červená (1. třída)
+DB_Apmz_123_rot-beige
+DB Apmz123 TEE červená (1. třída)
+DB_Apmz_123_rot-weiss
+DB Apmz123 červená (1. třída)
+DB_Apmz_125
+DB Apmz125 ICE albino (1. třída)
+DB_Apmz_127
+DB Apmz127 ICE albino (1. třída)
+DB_Apmz_857_5_BWE
+DB Apmz857.5 Berlin-Warszawa expres (1. třída)
+DB_Apumz_121_rot-beige-schwarz
+DB Apumz121 TEE červená (1. třída)
+DB_Apumz_122_rot-beige-schwarz
+DB Apumz121 TEE červená (1. třída)
+DB_AR4um-54_kakadu
+DB AR4um-54 kakadu (1. třída/barový vůz
+DB_AR4um-65_kakadu
+DB AR4um-65 kakadu (1. třída/barový vůz)
+DB_AR4um-65_TEE_red
+DB AR4um-65 TEE červená (1. třída/barovy vůz)
+DB_ARDmh_105_rot-beige-schwarz-1
+DB ARDmh105 TEE červená (1. třída/barový vůz se zavazadlovým
+DB_ARDmh_105_rot-beige-schwarz-2
+DB ARDmh105 TEE červená (1. třída/barový vůz se zavazadlovým
+DB_ARkimbz_262_2
+DB ARkimbz262.2 ICE albino (1. třída/barový vůz)
+DB_ARkimbz_262_2_fernblau
+DB ARkimbz262.2 InterRegio (1. třída/barový vůz)
+DB_ARkimbz_262_2_rot-weiss
+DB ARkimbz262.2 červená (1. třída/barový vůz)
+DB_ARmh_217_BWE
+DB ARmh217 Berlín-Warszawa expres (1. třída/barový vůz)
+DB_ARmh_217_orientrot
+DB ARmh217 orientální červená (1. třída/barový vůz)
+DB_ARmh_217_rot-weiss
+DB ARmh217 červená (1. třída/barový vůz)
+DB_ARmz_211_kakadu
+DB ARmz211 kakadu (1. třída/elektrický barový vůz)
+DB_ARmz_211_orientrot
+DB ARmz211 orientální červená (1. třída/elektrický barový vů
+DB_ARmz_211_rot-beige-schwarz
+DB ARmz211 TEE červená (1. třída/elektrický barový vůz)
+DB_ARmz_211_rot-weiss
+DB ARmz211 červená (1. třída/elektrický barový vůz)
+DB_ARmz_218_orientrot
+DB ARmz218 orientální červená (1. třída/barový vůz)
+DB_ARmz_218_rot-beige
+DB ARmz218 TEE červená (1. třída/barový vůz)
+DB_ARmz_218_rot-weiss
+DB ARmz218 červená (1. třída/barový vůz)
+DB_Av4um-63_TEE_blue
+DB Av4um-63 TEE modrá (1. třída)
+DB_Av4um-63_TEE_red
+DB Av4um-63 TEE červená (1. třída)
+DB_Avmz_106_Lufthansa
+DB Avmz106 Lufthansa (1. třída)
+DB_Avmz_106_Lufthansa_gep-1
+DB Avmz106 Lufthansa (1. třída s přepravou zavazadel) 1/2
+DB_Avmz_106_Lufthansa_gep-2
+DB Avmz106 Lufthansa (1. třída s přepravou zavazadel) 2/2
+DB_Avmz_107_fernblau
+DB Avmz107 InterRegio (1. třída)
+DB_Avmz_107_orientrot
+DB Avmz107 orientální červená (1. třída)
+DB_Avmz_107_rot-weiss
+DB Avmz107 červená (1. třída)
+DB_Avmz_108_1
+DB Avmz108.1 ICE albino (1. třída)
+DB_Avmz_109
+DB Avmz109 ICE albino (1. třída)
+DB_Avmz_111_1_orientrot
+DB Avmz111.1 orientální červená (1. třída)
+DB_Avmz_111_1_rot-weiss
+DB Avmz111.1 červená (1. třída)
+DB_Avmz_111_5_BWE
+DB Avmz111.5 Berlín-Warszawa expres (1. třída)
+DB_Avmz_206_Lufthansa
+DB Avmz206 Lufthansa (1. třída)
+DB_Avmz_206_Lufthansa_gep-1
+DB Avmz206 Lufthansa (1. třída s přepravou zavazadel) 1/2
+DB_Avmz_206_Lufthansa_gep-2
+DB Avmz206 Lufthansa (1. třída s přepravou zavazadel) 2/2
+DB_Avmz_207_orientrot
+DB Avmz207 orientální červená (1. třída)
+DB_Avmz_207_rot-weiss
+DB Avmz207 červená (1. třída)
+DB_Avumz_111_1_rot-beige-schwarz
+DB Avumz111.1 TEE červená (1. třída)
+DB_Avumz_207_rot-beige-schwarz
+DB Avumz207 TEE červená (1. třída)
+DB_Ayl_401_blue
+DB Ayl401 oceánová modrá (1. třída)
+db_b3yg
+DB B3yg (2. třída)
+DB_B4nb-59_silber-blau
+DB B4nb-59 stříbrná s modrým rámem (2. třída)
+DB_B4nb-59_silber-schwarz
+DB B4nb-59 stříbrná s černým rámem (2. třída)
+DB_B4um-54
+DB B4um-54 (2. třída)
+DB_B4um-63
+DB B4um-63 (2. třída)
+DB_B4ymb-51
+DB B4ymb-51 (2. třída)
+DB_B4ymf-51
+DB B4ymf-51 (zadní řídící vůz - 2. třída)
+DB_B4ymf-51_otoc
+DB B4ymf-51 (přední řídící vůz - 2. třída)
+DB_Bbd_499_mint-1
+DB Bdb499 mentolová (2. třída s přepravou jízdních kol) 1/2
+DB_Bbd_499_mint-2
+DB Bdb499 mentolová (2. třída s přepravou jízdních kol) 2/2
+DB_Bbd_499_red-1
+DB Bdb499 červená (2. třída s přepravou jízdních kol) 1/2
+DB_Bbd_499_red-2
+DB Bdb499 červená (2. třída s přepravou jízdních kol) 2/2
+DB_Bcm_243_blue
+DB Bcm243 oceánová modrá (lehátkový vůz - 2. třída)
+db_bd3yg-1
+DB BD3yg (2. třída s přepravou zavazadel) 1/2
+db_bd3yg-2
+DB BD3yg (2. třída s přepravou zavazadel) 2/2
+db_bd3ygef_otoc-1
+DB BD3ygef (zadní řídící vůz - 2. třída s přepravou zavazade
+db_bd3ygef_otoc-2
+DB BD3ygef (zadní řídící vůz - 2. třída s přepravou zavazade
+db_bd3ygef-1
+DB BD3ygef (přední řídící vůz - 2. třída s přepravou zavazad
+db_bd3ygef-2
+DB BD3ygef (přední řídící vůz - 2. třída s přepravou zavazad
+DB_BD4nf-59_silber-blau_otoc-1
+DB BD4nf-59 stříbrná s modrým rámem (přední řídící vůz - 2. 
+DB_BD4nf-59_silber-blau_otoc-2
+DB BD4nf-59 stříbrná s modrým rámem (přední řídící vůz - 2. 
+DB_BD4nf-59_silber-blau-1
+DB BD4nf-59 stribrna s modrym ramem (zadní řídící vůz - 2. t
+DB_BD4nf-59_silber-blau-2
+DB BD4nf-59 stříbrná s modrým rámem (zadní řídící vůz - 2. t
+DB_BD4nf-59_silber-schwarz_otoc-1
+DB BD4nf-59 stříbrná s černým rámem (přední řídící vůz - 2. 
+DB_BD4nf-59_silber-schwarz_otoc-2
+DB BD4nf-59 stříbrná s černým rámem (přední řídící vůz - 2. 
+DB_BD4nf-59_silber-schwarz-1
+DB BD4nf-59 stříbrná s černým rámem (zadní řídící vůz - 2. t
+DB_BD4nf-59_silber-schwarz-2
+DB BD4nf-59 stříbrná s černým rámem (zadní řídící vůz - 2. t
+DB_BD4um-59-1
+DB BD4um-59 (2. třída se zavazadlovým oddílem) 1/2
+DB_BD4um-59-2
+DB BD4um-59 (2. třída se zavazadlovým oddílem) 2/2
+DB_BD4ymf-51_otoc-1
+DB BD4ymf-51 (přední řídící vůz - 2. třída se zavazadlovým o
+DB_BD4ymf-51_otoc-2
+DB BD4ymf-51 (přední řídící vůz - 2. třída se zavazadlovým o
+DB_BD4ymf-51-1
+DB BD4ymf-51 (zadní řídící vůz - 2. třída se zavazadlovým od
+DB_BD4ymf-51-2
+DB BD4ymf-51 (zadní řídící vůz - 2. třída se zavazadlovým od
+DB_BDms_273_160_blue-1
+DB BDms273 oceánová modrá kotouč. brzdy (2. třída se zavazad
+DB_BDms_273_160_blue-2
+DB BDms273 oceánová modrá kotouč. brzdy (2. třída se zavazad
+DB_BDms_273_blue-1
+DB BDms273 oceánová modrá (2. třída se zavazadlovým oddílem)
+DB_BDms_273_blue-2
+DB BDms273 oceánová modrá (2. třída se zavazadlovým oddílem)
+DB_BDms_273_orientrot-1
+DB BDms273 orientální červená (2. třída se zavazadlovým oddí
+DB_BDms_273_orientrot-2
+DB BDms273 orientální červená (2. třída se zavazadlovým oddí
+DB_BDnf_466_mint_otoc-1
+DB BDnf466 mentolová (přední řídící vůz - 2. třída se zavaza
+DB_BDnf_466_mint_otoc-2
+DB BDnf466 mentolová (přední řídící vůz - 2. třída se zavaza
+DB_BDnf_466_mint-1
+DB BDnf466 mentolová (zadní řídící vůz - 2. třída se zavazad
+DB_BDnf_466_mint-2
+DB BDnf466 mentolová (zadní řídící vůz - 2. třída se zavazad
+DB_BDnf_735_silber-blau_otoc-1
+DB BDnf735 stříbrná/oceánová modrá (přední řídící vůz - 2. t
+DB_BDnf_735_silber-blau_otoc-2
+DB BDnf735 stříbrná/oceánová modrá (přední řídící vůz - 2. t
+DB_BDnf_735_silber-blau-1
+DB BDnf735 stříbrná/oceánová modrá (zadní řídící vůz - 2. tř
+DB_BDnf_735_silber-blau-2
+DB BDnf735 stříbrná/oceánová modrá (zadní řídící vůz - 2. tř
+DB_BDnf_738_blue_otoc-1
+DB BDnf738 oceánová modrá (přední řídící vůz - 2. třída se z
+DB_BDnf_738_blue_otoc-2
+DB BDnf738 oceánová modrá (přední řídící vůz - 2. třída se z
+DB_BDnf_738_blue-1
+DB BDnf738 oceánová modrá (zadní řídící vůz - 2. třída se za
+DB_BDnf_738_blue-2
+DB BDnf738 oceánová modrá (zadní řídící vůz - 2. třída se za
+DB_BDnrzf_460_citybahn_otoc-1
+DB BDnrzf460 City Bahn (přední řídící vůz - 2. třída se zava
+DB_BDnrzf_460_citybahn_otoc-2
+DB BDnrzf460 City Bahn (přední řídící vůz - 2. třída se zava
+DB_BDnrzf_460_citybahn-1
+DB BDnrzf460 City Bahn (zadní řídící vůz - 2. třída se zavaz
+DB_BDnrzf_460_citybahn-2
+DB BDnrzf460 City Bahn (zadní řídící vůz - 2. třída se zavaz
+DB_BDnrzf_463_red_otoc-1
+DB BDnrzf463 červená (přední řídící vůz - 2. třída se zavaza
+DB_BDnrzf_463_red_otoc-2
+DB BDnrzf463 červená (přední řídící vůz - 2. třída se zavaza
+DB_BDnrzf_463_red-1
+DB BDnrzf463 červená (zadní řídící vůz - 2. třída se zavazad
+DB_BDnrzf_463_red-2
+DB BDnrzf463 červená (zadní řídící vůz - 2. třída se zavazad
+DB_BDnrzf_477_mint_otoc-1
+DB BDnrzf477 mentolová (přední řídící vůz - 2. třída se zava
+DB_BDnrzf_477_mint_otoc-2
+DB BDnrzf477 mentolová (přední řídící vůz - 2. třída se zava
+DB_BDnrzf_477_mint-1
+DB BDnrzf477 mentolová (zadní řídící vůz - 2. třída se zavaz
+DB_BDnrzf_477_mint-2
+DB BDnrzf477 mentolová (zadní řídící vůz - 2. třída se zavaz
+DB_BDnrzf_477_red_otoc-1
+DB BDnrzf477 červená (přední řídící vůz - 2. třída se zavaza
+DB_BDnrzf_477_red_otoc-2
+DB BDnrzf477 červená (přední řídící vůz - 2. třída se zavaza
+DB_BDnrzf_477_red-1
+DB BDnrzf477 červená (zadní řídící vůz - 2. třída se zavazad
+DB_BDnrzf_477_red-2
+DB BDnrzf477 červená (zadní řídící vůz - 2. třída se zavazad
+DB_BDnrzf_740_2_otoc-1
+DB BDnrzf740.2 kyvadlový vlak Karlsruhe (přední řídící vůz -
+DB_BDnrzf_740_2_otoc-2
+DB BDnrzf740.2 kyvadlový vlak Karlsruhe (přední řídící vůz -
+DB_BDnrzf_740_2-1
+DB BDnrzf740.2 kyvadlový vlak Karlsruhe (zadní řídící vůz - 
+DB_BDnrzf_740_2-2
+DB BDnrzf740.2 kyvadlový vlak Karlsruhe (zadní řídící vůz - 
+DB_BDnrzf_740_orange-silber-blau_otoc-1
+DB BDnrzf740 stříbrná/oranžová (přední řídící vůz - 2. třída
+DB_BDnrzf_740_orange-silber-blau_otoc-2
+DB BDnrzf740 stříbrná/oranžová (přední řídící vůz - 2. třída
+DB_BDnrzf_740_orange-silber-blau-1
+DB BDnrzf740 stříbrná/oranžová (zadní řídící vůz - 2. třída 
+DB_BDnrzf_740_orange-silber-blau-2
+DB BDnrzf740 stříbrná/oranžová (zadní řídící vůz - 2. třída 
+DB_BDnzf_479_mint_otoc-1
+DB BDnzf479 mentolová (přední řídící vůz - 2. třída se zavaz
+DB_BDnzf_479_mint_otoc-2
+DB BDnzf479 mentolová (přední řídící vůz - 2. třída se zavaz
+DB_BDnzf_479_mint-1
+DB BDnzf479 mentolová (zadní řídící vůz - 2. třída se zavaza
+DB_BDnzf_479_mint-2
+DB BDnzf479 mentolová (zadní řídící vůz - 2. třída se zavaza
+DB_BDnzf_479_red_otoc-1
+DB BDnzf479 červená (přední řídící vůz - 2. třída se zavazad
+DB_BDnzf_479_red_otoc-2
+DB BDnzf479 červená (přední řídící vůz - 2. třída se zavazad
+DB_BDnzf_479_red-1
+DB BDnzf479 červená (zadní řídící vůz - 2. třída se zavazadl
+DB_BDnzf_479_red-2
+DB BDnzf479 červená (zadní řídící vůz - 2. třída se zavazadl
+DB_BDomsb_274_1_rot-weiss-1
+DB BDomsb 274.1 červená (2. třída se zavazadlovým oddílem) 1
+DB_BDomsb_274_1_rot-weiss-2
+DB BDomsb 274.1 červená (2. třída se zavazadlovým oddílem) 2
+DB_BDymf_456_blue_otoc-1
+DB BDymf456 oceánová modrá (přední řídící vůz - 2. třída se 
+DB_BDymf_456_blue_otoc-2
+DB BDymf456 oceánová modrá (přední řídící vůz - 2. třída se 
+DB_BDymf_456_blue-1
+DB BDymf456 oceánová modrá (zadní řídící vůz - 2. třída se z
+DB_BDymf_456_blue-2
+DB BDymf456 oceánová modrá (zadní řídící vůz - 2. třída se z
+DB_Bi_21
+DB Bi 21 (2. třída)
+DB_Bi_21a
+DB Bi 21a (2. třída)
+DB_Bi_21b
+DB Bi 21b (2. třída)
+DB_Bi_27
+DB Bi 27 (2. třída)
+DB_Bi_27_rot
+DB Bi 27 červená (2. třída)
+DB_Bi_28
+DB Bi 28 (2. třída)
+DB_Bi_28_rot
+DB Bi 28 červená (2. třída)
+DB_Bidmz_268_fernblau-1
+DB Bimdz268 InterRegio (2. třída s přepravou jízdních kol) 1
+DB_Bidmz_268_fernblau-2
+DB Bimdz268 InterRegio (2. třída s přepravou jízdních kol) 2
+DB_Bidmz_268_red-1
+DB Bimdz268 červená (2. třída s přepravou jízdních kol) 1/2
+DB_Bidmz_268_red-2
+DB Bimdz268 červená (2. třída s přepravou jízdních kol) 2/2
+DB_Bidmz_268-1
+DB Bimdz268 ICE albino (2. třída s přepravou jízdních kol) 1
+DB_Bidmz_268-2
+DB Bimdz268 ICE albino (2. třída s přepravou jízdních kol) 2
+DB_Bif_27_rot
+DB Bif 27 červená (přední řídící vůz - 2. třída)
+DB_Bif_27_rot_otoc
+DB Bif 27 červená (zadní řídící vůz - 2. třída)
+DB_Bif_28
+DB Bif 28 (přední řídící vůz - 2. třída)
+DB_Bif_28_otoc
+DB Bif 28 (zadní řídící vůz - 2. třída)
+DB_Bimdz_267_red-1
+DB Bimdz267 červená (2. třída s přepravou jízdních kol) 1/2
+DB_Bimdz_267_red-2
+DB Bimdz267 červená (2. třída s přepravou jízdních kol) 2/2
+DB_Bimdz_267-1
+DB Bimdz267 ICE albino (2. třída s přepravou jízdních kol) 1
+DB_Bimdz_267-2
+DB Bimdz267 ICE albino (2. třída s přepravou jízdních kol) 2
+DB_Bimz_259
+DB Bimz259 ICE albino (2. třída)
+DB_Bimz_259_red
+DB Bimz259 červená (2. třída)
+DB_Bimz_264_7
+DB Bimz264.7 ICE albino (2. třída)
+DB_Bimz_264_7_fernblau
+DB Bimz264.7 InterRegio (2. třída)
+DB_Bimz_264_7_red
+DB Bimz264.7 červená (2. třída)
+DB_Bm_234_blue
+DB Bm234 oceánová modrá (2. třída)
+DB_Bm_234_pop_blue
+DB Bm234 pop-modrá (2. třída)
+DB_Bm_234_pop_green
+DB Bm234 pop-zelená (2. třída)
+DB_Bm_235
+DB Bm235 ICE albino (2. třída)
+DB_Bm_235_blue
+DB Bm235 oceánová modrá mag. brzdy  (2. třída)
+DB_Bm_235_orientrot
+DB Bm235 orientální červená (2. třída)
+DB_Bm_235_rot-weiss
+DB Bm235 červená (2. třída)
+DB_Bn_448_mint
+DB Bn448 mentolová (2. třída)
+DB_Bn_448_red
+DB Bn448 červená (2. třída)
+DB_Bn_719_mint_versuch
+DB Bn719 mentolová zkušební nátěr (2. třída)
+DB_Bn_719_orange_versuch
+DB Bn719 oranžová zkušební nátěr (2. třída)
+DB_Bnb_719_blue
+DB Bnb719 oceánová modrá (2. třída)
+DB_Bndzf_481_mint_otoc-1
+DB Bndzf481 mentolová (přední řídící vůz - 2. třída s přepra
+DB_Bndzf_481_mint_otoc-2
+DB Bndzf481 mentolová (přední řídící vůz - 2. třída s přepra
+DB_Bndzf_481_mint-1
+DB Bndzf481 mentolová (zadní řídící vůz - 2. třída s přeprav
+DB_Bndzf_481_mint-2
+DB Bndzf481 mentolová (zadní řídící vůz - 2. třída s přeprav
+DB_Bndzf_481_red_otoc-1
+DB Bndzf481 červená (zadní řídící vůz - 2. třída s přepravou
+DB_Bndzf_481_red_otoc-2
+DB Bndzf481 červená (zadní řídící vůz - 2. třída s přepravou
+DB_Bndzf_481_red-1
+DB Bndzf481 červená (zadní řídící vůz - 2. třída s přepravou
+DB_Bndzf_481_red-2
+DB Bndzf481 červená (zadní řídící vůz - 2. třída s přepravou
+DB_Bnr_725_silber-blau
+DB Bnr725 stříbrná s modrým rámem (2. třída)
+DB_Bnrd_451_mint-1
+DB Bnrd451 mentolová (2. třída s přepravou jízdních kol) 1/2
+DB_Bnrd_451_mint-2
+DB Bnrd451 mentolová (2. třída s přepravou jízdních kol) 2/2
+DB_Bnrd_451_red-1
+DB Bnrd451 červená (2. třída s přepravou jízdních kol) 1/2
+DB_Bnrd_451_red-2
+DB Bnrd451 červená (2. třída s přepravou jízdních kol) 2/2
+DB_Bnrkz_493_mint
+DB Bnrkz493 mentolová (2. třída/barovy vůz)
+DB_Bnrz_430_citybahn
+DB Bnrz430 City Bahn (2. třída)
+DB_Bnrz_725
+DB Bnrz725 kyvadlový vlak Karlsruhe (2. třída)
+DB_Bnrz_729
+DB Bnrz729 kyvadlový vlak Karlsruhe (2. třída)
+DB_Bnrzf_734
+DB Bnrzf734 kyvadlový vlak Karlsruhe (zadní řídící vůz - 2. 
+DB_Bnrzf_734_otoc
+DB Bnrzf734 kyvadlový vlak Karlsruhe (přední řídící vůz - 2.
+DB_Bom_280_1_mint
+DB Bom280.1 mentolová (2. třída)
+DB_Bom_280_1_red
+DB Bom280.1 červená (2. třída)
+DB_Bomdz_239_rot-weiss-1
+DB Bomdz239 červená (2. třída s přepravou jízdních kol) 1/2
+DB_Bomdz_239_rot-weiss-2
+DB Bomdz239 červená (2. třída s přepravou jízdních kol) 2/2
+DB_Bomz_236
+DB Bomz236 ICE albino (2. třída)
+DB_Bomz_236_orientrot
+DB Bomz236 orientální červená (2. třída)
+DB_Bomz_236_rot-weiss
+DB Bomz236 červená (2. třída)
+DB_Bpmdz_293-1
+DB Bpmdz293 ICE albino (2. třída s přepravou jízdních kol) 1
+DB_Bpmdz_293-2
+DB Bpmdz293 ICE albino (2. třída s přepravou jízdních kol) 2
+DB_Bpmz_291_2_blue
+DB Bpmz291.2 oceánová modrá (2. třída)
+DB_Bpmz_291_2_orientrot
+DB Bpmz291.2 orientální červená (2. třída)
+DB_Bpmz_291_2_rot-weiss
+DB Bpmz291.2 červená (2. třída)
+DB_Bpmz_293_fernblau
+DB Bpmz293 InterRegio (2. třída)
+DB_Bpmz_293_orientrot
+DB Bpmz293 orientální červená (2. třída)
+DB_Bpmz_293_rot-weiss
+DB Bpmz293 červená (2. třída)
+DB_Bpmz_294
+DB Bpmz294 ICE albino (2. třída)
+DB_Bpmz_295
+DB Bpmz295 ICE albino (2. třída)
+DB_Bpmz_296_Lufthansa
+DB Bpmz296 Lufthansa (1. třída)
+DB_Bpmz_296_Lufthansa_gep-1
+DB Bpmz296 Lufthansa (1. třída s přepravou zavazadel) 1/2
+DB_Bpmz_296_Lufthansa_gep-2
+DB Bpmz296 Lufthansa (1. třída s přepravou zavazadel) 2/2
+DB_BR4ymb-51
+DB BR4ymb-51 (2. třída/barový vůz)
+DB_BR4ymb-51_kakadu
+DB BR4ymb-51 kakadu (2. třída/barový vůz)
+DB_BRbu4um-61_kakadu
+DB BRbu4um-61 kakadu (2. třída/barový vůz)
+DB_Bvmsz_186
+DB Bvmsz186 ICE albino (2. třída)
+DB_Bvmz_185_fernblau
+DB Bvmz185 InterRegio (2. třída)
+DB_Bvmz_185_orientrot
+DB Bvmz185 orientální červená (2. třída)
+DB_Bvmz_185_rot-weiss
+DB Bvmz185 červená (2. třída)
+DB_Bvmz_237_blue
+DB Bvmz237 oceánová modrá (2. třída)
+DB_Bvmz_237_pop_blue
+DB Bvmz237 pop-modrá (2. třída)
+DB_Bybdzf_482_1_mint_otoc-1
+DB Bybdzf482.1 mentolová (přední řídící vůz - 2. třída s pře
+DB_Bybdzf_482_1_mint_otoc-2
+DB Bybdzf482.1 mentolová (přední řídící vůz - 2. třída s pře
+DB_Bybdzf_482_1_mint-1
+DB Bybdzf482.1 mentolová (zadní řídící vůz - 2. třída s přep
+DB_Bybdzf_482_1_mint-2
+DB Bybdzf482.1 mentolová (zadní řídící vůz - 2. třída s přep
+DB_Bybdzf_482_1_red_otoc-1
+DB Bybdzf482.1 červená (přední řídící vůz - 2. třída s přepr
+DB_Bybdzf_482_1_red_otoc-2
+DB Bybdzf482.1 červená (přední řídící vůz - 2. třída s přepr
+DB_Bybdzf_482_1_red-1
+DB Bybdzf482.1 červená (zadní řídící vůz - 2. třída s přepra
+DB_Bybdzf_482_1_red-2
+DB Bybdzf482.1 červená (zadní řídící vůz - 2. třída s přepra
+DB_Bydz_439_red-1
+DB Bydz439 červená (2. třída s přepravou jízdních kol) 1/2
+DB_Bydz_439_red-2
+DB Bydz439 červená (2. třída s přepravou jízdních kol) 2/2
+DB_Byl_421_blue
+DB Byl421 oceánová modrá (2. třída)
+DB_Byl_423_blue
+DB Byl423 oceánová modrá (2. třída)
+DB_Bylf_436_blue
+DB Bylf436 oceánová modrá (zadní řídící vůz - 2. třída)
+DB_Bylf_436_blue_otoc
+DB Bylf436 oceánová modrá (přední řídící vůz - 2. třída)
+DB_Byu_438_1_mint
+DB Byu438.1 mentolová (2. třída)
+DB_Byu_438_1_red
+DB Byu438.1 červená (2. třída)
+DB_D4um-60
+DB D4um-60 (zavazadlový vůz)
+DB_DABbuzf_777_mint
+DB DABbuzf777 mentolová (zadní řídící vůz - 1. a 2. třída)
+DB_DABbuzf_777_mint_otoc
+DB DABbuzf777 mentolová (přední řídící vůz - 1. a 2. třída)
+DB_DABgbuzf_760_mint
+DB DABgbuzf760 mentolová (zadní řídící vůz - 1. a 2. třída)
+DB_DABgbuzf_760_mint_otoc
+DB DABgbuzf760 mentolová (přední řídící vůz - 1. a 2. třída)
+DB_DABz_755_mint
+DB DABz755 mentolova (1. a 2. třída)
+DB_DBuz_747_mint
+DB DBuz747 mentolová (2. třída)
+DB_DBz_750_mint
+DB DBz750 mentolová (2. třída)
+DB_Dduu_498_mint
+DB Dduu498 mentolová (zavazadlový vůz)
+DB_Dduu_498_red
+DB Dduu498 červená (zavazadlový vůz)
+DB_Di_23
+DB Di 23 (zavazadlový vůz)
+DB_Di_29
+DB Di 29 (zavazadlový vůz)
+DB_Dms_902_1_blue
+DB Dms902.1 oceánová modrá (zavazadlový vůz)
+DB_Dms_902_pop_green
+DB Dms902 pop-zelená (zavazadlový vůz)
 DB_e16
 DB E16 (elektrická lokomotiva ~15kV/16,7Hz)
 DB_e32
@@ -2038,6 +2904,10 @@ DB_e69_002
 DB E69.002 "Pauline" (elektrická lokomotiva ~15kV/16,7Hz)
 DB_e69_003
 DB E69.003 "Hermine" (elektrická lokomotiva ~15kV/16,7Hz)
+DB_Pwif_52_rot
+DB Pwif 52 červený (přední řídící vůz - zavazadla)
+DB_Pwif_52_rot_otoc
+DB Pwif 52 červený (zadní řídící vůz - zavazadla)
 db_v100
 DB V100 (dieselová lokomotiva)
 db_v100_006
@@ -2064,6 +2934,50 @@ db_v90
 DB V90 (dieselová lokomotiva)
 db_v90_prototyp
 DB V90 prototyp (dieselová lokomotiva)
+DB_WR4um-63_TEE_blue
+DB WR4um-63 TEE modrá (jídelní vůz)
+DB_WR4um-63_TEE_red
+DB WR4um-63 TEE červená (jídelní vůz)
+DB_WR4um-64_red
+DB WR4um-64 červená (jídelní vůz)
+DB_WR4um-64_TEE_red
+DB WR4um-64 TEE červená (jídelní vůz)
+DB_WRbumz_139_blue
+DB WRbumz139 oceánová modrá (elektrický jídelní vůz)
+DB_WRbumz_139_rot-beige
+DB WRbumz139 TEE červená (elektrický jídelní vůz)
+DB_WRm_130_1
+DB WRm 130.1 Mitropa (jídelní vůz)
+DB_WRm_130_1_orientrot
+DB WRm 130.1 orientální červená  (jídelní vůz)
+DB_WRm_130_1_rot-weiss
+DB WRm 130.1 červená  (jídelní vůz)
+DB_WRmh_132_blue
+DB WRmh132 oceánová modrá (jídelní vůz)
+DB_WRmh_132_orientrot
+DB WRmz132 orientální červená (jídelní vůz)
+DB_WRmh_132_pop_red
+DB WRmh132 pop-červená (jídelní vůz)
+DB_WRmh_132_rot-weiss
+DB WRmz132 červená (jídelní vůz)
+DB_WRmz_133
+DB WRmz133 ICE albino (jídelní vůz)
+DB_WRmz_133_rot-weiss
+DB WRmz133 červená (jídelní vůz)
+DB_WRmz_135_blue
+DB WRmz135 oceánová modrá (elektrický jídelní vůz)
+DB_WRmz_135_orientrot
+DB WRmz135 orientální červená (elektrický jídelní vůz)
+DB_WRmz_135_rot-beige-schwarz
+DB WRmz135 TEE červená (elektrický jídelní vůz)
+DB_WRmz_135_rot-weiss
+DB WRmz135 červená (elektrický jídelní vůz)
+DB_WRmz_137
+DB WRmz137 ICE albino (elektrický jídelní vůz)
+DB_WRmz_137_orientrot
+DB WRmz137 orientální červená (elektrický jídelní vůz)
+DB_WRmz_137_rot-weiss
+DB WRmz137 červená (elektrický jídelní vůz)
 DBC_Eas
 DB Cargo Eas (sypké zboží)
 DBC_Eas_dvojice
@@ -2074,10 +2988,458 @@ DBC_Es_dvojice
 DB Cargo Es dvojice vozů (sypké zboží)
 DBC_Fcc_Talbot
 DB Cargo Fcc Talbot (sypké zboží)
+dr_118_0_alt
+DR 118.0 (dieselová lokomotiva)
+dr_118_2
+DR 118.2 (dieselová lokomotiva)
+dr_118_2_alt
+DR 118.2 (dieselová lokomotiva)
+dr_118_neu
+DR 118 (dieselová lokomotiva)
 DR_120
 DR 120 "Sergej" (dieselová nákladní lokomotiva)
 DR_130
 DR 130 "Ragulin" (dieselová nákladní lokomotiva)
+DR_2_2_T21_5
+DR 2´2´ T 21,5 (tendr)
+DR_2_2_T21_5_otoc
+DR 2´2´ T 21,5 otočená (tendr)
+dr_211_rot
+DR 211 (elektrická lokomotiva ~15kV/16,7Hz)
+dr_250
+DR 250 (elektrická lokomotiva ~15kV/16,7Hz)
+dr_250_001
+DR 250.001 (elektrická lokomotiva ~15kV/16,7Hz)
+dr_251
+DR 251 (elektrická lokomotiva ~25kV/50Hz)
+DR_38
+DR 38 (osobní parní lokomotiva)
+DR_38_otoc
+DR 38 otočená (osobní parní lokomotiva)
+DR_A4ge
+DR A4ge modernizovaný vagon (1. třída kupé)
+DR_AB4ge
+DR AB4ge modernizovaný vagon (1. a 2. třída kupé)
+DR_ABge_3845
+DR ABge 38-45 modernizovaný vagon (1. a 2. třída kupé)
+DR_ABi_29_2
+DR ABi 29 Donnerbuchse (1. a 2. třída velkoprostor)
+DR_ABme_3043
+DR ABme 30-43 (1. a 2. třída kupé)
+DR_ABme_3085
+DR ABme 30-85 (1. a 2. třída kupé)
+DR_Age_1745
+DR Age 17-45 modernizovaný vagon (1. třída kupé)
+DR_Ai_29_2
+DR Ai 29 Donnerbuchse (1. třída velkoprostor)
+DR_Ame_1043
+DR Ame 10-43 (1. třída kupé)
+DR_Ame_1043_ie
+DR Ame 10-43 Interexpress (1. třída kupé)
+DR_Ame_1043_se
+DR Ame 10-43 Stadteexpress (1. třída kupé)
+DR_Ame_1085
+DR Ame 10-85 (1. třída kupé)
+DR_Amy_1070_ie
+DR Amy 10-70 Interexpress (1. třída velkoprostor)
+DR_Amz_1095_fernblau
+DR Amz 10-95 InterRegio (1. třída kupé)
+DR_B3g-57
+DR B3g-57 reko vagon (2. třída velkoprostor)
+DR_B3gtr-57-1
+DR B3gtr-57 reko vagon (2. třída velkoprostor s přepravou za
+DR_B3gtr-57-2
+DR B3gtr-57 reko vagon (2. třída velkoprostor s přepravou za
+DR_B4ge
+DR B4ge modernizovaný vagon (2. třída kupé)
+DR_B4gre
+DR B4gre modernizovaný vagon (2. třída kupé/barový vůz)
+DR_B4gwl-64
+DR B4gwl-64 reko vagon (2. třída velkoprostor)
+DR_Baage_2415
+DR Baage 24-15 reko vagon (2. třída velkoprostor)
+DR_Bage_2315
+DR Bage 23-15 reko vagon (2. třída velkoprostor)
+DR_Bagtre_2315-1
+DR Bagtre 23-15 reko vagon (2. třída velkoprostor s přepravo
+DR_Bagtre_2315-2
+DR Bagtre 23-15 reko vagon (2. třída velkoprostor s přepravo
+DR_BCi_21
+DR BCi 21 Donnerbuchse (2. a 3. třída velkoprostor)
+DR_BCi_29
+DR BCi 29 Donnerbuchse (2. a 3. třída velkoprostor)
+DR_Bcm_5080
+DR Bcm 50-80 (lehátkový vůz 2. třída)
+DR_BDghwse_8215_dg-1
+DR BDghwse 82-15 tmavě zelený reko vagon (služební/2. třída 
+DR_BDghwse_8215_dg-2
+DR BDghwse 82-15 tmavě zelený reko vagon (služební/2. třída 
+DR_BDghwse_8215-1
+DR BDghwse 82-15 reko vagon (služební/2. třída velkoprostor)
+DR_BDghwse_8215-2
+DR BDghwse 82-15 reko vagon (služební/2. třída velkoprostor)
+DR_BDmsb_8280-1
+DR BDmsb 82-80 (služební/2. třída kupé) 1/2
+DR_BDmsb_8280-2
+DR BDmsb 82-80 (služební/2. třída kupé) 2/2
+DR_BDwsb_8213-1
+DR BDwsb 82-13 reko vagon (služební/2. třída kupé) 1/2
+DR_BDwsb_8213-2
+DR BDwsb 82-13 reko vagon (služební/2. třída kupé) 2/2
+DR_Bg-57
+DR Bg-57 reko vagon (2. třída velkoprostor)
+DR_Bge_2945
+DR Bge 29-45 modernizovaný vagon (2. třída kupé)
+DR_Bghwe_2815
+DR Bghwe 28-15 reko vagon (2. třída velkoprostor)
+DR_Bi_21
+DR Bi 21 Donnerbuchse (2. třída velkoprostor)
+DR_Bi_27_2
+DR Bi 27 Donnerbuchse (2. třída velkoprostor)
+DR_Bi_28_2
+DR Bi 28 Donnerbuchse (2. třída velkoprostor)
+DR_Bi_28_2_rot
+DR Bi 28 Donnerbuchse červenokrémová (2. třída velkoprostor)
+DR_Bi_29
+DR Bi 29 Donnerbuchse (2. třída velkoprostor)
+DR_Bimdz_8495_fernblau-1
+DR Bimdz 84-95 InterRegio (2. třída kombinovaný interier s p
+DR_Bimdz_8495_fernblau-2
+DR Bimdz 84-95 InterRegio (2. třída kombinovaný interier s p
+DR_Bimz_2295_fernblau
+DR Bimz 22-95 InterRegio (2. třída kombinovaný interier)
+DR_Bme_2150
+DR Bme 21-50 (2. třída kupé)
+DR_Bme_2150_ie
+DR Bme 21-50 Interexpress (2. třída kupé)
+DR_Bme_2150_se
+DR Bme 21-50 Stadteexpress (2. třída kupé)
+DR_Bme_2185
+DR Bme 21-85 (2. třída kupé)
+DR_Bme_2185_se
+DR Bme 21-85 Stadteexpress (2. třída kupé)
+DR_Bmh_2140
+DR Bmh 21-40 (2. třída velkoprostor)
+DR_Bmh_2140_se
+DR Bmh 21-40 Stadteexpress (2. třída velkoprostor)
+DR_Bmhe_2111
+DR Bmhe 21-11 (2. třída velkoprostor)
+DR_Bmk_8545
+DR Bmk 85-45 (2. třída kupé/barový vůz)
+DR_Bmy_2070_ie
+DR Bmy 20-70 Interexpress (2. třída velkoprostor)
+DR_Bmz_2190_fernblau
+DR Bmz 21-90 InterRegio (2. třída kupé)
+DR_BRge_8545
+DR BRge 85-45 modernizovaný vagon (2. třída kupé/barový vůz)
+DR_Ci_21
+DR Ci 21 Donnerbuchse (3. třída velkoprostor)
+DR_Ci_27
+DR Ci 27 Donnerbuchse (3. třída velkoprostor)
+DR_Ci_28
+DR Ci 28 Donnerbuchse (3. třída velkoprostor)
+DR_D4ge
+DR D4ge modernizovaný vagon (služební vůz)
+DR_Daa_9326
+DR Daa 93-26 (služební vůz)
+DR_Dage_9315
+DR Dage 93-15 reko vagon (služební vůz)
+DR_DB_13-1-1
+DR DB 13 patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DB_13-1-2
+DR DB 13 patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DB_13-2
+DR DB 13 patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DB_13-3
+DR DB 13 patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DB_13-4-1
+DR DB 13 patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DB_13-4-2
+DR DB 13 patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DBmqe_2513_dg
+DR DBmqe 25-13 tmavě zelená (zadní řídící patrový vůz - 2. t
+DR_DBmqe_2513_dg_otoc
+DR DBmqe 25-13 tmavě zelená (přední řídící patrový vůz - 2. 
+DR_DBmqe_2513_o
+DR DBmqe 25-13 okrová (zadní řídící patrový vůz - 2. třída v
+DR_DBmqe_2513_o_otoc
+DR DBmqe 25-13 okrová (přední řídící patrový vůz - 2. třída 
+DR_DBmqee_2503_Berlin
+DR DBmqee 25-03 Berlin (zadní řídící patrový vůz - 2. třída 
+DR_DBmqee_2503_Berlin_otoc
+DR DBmqee 25-03 Berlin (přední řídící patrový vůz - 2. třída
+DR_DBmu_2513_001_prototyp
+DR DBmu 25-13 001 prototyp (patrový vůz - 2. třída velkopros
+DR_DBmu_2513_002_prototyp
+DR DBmu 25-13 002 prototyp (patrový vůz - 2. třída velkopros
+DR_DBmu_2513_mint
+DR DBmu 25-13 mentolová (patrový vůz - 2. třída velkoprostor
+DR_DBmue_2513_dg
+DR DBmue 25-13 tmavě zelená (patrový vůz - 2. třída velkopro
+DR_DBmue_2513_o
+DR DBmue 25-13 okrová (patrový vůz - 2. třída velkoprostor)
+DR_DBmuz_2504_Berlin
+DR DBmue 25-04 Berlin (patrový vůz - 2. třída velkoprostor)
+DR_DBvqe_blau_otoc-1-1
+DR DBvqe patrová jednotka modrá (přední vůz - 2. třída velko
+DR_DBvqe_blau_otoc-1-2
+DR DBvqe patrová jednotka modrá (přední vůz - 2. třída velko
+DR_DBvqe_blau_otoc-2
+DR DBvqe patrová jednotka modrá (vložený vůz - 2. třída velk
+DR_DBvqe_blau_otoc-3
+DR DBvqe patrová jednotka modrá (vložený vůz - 2. třída velk
+DR_DBvqe_blau_otoc-4-1
+DR DBvqe patrová jednotka modrá (zadní řídící vůz - 2. třída
+DR_DBvqe_blau_otoc-4-2
+DR DBvqe patrová jednotka modrá (zadní řídící vůz - 2. třída
+DR_DBvqe_blau-1-1
+DR DBvqe patrová jednotka modrá (přední řídící vůz - 2. tříd
+DR_DBvqe_blau-1-2
+DR DBvqe patrová jednotka modrá (přední řídící vůz - 2. tříd
+DR_DBvqe_blau-2
+DR DBvqe patrová jednotka modrá (vložený vůz - 2. třída velk
+DR_DBvqe_blau-3
+DR DBvqe patrová jednotka modrá (vložený vůz - 2. třída velk
+DR_DBvqe_blau-4-1
+DR DBvqe patrová jednotka modrá (zadní vůz - 2. třída velkop
+DR_DBvqe_blau-4-2
+DR DBvqe patrová jednotka modrá (zadní vůz - 2. třída velkop
+DR_DBvqe_otoc-1-1
+DR DBvqe patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DBvqe_otoc-1-2
+DR DBvqe patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DBvqe_otoc-2
+DR DBvqe patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DBvqe_otoc-3
+DR DBvqe patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DBvqe_otoc-4-1
+DR DBvqe patrová jednotka (zadní řídící vůz - 2. třída velko
+DR_DBvqe_otoc-4-2
+DR DBvqe patrová jednotka (zadní řídící vůz - 2. třída velko
+DR_DBvqe-1-1
+DR DBvqe patrová jednotka (přední řídící vůz - 2. třída velk
+DR_DBvqe-1-2
+DR DBvqe patrová jednotka (přední řídící vůz - 2. třída velk
+DR_DBvqe-2
+DR DBvqe patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DBvqe-3
+DR DBvqe patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DBvqe-4-1
+DR DBvqe patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DBvqe-4-2
+DR DBvqe patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DBvue-1-1
+DR DBvue patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DBvue-1-2
+DR DBvue patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DBvue-2
+DR DBvue patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DBvue-3
+DR DBvue patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DBvue-4-1
+DR DBvue patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DBvue-4-2
+DR DBvue patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DGB_12-1
+DR DGB 12 patrová jednotka (přední vůz - 2. třída velkoprost
+DR_DGB_12-2
+DR DGB 12 patrová jednotka (spojovací článek)
+DR_DGB_12-3
+DR DGB 12 patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGB_12-4
+DR DGB 12 patrová jednotka (spojovací článek)
+DR_DGB_12-5
+DR DGB 12 patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGB_12-6
+DR DGB 12 patrová jednotka (spojovací článek)
+DR_DGB_12-7
+DR DGB 12 patrová jednotka (vloženy vůz - 2. třída velkopros
+DR_DGB_12-8
+DR DGB 12 patrová jednotka (spojovací článek)
+DR_DGB_12-9
+DR DGB 12 patrová jednotka (zadní vůz - 2. třída velkoprosto
+DR_DGBge_bs-1
+DR DGBge patrová jednotka hnědá střecha (přední vůz - 2. tří
+DR_DGBge_bs-2
+DR DGBge patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBge_bs-3
+DR DGBge patrova jednotka hnědá střecha (vložený vůz - 2. tř
+DR_DGBge_bs-4
+DR DGBge patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBge_bs-5
+DR DGBge patrová jednotka hnědá střecha (vložený vůz - 2. tř
+DR_DGBge_bs-6
+DR DGBge patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBge_bs-7
+DR DGBge patrová jednotka hnědá střecha (vložený vůz - 2. tř
+DR_DGBge_bs-8
+DR DGBge patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBge_bs-9
+DR DGBge patrová jednotka hnědá střecha (zadní vůz - 2. tříd
+DR_DGBge-1
+DR DGBge patrová jednotka (přední vůz - 2. třída velkoprosto
+DR_DGBge-2
+DR DGBge patrová jednotka (spojovací článek)
+DR_DGBge-3
+DR DGBge patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DGBge-4
+DR DGBge patrová jednotka (spojovací článek)
+DR_DGBge-5
+DR DGBge patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DGBge-6
+DR DGBge patrová jednotka (spojovací článek)
+DR_DGBge-7
+DR DGBge patrová jednotka (vložený vůz - 2. třída velkoprost
+DR_DGBge-8
+DR DGBge patrová jednotka (spojovací článek)
+DR_DGBge-9
+DR DGBge patrová jednotka (zadní vůz - 2. třída velkoprostor
+DR_DGBgqe_bs_otoc-1
+DR DGBgqe patrová jednotka hnědá střecha (přední vůz - 2. tř
+DR_DGBgqe_bs_otoc-2
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs_otoc-3
+DR DGBgqe patrová jednotka hnědá střecha (vložený vůz - 2. t
+DR_DGBgqe_bs_otoc-4
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs_otoc-5
+DR DGBgqe patrová jednotka hnědá střecha (vložený vůz - 2. t
+DR_DGBgqe_bs_otoc-6
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs_otoc-7
+DR DGBgqe patrová jednotka hnědá střecha (vložený vůz - 2. t
+DR_DGBgqe_bs_otoc-8
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs_otoc-9
+DR DGBgqe patrová jednotka hnědá střecha (zadní řídící vůz -
+DR_DGBgqe_bs-1
+DR DGBgqe patrová jednotka hnědá střecha (přední řídící vůz 
+DR_DGBgqe_bs-2
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs-3
+DR DGBgqe patrová jednotka hnědá střecha (vložený vůz - 2. t
+DR_DGBgqe_bs-4
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs-5
+DR DGBgqe patrová jednotka hnědá střecha (vložený vůz - 2. t
+DR_DGBgqe_bs-6
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs-7
+DR DGBgqe patrová jednotka hnědá střecha (vložený vůz - 2. t
+DR_DGBgqe_bs-8
+DR DGBgqe patrová jednotka hnědá střecha (spojovací článek)
+DR_DGBgqe_bs-9
+DR DGBgqe patrová jednotka hnědá střecha (zadní vůz - 2. tří
+DR_DGBgqe_otoc-1
+DR DGBgqe patrová jednotka (přední vůz - 2. třída velkoprost
+DR_DGBgqe_otoc-2
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe_otoc-3
+DR DGBgqe patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGBgqe_otoc-4
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe_otoc-5
+DR DGBgqe patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGBgqe_otoc-6
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe_otoc-7
+DR DGBgqe patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGBgqe_otoc-8
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe_otoc-9
+DR DGBgqe patrová jednotka (zadní řídící vůz - 2. třída velk
+DR_DGBgqe-1
+DR DGBgqe patrová jednotka (přední řídící vůz - 2. třída vel
+DR_DGBgqe-2
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe-3
+DR DGBgqe patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGBgqe-4
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe-5
+DR DGBgqe patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGBgqe-6
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe-7
+DR DGBgqe patrová jednotka (vložený vůz - 2. třída velkopros
+DR_DGBgqe-8
+DR DGBgqe patrová jednotka (spojovací článek)
+DR_DGBgqe-9
+DR DGBgqe patrová jednotka (zadní vůz - 2. třída velkoprosto
+DR_DGR_3
+DR DGR 3 (barový vůz k patrové jednotce DR DGB 12)
+DR_Dgse_9545
+DR Dgse 95-45 modernizovaný vagon (služební vůz)
+DR_DPw_4g
+DR DPw 4g (zavazadlový vůz k patrové jednotce DR DGB 12)
+dr_gbkkqss
+DR Gbkkqss (zavazadlový vůz)
+DR_Post3-cl12_8
+DR Post3-cl12,8 reko vagon (poštovní vůz)
+DR_Post4-bll20_8
+DR Post4-bll20,8 modernizovaný vagon (poštovní vůz)
+DR_Post4-bll21_1
+DR Post4-bll21,1 modernizovaný vagon (poštovní vůz)
+DR_Posta
+DR Posta reko vagon (poštovní vůz)
+DR_Pw3ge
+DR Pw3ge reko vagon (služební vůz)
+DR_Pwgs-56
+DR Pwgs-56 (služební vůz)
+DR_Pwi_23
+DR Pwi 23 (zavazadlový vůz)
+DR_Pwi_23_2
+DR Pwi 23 (zavazadlový vůz)
+DR_Pwi_29
+DR Pwi 29 (zavazadlový vůz)
+DR_Pwi_29_2
+DR Pwi 29 (zavazadlový vůz)
+DR_Pwi_29_2_rot
+DR Pwi 29 červený (zavazadlový vůz)
+dr_v180
+DR V180 (dieselová lokomotiva)
+dr_v180_2
+DR V180.2 (dieselová lokomotiva)
+DR_Wgr_8715
+DR Wgr 87-15 reko vagon (jídelní vůz)
+DR_WRge_8845
+DR WRge 88-45 reko vagon (jídelní vůz)
+DR_WRge_8845_6f
+DR WRge 88-45 reko vagon (jídelní vůz - 6 oken)
+DR_WRge_8845_se
+DR WRge 88-45 reko vagon Stadteexpress (jídelní vůz)
+DR_WRme_8870
+DR WRme 88-70 (jídelní vůz)
+DRG_2_2_T21_5
+DRG 2´2´ T 21,5 (tendr)
+DRG_2_2_T21_5_otoc
+DRG 2´2´ T 21,5 otočená (tendr)
+DRG_38_10-40
+DRG 38.10-40 (osobní parní lokomotiva)
+DRG_38_10-40_otoc
+DRG 38.10-40 otočená (osobní parní lokomotiva)
+DRG_BCi_21
+DRG BCi 21 (2. a 3. třída velkoprostor)
+DRG_BCi_29
+DRG BCi 29 (2. a 3. třída velkoprostor)
+DRG_BDi_21
+DRG BDi 21 (2. a 4. třída velkoprostor)
+DRG_Bi_21
+DRG Bi 21 (2. třída velkoprostor)
+DRG_Bi_29
+DRG Bi 29 (2. třída velkoprostor)
+DRG_Ci_21
+DRG Ci 21 (3. třída velkoprostor)
+DRG_Ci_28
+DRG Ci 28 (3. třída velkoprostor)
+DRG_Di_21
+DRG Di 21 (4. třída velkoprostor)
+DRG_Di_27
+DRG Di 27 (4. třída velkoprostor)
+DRG_Pwi_23
+DRG Pwi 23 (zavazadlový vůz)
+DRG_Pwi_29
+DRG Pwi 29 (zavazadlový vůz)
 EPPK_Ob_Prazdroj
 EPPK Ob Prazdroj (chladicí vůz na pivo)
 GW_010
@@ -2298,16 +3660,390 @@ Liaz_250.261_uhli
 Náklaďák Liaz 251.261 (sklápěč, sypké zboží)
 Liaz_251.261_obili
 Náklaďák Liaz 251.261 (sklápěč, zemedělské produkty)
+MAV_Ap_1905
+MAV Ap 19-05 (1. třída)
+MAV_BDh_8127-1
+MAV BDh 81-27 (2. třída/služební) 1/2
+MAV_BDh_8127-2
+MAV BDh 81-27 (2. třída/služební) 2/2
+MAV_BDt_8227_otoc-1
+MAV BDt 82-27 (zadní řídící vůz - 2. třída/služební) 1/2
+MAV_BDt_8227_otoc-2
+MAV BDt 82-27 (zadní řídící vůz - 2. třída/služební) 2/2
+MAV_BDt_8227_z_otoc-1
+MAV BDt 82-27 zelený (zadní řídící vůz - 2. třída/služebni) 
+MAV_BDt_8227_z_otoc-2
+MAV BDt 82-27 zelený (zadní řídící vůz - 2. třída/služební) 
+MAV_BDt_8227_z-1
+MAV BDt 82-27 zelený (přední řídící vůz - 2. třída/služební)
+MAV_BDt_8227_z-2
+MAV BDt 82-27 zelený (přední řídící vůz - 2. třída/služební)
+MAV_BDt_8227-1
+MAV BDt 82-27 (přední řídící vůz - 2. třída/služební) 1/2
+MAV_BDt_8227-2
+MAV BDt 82-27 (přední řídící vůz - 2. třída/služební) 2/2
+MAV_BDzx_8328-1
+MAV BDzx 83-28 (přípojný vůz - 2. třída/služební) 1/2
+MAV_BDzx_8328-2
+MAV BDzx 83-28 (přípojný vůz - 2. třída/služební) 2/2
+MAV_Bh_2026_z
+MAV Bh 20-26 zelený (2. třída)
+MAV_Bhv_2007
+MAV Bhv 20-07 (2. třída)
+MAV_Bhv_2027
+MAV Bhv 20-27 (2. třída)
+MAV_By_2017
+MAV By 20-17 (2. třída)
+MAV_By_2017_z
+MAV By 20-17 zelený (2. třída)
+MAV_Bzmot_5429
+MAV Bzmot 54-29 (motorový vůz - 2. třída)
+MAV_Bzmot_5429_zp
+MAV Bzmot 54-29 žlutý pruh (motorový vůz - 2. třída)
+MAV_Bzx_2428
+MAV Bzx 24-28 (přípojný vůz - 2. třída)
+MAV_Bzx_2428_zp
+MAV Bzx 24-28 žlutý pruh (přípojný vůz - 2. třída)
+MAV_M41
+MAV M41 (motorová lokomotiva)
+MAV_M41_h
+MAV M41 tovární nátěr (motorová lokomotiva)
+MAV_M61
+MAV M61 "Nohabka" (motorová lokomotiva)
+MAV_M61_h
+MAV M61 tovární nátěr "Nohabka" (motorová lokomotiva)
 MAV_M62
 MAV M62 "Sergej" (dieselová nákladní lokomotiva)
+MAV_Start_ABmz_3091
+MAV Start ABmz 30-91 (1. a 2. třída)
+MAV_Start_AByee_3155
+MAV Start AByee 31-55 (1. a 2. třída)
+MAV_Start_Amz_1991
+MAV Start Amz 19-91 (1. třída)
+MAV_Start_Apmz_1091
+MAV Start Apmz 10-91 (1. třída)
+MAV_Start_Bcmz_5091
+MAV Start Bcmz 50-91 (lehátkový vůz - 2. třída)
+MAV_Start_BDh_8127-1
+MAV Start BDh 81-27 (2. třída/služební) 1/2
+MAV_Start_BDh_8127-2
+MAV Start BDh 81-27 (2. třída/služební) 2/2
+MAV_Start_BDt_8005_otoc-1
+MAV Start BDt 80-05 (zadní řídící vůz - 2. třída/služební) 1
+MAV_Start_BDt_8005_otoc-2
+MAV Start BDt 80-05 (zadní řídící vůz - 2. třída/služební) 2
+MAV_Start_BDt_8005-1
+MAV Start BDt 80-05 (přední řídící vůz - 2. třída/služební) 
+MAV_Start_BDt_8005-2
+MAV Start BDt 80-05 (přední řídící vůz - 2. třída/služební) 
+MAV_Start_BDt_8207_otoc-1
+MAV Start BDt 82-07 (zadní řídící vůz - 2. třída/služební) 1
+MAV_Start_BDt_8207_otoc-2
+MAV Start BDt 82-07 (zadní řídící vůz - 2. třída/služební) 2
+MAV_Start_BDt_8207-1
+MAV Start BDt 82-07 (přední řídící vůz - 2. třída/služební) 
+MAV_Start_BDt_8207-2
+MAV Start BDt 82-07 (přední řídící vůz - 2. třída/služební) 
+MAV_Start_BDzx_8328-1
+MAV Start BDzx 83-28 (přípojný vůz - 2. třída/služební) 1/2
+MAV_Start_BDzx_8328-2
+MAV Start BDzx 83-28 (přípojný vůz - 2. třída/služební) 2/2
+MAV_Start_Bhv_2005
+MAV Start Bhv 20-05 (2. třída)
+MAV_Start_Bhv_2007
+MAV Start Bhv 20-07 (2. třída)
+MAV_Start_Bmz_2191
+MAV Start Bmz 21-91 (2. třída)
+MAV_Start_Bp_2905
+MAV Start Bp 29-05 (2. třída)
+MAV_Start_Bpmz_2091
+MAV Start Bpmz 20-91 (2. třída)
+MAV_Start_Btzx_8028_IP
+MAV Start Btzx 80-28 "InterPici" (zadni řídící vůz - 2. tříd
+MAV_Start_Btzx_8028_IP_p
+MAV Start Btzx 80-28 "InterPici" (přední řídící vůz - 2. tří
+MAV_Start_By_2017
+MAV Start By 20-17 (2. třída)
+MAV_Start_Bybdtee_8055_otoc-1
+MAV Start Bybdtee 80-55 (zadní řídící vůz - 2. třída s přepr
+MAV_Start_Bybdtee_8055_otoc-2
+MAV Start Bybdtee 80-55 (zadní řídící vůz - 2. třída s přepr
+MAV_Start_Bybdtee_8055-1
+MAV Start Bybdtee 80-55 (přední řídící vůz - 2. třída s přep
+MAV_Start_Bybdtee_8055-2
+MAV Start Bybdtee 80-55 (přední řídící vůz - 2. třída s přep
+MAV_Start_Bydee_8455-1
+MAV Start Bydee 84-55 (2. třída s přepravou jízdních kol) 1/
+MAV_Start_Bydee_8455-2
+MAV Start Bydee 84-55 (2. třída s přepravou jízdních kol) 2/
+MAV_Start_Byee_2155
+MAV Start Byee 21-55 (2. třída)
+MAV_Start_Bzmot_5429
+MAV Start Bzmot 54-29 (motorový vůz - 2. třída)
+MAV_Start_Bzmot_5429_IP
+MAV Start Bzmot 54-29 "InterPici" (motorový vůz - 2. třída)
+MAV_Start_Bzx_2428
+MAV Start Bzx 24-28 (přípojný vůz - 2. třída)
+MAV_Start_Dms_9591
+MAV Start Dms 95-91 (služební vůz)
+MAV_Start_WLABmz_7191
+MAV Start WLABmz 71-91 (lůžkový vůz - 1. a 2. třída)
+MAV_Start_WRmz_8891
+MAV Start WRmz 88-91 (jídelní vůz)
+MAV_V43_1
+MAV V43.1 (elektrická lokomotiva ~25kV/50Hz)
+MAV_V43_1_h
+MAV V43.1 tovární nátěr (elektrická lokomotiva ~25kV/50Hz)
+MAV_V43_1_s
+MAV V43.1 šedý (elektrická lokomotiva ~25kV/50Hz)
+MAV_V43_2
+MAV V43.2 (elektrická lokomotiva ~25kV/50Hz)
+MAV_V43_3
+MAV V43.3 (elektrická lokomotiva ~25kV/50Hz)
+MAV_V63_0
+MAV V63.0 (elektrická lokomotiva ~25kV/50Hz)
+MAV_V63_0_h
+MAV V63.0 tovární nátěr (elektrická lokomotiva ~25kV/50Hz)
+MAV_V63_1
+MAV V63.1 (elektrická lokomotiva ~25kV/50Hz)
 Mercedes_Benz_Actros
 Tahač Mercedes Benz Actros (žlutý)
 nhkg_t669_2501
 NHKG T669.2501 prototyp (dieselová lokomotiva)
 nhkg_t669_2501_2
 NHKG T669.2501 prototyp pozdejší provedení (dieselová lokomo
+OBB_1010_green
+OBB 1010 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1010_orange
+OBB 1010 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1014_CAT
+OBB 1014 "City Airport Train" (elektrická dvousystémová loko
+OBB_1014_RCA
+OBB 1014 "Rail Cargo Austria" (elektrická dvousystémová loko
+OBB_1014_red
+OBB 1014 červený (elektrická dvousystémová lokomotiva ~15kV/
+obb_1018_blut_rot
+OBB 1018 červená (elektrická lokomotiva ~15kV/16,7Hz)
+obb_1018_gruen
+OBB 1018 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1040_green
+OBB 1040 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1040_orange
+OBB 1040 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1041_green
+OBB 1041 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1041_orange
+OBB 1041 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1042_5_orange
+OBB 1042.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1042_5_red
+OBB 1042.5 červený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1042_green
+OBB 1042 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1042_orange
+OBB 1042 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1042_red
+OBB 1042 červený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1044_501
+OBB 1044.501 (testovací vysokorychlostní elektrická lokomoti
+OBB_1044_orange
+OBB 1044 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1044_red
+OBB 1044 červený (elektrická lokomotiva ~15kV/16,7Hz)
+obb_1080_br
+OBB 1080 hnědá (elektrická lokomotiva ~15kV/16,7Hz)
+obb_1080_gr_1
+OBB 1080 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1114_red
+OBB 1114 červený (elektrická dvousystémová lokomotiva ~15kV/
+obb_1118_blut_rot
+OBB 1118 červená (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1142_5_orange
+OBB 1142.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1142_5_red
+OBB 1142.5 červený (elektrická lokomotiva ~15kV/16,7Hz)
+OBB_1144_red
+OBB 1144 červený (elektrická lokomotiva ~15kV/16,7Hz)
+obb_1189_02_a
+OBB 1189 oranžová (přední díl - tříčlánková elektrická lokom
+obb_1189_02_b
+OBB 1189 oranžová (střední díl - tříčlánková elektrická loko
+obb_1189_02_c
+OBB 1189 oranžová (zadní díl - tříčlánková elektrická lokomo
+obb_1189_gruen_a
+OBB 1189 zelená (přední díl - tříčlánková elektrická lokomot
+obb_1189_gruen_b
+OBB 1189 zelená (střední díl - tříčlánková elektrická lokomo
+obb_1189_gruen_c
+OBB 1189 zelená (zadní díl - tříčlánková elektrická lokomoti
+OBB_2016
+OBB 2016 "Hercules" (motorová lokomotiva)
+OBB_4020
+OBB 4020 (elektrická jednotka ~15kV/16,7Hz - hnací vůz 2. tř
+OBB_4020_r
+OBB 4020 červený (elektrická jednotka ~15kV/16,7Hz - hnací v
+OBB_5047
+OBB 5047 (motorový vůz - 2. třída)
+OBB_5047_r1
+OBB 5047 červený (motorový vůz - 2. třída)
+OBB_5047_r2
+OBB 5047 červený II. (motorový vůz - 2. třída)
+OBB_5147-1
+OBB 5147 (přední motorový vůz - 2. třída)
+OBB_5147-2
+OBB 5147 (zadní motorový vůz - 2. třída)
+OBB_5247
+OBB 5247 (vložený motorový vůz - 2. třída)
+OBB_6020
+OBB 6020 (elektrická jednotka ~15kV/16,7Hz - řídící vůz 2. t
+OBB_6020_r
+OBB 6020 červený (elektrická jednotka ~15kV/16,7Hz - řídící 
+OBB_7020
+OBB 7020 (elektrická jednotka ~15kV/16,7Hz - vložený vůz 2. 
+OBB_7020_r
+OBB 7020 červený (elektrická jednotka ~15kV/16,7Hz - vložený
+OBB_ABmpz_3975
+OBB ABmpz 39-75 (1. a 2. třída)
+OBB_ABmpz_3975_spar
+OBB ABmpz 39-75 Spar (1. a 2. třída)
+OBB_ABmpz-l_3937
+OBB ABmpz-l 39-37 "City Shuttle" (1. a 2. třída)
+OBB_ABmz_3070_dark
+OBB ABmz 30-70 tmavě šedý (1. a 2. třída)
+OBB_ABmz_3070_light
+OBB ABmz 30-70 světle šedý (1. a 2. třída)
+OBB_ABmz_3070_orange
+OBB ABmz 30-70 oranžový (1. a 2. třída)
+OBB_ABmz_3090_light
+OBB ABmz 30-90 světle šedý (1. a 2. třída)
+OBB_ABp_3735
+OBB ABp 37-35 "Schlieren" (1. a 2. třída)
+OBB_ABpo_3735
+OBB ABpo 37-35 "Schlieren" (1. a 2. třída)
+OBB_Ampz_1891_light
+OBB Ampz 18-91 světle šedý (1. třída)
+OBB_Ampz_1975
+OBB Ampz 19-75 (1. třída)
+OBB_Ampz_1975_spar
+OBB Ampz 19-75 Spar (1. třída)
+OBB_Amz
+ÖBB Amz
+OBB_Amz_160
+ÖBB Amz (1. třída) (160)
+OBB_Amz_1970_orange
+OBB Amz 19-70 oranžový (1. třída)
+OBB_Amz_1971_orange
+OBB Amz 19-71 oranžový (1. třída)
+OBB_Ap_1735
+OBB Ap 17-35 "Schlieren" (1. třída)
+OBB_Apo_1735
+OBB Apo 17-35 "Schlieren" (1. třída)
+OBB_BDmpsz_8275_spar-1
+OBB BDmpsz 82-75 Spar (2. třída/služební) 1/2
+OBB_BDmpsz_8275_spar-2
+OBB BDmpsz 82-75 Spar (2. třída/služební) 2/2
+OBB_BDmpsz_8275-1
+OBB BDmpsz 82-75 (2. třída/služební) 1/2
+OBB_BDmpsz_8275-2
+OBB BDmpsz 82-75 (2. třída/služební) 2/2
+OBB_BDmsz_8270_dark-1
+OBB BDmsz 82-70 tmavě šedý (2. třída/služební) 1/2
+OBB_BDmsz_8270_dark-2
+OBB BDmsz 82-70 tmavě šedý (2. třída/služební) 2/2
+OBB_BDmsz_8270_orange-1
+OBB BDmsz 82-70 oranžový (2. třída/služební) 1/2
+OBB_BDmsz_8270_orange-2
+OBB BDmsz 82-70 oranžový (2. třída/služební) 2/2
+OBB_BDp_8235_spar-1
+OBB BDp 82-35 Spar "Schlieren" (2. třída/služební) 1/2
+OBB_BDp_8235_spar-2
+OBB BDp 82-35 Spar "Schlieren" (2. třída/služební) 2/2
+OBB_BDp_8235-1
+OBB BDp 82-35 "Schlieren" (2. třída/služební) 1/2
+OBB_BDp_8235-2
+OBB BDp 82-35 "Schlieren" (2. třída/služební) 2/2
+OBB_BDpo_8235-1
+OBB BDpo 82-35 "Schlieren" (2. třída/služební) 1/2
+OBB_BDpo_8235-2
+OBB BDpo 82-35 "Schlieren" (2. třída/služební) 2/2
+OBB_Bmpz
+ÖBB Bmpz (2. třída)
+OBB_Bmpz_2075
+OBB Bmpz 20-75 (2. třída)
+OBB_Bmpz_2075_spar
+OBB Bmpz 20-75 Spar (2. třída)
+OBB_Bmpz-dl_2633
+OBB Bmpz-dl 26-33 "City Shuttle" (2. třída)
+OBB_Bmpz-dl_2633_CAT
+OBB Bmpz-dl 26-33 "City Airport Train" (2. třída)
+OBB_Bmpz-ds_8033
+OBB Bmpz-ds 80-33 "City Shuttle" (přední řídící vůz - 2. tří
+OBB_Bmpz-ds_8033_CAT
+OBB Bmpz-ds 80-33 "City Airport Train" (přední řídící vůz - 
+OBB_Bmpz-ds_8033_CAT_otoc
+OBB Bmpz-ds 80-33 "City Airport Train" (zadní řídící vůz - 2
+OBB_Bmpz-ds_8033_otoc
+OBB Bmpz-ds 80-33 "City Shuttle" (zadní řídící vůz - 2. tříd
+OBB_Bmpz-l_2173
+OBB Bmpz-l 21-73 "City Shuttle" (2. třída)
+OBB_Bmpz-s_8073_otoc-1
+OBB Bmpz-s 80-73 "City Shuttle" (zadní řídící vůz - 2. třída
+OBB_Bmpz-s_8073_otoc-2
+OBB Bmpz-s 80-73 "City Shuttle" (zadní řídící vůz - 2. třída
+OBB_Bmpz-s_8073-1
+OBB Bmpz-s 80-73 "City Shuttle" (přední řídící vůz - 2. tříd
+OBB_Bmpz-s_8073-2
+OBB Bmpz-s 80-73 "City Shuttle" (přední řídící vůz - 2. tříd
+OBB_Bmz
+ÖBB Bmz (2. třída)
+OBB_Bmz_160
+ÖBB Bmz 160 (2. třída kupé)
+OBB_Bmz_2170_dark
+OBB Bmz 21-70 tmavě šedý (2. třída)
+OBB_Bmz_2170_orange
+OBB Bmz 21-70 oranžový (2. třída)
+OBB_Bmz_2171_orange
+OBB Bmz 21-71 oranžový (2. třída)
+OBB_Bp_2833_spar
+OBB Bp 28-33 Spar "Schlieren" (2. třída)
+OBB_Bp_2935
+OBB Bp 29-35 "Schlieren" (2. třída)
+OBB_Bp_2935_spar
+OBB Bp 29-35 Spar "Schlieren" (2. třída)
+OBB_Bpo_2935
+OBB Bpo 29-35 "Schlieren" (2. třída)
+OBB_BRmpz_8575
+OBB BRmpz 85-75 (2. třída/barový vůz)
+OBB_Dmsz_9570_dark
+OBB Dmsz 95-70 tmavě šedý (služební vůz)
+OBB_Dmsz_9570_light
+OBB Dmsz 95-70 světle šedý (služební vůz)
+OBB_Dmsz_9570_orange
+OBB Dmsz 95-70 oranžový (služební vůz)
+OBB_Gabkqss-x
+OBB Gabkqss-x (zavazadlový vůz pro přepravu jízdních kol)
+OBB_Gabkqss-x_r
+OBB Gabkqss-x červený (zavazadlový vůz pro přepravu jízdních
+OBB_Gbkkss-vx
+OBB Gbkkss-vx (zavazadlový vůz pro přepravu jízdních kol)
+OBB_Postm_0033
+OBB Postm 00-33 (poštovní vůz)
+OBB_Postm_0033_dark
+OBB Postm 00-33 tmavě šedý (poštovní vůz)
+OBB_Postmz_0030
+OBB Postmz 00-30 (poštovní vůz)
+OBB_Postmz_0030_dark
+OBB Postmz 00-30 tmavě šedý (poštovní vůz)
 obb_setra_s431dt
 Meziměstský autobus Setra S 431 DT
+OBB_WRmz_8870_dark
+OBB WRmz 88-70 tmavě šedý (jídelní vůz)
+OBB_WRmz_8870_orange
+OBB WRmz 88-70 oranžový (jídelní vůz)
+OBB_WRmz_8890_dark
+OBB WRmz 88-90 tmavě šedý (jídelní vůz)
+OBB_WRmz_8890_light
+OBB WRmz 88-90 světle šedý (jídelní vůz)
 OZVD_Ci_R_I
 OZVD Ci Rybák I (3. třída)
 podval_P-32_auta
@@ -2876,6 +4612,10 @@ TATRA_813_S1_8x8
 Těžký náklaďák Tatra 813 8x8 S1 (jednostranný sklápěč)
 TATRA_813_TP_6x6
 Těžký tahač Tatra 813 TP 6x6
+TATRA_815_(manipulacni_ruka,_beton)
+Těžký náklaďák Tatra 815 6x6 valník s manipulační rukou (bet
+TATRA_815_(manipulacni_ruka,_pytlovany_cement)
+Těžký náklaďák Tatra 815 (valník s manipulační rukou na pytl
 TATRA_815_260N51
 Tahač Tatra 815 260N51
 TATRA_815_Agro_S
@@ -3216,3 +4956,15 @@ ZSSK_Tms_beton
 ZSSK Tms (beton)
 ZSSK_Tms_ocel
 ZSSK Tms (ocel)
+#______________________________________way______________________________________
+#______________________________________way______________________________________
+trat_130
+Trať pro koridor
+trat_45
+Trať pro lokální provoz
+trat_85
+Trať pro nákladní provoz
+vlecka_30
+Železniční vlečka
+vlecka_35
+Železniční vlečka s pražci

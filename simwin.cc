@@ -47,6 +47,7 @@
 #include "gui/gui_frame.h"
 
 #include "player/simplay.h"
+#include "tpl/inthashtable_tpl.h"
 #include "tpl/vector_tpl.h"
 #include "utils/simstring.h"
 #include "utils/cbuffer_t.h"
@@ -67,6 +68,9 @@
 #include "gui/message_option_t.h"
 #include "gui/fabrik_info.h"
 
+
+
+class inthashtable_tpl<ptrdiff_t,koord> old_win_pos;
 
 
 #define dragger_size 12
@@ -366,10 +370,10 @@ static void win_draw_window_dragger(koord pos, koord gr)
 // returns the window (if open) otherwise zero
 gui_frame_t *win_get_magic(ptrdiff_t magic)
 {
-	if(magic!=-1  &&  magic!=0) {
+	if(  magic!=-1  &&  magic!=0  ) {
 		// es kann nur ein fenster fuer jede pos. magic number geben
-		FOR(vector_tpl<simwin_t>, const& i, wins) {
-			if (i.magic_number == magic) {
+		FOR( vector_tpl<simwin_t>, const& i, wins ) {
+			if(  i.magic_number == magic  ) {
 				// if 'special' magic number, return it
 				return i.gui;
 			}
@@ -534,9 +538,25 @@ int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, ptrdiff_t
 {
 	assert(gui!=NULL  &&  magic!=0);
 
-	if(  magic!=magic_none  &&  win_get_magic(magic)  ) {
-		top_win( win_get_magic(magic) );
+	if(  gui_frame_t *win = win_get_magic(magic)  ) {
+		if(  umgebung_t::second_open_closes_win  ) {
+			destroy_win( win );
+			if(  !( wt & w_do_not_delete )  ) {
+				delete gui;
+			}
+		}
+		else {
+			top_win( win );
+		}
 		return -1;
+	}
+
+	if(  x==-1  &&  y==-1  &&  umgebung_t::remember_window_positions  ) {
+		// look for window in hash table
+		if(  koord *k = old_win_pos.access(magic)  ) {
+			x = k->x;
+			y = k->y;
+		}
 	}
 
 	/* if there are too many handles (likely in large games)
@@ -556,8 +576,9 @@ int create_win(int x, int y, gui_frame_t* const gui, wintype const wt, ptrdiff_t
 	if(  wins.get_count() < MAX_WIN  ) {
 
 		if (!wins.empty()) {
-			// mark old title dirty
-			mark_rect_dirty_wc( wins.back().pos.x, wins.back().pos.y, wins.back().pos.x+wins.back().gui->get_fenstergroesse().x, wins.back().pos.y+16 );
+			// mark old dirty
+			const koord gr = wins.back().gui->get_fenstergroesse();
+			mark_rect_dirty_wc( wins.back().pos.x - 1, wins.back().pos.y - 1, wins.back().pos.x + gr.x + 2, wins.back().pos.y + gr.y + 2 ); // -1, +2 for umgebung_t::window_frame_active
 		}
 
 		wins.append( simwin_t() );
@@ -665,8 +686,8 @@ static void process_kill_list()
 static void destroy_framed_win(simwin_t *wins)
 {
 	// mark dirty
-	koord gr = wins->gui->get_fenstergroesse();
-	mark_rect_dirty_wc( wins->pos.x, wins->pos.y, wins->pos.x+gr.x, wins->pos.y+gr.y );
+	const koord gr = wins->gui->get_fenstergroesse();
+	mark_rect_dirty_wc( wins->pos.x - 1, wins->pos.y - 1, wins->pos.x + gr.x + 2, wins->pos.y + gr.y + 2 ); // -1, +2 for umgebung_t::window_frame_active
 
 	if(wins->gui) {
 		event_t ev;
@@ -725,6 +746,15 @@ bool destroy_win(const gui_frame_t *gui)
 			else {
 				simwin_t win = wins[i];
 				wins.remove_at(i);
+				if(  win.magic_number < magic_max  ) {
+					// save last pos
+					if(  koord *k = old_win_pos.access(win.magic_number)  ) {
+						*k = win.pos;
+					}
+					else {
+						old_win_pos.put( win.magic_number, win.pos );
+					}
+				}
 				destroy_framed_win(&win);
 			}
 			return true;
@@ -761,8 +791,9 @@ int top_win(int win, bool keep_state )
 		return win;
 	} // already topped
 
-	// mark old title dirty
-	mark_rect_dirty_wc( wins.back().pos.x, wins.back().pos.y, wins.back().pos.x+wins.back().gui->get_fenstergroesse().x, wins.back().pos.y+16 );
+	// mark old dirty
+	koord gr = wins.back().gui->get_fenstergroesse();
+	mark_rect_dirty_wc( wins.back().pos.x - 1, wins.back().pos.y - 1, wins.back().pos.x + gr.x + 2, wins.back().pos.y + gr.y + 2 ); // -1, +2 for umgebung_t::window_frame_active
 
 	simwin_t tmp = wins[win];
 	wins.remove_at(win);
@@ -772,8 +803,8 @@ int top_win(int win, bool keep_state )
 	wins.append(tmp);
 
 	 // mark new dirty
-	koord gr = wins.back().gui->get_fenstergroesse();
-	mark_rect_dirty_wc( wins.back().pos.x, wins.back().pos.y, wins.back().pos.x+gr.x, wins.back().pos.y+gr.y );
+	gr = wins.back().gui->get_fenstergroesse();
+	mark_rect_dirty_wc( wins.back().pos.x - 1, wins.back().pos.y - 1, wins.back().pos.x + gr.x + 2, wins.back().pos.y + gr.y + 2 ); // -1, +2 for umgebung_t::window_frame_active
 
 	event_t ev;
 
@@ -876,14 +907,12 @@ void display_all_win()
 }
 
 
-
 void win_rotate90( sint16 new_ysize )
 {
 	FOR(vector_tpl<simwin_t>, const& i, wins) {
 		i.gui->map_rotate90(new_ysize);
 	}
 }
-
 
 
 static void remove_old_win()
@@ -1042,9 +1071,9 @@ void move_win(int win, event_t *ev)
 	const koord delta = to_pos - from_pos;
 
 	wins[win].pos += delta;
-	// need to mark all of old and new positions dirty
-	mark_rect_dirty_wc( from_pos.x, from_pos.y, from_pos.x+from_gr.x, from_pos.y+from_gr.y );
-	mark_rect_dirty_wc( to_pos.x, to_pos.y, to_pos.x+to_gr.x, to_pos.y+to_gr.y );
+	// need to mark all of old and new positions dirty. -1, +2 for umgebung_t::window_frame_active
+	mark_rect_dirty_wc( from_pos.x - 1, from_pos.y - 1, from_pos.x + from_gr.x + 2, from_pos.y + from_gr.y + 2 );
+	mark_rect_dirty_wc( to_pos.x - 1, to_pos.y - 1, to_pos.x + to_gr.x + 2, to_pos.y + to_gr.y + 2 );
 	// set dirty flag to refill background
 	if(wl) {
 		wl->set_background_dirty();
@@ -1074,7 +1103,7 @@ void resize_win(int win, event_t *ev)
 	}
 
 	// since we may be smaller afterwards
-	mark_rect_dirty_wc( from_pos.x, from_pos.y, from_pos.x+from_gr.x, from_pos.y+from_gr.y );
+	mark_rect_dirty_wc( from_pos.x - 1, from_pos.y - 1, from_pos.x + from_gr.x + 2, from_pos.y + from_gr.y + 2 ); // -1, +2 for umgebung_t::window_frame_active
 	// set dirty flag to refill background
 	if(wl) {
 		wl->set_background_dirty();
@@ -1086,7 +1115,6 @@ void resize_win(int win, event_t *ev)
 
 	wins[win].gui->infowin_event( &wev );
 }
-
 
 
 // returns true, if gui is a open window handle
@@ -1104,7 +1132,6 @@ bool win_is_open(gui_frame_t *gui)
 	}
 	return false;
 }
-
 
 
 koord const& win_get_pos(gui_frame_t const* const gui)
@@ -1126,7 +1153,7 @@ void win_set_pos(gui_frame_t *gui, int x, int y)
 			wins[i].pos.x = x;
 			wins[i].pos.y = y;
 			const koord gr = wins[i].gui->get_fenstergroesse();
-			mark_rect_dirty_wc( x, y, x+gr.x, y+gr.y );
+			mark_rect_dirty_wc( x - 1, y - 1, x + gr.x + 2, y + gr.y + 2 ); // -1, +2 for umgebung_t::window_frame_active
 			return;
 		}
 	}
@@ -1304,7 +1331,7 @@ bool check_pos_win(event_t *ev)
 						if (IS_LEFTCLICK(ev)) {
 							wins[i].sticky = !wins[i].sticky;
 							// mark title bar dirty
-							mark_rect_dirty_wc( wins[i].pos.x, wins[i].pos.y, wins[i].pos.x+wins[i].gui->get_fenstergroesse().x, wins[i].pos.y+16 );
+							mark_rect_dirty_wc( wins[i].pos.x, wins[i].pos.y, wins[i].pos.x + wins[i].gui->get_fenstergroesse().x, wins[i].pos.y + D_TITLEBAR_HEIGHT );
 						}
 						break;
 					default : // Title
@@ -1585,6 +1612,8 @@ void win_display_flush(double konto)
 void win_set_welt(karte_t *welt)
 {
 	wl = welt;
+	// remove all save window positions
+	old_win_pos.clear();
 }
 
 

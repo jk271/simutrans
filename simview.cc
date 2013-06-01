@@ -26,7 +26,8 @@
 
 karte_ansicht_t::karte_ansicht_t(karte_t *welt)
 {
-    this->welt = welt;
+	this->welt = welt;
+	outside_visible = true;
 }
 
 static const sint8 hours2night[] =
@@ -100,8 +101,8 @@ void karte_ansicht_t::display(bool force_dirty)
 	// redraw everything?
 	force_dirty = force_dirty || welt->is_dirty();
 	welt->unset_dirty();
-	if(force_dirty) {
-		mark_rect_dirty_wc( 0, 0, display_get_width(), display_get_height() );
+	if(  force_dirty  ) {
+		mark_screen_dirty();
 		welt->set_background_dirty();
 		force_dirty = false;
 	}
@@ -153,6 +154,8 @@ void karte_ansicht_t::display(bool force_dirty)
 		// we check if background will be visible, no need to clear screen if it's not.
 		display_background(0, menu_height, disp_width, disp_height-menu_height, force_dirty);
 		welt->unset_background_dirty();
+		// reset
+		outside_visible = false;
 	}
 	// to save calls to grund_t::get_disp_height
 	// gr->get_disp_height() == min(gr->get_hoehe(), hmax_ground)
@@ -396,6 +399,10 @@ void karte_ansicht_t::display_region( koord lt, koord wh, sint16 y_min, const si
 #endif
 						kb->display_if_visible(xpos, yypos, IMG_SIZE);
 						plotted = true;
+					}
+					// not on screen? We still might need to plot the border ...
+					else if(  umgebung_t::draw_earth_border  &&  (pos.x-welt->get_size().x+1 == 0  ||  pos.y-welt->get_size().y+1 == 0)  ) {
+						kb->display_border( xpos, yypos, IMG_SIZE );
 					}
 				}
 				else {

@@ -38,20 +38,19 @@ int zoom_factor_down()
 	return false;
 }
 
-static inline void mark_tile_dirty(const int, const int)
-{
-}
-
-static inline void mark_tiles_dirty(const int, const int, const int)
-{
-}
-
-static inline int is_tile_dirty(const int, const int)
-{
-	return false;
-}
-
 void mark_rect_dirty_wc(KOORD_VAL, KOORD_VAL, KOORD_VAL, KOORD_VAL)
+{
+}
+
+void mark_rect_dirty_clip(KOORD_VAL, KOORD_VAL, KOORD_VAL, KOORD_VAL)
+{
+}
+
+void mark_screen_dirty()
+{
+}
+
+void display_mark_img_dirty(unsigned, KOORD_VAL, KOORD_VAL)
 {
 }
 
@@ -180,14 +179,6 @@ display_blend_proc display_blend = display_base_img_blend;
 signed short current_tile_raster_width = 0;
 
 void display_blend_wh(KOORD_VAL, KOORD_VAL, KOORD_VAL, KOORD_VAL, int, int )
-{
-}
-
-void mark_screen_dirty()
-{
-}
-
-void display_mark_img_dirty(unsigned, KOORD_VAL, KOORD_VAL)
 {
 }
 

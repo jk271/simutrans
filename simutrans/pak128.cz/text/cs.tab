@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                           Date Created: 31.05 2013                           #
+#                            Date Created: 1.06 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -36,14 +36,386 @@
 #                                    note:                                     #
 #                                                                              #
 ################################################################################
+#____________________________________bridge_____________________________________
+#____________________________________bridge_____________________________________
+ClassicRail
+Plochý betonový most (Nabe)
+ClassicRoad
+Betonový silniční most
+Concrete_Road_Bridge
+Dálniční most
+Plate_Girder_Bridge
+Ocelový viadukt
+PowerBridge
+Most vedení VN
+road_015_bridge
+Silniční most
+road_030_bridge
+Dřevěný silniční most
+road_035_bridge
+Silniční most
+road_050_bridge
+Silniční most
+road_080_bridge
+Silniční most
+road_090_bridge
+Silniční most
+road_110_bridge
+Silniční most
+road_130_bridge
+Dálniční most
+RVg_Concrete_Rail_Bridge
+Klenutý ocelový most (RVg)
+SteelRail
+Ocelový železniční most
+SteelRail2
+Uzavřený železniční most
+SteelRoad1
+Ocelový silniční most
+SteelRoad2
+Tubusový silniční most
+u_truss_bridge
+Visutá trať (most)
+viadukt_120
+Železniční most
+water_bridge
+Průplavový most
+Wooden_Rail
+Dřevěný most
 #___________________________________building____________________________________
 #___________________________________building____________________________________
+01_CITY
+Radnice
+01_CITY_1
+Radnice
+02_CITY
+Radnice
+02_CITY_1
+Radnice
+03_CITY
+Radnice
+03_CITY_1
+Radnice
+04_CITY
+Radnice
+04_CITY_1
+Radnice
+05_CITY
+Radnice
+05_CITY_1
+Radnice
+1920_AirDepot
+Základní hangár
+1930AirDepot
+Dřevěný hangár
+1940AirDepot
+Plechový Hangár
+1950AirDepot
+Zděný hangár
+1990AirDepot
+Moderní Hangár
+ABBYS_0
+Opatství\n\nToto opatství je zajímavé\nstudnami ve věžích o nichž\nse tvrdí, že jsou bezedné.\nJe neuvěřitelné, jaké\nmnožství lidí chce vidět\ntyto magické studny. Mince\ntiše padající na molitan v\nhloubce padesáti metrů\npomohly ekonomice\nopatství natolik, že mohlo\nbýt zrekonstruováno z ruin\ndo stavu, který vidíte.\n\n
+Airport1920_AirportBlg
+Odbavovací hala
+Airport1930PostOffice
+Letecká pošta
+Airport1990_Big_AirportBlg
+Letištní Terminál
+Airport1990_Entrance_AirportBlg
+Vstupní brána
+Airport1990_Gates_AirportBlg
+Průchod
+Airport1990_PostOffice
+Letecká pošta
+Airport1990_Small_AirportBlg
+Moderní Čekárna
+Airport1990_Warehouse
+Budova nákladní dopravy (CARGO)
+AirStop_AirportBlg
+Stojánka
+Almuthof_StationBlg
+Vesnická stanice
+Avila_Big_StationBlg
+Velká nádražní hala
+Avila_Small_StationBlg
+Malá nádražní hala
+Avila_Warehouse_StationBlg
+Sklad
+big_classic_bus_stop
+Velká zastávka
+big_modern_bus_stop
+Velká moderní zastávka
+BigTerminal1930_AirportBlg_S
+Velká letištní hala
+BigTerminal1950_AirportBlg_S
+Velká odbavovací hala
+Bulk_Dock
+Přístav na sypké materiály
+Bulk_StationBlg
+Sklad sypkých hmot
+bus_terminus
+Autobusový terminál
+canal_ChannelStop
+Přístaviště na průplavu
+canal_ware_stop
+Přístaviště na průplavu (nákladní)
+Car_StationBlg
+Parkoviště
+CarDepot
+Garáže
+CarStop
+Nakládací rampa
+CASTLE_0
+Starý hrad\n\nStavba byla užívaná jako hrad\nkrále Napíka. Většina byla\nzničena během velké války,\navšak byla v 19.století\nopravena a přebudována.\nNyní poskytuje k vidění\nslavnou kolekci starých\nbrnění a mečů.\n\n
+CHURCH_00
+Gotická katedrála\n\nTato stará gotická katedrála\nje nyní atraktivnější než\nkdy dříve. Je to časté místo\nveřejných výstav a nikoliv\nprostředí pro uctívání. Zdá\nse, že to je pro církev\nlepší, protože zisk z turistů\nje mnohem vyšší, než\ndesátek vybraný z\nklasických bohoslužeb.\nJelikož se turisté nemohou\ndostat ke kostelu vlastním\nvozem, dožadují se dopravního\nspojení.\n\n
+CHURCH_01
+Kostelík\n\nTento malý zapomenutý kostel\nje stále krásné přátelské\nmísto pro setkávání s\npřáteli, povídání a hledání\nněčeho vyššího, než je\npozemský majetek.\n\n
+CHURCH_02
+Růžový kostel\n\nTento malebný kostel proslavil\nšílený mnich, který v roce\n1654 natřel celý objekt na\nrůžovo. Růžová barva\nčasem vybledla a smyla se,\nale jméno zůstalo. Jistý\nčlověk dostal nápad barvu\nobnovit, ale narazil na\npamátkový úřad, který to\nzamítl.\n\n
+CHURCH_03
+Kostel\n\nZnámý kostel, který přitahuje lidi\ndíky příjemnému okolí a\nzajímavým obrazům.\nZajímavostí je, že je\npostaven na základech,\nkteré jsou více než 1000 let\nstaré.\n\n
+CHURCH_04
+Synagoga\n\nAčkoliv tento chrám vypadá\nponěkud arabsky, je to ve\nskutečnosti synagoga.\n
+CHURCH_05
+Sv. Michael\n\nTento architektonický skvost\npochází z konce\ndevatenáctého století. Je\npozoruhodný kovovými\nkrovy, které projektoval\nAlexandr Gustav Eiffel.\n\n
+CHURCH_06
+Kostel\n\nTypický kostel, jaký najdete v\nmenších městech a na\nvenkově. Z věže se zároveň\nvyhlašuje požární poplach;\nv dřívějších dobách však\nzvony hlásily třeba i blížící\nse vojska.\n\n
+CIRCUS_0
+Cirkus Humberto.\n\nTento cirkus dosáhl takové\npopularity, že už nemusí\njezdit po světě za diváky,\nale diváci jezdí za ním.\nPrávě v tomto městě se\ncirkusáci rozhodli\nnaposledy rozvinout své\nšapitó. Sami si pak koupili\npohodlné domy v okolí a\njejich maringotky teď slouží\njako penzion pro přespolní\ndiváky. Hlavní atrakcí cirkusu je\nslon Jumbo, který kecne na\nzadek pokaždé, když zazvoní\nzvon. Tak si dejte pozor kde\nstojíte, když na kostelní věži\nbudou odbíjet celou.\n\n
+CIVILIAN_RADAR
+Observatoř\n\nMožná se vám to zdá\nneuvěřitelné, ale tohle je\nnormální hvězdárna. Tedy\nradiohvězdárna...\n
+classic_mailbox
+Poštovní schránka
+ClosedTrainStop
+Zastřešené nástupiště
+CoalTrainStop
+Překladiště uhlí
+Container1TrainStop
+Překladiště kontejnerů
+Container2TrainStop
+Moderní překladiště kontejnerů
+Control_StationBlg
+Nádražní velín
+CoveredTrainStop
+Kryté nástupiště
+Crate_Goods_Dock
+Kontejnerový přístav
+CunnersdorfStopBlg
+Vesnická nádražní budova
+CUR_01_128_JH
+Atomium bylo vystavěno\njako památka, ale\nnesetkalo se s valným\núspěchem. Proto bylo\npřestavěno na luxusní\nrestauraci. Stoly nahoře\nnabízí opravdu krásný\nvýhled, a tudíž je nutno\nprovádět rezervaci dva\ntýdny předem.\n\n
+ELEMENTARY_SCHOOL_1
+Základní škola\n\nToto je místo, kde děti\ndostanou své první\nvzdělání. Matematika,\njazyky, dějepis, vědy, to\njsou předměty, které\nnejsou příliš oblíbené. Mladí\nstudenti raději malují nebo\nzpívají. Od té doby, co\nnemohou mladí lidé řídit\nauta, je třeba do školy\ndopravovat velké množství\nstudentů. Ale dejte si pozor,\nluxusní autobusy nejsou pro\nmístní dopravu ideální.\n\n
+ELEMENTARY_SCHOOL_2
+Základní škola\n\nZajímavostí této Základní školy je to,\nže začíná vyučování v\ndevět hodin a končí již v\npoledne. Druhou neobvyklou\nvěcí je to, že se tam děti\nučí i o víkendu. Díky tomu\nje oblíbená u řady rodičů,\nmohou se tak dětí zbavit i o\nvíkendu a díky tomu si užít\nčas nerušeného klidu a\npohody.\n\n
+Firestation
+Toto je městská požární\nstanice. Jsou v ní\nzaparkována požární auta,\nsanitka a bydlí v ní hasiči.\nSanitka je zde dočasně,\njednou se přesune, až si\nnajde vlastní budovu.\n\n
+Fluid_StationBlg
+Zásobník na kapaliny
+FORT_FUN
+Rodeo\n\nZábavné rodeo městečko. Bylo\npůvodně postaveno pro\nnatáčení filmu "Sedm\nzpátečních", o\ndvojnásobném přepadení\nvlaku na Divokém Západě.\n\n
+FreightTrainStop
+Nákladové nádraží
+FUTURISTIC_TOWER_0
+Věž\n\nTato věž nabízí krásný výhled\ndo krajiny, kterou je\nobklopena. Vyšší patro také\nukrývá malý bar, takže si\nmůžete dát něco k pití ke\nzvýšení požitku z výhledu.\nAčkoliv ceny zde nejsou\nnízké, atrakce nikdy\nnepostrádá návštěvníky.\n\n
+Gas_StationBlg
+Zásobník plynu
+Goods_StationBlg
+Sklad
+GRASS_STADIUM
+Malý stadion\n\nTento travnatý stadion je\nvýborné místo pro běhání a\nhraní sportů, jako je fotbal.\nJe možné v klidu sledovat\nsvé přátele při činnosti z\nlavičky pod stromem.\n\n
+GREEN_HOUSE
+Skleník\n\nTento skleník byl využíván jako\nobchod. Ale před časem\njeho vlastník přišel na to,\nže lidé sem přicházejí bez\nzjevného zájmu něco si\nkoupit. A tak změnil dům na\nzimní tropickou zahradu.\nNyní je v něm spousta\nvzácných květin a dům je\ndobře znám po celém světě.\n\n
+HIGH_SCHOOL_1
+Střední škola \n\n toto je\nmísto, kde se mladým lidem\ndostane další vzdělání.\nAčkoli oficiálně jsou\nvyučovány pouze vědy,\nvětšina studentů využívá\ndalší kurzy, které se na\nškole pořádají. Především\nkurz Sociálních a\nmezilidských vztahů.\n\n
+HOUSE_RUINS_0
+Ruina\n\nToto kdysi bývala radnice\nměsta, které už neexistuje.\nHistorikové sem rádi chodí\nvzpomínat na minulost a\nturisté se chodí koukat na\npředstavení pod stromem.\n\n
+HQ1
+Tady odsuď řídíš svoji firmu, projektuješ tady tratě a zadáváš nákupy vozidel. Až si vyděláš víc budeš si moci dovolit lepší sídlo.
+HQ2
+Řídící středisko Simutrans\nTato budova ukrývá ve svých zdech obrovské řídící centrum, ze kterého se řídí vše od východu a západu slunce až po zpěv ptáků.\nNe, ve skutečnosti je toto obyčejná budova plná obyčejných kanceláří a ještě obyčejnějších úředníků... a nebo ne?
+JUSTICE
+Městský soud. Právníci se\ntrousí ven a zase dovnitř.\n\n
+Lighthouse_0
+Maják\n\nJiž od dávných dob ukazuje\ntento maják bezpečnou\ncestu lodím mířícím do\npřístavu. Přístav sice již\ndávno zanikl, ale maják\nstojí stále. Dnes již\nnenaviguje lodě, stala se z\nněj vyhledávaná turistická\natrakce.\n\n
+Lighthouse_1
+Maják\n\nTento maják byl postaven, aby\nnavigoval lodě a\nupozorňoval na nebezpečné\nútesy, které jsou ukryty\ntěsně pod hladinou moře.\n\n\n
+Long_Goods_Dock
+Nákladní přístav
+LuftPost1950_AirportBlg
+Budova letecké poštovní společnosti
+MANOR_0
+Zámeček\n\nTento oblíbený renesanční\nzámeček byl dříve velice\nzajímavý. Dnes je to domov\núspěšných obchodníků (tj.\nNapíka). Ale velká část\nsídla je zde otevřena jako\nexpozice pro veřejnost. K\nvidění jsou obrazy z\nhistorie a jiné věci. Ačkoliv\nse to zdá nudné, výstava\nje dnes velice zajímavá.\nZámeček je každý den plný\nturistů.\n\n
+MARKET_PLACE_0
+Tržiště\n\nNa městském tržišti si\nmůžete koupit mnoho\nzbytečností a výjimečně i\nužitečných věcí, obdivovat\nse starým řemeslům,\nposedět s přáteli u\nsvařeného vína, no zkrátka\nstrávit docela příjemné\nodpoledne. Pravidelně se\nzde také pořádají koncerty\na různé další masové akce.\nPříští týden tu bude dokonce\npředvolební meeting UDS, již teď\njsou všechny plochy polepené\nplakáty se zelenou kočkou.\n\n
+medium_classic_bus_stop
+Autobusová zastávka
+medium_early_bus_stop
+Stará autobusová zastávka
+medium_modern_bus_stop
+Moderní zastávka
+MILITARY_RADAR
+Radar\n\nVojenský objekt, VSTUP ZAKÁZÁN.\nJděte pryč! Řekl jsem jděte\npryč! Já to myslel\nVÁŽNĚ!!!!!!!!! OKAMŽITĚ\nZAVŘETE TOTO OKNO A\nODSCROLUJTE JINAM\n!!!!!!!!!!!!!!!!!\n\n
+Modern_Warehouse
+Moderní skladiště
+ModernPostOffice
+Moderní pošta
+ModernTrainStop
+Moderní vlakové nádraží
+MT_HOTEL_0
+Hotel\n\nToto je velmi slavný hotel.\nPokoje jsou velmi drahé,\nale každý přímo umírá po\ntom, zůstat zde na víkend\nnebo si alespoň dát jídlo v\nhotelové restauraci.\n\n
+MUSEUM_0
+Toto byl původně hrádek,\npřestavěný posléze na\nzámeček a naposledy na\nměstské technické muzeum.\nNávštěvníci se zde mohou\nobdivovat modelům prvních\nletadel, lodí, parních\nlokomotiv a dozvědět se\nspoustu dalších\nzajímavostí ze světa vědy\na techniky. Pravidelně se\nzde také pořádají\npřednášky a besedy.\n\n
+OBSERVATORY
+Všeobecně známá\nhvězdárna Ondrákov, na\nmnoho hvězdných objevů\nse přišlo právě tady. Vědci\nv noci sledují oblohu (přes\nden si dávají dvacet).\nTuristi, kteří přijdou\nnebudou zkrátka. Je tu\nvzdělávací výstavka a\npořádá se tu mnoho\nzajímavých přednášek, jak\npro odbornou společnost\ntak pro laické publikum. Nikdo\nnepřijde zkrátka a tak jsou sály\nstále plné. \n\n
+Old_gate
+Městská brána\n\n\n
+OLD_HOUSE_0
+Starý dům\n\nTato skupina starých\nrenesančních domů byla\nnedávno změněna na\nmuzeum architektury.\nProhlídka nabízí mnoho\nobrazů z minulosti budov.\nVýstava je zajímavá a\nsnadná k porozumění a je\nkaždý den hojně\nnavštěvovaná.\n\n
+OpenTrainStop
+Peron
+Pagoda01
+Pagoda\n\nChrám Čtyř větrů. V sousedství\nse nachází lázně na léčbu\nzažívacích obtíží.\n\n
+PARK_0
+Park\n\nToto je krásný a oblíbený park,\nkde si mohou unavení lidé\nsednout na lavičky, nebo\nležet na trávě a relaxovat.\nMístní lidé jej nedají za\nžádnou cenu.\n\n
+parking_(catchemnt_area_ext)1
+Parkoviště
+parking_(catchemnt_area_ext)2
+Parkoviště
+parking_(catchemnt_area_ext)3
+Parkoviště
+Post_Dock
+Přístav s poštou
+PostOffice
+Pošta
+PostOffice1920_AirportBlg
+Letecká Pošta
+Radar3
+Radar
+RADIO_TOWER_0
+Toto je domov místní\nChit-Chat FM rádio stanice.\nPoměrně hodně lidí se sem\nchce dostat, protože jim\nslíbili být hostem ve\nvysílání každý den mezi\n13:00 a 14:30.\n\n
+rmax_clock_tower
+Hodinová věž\n\nNavzdory její podobě s mýtickou\nfabulónskou věží není tato\nbudova příliš letitá. I tak\nmá ale věk na to, aby ji\nmísto dnes módních rádiem\nřízených časových\nzákladen pohánělo solidní\nmosazné soustrojí.\n\n
+rmax_courthouse
+Palác\ntento palác byl od nepaměti\nmajetkem rodu Ermaxů. Před\nněkolika lety byl Ermaxům v\nsouladu s Hansovými\ndekrety zabaven a od té\ndoby v něm sídlí muzeum\nhistorie Simutrans. Rod\nErmaxů se ale nechce\nsvého majetku vzdát a o\npalác se neustále soudí.\n\n
+rmax_icarus
+Raketodrom\n\nTento raketodrom patří firmě\nIcarus, světoznámé díky\ntomu, že jako jedna z\nprvních v komerčním\nsektoru zvládla techniku\nvypouštění satelitů. Starty\nraket jsou pro turisty\nvelkým lákadlem.\n\n
+rmax_mosque
+Omarova mešita.\n\nDříve\npravoslavný kostel Ilji\nMuromce. Přestože budova\nzměnila svého majitele i\nvyznání, zahradník v\nčerném rouchu s dlouhým\nvousem zůstal. Je to jediná\nosoba na světě zapsaná v\nhistorických památkách\nUNESCO. Rozhodně tak\nvypadá.\n\n
+ROCK_0
+Patrickova skála láká hodně\ngeologů, kteří jsou\nfascinováni tímto\nprastarým vulkánem.\n\n
 rotunda_Znojmo128
 Rotunda
+RUIN_0
+Hrad\n\nPůvodně zde stál gotický hrad.\nNicméně jeho majitel si na\nzačátku 20. století\nuvědomil, že takový hrad\nmu již mnoho peněz\nnepřinese, a tak jej\npřestavěl na středověký\nzábavný a naučný park. Od\nté doby se dveře nezavřou,\nproudy lidí chodí obdivovat\nšermířské souboje a\nvýstavy různých zajímavých\nvěciček. Nejvyhlášenější atrakcí\nje ale pravá středověká mučírna\n- za tučný poplatek a podepsání\nzávazku o tom, že se vzdáváte\nmožnosti majitele žalovat za\njakoukoliv újmu se můžete\nnechat natáhnout na skřipec,\nzavřít do ocelové panny, hodit\ndo hladomorny nebo si nechat\ndrtit ruce. Mučírna ale vlastně\nnebyla tak populární vždy. Její\npopularita vzrostla tehdy, když\nmajitel nabídl za příplatek tajně\nobjednat mučení pro svého\npartnera a to včetně stylového\nodvlečení v rukou biřiců. Rodinný\nvýlet, tak může nabrat nečekaný\nspád. Hned vedle mučírny je pro\njistotu manželská poradna\nslavného doktora Radima\nTkaničky.\n\n
+RUIN_1
+Ruina\n\nToto je zřícenina slavného\nhradu. Hodně kapitol\nhistorie bylo napsáno právě\nzde. Z tohoto důvodu je\ntoto místo skutečným\nmagnetem pro turisty z\ncelého světa. Každý je\ndychtivý jej vidět.\nZřícenina je ještě k tomu\npoměrně romantická, nebo\nne?\n\n
+Russian_Cathedral
+Ruský kostel\n\n
+Secession_Chapel
+Secesní kaple\n\n
+sh_oasis_seasons
+Oáza\n\nJedno z mála míst v poušti, kde\nse dá najít voda a tudíž i\nbujnější vegetace. Kdysi\nse zde zastavovaly\nkaravany na nebezpečné\ncestě pustinou, dnes je\nnavzdory jisté omšelosti\nodpočinek pod palmami a\nfotografie s velbloudem\nstále vyhledávaným\nturistickým zážitkem.\n\n
+ShipDepot
+Dok
+ShipStop
+Osobní přístav
+small_classic_bus_stop
+Primitivní zastávka
+small_early_bus_stop
+Jednoduchá zastávka
+SMALL_MANOR
+Sídlo Lorda Aquaka\n\nŠlechtic se stal slavným nejen\ndíky svému jménu, které se\nstalo základem pro\npobavení mnoha generací\n(mluvil tu někdo o\nkachnách?), ale také pro\nsvé sídlo: lord Aquak se\nnavzdory svému jménu\npanicky bál vody, proto\nnechal postavit první dvě\npatra vodotěsná. \nZdejší kopec je také slavný tím,\nže se na něm v dvanáctém\nstoletí zachránily tisíce obyvatel\nměsta v údolí před povodní.\nMístní ten podivný dům proto\nberou jako talisman pro štěstí.\n\n
+st_benedict_church
+Chrám Svatého Benedikta.\nByl postaven za císaře\nDiokleciána v byzantském\nslohu a je jednou z\nnejstarších dochovaných\npamátek Simusvěta. Anděl\nna nejvyšší věži má\npohnutou historii. Je ze\nskla a mnohokrát v historii\nčelil nepřízni počasí i\nválkám, přesto dodnes na\nSlunci září vnitřním světlem\nneporušen. Legenda praví, že je\nv něm uchováno čisté srdce\nSpasitele. \n\n
+ST_PETER
+Svatý Petr\n\nPozdně románský kostel\npostavený okolo r. 1220, s\nkřížovou lodí zdobenou\nfreskami z poloviny 13.\nstoletí. V prosklené rakvi je\nuloženo mumifikované tělo\nkrálovského správce Petra\nBoka, které přetrvalo po\nsedm staletí až do dnešní\ndoby beze změny. Podle\nlegendy byl Petr Bok tak\nštědrým mecenášem kostela,\nprotože byl hnán strachem o své\nzdraví. Za to byl po smrti\n"odměněn" skutečně\nnezničitelným tělem. \n\n
+SUSHI_HOSPITAL
+Suši-Nemocnice\n\ntato\nnemocnice vznikla jako\npracovní místo pro většinu\nčínské populace ve městě,\ns výjimkou činnosti\nrestaurací. Z tohoto důvodu\nmůže nabídnout rychlou,\nlevnou a kvalifikovanější\nlékařskou péči, a tak ji mají\nrádi lidé, kteří si nemohou\ndovolit luxusní nemocnice a\nnechtějí navštívit kliniky\nnízké kvality. Neposkytuje mnoho\nparkovacích míst. Každý, kdo\nnení přivezen a odvezen\nsanitkou, musí použít veřejnou\ndopravu.\n\n
+Terminal1930_AirportBlg
+Malá letištní hala
+Terminal1950_AirportBlg_S
+Malá letištní hala
+Tower1920_AirportBlg
+Základní letištní věž
+Tower1930_AirportBlg
+Malá řídící věž
+Tower1950_AirportBlg
+Řídící věž
+Tower1990_AirportBlg
+Moderní letištní věž
+TrainDepot
+Vlakové depo
+TrainStop
+Nádraží
+TramDepot
+Tramvajové depo
+TRIUMPH
+Vítězný oblouk\n\nOblouk vítězství byl vystavěn\nslavným králem Napikem na\npřipomínku velikosti jeho\narmád. Dnes už v bráně\nnezní okované boty, ale\nštěbetání turistů, kteří se\npozastavují nad ohromující\narchitekturou dávných dob,\nkdy v tomto městě působil\nslavný architekt M.H.Z.\nGeorg.\n\n
+TV_TOWER_0
+Vysílač\n\nTelevizní vysílač společnosti BBQ.\nNahoře je nainstalována\nwebkamera, která právě\npřenáší váš udivený obličej\ndo studia - usmívejte se!\nTřeba vás vyberou do\nreality show Malá sestra,\nkde se z účastníků stávají\nošetřovatelé v domově\ndůchodců.\n\n
+TV_TOWER_1
+Televizní vysílač\n\nTato věž si ve své době\ntroufla pokořit svou výškou\ni ty největší budovy na\nsvětě. O prvenství ji\npřipravil po pěti letech\nnějaký jiný vysílač kdesi v\nTramtárii. Co ovšem zůstalo\nzachováno je výrazně lepší\ntelevizní signál pro\nobyvatele několika stovek\nčtverečních kilometrů okolo.\n\n
+Very_Big_Terminal
+Gigantická odbavovací hala (3x3)
+VictorianStation
+Stanice ve viktoriánském stylu
+VillageTrainStop
+Vesnické nástupiště
+WHEEL
+Ruské kolo\n\nVšem je dobře známá - hlavně\nstarší generaci, která\nchodila do zábavných\nparků. Dnes je to spíš\nvyhlídkové místo pro děti,\naby se podívaly kde v\nparku co stojí.\n\n
+Windmill
+Větrný mlýn\n\nNěkdo se chodí dívat na větrný\nmlýn, protože se mu líbí\nelegance, se kterou se ve\nvánku otáčí jeho lopatky;\nněkdo zase protože se mu\nchce na procházku a nemá\nv okolí lepší cíl. No a někteří\nvýtržníci chodí k větrnému\nmlýnu, aby si po něm\nvyzkoušeli hodit kamenem.\n\n
+WOODEN_CHURCH
+Dřevěný kostel\n\nTento kosltel byl postavený\nlidmi, kteří mají rádi výzvy,\nstojí bez použití jediného\nhřebíčku.\n\n
 #__________________________________dummy_info___________________________________
 #__________________________________dummy_info___________________________________
+factory_bakery_details
+<title>Pekárna</title>\nHmmm... koblížky
+factory_brewery_details
+<title>Pivovar</title>\nCo ještě chceš vědět? Vždyť jsi Čech!
+factory_cannery_details
+<title>Konzervárna</title>\nZde zakonzervují vše. Maso, ovoce, zelenina, nic není problém...
+factory_chicken_farm_details
+<title>Drůbežárna</title>\nSlepice! Všude samé slepice! Ko-ko-dáák!
+factory_cow_farm_details
+Kravín.\nZde se chovají krávy a to jak na maso, tak na mléko. Nic víc snad není třeba dodávat.
+factory_dairy_details
+Mlékárna\ntovárna, ve které se zpracovává mléko na velké množství produktů tvarohem počínaje a různě ochucenými mléky pro děti konče.
+factory_Druckerei_details
+Tiskárna\nPřivezte dostatečné množství papíru a inkoustu a mile rádi ti vytisknou tvou oblíbenou knížku. Ať žije Ferda Mravenec!
+factory_Glass_factory_details
+<title>Sklárna - detaily</title>\n<h1>Sklárna</h1>\nV této továrně se taví písek a vyrábí se z něj sklo. Ze skla poté vyrábí spoustu užitečných i neužitečných předmětů.\nNejvětší zakázkou poslední doby je výroba lahví pro místní pivovar.
+factory_grain_farm_details
+<title>Více o pšenicích</title>\n<h1>Více o pšenicích</h1>\n<p>Archeologické nálezy dokládají pěstování pšenice jednozrnky na území Íránu již 6 000 let př. n. l. Hlavními obilnicemi světa jsou USA a území SNS, dříve jí byl např. Egypt a Sumer.</p>\n<p>Pšenice poskytují zrno, které se používá jako potravina, krmivo a jako surovina. Zpracovávají se také stébla (sláma) a otruby (semenné slupky a mouka). Výhodou pšenice, tak jako u jiných obilovin je poměrně jednoduchá skladovatelnost a poměrně dlouhá trvanlivost. Pšenice mají vysokou výživnou hodnotu. V Evropě jsou základní potravinářskou surovinou pro výrobu pečiva, těstovin a rozmanitých pokrmů.</p>\n<p>Průmyslově se využívá jako surovina k výrobě škrobu, lihu nebo piva.</p>
+factory_grain_mill_details
+<title>Mlýn - detaily</title>\n<h1>Mlýn</h1>\nZde se z obilí mele mouka. A to dokonce na čtyři druhy: hrubá, polohrubá, jemná a 00. Né, pardon, to je záchod...
+factory_Nutzwald_details
+<title>Lesy - detaily</title>\n<h1>Lesy</h1>\n<p>Lesnictví poskytuje dřevo - jednu z nejdůležitějších surovin a zároveň energetický zdroj. Dřevo je dále zpracováváno dřevařským a papírenským průmyslem na velmi ceněné produkty.</p>
+factory_Oelbohrinsel_details
+<title>Ropná plošina</title>\n<h1>Ropa a ropné plošiny</h1>\n<p>21. století žízní po ropě. Každých 10 let se spotřeba zdvojnásobí. Ropné plošiny těží tuto surovinu v mělkých šelfových mořích (hloubka do 200m). Plošiny jsou ve skutečnosti obrovské, ale málokdo si to uvědomuje, většina je totiž ukryta pod hladinou. </p>\n<p>Největší plošina jaká byla kdy postavena, je norský Statfjord B. Váží 800.000 tun a celková výška je 192m.</p>
+factory_Oelfeld_details
+<title>Ropné vrty</title>\n<h1>Ropa a ropné vrty</h1>\n<p>Ropa se před začátkem 20. století jako přírodní materiál používala na nátěry a jako mazadlo. Sloužila i jako topivo. Důležitost jako strategická surovina získala až jako surovina pro výrobu paliv s vynálezem spalovacích motorů a rozmachem automobilismu.</p>\n<p>Ropa je tekutina, směs mnoha různých uhlovodíků. Nikdo přesně neví jak ropná ložiska vlastně vznikla, velmi pravděpodobně to bylo podobné vzniku uhlí - organické zbytky, vysoké tlaky a absence kyslíku. Nalézají se v hloubkách stovek metrů a v ložiscích se ropa obvykle vyskytuje pod tlakem společně se zemním plynem, který usnadňuje těžbu podobným způsobem jako plyn v plechovce spreje.</p>
+factory_Raffinerie_details
+<title>Rafinerie - Detaily</title>\n<h1>Rafinerie</h1>\n<p>V těchto obrovských továrnách se z ropy složitým procesem postupně získává benzín, olej, Rama, asfalt a podobné produkty.</p>
 factory_recycling_factory_details
 <title>Třídírna odpadu - detaily</title>\n<h1>Třídírna odpadu</h1><p>V této továrně se z odpadu vybírají druhotné suroviny - sklo, papír, kovy a plasty. Automatizace není možná, všechno se musí třídit ručně, ale jsou lidi, kteří radši pracují zde než aby žebrali na ulici. Zbylý odpad po vytřídění se háže do tajné černé díry ve sklepě. Bohužel při tom už došlo k několika ošklivým úrazům a záhadným zmizením inspektorů bezpečnosti práce.</p>
+factory_Saegewerk_details
+<title>Pila - detaily</title>\n<h1>Pila</h1>\n<p>Všechno dřevo, které se vytěží v lesích se veze sem. Zde podle přání zákazníka nařežou dlouhé klády na desky, trámy a další ...</p>
+factory_Sandquarry_details
+<title>Pískovna - detaily</title>\n<h1>Pískovna</h1>\n<p>V pískovně se těží, jak jinak, písek. Ten poté vozí do skláren, kde jej přetaví na sklo, nebo jej prodávají na stavby, kde se přidává do betonů a omítek.</p>
+factory_sheep_farm_details
+<title>Ovčín - detaily</title>\n<h1>Ovčín</h1>\n
+factory_supermarket_details
+<title>Supermarket</title>\n<h1>Supermarkety</h1>\n<p>První supermarkety se začaly v USA objevovat již v padesátých letech našeho století, vznikly jako reakce na nákupní horečku, která zachvátila Spojené státy po hubených válečných letech.</p>\n<p>První supermarkety byly v České republice postaveny v roce 1991 (firmy Delvita a Mana, dnes Albert), s prvním hypermarketem přišlo Tesco až o šest let později.</p>\n<p>Dnes nakupují v super- a hypermarketech více než 2/3 čechů.</p>
+factory_TANKE1_details
+<title>O čerpacích stanicích</title>\n<h1>O čerpacích stanicích</h1>\n<p>V raných dobách automobilu si majitelé aut kupovali benzín v koloniálech a servisech. Ale už v roce 1905 se objevuje první benzínová pumpa. Od roku 1910 se v Americe objevují první zastřešené pumpy, od třicátých let začínají nabízet i další služby jako opravy či mapy.</p>
+factory_waste_disposal_details
+<title>O skládkách odpadu</title>\n<h1>O skládkách odpadu</h1>\n<p>ve středověku se odpadky běžně vyhazovaly z oken na ulici, čímž se extrémně zhoršovalo životní prostředí ve městech.</p>\n<p>S příchodem "civilizace" se začaly odpadky odkládat na místa k tomu určená a odtud je měští zaměstnanci svážely na velké hromady za městem - skádky.</p>\n<p>Podobného principu se ti čistotnější z nás drží dodnes: odpadky vyhodíme do kontejneru, který poté popeláři vysypou na skládku daleko za městem.</p>
+factory_wind_kraftwerk_details
+<title>O větrných elektrárnách</title>\n<h1>O větrných elektrárnách</h1>\n<p>Větrné elektrárny se v poslední době začínají čím dál více využívat jako ekologický zdroj obnovitelné energie.</p>\n<p>V podstatě nejde o nic jiného, než o obrovský generátor připojený k ještě větší vrtuli. To celé je poté postaveno na vysokém sloupu, čímž je dosaženo toho, že je vrtule vysoko nad terénem, kde je velká rychlost proudění vzduchu. Bohužel jsou díky tomu viděl i z hodně velké vzdálenosti.</p>
 #____________________________________factory____________________________________
 #____________________________________factory____________________________________
 autoshop3
@@ -93,7 +465,7 @@ Potravinářský závod
 Glass_factory
 Sklárna
 grain_farm
-JZD
+Zemědělské družstvo
 grain_farm_w_fields
 JZD
 grain_mill
@@ -354,6 +726,24 @@ tree133
 Horský smrk
 tree140
 Smrk
+#____________________________________tunnel_____________________________________
+#____________________________________tunnel_____________________________________
+cs_tunnel
+Železniční tunel
+RailTunnel
+Železniční tunel
+road_015_tunnel
+Silniční tunel
+road_050_tunnel
+Silniční tunel
+road_080_tunnel
+Silniční tunel
+road_090_tunnel
+Silniční tunel
+road_110_tunnel
+Silniční tunel
+road_130_tunnel
+Dálniční tunel
 #____________________________________vehicle____________________________________
 #____________________________________vehicle____________________________________
 Arriva_223
@@ -4958,13 +5348,77 @@ ZSSK_Tms_ocel
 ZSSK Tms (ocel)
 #______________________________________way______________________________________
 #______________________________________way______________________________________
+air_movement_area
+Pojížděcí plocha
+air_movement_area_old
+Dlážděná pojížděcí plocha
+concrete_sleeper_track
+Trať s betonovými pražci
+concrete_tram_track
+Tramvajový pás
+cs_narrow_gauge_track_30
+Úzkokolejná trať
+cs_narrow_gauge_track_50
+Úzkokolejná trať
+High_quality_track
+Trať vysoké kvality
+low_quality_track
+Trať nízké kvality
+Powerline
+Vedení vysokého napětí
+Rillenschienen
+Tramvajová trať
+river_00
+Splavná řeka
+river_01
+Splavná řeka
+river_02
+Splavná řeka
+river_03
+Řeka
+river_04
+Říčka
+road_015
+Dlážděná cesta
+road_030
+Blátivá polní cesta
+road_035
+Štěrková cesta
+road_050
+Asfaltová ulice
+road_080
+Asfaltová silnice
+road_090
+Asfaltová silnice
+road_110
+Silnice pro motorová vozidla
+road_130
+Dálnice
+runway_modern
+Přistávací dráha
+steel_sleeper_track
+Vysokrychlostní koridor
 trat_130
 Trať pro koridor
 trat_45
 Trať pro lokální provoz
 trat_85
 Trať pro nákladní provoz
+Trat_pro_koridor
+Trať pro koridor
+Trat_pro_lokalni_provoz
+Trať pro lokální provoz
+Trat_pro_nakladni_provoz
+Trať pro nákladní provoz
 vlecka_30
 Železniční vlečka
 vlecka_35
+Železniční vlečka s pražci
+water_road
+Průplav
+wooden_sleeper_track
+Trať s dřevěnými pražci
+Zeleznicni_vlecka
+Železniční vlečka
+Zeleznicni_vlecka_s_prazci
 Železniční vlečka s pražci

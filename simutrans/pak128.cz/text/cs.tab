@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                            Date Created: 1.06 2013                           #
+#                            Date Created: 8.06 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -136,6 +136,14 @@ AirStop_AirportBlg
 Stojánka
 Almuthof_StationBlg
 Vesnická stanice
+Asfaltova nakladaci rampa leva
+Asfaltová nakládací rampa levá
+Asfaltova nakladaci rampa prava
+Asfaltová nakládací rampa pravá
+Asfaltove kryte nastupiste leve
+Asfaltové kryté nástupiště levé
+Asfaltove kryte nastupiste prave
+Asfaltové kryté nástupiště pravé
 Avila_Big_StationBlg
 Velká nádražní hala
 Avila_Small_StationBlg
@@ -602,16 +610,82 @@ wool
 Vlna
 #___________________________________roadsign____________________________________
 #___________________________________roadsign____________________________________
+airport_oneway
+Jednosměrná značka pro ranveje
+autobahn_classic_entrance
+Vjezd na dálnici
+autobahn_classic_exit
+Konec dánice
+autobahn_modern_entrance
+Vjezd na dálnici
+autobahn_modern_exit
+Konec dánice
+choose_point
+Značka vyber příští zastávku
 choose_point_Zn
 Značka vyber příští zastávku
 choosesign_digital_jp
 Značka vyber příští zastávku
+ChooseSignals
+Návěstí volby koleje (standardní typ)
+Classic_LongSignals_right
+Návěstí dlouhého bloku (klasický typ)
+Classic_preSignals_right
+Přednávěstidlo (klasický typ)
+Classic_Signals_right
+Návěstí (klasický typ)
+csr_mechanic_choosesignal_1
+Návěstí volby koleje (mechanické ČSR)
+csr_mechanic_choosesignal_2
+Návěstí volby koleje (mechanické ČSR)
+csr_mechanic_endofchoosesignal
+Konec výběru koleje (mechanické ČSR)
+csr_mechanic_longblocksignal
+Mechanické návěstí dlouhého bloku
+csr_mechanic_onewaysignal
+Jednosměrné návěstí (mechanické ČSR)
+csr_mechanic_presignal
+Mechanické přednávěstidlo
+csr_mechanic_presignal_2
+Mechanické přednávěstidlo
+csr_mechanic_signal
+Návěstí (ČSR mechanické)
+csr_sssr_choosesignal
+Návěstidlo volby koleje
+csr_sssr_endofchoosesignal
+Návěstidlo konce výběru koleje
+csr_sssr_longblocksignal
+Návěstí dlouhého bloku
+csr_sssr_onewaysignal
+Jednosměrné návěstí
+csr_sssr_presignal
+Přednávěstidlo
+csr_sssr_signal
+Návěstí
 Customs
 Celnice
+Early_ChooseSignals_right
+Návěstí výběru perónu (raný typ)
+Early_LongSignals_right
+Návěstí dlouhého bloku (raný typ)
+Early_preSignals_right
+Přednávěstidlo (raný typ)
+Early_Signals_right
+Návěstí (raný typ)
 Endofchooseroad
 Zákaz výběru zastávky
 Endofchooseroad_Zn
 Zákaz výběru zastávky
+EndOfChooseSignals
+Návěstí konce volby perónu
+Minimum100
+Minimální rychlost 100 km/h
+Minimum130
+Minimální rychlost 130 km/h
+Minimum160
+Minimální rychlost 160 km/h
+Minimum190
+Minimální rychlost 190 km/h
 Minimum30
 Minimální rychlost 30 km/h
 Minimum30_Zn
@@ -624,26 +698,90 @@ Minimum80
 Minimální rychlost 80 km/h
 Minimum80_Zn
 Minimální rychlost 80 km/h
+Modern_ChooseSignals_right
+Návěstí výběru perónu (moderní typ)
+Modern_EndOfChooseSignals_right
+Návěstí konce výběru perónu (moderní typ)
+Modern_LongSignals_right
+Návěstí dlouhého bloku (moderní typ)
+Modern_OneWaySignals_right
+Jednosměrné návěstí (moderní typ)
+Modern_preSignals_right
+Přednávěstidlo (moderní typ)
+Modern_Signals_right
+Návěstí (moderní typ)
+Narrow_ChooseSignals_right
+Návěstí volby koleje
+Narrow_EndOfChooseSignals_right
+Návěstí konce volby koleje
+Narrow_EndOfChooseSignals_small
+Návěstí konce volby koleje (malé)
+Narrow_LongSignals_right
+Návěstí dlouhého bloku
+Narrow_OneWaySignals_right
+Jednosměrné návěstí
+Narrow_preSignals_choose
+Přednávěstidlo
+Narrow_preSignals_right
+Přednávěstí pro úzkokolejku
+Narrow_Signals_right
+Návěstí pro úzkokolejku
+Narrowgate
+Závora
+NoEntry
+Jednosměrka
 NoEntry_Zn
 Jednosměrka
 OneWay
 Jednosměrka
 OneWay_Zn
 Jednosměrka
+OneWaySignals
+Jednosměrné návěští
+policajt
+policista
+preSignals
+Přednávěstidla (standardní typ)
 privroad
 Soukromá cesta
 privroad_Zn
 Soukromá cesta
+Railgate
+Závora
 RisingBollards
 Výsuvné sloupky
+RoadClosed
+Uzávěra
 RoadClosed_Zn
 Uzávěra
+RoadGate
+Závora
 Roundabout
 Kruhový objezd
 Roundabout_Zn
 Kruhový objezd
+Signals
+Návěstí (standardní typ)
 TollGate
 Mýtnice
+traffic_light
+Semafor
+Tram_ChooseSignals_right
+Návěstí výběru perónu (tramvajové)
+Tram_EndOfChooseSignals_right
+Návěstí konce výběru perónu (tramvajové)
+Tram_LongSignals_right
+Návěstí dlouhého bloku (tramvajové)
+Tram_OneWaySignals_right
+Jednosměrné návěstí (tramvajové)
+Tram_preSignals_right
+Přednávěstidlo (tramvaj)
+Tram_Signals_right
+Návěstí traťového bloku (tramvaj)
+Tramgate
+Závora
+ZollGate
+Závora
 #_____________________________________tree______________________________________
 #_____________________________________tree______________________________________
 palm010
@@ -5422,3 +5560,17 @@ Zeleznicni_vlecka
 Železniční vlečka
 Zeleznicni_vlecka_s_prazci
 Železniční vlečka s pražci
+#__________________________________way-object___________________________________
+#__________________________________way-object___________________________________
+High_Speed_Catenary
+Vysokorychlostní trolej
+old_catenary
+Stará trolej
+standard_catenary
+Standardní trolej
+Third_Rail_Electrification
+Elektrifikace třetí kolejí
+Tram_Electrification
+Tramvajová trolej
+TrolleyBus_Electrification
+Trolejbusová trolej

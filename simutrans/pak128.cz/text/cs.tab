@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                            Date Created: 8.06 2013                           #
+#                           Date Created: 23.06 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -144,6 +144,22 @@ Asfaltove kryte nastupiste leve
 Asfaltové kryté nástupiště levé
 Asfaltove kryte nastupiste prave
 Asfaltové kryté nástupiště pravé
+Asfaltove kryte nastupiste se sluzebnim prejezdem leve
+Asfaltové kryté nástupiště se služebním přejezdem levé
+Asfaltove kryte nastupiste se sluzebnim prejezdem prave
+Asfaltové kryté nástupiště se služebním přejezdem pravé
+Asfaltove male nastupiste leve
+Asfaltové malé nástupiště levé
+Asfaltove male nastupiste prave
+Asfaltové malé nástupiště pravé
+Asfaltove nastupiste leve
+Asfaltové nástupiště levé
+Asfaltove nastupiste prave
+Asfaltové nástupiště pravé
+Asfaltove nastupiste se sluzebnim prejezdem leve
+Asfaltové nástupiště se služebním přejezdem levé
+Asfaltove nastupiste se sluzebnim prejezdem prave
+Asfaltové nástupiště se služebním přejezdem pravé
 Avila_Big_StationBlg
 Velká nádražní hala
 Avila_Small_StationBlg
@@ -176,6 +192,8 @@ CarStop
 Nakládací rampa
 CASTLE_0
 Starý hrad\n\nStavba byla užívaná jako hrad\nkrále Napíka. Většina byla\nzničena během velké války,\navšak byla v 19.století\nopravena a přebudována.\nNyní poskytuje k vidění\nslavnou kolekci starých\nbrnění a mečů.\n\n
+Chodovska_tvrz
+Chodovská tvrz\n\nStavba je nejvýznačnějším\nhistorickým objektem\npanelového Jižního města na\nPraze 4. Vznikla na přelomu\n13. a 14. století. Původně\nbyla obehnaná vodním\npříkopem, ten byl při\nrekonstrukci v 17.století\nzasypán. Nyní je využívána\njako kulturní centrum.\n\n
 CHURCH_00
 Gotická katedrála\n\nTato stará gotická katedrála\nje nyní atraktivnější než\nkdy dříve. Je to časté místo\nveřejných výstav a nikoliv\nprostředí pro uctívání. Zdá\nse, že to je pro církev\nlepší, protože zisk z turistů\nje mnohem vyšší, než\ndesátek vybraný z\nklasických bohoslužeb.\nJelikož se turisté nemohou\ndostat ke kostelu vlastním\nvozem, dožadují se dopravního\nspojení.\n\n
 CHURCH_01
@@ -210,6 +228,22 @@ CoveredTrainStop
 Kryté nástupiště
 Crate_Goods_Dock
 Kontejnerový přístav
+cs_depicko
+Depo
+cs_kostelik
+Kostel
+cs_skladistko_leve
+Skladiště s nakládací rampou levé
+cs_skladistko_prave
+Skladiště s nakládací rampou pravé
+CS_StationBuilding_mala_stanice_se_skladistem
+Malá nádražní budova
+cs_sypane_nastupiste
+Sypané nástupiště
+CSStationBuilding
+Nádražní budova (malá)
+CSStationBuilding_16/H
+Nádražní budova
 CunnersdorfStopBlg
 Vesnická nádražní budova
 CUR_01_128_JH
@@ -244,8 +278,14 @@ HQ1
 Tady odsuď řídíš svoji firmu, projektuješ tady tratě a zadáváš nákupy vozidel. Až si vyděláš víc budeš si moci dovolit lepší sídlo.
 HQ2
 Řídící středisko Simutrans\nTato budova ukrývá ve svých zdech obrovské řídící centrum, ze kterého se řídí vše od východu a západu slunce až po zpěv ptáků.\nNe, ve skutečnosti je toto obyčejná budova plná obyčejných kanceláří a ještě obyčejnějších úředníků... a nebo ne?
+HZS
+Sídlo hasičského záchranného sboru
 JUSTICE
 Městský soud. Právníci se\ntrousí ven a zase dovnitř.\n\n
+klaster_na_Slovanech
+Klášter Na slovanech
+KostelHermankovice
+Kostel Všech svatých v Heřmánkovicích
 Lighthouse_0
 Maják\n\nJiž od dávných dob ukazuje\ntento maják bezpečnou\ncestu lodím mířícím do\npřístavu. Přístav sice již\ndávno zanikl, ale maják\nstojí stále. Dnes již\nnenaviguje lodě, stala se z\nněj vyhledávaná turistická\natrakce.\n\n
 Lighthouse_1
@@ -276,6 +316,8 @@ MT_HOTEL_0
 Hotel\n\nToto je velmi slavný hotel.\nPokoje jsou velmi drahé,\nale každý přímo umírá po\ntom, zůstat zde na víkend\nnebo si alespoň dát jídlo v\nhotelové restauraci.\n\n
 MUSEUM_0
 Toto byl původně hrádek,\npřestavěný posléze na\nzámeček a naposledy na\nměstské technické muzeum.\nNávštěvníci se zde mohou\nobdivovat modelům prvních\nletadel, lodí, parních\nlokomotiv a dozvědět se\nspoustu dalších\nzajímavostí ze světa vědy\na techniky. Pravidelně se\nzde také pořádají\npřednášky a besedy.\n\n
+NadrazniBudova
+Nádražní budova
 OBSERVATORY
 Všeobecně známá\nhvězdárna Ondrákov, na\nmnoho hvězdných objevů\nse přišlo právě tady. Vědci\nv noci sledují oblohu (přes\nden si dávají dvacet).\nTuristi, kteří přijdou\nnebudou zkrátka. Je tu\nvzdělávací výstavka a\npořádá se tu mnoho\nzajímavých přednášek, jak\npro odbornou společnost\ntak pro laické publikum. Nikdo\nnepřijde zkrátka a tak jsou sály\nstále plné. \n\n
 Old_gate
@@ -296,6 +338,8 @@ parking_(catchemnt_area_ext)3
 Parkoviště
 Post_Dock
 Přístav s poštou
+posta
+Pošta
 PostOffice
 Pošta
 PostOffice1920_AirportBlg
@@ -314,8 +358,14 @@ rmax_mosque
 Omarova mešita.\n\nDříve\npravoslavný kostel Ilji\nMuromce. Přestože budova\nzměnila svého majitele i\nvyznání, zahradník v\nčerném rouchu s dlouhým\nvousem zůstal. Je to jediná\nosoba na světě zapsaná v\nhistorických památkách\nUNESCO. Rozhodně tak\nvypadá.\n\n
 ROCK_0
 Patrickova skála láká hodně\ngeologů, kteří jsou\nfascinováni tímto\nprastarým vulkánem.\n\n
+rotunda_na_Ripu128
+Rotunda svatého Jiří na Řípu\n\nRotunda svatého Jiří na\nvrcholu hory Říp je významná\ncírkevní i kulturní památka,\njde o románskou rotundu,\nkterá patří mezi nejstarší\ndochované stavby v České\nrepublice.\n\n
 rotunda_Znojmo128
-Rotunda
+Rotunda svaté Kateřiny ve Znojmě\n\nNárodní kulturní památka\nRotunda svaté Kateřiny stojí\nv areálu přemyslovského hradu\nve Znojmě. Je jednou z mnoha\nrotund postavených v raném\nstředověku na území Moravy\na Čech, od ostatních se\nliší zachovanými nástěnnými\nmalbami z roku 1134. Tyto\nmalby jsou výjimečné v celém\nrománském umění Evropy svým\nzaměřením na ideologii státu.\n\n
+roura
+Ropovod
+roura_sikma
+Ropovod ve svahu\n
 RUIN_0
 Hrad\n\nPůvodně zde stál gotický hrad.\nNicméně jeho majitel si na\nzačátku 20. století\nuvědomil, že takový hrad\nmu již mnoho peněz\nnepřinese, a tak jej\npřestavěl na středověký\nzábavný a naučný park. Od\nté doby se dveře nezavřou,\nproudy lidí chodí obdivovat\nšermířské souboje a\nvýstavy různých zajímavých\nvěciček. Nejvyhlášenější atrakcí\nje ale pravá středověká mučírna\n- za tučný poplatek a podepsání\nzávazku o tom, že se vzdáváte\nmožnosti majitele žalovat za\njakoukoliv újmu se můžete\nnechat natáhnout na skřipec,\nzavřít do ocelové panny, hodit\ndo hladomorny nebo si nechat\ndrtit ruce. Mučírna ale vlastně\nnebyla tak populární vždy. Její\npopularita vzrostla tehdy, když\nmajitel nabídl za příplatek tajně\nobjednat mučení pro svého\npartnera a to včetně stylového\nodvlečení v rukou biřiců. Rodinný\nvýlet, tak může nabrat nečekaný\nspád. Hned vedle mučírny je pro\njistotu manželská poradna\nslavného doktora Radima\nTkaničky.\n\n
 RUIN_1
@@ -340,8 +390,12 @@ st_benedict_church
 Chrám Svatého Benedikta.\nByl postaven za císaře\nDiokleciána v byzantském\nslohu a je jednou z\nnejstarších dochovaných\npamátek Simusvěta. Anděl\nna nejvyšší věži má\npohnutou historii. Je ze\nskla a mnohokrát v historii\nčelil nepřízni počasí i\nválkám, přesto dodnes na\nSlunci září vnitřním světlem\nneporušen. Legenda praví, že je\nv něm uchováno čisté srdce\nSpasitele. \n\n
 ST_PETER
 Svatý Petr\n\nPozdně románský kostel\npostavený okolo r. 1220, s\nkřížovou lodí zdobenou\nfreskami z poloviny 13.\nstoletí. V prosklené rakvi je\nuloženo mumifikované tělo\nkrálovského správce Petra\nBoka, které přetrvalo po\nsedm staletí až do dnešní\ndoby beze změny. Podle\nlegendy byl Petr Bok tak\nštědrým mecenášem kostela,\nprotože byl hnán strachem o své\nzdraví. Za to byl po smrti\n"odměněn" skutečně\nnezničitelným tělem. \n\n
+stepanka
+Rozhledna\n\nRozhlednu Štěpánka najdeme v Jizerských horách. 
 SUSHI_HOSPITAL
 Suši-Nemocnice\n\ntato\nnemocnice vznikla jako\npracovní místo pro většinu\nčínské populace ve městě,\ns výjimkou činnosti\nrestaurací. Z tohoto důvodu\nmůže nabídnout rychlou,\nlevnou a kvalifikovanější\nlékařskou péči, a tak ji mají\nrádi lidé, kteří si nemohou\ndovolit luxusní nemocnice a\nnechtějí navštívit kliniky\nnízké kvality. Neposkytuje mnoho\nparkovacích míst. Každý, kdo\nnení přivezen a odvezen\nsanitkou, musí použít veřejnou\ndopravu.\n\n
+SvataMarketa
+Kostel\n\nKostel Svaté Markéty
 Terminal1930_AirportBlg
 Malá letištní hala
 Terminal1950_AirportBlg_S
@@ -366,18 +420,52 @@ TV_TOWER_0
 Vysílač\n\nTelevizní vysílač společnosti BBQ.\nNahoře je nainstalována\nwebkamera, která právě\npřenáší váš udivený obličej\ndo studia - usmívejte se!\nTřeba vás vyberou do\nreality show Malá sestra,\nkde se z účastníků stávají\nošetřovatelé v domově\ndůchodců.\n\n
 TV_TOWER_1
 Televizní vysílač\n\nTato věž si ve své době\ntroufla pokořit svou výškou\ni ty největší budovy na\nsvětě. O prvenství ji\npřipravil po pěti letech\nnějaký jiný vysílač kdesi v\nTramtárii. Co ovšem zůstalo\nzachováno je výrazně lepší\ntelevizní signál pro\nobyvatele několika stovek\nčtverečních kilometrů okolo.\n\n
+uzk_vytopna
+Úzkokolejné depo
 Very_Big_Terminal
 Gigantická odbavovací hala (3x3)
 VictorianStation
 Stanice ve viktoriánském stylu
 VillageTrainStop
 Vesnické nástupiště
+vodni_hrad_Svihov
+Vodní Hrad Švihov
 WHEEL
 Ruské kolo\n\nVšem je dobře známá - hlavně\nstarší generaci, která\nchodila do zábavných\nparků. Dnes je to spíš\nvyhlídkové místo pro děti,\naby se podívaly kde v\nparku co stojí.\n\n
 Windmill
 Větrný mlýn\n\nNěkdo se chodí dívat na větrný\nmlýn, protože se mu líbí\nelegance, se kterou se ve\nvánku otáčí jeho lopatky;\nněkdo zase protože se mu\nchce na procházku a nemá\nv okolí lepší cíl. No a někteří\nvýtržníci chodí k větrnému\nmlýnu, aby si po něm\nvyzkoušeli hodit kamenem.\n\n
 WOODEN_CHURCH
 Dřevěný kostel\n\nTento kosltel byl postavený\nlidmi, kteří mají rádi výzvy,\nstojí bez použití jediného\nhřebíčku.\n\n
+#____________________________________citycar____________________________________
+#____________________________________citycar____________________________________
+ambulance_0
+Stará sanitka
+ambulance_1
+Vysloužilá vojenská sanitka
+ms_foord_gallaxie_brown
+Ford Galaxy hnědé barvy
+ms_foord_gallaxie_white
+Ford Galaxy bílé barvy
+ms_megane_blue
+Renault Megane modré barvy
+ms_megane_green
+Renault Megane zelené barvy
+ms_mustang_blue
+Ford Mustang modré barvy
+ms_mustang_green
+Ford Mustang zelené barvy
+ms_mustang_red
+Ford Mustang červené barvy
+ms_scenic_green
+Renault Scenic zelené barvy
+RVg_dumptruck_1
+Uzavřený právě umytý popelářský vůz
+RVg_dumptruck_2
+Uzavřený posprejovaný popelářský vůz
+school_bus_0
+Školní autobus
+VS_T-813-cammo
+Tatra 813 v vojenském zbarvení
 #__________________________________dummy_info___________________________________
 #__________________________________dummy_info___________________________________
 factory_bakery_details
@@ -441,7 +529,7 @@ Autosalon
 Cementmill
 Cementárna
 chicken_farm
-Líhně kuřat
+Drůbežárna
 classical_goods_factory
 Továrna
 Concretefactory
@@ -472,10 +560,8 @@ food_processing_plant
 Potravinářský závod
 Glass_factory
 Sklárna
-grain_farm
-Zemědělské družstvo
 grain_farm_w_fields
-JZD
+Zemědělské družstvo
 grain_mill
 Mlýn
 Kohlekraftwerk
@@ -497,7 +583,7 @@ Ropné pole
 oilkraftwerk
 Elektrárna na mazut
 old_powerplant_kraftwerk
-Uhelná elektrárna
+Tepelná elektrárna
 open_coal_mine
 Povrchový uhelný důl
 Papierfabrik
@@ -711,11 +797,11 @@ Přednávěstidlo (moderní typ)
 Modern_Signals_right
 Návěstí (moderní typ)
 Narrow_ChooseSignals_right
-Návěstí volby koleje
+Návěstí výběru perónu
 Narrow_EndOfChooseSignals_right
-Návěstí konce volby koleje
+Návěstí konce výběru peronu
 Narrow_EndOfChooseSignals_small
-Návěstí konce volby koleje (malé)
+Návěstí konce volby perónu (malé)
 Narrow_LongSignals_right
 Návěstí dlouhého bloku
 Narrow_OneWaySignals_right
@@ -725,9 +811,9 @@ Přednávěstidlo
 Narrow_preSignals_right
 Přednávěstí pro úzkokolejku
 Narrow_Signals_right
-Návěstí pro úzkokolejku
+Návěstí
 Narrowgate
-Závora
+Železniční vrata (úzkokolejka)
 NoEntry
 Jednosměrka
 NoEntry_Zn
@@ -747,7 +833,7 @@ Soukromá cesta
 privroad_Zn
 Soukromá cesta
 Railgate
-Závora
+Železniční vrata (vlak)
 RisingBollards
 Výsuvné sloupky
 RoadClosed
@@ -779,9 +865,9 @@ Přednávěstidlo (tramvaj)
 Tram_Signals_right
 Návěstí traťového bloku (tramvaj)
 Tramgate
-Závora
+Železniční vrata (tramvaj)
 ZollGate
-Závora
+Celnice
 #_____________________________________tree______________________________________
 #_____________________________________tree______________________________________
 palm010
@@ -4341,57 +4427,57 @@ NHKG T669.2501 prototyp (dieselová lokomotiva)
 nhkg_t669_2501_2
 NHKG T669.2501 prototyp pozdejší provedení (dieselová lokomo
 OBB_1010_green
-OBB 1010 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1010 zelený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1010_orange
-OBB 1010 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1010 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1014_CAT
-OBB 1014 "City Airport Train" (elektrická dvousystémová loko
+ÖBB 1014 "City Airport Train" (elektrická dvousystémová loko
 OBB_1014_RCA
-OBB 1014 "Rail Cargo Austria" (elektrická dvousystémová loko
+ÖBB 1014 "Rail Cargo Austria" (elektrická dvousystémová loko
 OBB_1014_red
-OBB 1014 červený (elektrická dvousystémová lokomotiva ~15kV/
+ÖBB 1014 červený (elektrická dvousystémová lokomotiva ~15kV/
 obb_1018_blut_rot
 OBB 1018 červená (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1018_gruen
 OBB 1018 zelená (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1040_green
-OBB 1040 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1040 zelený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1040_orange
-OBB 1040 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1040 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1041_green
-OBB 1041 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1041 zelený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1041_orange
-OBB 1041 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1041 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1042_5_orange
-OBB 1042.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1042.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1042_5_red
-OBB 1042.5 červený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1042.5 červený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1042_green
-OBB 1042 zelený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1042 zelený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1042_orange
-OBB 1042 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1042 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1042_red
-OBB 1042 červený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1042 červený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1044_501
-OBB 1044.501 (testovací vysokorychlostní elektrická lokomoti
+ÖBB 1044.501 (testovací vysokorychlostní elektrická lokomoti
 OBB_1044_orange
-OBB 1044 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1044 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1044_red
-OBB 1044 červený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1044 červený (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1080_br
 OBB 1080 hnědá (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1080_gr_1
 OBB 1080 zelená (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1114_red
-OBB 1114 červený (elektrická dvousystémová lokomotiva ~15kV/
+ÖBB 1114 červený (elektrická dvousystémová lokomotiva ~15kV/
 obb_1118_blut_rot
 OBB 1118 červená (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1142_5_orange
-OBB 1142.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1142.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1142_5_red
-OBB 1142.5 červený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1142.5 červený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1144_red
-OBB 1144 červený (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1144 červený (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1189_02_a
 OBB 1189 oranžová (přední díl - tříčlánková elektrická lokom
 obb_1189_02_b
@@ -4407,171 +4493,171 @@ OBB 1189 zelená (zadní díl - tříčlánková elektrická lokomoti
 OBB_2016
 OBB 2016 "Hercules" (motorová lokomotiva)
 OBB_4020
-OBB 4020 (elektrická jednotka ~15kV/16,7Hz - hnací vůz 2. tř
+ÖBB 4020 (elektrická jednotka ~15kV/16,7Hz - hnací vůz 2. tř
 OBB_4020_r
-OBB 4020 červený (elektrická jednotka ~15kV/16,7Hz - hnací v
+ÖBB 4020 červený (elektrická jednotka ~15kV/16,7Hz - hnací v
 OBB_5047
-OBB 5047 (motorový vůz - 2. třída)
+ÖBB 5047 (motorový vůz - 2. třída)
 OBB_5047_r1
-OBB 5047 červený (motorový vůz - 2. třída)
+ÖBB 5047 červený (motorový vůz - 2. třída)
 OBB_5047_r2
-OBB 5047 červený II. (motorový vůz - 2. třída)
+ÖBB 5047 červený II. (motorový vůz - 2. třída)
 OBB_5147-1
-OBB 5147 (přední motorový vůz - 2. třída)
+ÖBB 5147 (přední motorový vůz - 2. třída)
 OBB_5147-2
-OBB 5147 (zadní motorový vůz - 2. třída)
+ÖBB 5147 (zadní motorový vůz - 2. třída)
 OBB_5247
 OBB 5247 (vložený motorový vůz - 2. třída)
 OBB_6020
-OBB 6020 (elektrická jednotka ~15kV/16,7Hz - řídící vůz 2. t
+ÖBB 6020 (elektrická jednotka ~15kV/16,7Hz - řídící vůz 2. t
 OBB_6020_r
-OBB 6020 červený (elektrická jednotka ~15kV/16,7Hz - řídící 
+ÖBB 6020 červený (elektrická jednotka ~15kV/16,7Hz - řídící 
 OBB_7020
-OBB 7020 (elektrická jednotka ~15kV/16,7Hz - vložený vůz 2. 
+ÖBB 7020 (elektrická jednotka ~15kV/16,7Hz - vložený vůz 2. 
 OBB_7020_r
-OBB 7020 červený (elektrická jednotka ~15kV/16,7Hz - vložený
+ÖBB 7020 červený (elektrická jednotka ~15kV/16,7Hz - vložený
 OBB_ABmpz_3975
-OBB ABmpz 39-75 (1. a 2. třída)
+ÖBB ABmpz 39-75 (1. a 2. třída)
 OBB_ABmpz_3975_spar
-OBB ABmpz 39-75 Spar (1. a 2. třída)
+ÖBB ABmpz 39-75 Spar (1. a 2. třída)
 OBB_ABmpz-l_3937
-OBB ABmpz-l 39-37 "City Shuttle" (1. a 2. třída)
+ÖBB ABmpz-l 39-37 "City Shuttle" (1. a 2. třída)
 OBB_ABmz_3070_dark
-OBB ABmz 30-70 tmavě šedý (1. a 2. třída)
+ÖBB ABmz 30-70 tmavě šedý (1. a 2. třída)
 OBB_ABmz_3070_light
-OBB ABmz 30-70 světle šedý (1. a 2. třída)
+ÖBB ABmz 30-70 světle šedý (1. a 2. třída)
 OBB_ABmz_3070_orange
-OBB ABmz 30-70 oranžový (1. a 2. třída)
+ÖBB ABmz 30-70 oranžový (1. a 2. třída)
 OBB_ABmz_3090_light
-OBB ABmz 30-90 světle šedý (1. a 2. třída)
+ÖBB ABmz 30-90 světle šedý (1. a 2. třída)
 OBB_ABp_3735
-OBB ABp 37-35 "Schlieren" (1. a 2. třída)
+ÖBB ABp 37-35 "Schlieren" (1. a 2. třída)
 OBB_ABpo_3735
-OBB ABpo 37-35 "Schlieren" (1. a 2. třída)
+ÖBB ABpo 37-35 "Schlieren" (1. a 2. třída)
 OBB_Ampz_1891_light
-OBB Ampz 18-91 světle šedý (1. třída)
+ÖBB Ampz 18-91 světle šedý (1. třída)
 OBB_Ampz_1975
-OBB Ampz 19-75 (1. třída)
+ÖBB Ampz 19-75 (1. třída)
 OBB_Ampz_1975_spar
-OBB Ampz 19-75 Spar (1. třída)
+ÖBB Ampz 19-75 Spar (1. třída)
 OBB_Amz
 ÖBB Amz
 OBB_Amz_160
 ÖBB Amz (1. třída) (160)
 OBB_Amz_1970_orange
-OBB Amz 19-70 oranžový (1. třída)
+ÖBB Amz 19-70 oranžový (1. třída)
 OBB_Amz_1971_orange
-OBB Amz 19-71 oranžový (1. třída)
+ÖBB Amz 19-71 oranžový (1. třída)
 OBB_Ap_1735
-OBB Ap 17-35 "Schlieren" (1. třída)
+ÖBB Ap 17-35 "Schlieren" (1. třída)
 OBB_Apo_1735
-OBB Apo 17-35 "Schlieren" (1. třída)
+ÖBB Apo 17-35 "Schlieren" (1. třída)
 OBB_BDmpsz_8275_spar-1
-OBB BDmpsz 82-75 Spar (2. třída/služební) 1/2
+ÖBB BDmpsz 82-75 Spar (2. třída/služební) 1/2
 OBB_BDmpsz_8275_spar-2
-OBB BDmpsz 82-75 Spar (2. třída/služební) 2/2
+ÖBB BDmpsz 82-75 Spar (2. třída/služební) 2/2
 OBB_BDmpsz_8275-1
-OBB BDmpsz 82-75 (2. třída/služební) 1/2
+ÖBB BDmpsz 82-75 (2. třída/služební) 1/2
 OBB_BDmpsz_8275-2
-OBB BDmpsz 82-75 (2. třída/služební) 2/2
+ÖBB BDmpsz 82-75 (2. třída/služební) 2/2
 OBB_BDmsz_8270_dark-1
-OBB BDmsz 82-70 tmavě šedý (2. třída/služební) 1/2
+ÖBB BDmsz 82-70 tmavě šedý (2. třída/služební) 1/2
 OBB_BDmsz_8270_dark-2
-OBB BDmsz 82-70 tmavě šedý (2. třída/služební) 2/2
+ÖBB BDmsz 82-70 tmavě šedý (2. třída/služební) 2/2
 OBB_BDmsz_8270_orange-1
 OBB BDmsz 82-70 oranžový (2. třída/služební) 1/2
 OBB_BDmsz_8270_orange-2
-OBB BDmsz 82-70 oranžový (2. třída/služební) 2/2
+ÖBB BDmsz 82-70 oranžový (2. třída/služební) 2/2
 OBB_BDp_8235_spar-1
-OBB BDp 82-35 Spar "Schlieren" (2. třída/služební) 1/2
+ÖBB BDp 82-35 Spar "Schlieren" (2. třída/služební) 1/2
 OBB_BDp_8235_spar-2
-OBB BDp 82-35 Spar "Schlieren" (2. třída/služební) 2/2
+ÖBB BDp 82-35 Spar "Schlieren" (2. třída/služební) 2/2
 OBB_BDp_8235-1
-OBB BDp 82-35 "Schlieren" (2. třída/služební) 1/2
+ÖBB BDp 82-35 "Schlieren" (2. třída/služební) 1/2
 OBB_BDp_8235-2
-OBB BDp 82-35 "Schlieren" (2. třída/služební) 2/2
+ÖBB BDp 82-35 "Schlieren" (2. třída/služební) 2/2
 OBB_BDpo_8235-1
-OBB BDpo 82-35 "Schlieren" (2. třída/služební) 1/2
+ÖBB BDpo 82-35 "Schlieren" (2. třída/služební) 1/2
 OBB_BDpo_8235-2
 OBB BDpo 82-35 "Schlieren" (2. třída/služební) 2/2
 OBB_Bmpz
 ÖBB Bmpz (2. třída)
 OBB_Bmpz_2075
-OBB Bmpz 20-75 (2. třída)
+ÖBB Bmpz 20-75 (2. třída)
 OBB_Bmpz_2075_spar
-OBB Bmpz 20-75 Spar (2. třída)
+ÖBB Bmpz 20-75 Spar (2. třída)
 OBB_Bmpz-dl_2633
-OBB Bmpz-dl 26-33 "City Shuttle" (2. třída)
+ÖBB Bmpz-dl 26-33 "City Shuttle" (2. třída)
 OBB_Bmpz-dl_2633_CAT
-OBB Bmpz-dl 26-33 "City Airport Train" (2. třída)
+ÖBB Bmpz-dl 26-33 "City Airport Train" (2. třída)
 OBB_Bmpz-ds_8033
-OBB Bmpz-ds 80-33 "City Shuttle" (přední řídící vůz - 2. tří
+ÖBB Bmpz-ds 80-33 "City Shuttle" (přední řídící vůz - 2. tří
 OBB_Bmpz-ds_8033_CAT
-OBB Bmpz-ds 80-33 "City Airport Train" (přední řídící vůz - 
+ÖBB Bmpz-ds 80-33 "City Airport Train" (přední řídící vůz - 
 OBB_Bmpz-ds_8033_CAT_otoc
-OBB Bmpz-ds 80-33 "City Airport Train" (zadní řídící vůz - 2
+ÖBB Bmpz-ds 80-33 "City Airport Train" (zadní řídící vůz - 2
 OBB_Bmpz-ds_8033_otoc
-OBB Bmpz-ds 80-33 "City Shuttle" (zadní řídící vůz - 2. tříd
+ÖBB Bmpz-ds 80-33 "City Shuttle" (zadní řídící vůz - 2. tříd
 OBB_Bmpz-l_2173
-OBB Bmpz-l 21-73 "City Shuttle" (2. třída)
+ÖBB Bmpz-l 21-73 "City Shuttle" (2. třída)
 OBB_Bmpz-s_8073_otoc-1
-OBB Bmpz-s 80-73 "City Shuttle" (zadní řídící vůz - 2. třída
+ÖBB Bmpz-s 80-73 "City Shuttle" (zadní řídící vůz - 2. třída
 OBB_Bmpz-s_8073_otoc-2
-OBB Bmpz-s 80-73 "City Shuttle" (zadní řídící vůz - 2. třída
+ÖBB Bmpz-s 80-73 "City Shuttle" (zadní řídící vůz - 2. třída
 OBB_Bmpz-s_8073-1
-OBB Bmpz-s 80-73 "City Shuttle" (přední řídící vůz - 2. tříd
+ÖBB Bmpz-s 80-73 "City Shuttle" (přední řídící vůz - 2. tříd
 OBB_Bmpz-s_8073-2
-OBB Bmpz-s 80-73 "City Shuttle" (přední řídící vůz - 2. tříd
+ÖBB Bmpz-s 80-73 "City Shuttle" (přední řídící vůz - 2. tříd
 OBB_Bmz
 ÖBB Bmz (2. třída)
 OBB_Bmz_160
 ÖBB Bmz 160 (2. třída kupé)
 OBB_Bmz_2170_dark
-OBB Bmz 21-70 tmavě šedý (2. třída)
+ÖBB Bmz 21-70 tmavě šedý (2. třída)
 OBB_Bmz_2170_orange
-OBB Bmz 21-70 oranžový (2. třída)
+ÖBB Bmz 21-70 oranžový (2. třída)
 OBB_Bmz_2171_orange
-OBB Bmz 21-71 oranžový (2. třída)
+ÖBB Bmz 21-71 oranžový (2. třída)
 OBB_Bp_2833_spar
-OBB Bp 28-33 Spar "Schlieren" (2. třída)
+ÖBB Bp 28-33 Spar "Schlieren" (2. třída)
 OBB_Bp_2935
-OBB Bp 29-35 "Schlieren" (2. třída)
+ÖBB Bp 29-35 "Schlieren" (2. třída)
 OBB_Bp_2935_spar
-OBB Bp 29-35 Spar "Schlieren" (2. třída)
+ÖBB Bp 29-35 Spar "Schlieren" (2. třída)
 OBB_Bpo_2935
-OBB Bpo 29-35 "Schlieren" (2. třída)
+ÖBB Bpo 29-35 "Schlieren" (2. třída)
 OBB_BRmpz_8575
-OBB BRmpz 85-75 (2. třída/barový vůz)
+ÖBB BRmpz 85-75 (2. třída/barový vůz)
 OBB_Dmsz_9570_dark
-OBB Dmsz 95-70 tmavě šedý (služební vůz)
+ÖBB Dmsz 95-70 tmavě šedý (služební vůz)
 OBB_Dmsz_9570_light
-OBB Dmsz 95-70 světle šedý (služební vůz)
+ÖBB Dmsz 95-70 světle šedý (služební vůz)
 OBB_Dmsz_9570_orange
-OBB Dmsz 95-70 oranžový (služební vůz)
+ÖBB Dmsz 95-70 oranžový (služební vůz)
 OBB_Gabkqss-x
-OBB Gabkqss-x (zavazadlový vůz pro přepravu jízdních kol)
+ÖBB Gabkqss-x (zavazadlový vůz pro přepravu jízdních kol)
 OBB_Gabkqss-x_r
-OBB Gabkqss-x červený (zavazadlový vůz pro přepravu jízdních
+ÖBB Gabkqss-x červený (zavazadlový vůz pro přepravu jízdních
 OBB_Gbkkss-vx
-OBB Gbkkss-vx (zavazadlový vůz pro přepravu jízdních kol)
+ÖBB Gbkkss-vx (zavazadlový vůz pro přepravu jízdních kol)
 OBB_Postm_0033
-OBB Postm 00-33 (poštovní vůz)
+ÖBB Postm 00-33 (poštovní vůz)
 OBB_Postm_0033_dark
 OBB Postm 00-33 tmavě šedý (poštovní vůz)
 OBB_Postmz_0030
 OBB Postmz 00-30 (poštovní vůz)
 OBB_Postmz_0030_dark
-OBB Postmz 00-30 tmavě šedý (poštovní vůz)
+ÖBB Postmz 00-30 tmavě šedý (poštovní vůz)
 obb_setra_s431dt
 Meziměstský autobus Setra S 431 DT
 OBB_WRmz_8870_dark
-OBB WRmz 88-70 tmavě šedý (jídelní vůz)
+ÖBB WRmz 88-70 tmavě šedý (jídelní vůz)
 OBB_WRmz_8870_orange
-OBB WRmz 88-70 oranžový (jídelní vůz)
+ÖBB WRmz 88-70 oranžový (jídelní vůz)
 OBB_WRmz_8890_dark
-OBB WRmz 88-90 tmavě šedý (jídelní vůz)
+ÖBB WRmz 88-90 tmavě šedý (jídelní vůz)
 OBB_WRmz_8890_light
-OBB WRmz 88-90 světle šedý (jídelní vůz)
+ÖBB WRmz 88-90 světle šedý (jídelní vůz)
 OZVD_Ci_R_I
 OZVD Ci Rybák I (3. třída)
 podval_P-32_auta

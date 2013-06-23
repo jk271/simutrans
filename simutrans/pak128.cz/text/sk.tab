@@ -1,0 +1,642 @@
+§################################################################################
+#                                                                              #
+#                Simutrans Scenario Specific Translation File                  #
+#                              Scenario: pak128.cz                             #
+#                            Language: sk Slovencina                           #
+#                             Encoding: ISO-8859-2                             #
+#                            Font : prop-latin2.fnt                            #
+#                           Date Created: 23.06 2013                           #
+#                                                                              #
+#                                   authors:                                   #
+#                                    - An_dz                                   #
+#                   note: Verified where all texts are shown                   #
+#                                    - Dwachs                                  #
+#                                    note:                                     #
+#                              Frank Penz - FrankP                             #
+#                                    note:                                     #
+#                              Honza Korbel - jk271                             #
+#                                    note:                                     #
+#                           Peter Karak - peter.karak                          #
+#                                    note:                                     #
+#                          Markus Pristovsek - prissi                          #
+#                                    note:                                     #
+#                                                                              #
+################################################################################
+#____________________________________bridge_____________________________________
+#____________________________________bridge_____________________________________
+ClassicRail
+Betónový most
+ClassicRoad
+Betónový most
+Concrete_Road_Bridge
+Diaľničný most
+Plate_Girder_Bridge
+Trámový most
+RVg_Concrete_Rail_Bridge
+Závesný oceľový most
+SteelRail
+Oceľový most
+SteelRail2
+Masívny oceľový most
+SteelRoad1
+Oceľový most
+u_truss_bridge
+Priehradový most
+Wooden_Rail
+Drevený most
+#_____________________________________good______________________________________
+#_____________________________________good______________________________________
+Autos
+automobily
+beer
+pivo
+Bretter
+drevené dosky
+Bucher
+knihy
+canned_food
+konzerv.potr.
+Cement
+cement
+corn
+kukurica
+cotton
+bavlna
+Eisenerz
+železná ruda
+electronics
+elektronika
+flour
+múka
+milk
+mlieko
+Oel
+ropa
+Sand
+piesok
+Stahl
+oceľ
+#____________________________________vehicle____________________________________
+#____________________________________vehicle____________________________________
+CD_020
+ČD Btx / 020 (2. trieda)
+CD_021-1
+ČD Btx / 021 (2. trieda s prepravou bicyklov) 1/2
+CD_021-2
+ČD Btx / 021 (2. trieda s prepravou bicyklov) 2/2
+CD_022-1
+ČD BDdtx / 022 (2. trieda/služobný s prepravou bicyklov) 1/2
+CD_022-2
+ČD BDdtx / 022 (2. trieda/služobný s prepravou bicyklov) 2/2
+CD_050
+ČD Bmx / 050 (2. trieda)
+CD_050_balkan-1
+ČD Bmx765 balkán (2. trieda s prepravou bicyklov) 1/2
+CD_050_balkan-2
+ČD Bmx765 balkán (2. trieda s prepravou bicyklov) 2/2
+CD_050_cyklo-1
+ČD Bmx cyklo / 050 (2. trieda s prepravou bicyklov) 1/2
+CD_050_cyklo-2
+ČD Bmx cyklo / 050 (2. trieda s prepravou bicyklov) 2/2
+CD_820
+ČD 820 "Singrovka" (motorový vozeň - 2. trieda)
+CD_820-1
+ČD 820 "Singrovka" (motorový vozeň - 2. trieda/služobný) 1/2
+CD_820-2
+ČD 820 "Singrovka" (motorový vozeň - 2. trieda/služobný) 2/2
+CD_850-1
+ČD 850 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 1/2
+CD_850-2
+ČD 850 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 2/2
+CD_851
+ČD 851 "Krokodíl" (motorový vozeň - 2. trieda)
+CD_851_balkan
+ČD 851 balkán "Krokodíl" (motorový vozeň - 2. trieda)
+CD_851_balkan_otoc
+ČD 851 balkán "Krokodíl" (zadný motorový vozeň - 2. trieda)
+CD_851_balkan_otoc-1
+ČD 851 balkán "Krokodíl" (zadný motorový vozeň - 2. trieda/s
+CD_851_balkan_otoc-2
+ČD 851 balkán "Krokodíl" (zadný motorový vozeň - 2. trieda/s
+CD_851_balkan-1
+ČD 851 balkán "Krokodíl" (motorový vozeň - 2. trieda/služobn
+CD_851_balkan-2
+ČD 851 balkán "Krokodíl" (motorový vozeň - 2. trieda/služobn
+CD_851_otoc
+ČD 851 "Krokodíl" (zadný motorový vozeň - 2. trieda)
+CD_851_otoc-1
+ČD 851 "Krokodíl" (zadný motorový vozeň - 2. trieda/služobný
+CD_851_otoc-2
+ČD 851 "Krokodíl" (zadný motorový vozeň - 2. trieda/služobný
+CD_854
+ČD 854 "Hydra" (motorový vozeň - 2. trieda)
+CD_854_balkan
+ČD 854 "Hydra" balkán (motorový vozeň - 2. trieda)
+CD_854_balkan-1
+ČD 854 "Hydra" balkán (motorový vozeň - 2. trieda/služobný) 
+CD_854_balkan-2
+ČD 854 "Hydra" balkán (motorový vozeň - 2. trieda/služobný) 
+CD_854_balkan-otoc
+ČD 854 "Hydra" balkán (zadný motorový vozeň - 2. trieda)
+CD_854_balkan-otoc-1
+ČD 854 "Hydra" balkán (zadný motorový vozeň - 2. trieda/služ
+CD_854_balkan-otoc-2
+ČD 854 "Hydra" balkán (zadný motorový vozeň - 2. trieda/služ
+CD_854-1
+ČD 854 "Hydra" (motorový vozeň - 2. trieda/služobný) 1/2
+CD_854-2
+ČD 854 "Hydra" (motorový vozeň - 2. trieda/služobný) 2/2
+CD_854-otoc
+ČD 854 "Hydra" (zadný motorový vozeň - 2. trieda)
+CD_854-otoc-1
+ČD 854 "Hydra" (zadný motorový vozeň - 2. trieda/služobný) 1
+CD_854-otoc-2
+ČD 854 "Hydra" (zadný motorový vozeň - 2. trieda/služobný) 2
+CD_954
+ČD Bfbrdtn / 954 (riadiací vozeň - 2. trieda)
+CD_954_2
+ČD ABfbrdtn / 954.2 (riadiací vozeň - 1. a 2. trieda)
+CD_954_2_balkan
+ČD ABfbrdtn795 / 954.2 balkán (riadiací vozeň - 1. a 2. trie
+CD_954_2_balkan-1
+ČD ABfbrdtn795 / 954.2 balkán (riadiací vozeň - 1. a 2. trie
+CD_954_2_balkan-2
+ČD ABfbrdtn795 / 954.2 balkán (riadiací vozeň - 1. a 2. trie
+CD_954_2_balkan-otoc
+ČD ABfbrdtn795 / 954.2 balkán (predný riadiací vozeň - 1. a 
+CD_954_2_balkan-otoc-1
+ČD ABfbrdtn795 / 954.2 balkán (predný riadiací vozeň - 1. a 
+CD_954_2_balkan-otoc-2
+ČD ABfbrdtn795 / 954.2 balkán (predný riadiací vozeň - 1. a 
+CD_954_2-1
+ČD ABfbrdtn / 954.2 (riadiací vozeň - 1. a 2. trieda s prepr
+CD_954_2-2
+ČD ABfbrdtn / 954.2 (riadiací vozeň - 1. a 2. trieda s prepr
+CD_954_2-otoc
+ČD ABfbrdtn / 954.2 (predný riadiací vozeň - 1. a 2. trieda)
+CD_954_2-otoc-1
+ČD ABfbrdtn / 954.2 (predný riadiací vozeň - 1. a 2. trieda 
+CD_954_2-otoc-2
+ČD ABfbrdtn / 954.2 (predný riadiací vozeň - 1. a 2. trieda 
+CD_954_balkan
+ČD Bfbrdtn794 / 954 balkán (riadiací vozeň - 2. trieda)
+CD_954_balkan-1
+ČD Bfbrdtn794 / 954 balkán (riadiací vozeň - 2. trieda s pre
+CD_954_balkan-2
+ČD Bfbrdtn794 / 954 balkán (riadiací vozeň - 2. trieda s pre
+CD_954_balkan-otoc
+ČD Bfbrdtn794 / 954 balkán (predný riadiací vozeň - 2. tried
+CD_954_balkan-otoc-1
+ČD Bfbrdtn794 / 954 balkán (predný riadiací vozeň - 2. tried
+CD_954_balkan-otoc-2
+ČD Bfbrdtn794 / 954 balkán (predný riadiací vozeň - 2. tried
+CD_954-1
+ČD Bfbrdtn / 954 (riadiací vozeň - 2. trieda s prepravou bic
+CD_954-2
+ČD Bfbrdtn / 954 (riadiací vozeň - 2. trieda s prepravou bic
+CD_954-otoc
+ČD Bfbrdtn / 954 (predný riadiací vozeň - 2. trieda)
+CD_954-otoc-1
+ČD Bfbrdtn / 954 (predný riadiací vozeň - 2. trieda s prepra
+CD_954-otoc-2
+ČD Bfbrdtn / 954 (predný riadiací vozeň - 2. trieda s prepra
+CSD_Aalm-d_prototyp
+ČSD Aalm-d prototyp (1. trieda)
+CSD_Balm-d
+ČSD Balm-d (2. trieda)
+CSD_Balm-d_prototyp
+ČSD Balm-d prototyp (2. trieda)
+CSD_Balm-k
+ČSD Balm-k (2. trieda)
+CSD_BFalm-1
+ČSD BFalm (2. trieda/služobný) 1/2
+CSD_BFalm-2
+ČSD BFalm (2. trieda/služobný) 2/2
+CSD_M240_0
+ČSD M240.0 "Singrovka" (motorový vozeň - 2. trieda)
+CSD_M240_0-1
+ČSD M240.0 "Singrovka" (motorový vozeň - 2. trieda/služobný)
+CSD_M240_0-2
+ČSD M240.0 "Singrovka" (motorový vozeň - 2. trieda/služobný)
+CSD_M283_1_prototyp
+ČSD M283.1 prototyp "Krokodíl" (motorový vozeň - 2. trieda)
+CSD_M283_1_prototyp_otoc
+ČSD M283.1 prototyp "Krokodíl" (zadný motorový vozeň - 2. tr
+CSD_M283_1_prototyp_otoc-1
+ČSD M283.1 prototyp "Krokodíl" (zadný motorový vozeň - 2. tr
+CSD_M283_1_prototyp_otoc-2
+ČSD M283.1 prototyp "Krokodíl" (zadný motorový vozeň - 2. tr
+CSD_M283_1_prototyp-1
+ČSD M283.1 prototyp "Krokodíl" (motorový vozeň - 2. trieda/s
+CSD_M283_1_prototyp-2
+ČSD M283.1 prototyp "Krokodíl" (motorový vozeň - 2. trieda/s
+CSD_M286_0
+ČSD M286.0 "Krokodíl" (motorový vozeň - 2. trieda)
+CSD_M286_0_otoc
+ČSD M286.0 "Krokodíl" (zadny motorový vozeň - 2. trieda)
+CSD_M286_0_otoc-1
+ČSD M286.0 "Krokodíl" (zadný motorový vozeň - 2. trieda/služ
+CSD_M286_0_otoc-2
+ČSD M286.0 "Krokodíl" (zadný motorový vozeň - 2. trieda/služ
+CSD_M286_0-1
+ČSD M286.0 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 
+CSD_M286_0-2
+ČSD M286.0 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 
+CSD_M286_1
+ČSD M286.1 "Krokodíl" (motorový vozeň - 2. trieda)
+CSD_M286_1_otoc
+ČSD M286.1 "Krokodíl" (zadný motorový vozeň - 2. trieda)
+CSD_M286_1_otoc-1
+ČSD M286.1 "Krokodíl" (zadný motorový vozeň - 2. trieda/služ
+CSD_M286_1_otoc-2
+ČSD M286.1 "Krokodíl" (zadný motorový vozeň - 2. trieda/služ
+CSD_M286_1-1
+ČSD M286.1 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 
+CSD_M286_1-2
+ČSD M286.1 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 
+CSD_M296_1
+ČSD M296.1 "Hydra" (motorový vozeň - 2. trieda)
+CSD_M296_1-1
+ČSD M296.1 "Hydra" (motorový vozeň - 2. trieda/služobný) 1/2
+CSD_M296_1-2
+ČSD M296.1 "Hydra" (motorový vozeň - 2. trieda/služobný) 2/2
+CSD_M296_1-otoc
+ČSD M296.1 "Hydra" (zadný motorový vozeň - 2. trieda)
+CSD_M296_1-otoc-1
+ČSD M296.1 "Hydra" (zadný motorový vozeň - 2. trieda/služobn
+CSD_M296_1-otoc-2
+ČSD M296.1 "Hydra" (zadný motorový vozeň - 2. trieda/služobn
+CSD_M296_2
+ČSD M296.2 "Hydra" (motorový vozeň - 2. trieda)
+CSD_M296_2-1
+ČSD M296.2 "Hydra" (motorový vozeň - 2. trieda/služobný) 1/2
+CSD_M296_2-2
+ČSD M296.2 "Hydra" (motorový vozeň - 2. trieda/služobný) 2/2
+CSD_M296_2-otoc
+ČSD M296.2 "Hydra" (zadný motorový vozeň - 2. trieda)
+CSD_M296_2-otoc-1
+ČSD M296.2 "Hydra" (zadný motorový vozeň - 2. trieda/služobn
+CSD_M296_2-otoc-2
+ČSD M296.2 "Hydra" (zadný motorový vozeň - 2. trieda/služobn
+CSD_M475_0
+ČSD M475.0 "Chrochtadlo" (motorový vozeň - 2. trieda)
+CSD_M475_0-1
+ČSD M475.0 "Chrochtadlo" (motorový vozeň - 2. trieda/služobn
+CSD_M475_0-2
+ČSD M475.0 "Chrochtadlo" (motorový vozeň - 2. trieda/služobn
+MAV_Ap_1905
+MAV Ap 19-05 (1. trieda)
+MAV_BDh_8127-1
+MAV BDh 81-27 (2. trieda/služobný) 1/2
+MAV_BDh_8127-2
+MAV BDh 81-27 (2. trieda/služobný) 2/2
+MAV_BDt_8227_otoc-1
+MAV BDt 82-27 (zadný riadiací vozeň - 2. trieda/služobný) 1/
+MAV_BDt_8227_otoc-2
+MAV BDt 82-27 (zadný riadiací vozeň - 2. trieda/služobný) 2/
+MAV_BDt_8227_z_otoc-1
+MAV BDt 82-27 zelený (zadný riadiací vozeň - 2. trieda/služo
+MAV_BDt_8227_z_otoc-2
+MAV BDt 82-27 zelený (zadný riadiací vozeň - 2. trieda/služo
+MAV_BDt_8227_z-1
+MAV BDt 82-27 zelený (predný riadiací vozeň - 2. trieda/služ
+MAV_BDt_8227_z-2
+MAV BDt 82-27 zelený (predný riadiací vozeň - 2. trieda/služ
+MAV_BDt_8227-1
+MAV BDt 82-27 (predný riadiací vozeň - 2. trieda/služobný) 1
+MAV_BDt_8227-2
+MAV BDt 82-27 (predný riadiací vozeň - 2. trieda/služobný) 2
+MAV_BDzx_8328-1
+MAV BDzx 83-28 (prípojný vozeň - 2. trieda/služobný) 1/2
+MAV_BDzx_8328-2
+MAV BDzx 83-28 (prípojný vozeň - 2. trieda/služobný) 2/2
+MAV_Bh_2026_z
+MAV Bh 20-26 zelený (2. trieda)
+MAV_Bhv_2007
+MAV Bhv 20-07 (2. trieda)
+MAV_Bhv_2027
+MAV Bhv 20-27 (2. trieda)
+MAV_By_2017
+MAV By 20-17 (2. trieda)
+MAV_By_2017_z
+MAV By 20-17 zelený (2. trieda)
+MAV_Bzmot_5429
+MAV Bzmot 54-29 (motorový vozeň - 2. trieda)
+MAV_Bzmot_5429_zp
+MAV Bzmot 54-29 žltý pruh (motorový vozeň - 2. trieda)
+MAV_Bzx_2428
+MAV Bzx 24-28 (prípojný vozeň - 2. trieda)
+MAV_Bzx_2428_zp
+MAV Bzx 24-28 žltý pruh (prípojný vozeň - 2. trieda)
+MAV_M41
+MAV M41 (motorová lokomotiva)
+MAV_M41_h
+MAV M41 továrné farby (motorová lokomotiva)
+MAV_M61
+MAV M61 "Nohabka" (motorová lokomotiva)
+MAV_M61_h
+MAV M61 továrné farby "Nohabka" (motorová lokomotiva)
+MAV_Start_ABmz_3091
+MAV Start ABmz 30-91 (1. a 2. trieda)
+MAV_Start_AByee_3155
+MAV Start AByee 31-55 (1. a 2. trieda)
+MAV_Start_Amz_1991
+MAV Start Amz 19-91 (1. trieda)
+MAV_Start_Apmz_1091
+MAV Start Apmz 10-91 (1. trieda)
+MAV_Start_Bcmz_5091
+MAV Start Bcmz 50-91 (ležadlový vozeň - 2. trieda)
+MAV_Start_BDh_8127-1
+MAV Start BDh 81-27 (2. trieda/služobný) 1/2
+MAV_Start_BDh_8127-2
+MAV Start BDh 81-27 (2. trieda/služobný) 2/2
+MAV_Start_BDt_8005_otoc-1
+MAV Start BDt 80-05 (zadný riadiací vozeň - 2. trieda/služob
+MAV_Start_BDt_8005_otoc-2
+MAV Start BDt 80-05 (zadný riadiací vozeň - 2. trieda/služob
+MAV_Start_BDt_8005-1
+MAV Start BDt 80-05 (predný riadiací vozeň - 2. trieda/služo
+MAV_Start_BDt_8005-2
+MAV Start BDt 80-05 (predný riadiací vozeň - 2. trieda/služo
+MAV_Start_BDt_8207_otoc-1
+MAV Start BDt 82-07 (zadný riadiací vozeň - 2. trieda/služob
+MAV_Start_BDt_8207_otoc-2
+MAV Start BDt 82-07 (zadný riadiací vozeň - 2. trieda/služob
+MAV_Start_BDt_8207-1
+MAV Start BDt 82-07 (predný riadiací vozeň - 2. trieda/služo
+MAV_Start_BDt_8207-2
+MAV Start BDt 82-07 (predný riadiací vozeň - 2. trieda/služo
+MAV_Start_BDzx_8328-1
+MAV Start BDzx 83-28 (prípojný vozeň - 2. trieda/služobný) 1
+MAV_Start_BDzx_8328-2
+MAV Start BDzx 83-28 (prípojný vozeň - 2. trieda/služobný) 2
+MAV_Start_Bhv_2005
+MAV Start Bhv 20-05 (2. trieda)
+MAV_Start_Bhv_2007
+MAV Start Bhv 20-07 (2. trieda)
+MAV_Start_Bmz_2191
+MAV Start Bmz 21-91 (2. trieda)
+MAV_Start_Bp_2905
+MAV Start Bp 29-05 (2. trieda)
+MAV_Start_Bpmz_2091
+MAV Start Bpmz 20-91 (2. trieda)
+MAV_Start_Btzx_8028_IP
+MAV Start Btzx 80-28 "InterPici" (zadný riadiací vozeň - 2. 
+MAV_Start_Btzx_8028_IP_p
+MAV Start Btzx 80-28 "InterPici" (predný riadiací vozeň - 2.
+MAV_Start_By_2017
+MAV Start By 20-17 (2. trieda)
+MAV_Start_Bybdtee_8055_otoc-1
+MAV Start Bybdtee 80-55 (zadný riadiací vozeň - 2. trieda s 
+MAV_Start_Bybdtee_8055_otoc-2
+MAV Start Bybdtee 80-55 (zadný riadiací vozeň - 2. trieda s 
+MAV_Start_Bybdtee_8055-1
+MAV Start Bybdtee 80-55 (predný riadiací vozeň - 2. trieda s
+MAV_Start_Bybdtee_8055-2
+MAV Start Bybdtee 80-55 (predný riadiací vozeň - 2. trieda s
+MAV_Start_Bydee_8455-1
+MAV Start Bydee 84-55 (2. trieda s prepravou bicyklov) 1/2
+MAV_Start_Bydee_8455-2
+MAV Start Bydee 84-55 (2. trieda s prepravou bicyklov) 2/2
+MAV_Start_Byee_2155
+MAV Start Byee 21-55 (2. trieda)
+MAV_Start_Bzmot_5429
+MAV Start Bzmot 54-29 (motorový vozeň - 2. trieda)
+MAV_Start_Bzmot_5429_IP
+MAV Start Bzmot 54-29 "InterPici" (motorový vozeň - 2. tried
+MAV_Start_Bzx_2428
+MAV Start Bzx 24-28 (prípojný vozeň - 2. trieda)
+MAV_Start_Dms_9591
+MAV Start Dms 95-91 (služobný vozeň)
+MAV_Start_WLABmz_7191
+MAV Start WLABmz 71-91 (lôžkový vozeň - 1. a 2. trieda)
+MAV_Start_WRmz_8891
+MAV Start WRmz 88-91 (restauračný vozeň)
+MAV_V43_1
+MAV V43.1 (elektrický rušeň ~25kV/50Hz)
+MAV_V43_1_h
+MAV V43.1 továrné farby (elektrický rušeň ~25kV/50Hz)
+MAV_V43_1_s
+MAV V43.1 sivý (elektrický rušeň ~25kV/50Hz)
+MAV_V43_2
+MAV V43.2 (elektrický rušeň ~25kV/50Hz)
+MAV_V43_3
+MAV V43.3 (elektrický rušeň ~25kV/50Hz)
+MAV_V63_0
+MAV V63.0 (elektrický rušeň ~25kV/50Hz)
+MAV_V63_0_h
+MAV V63.0 továrné farby (elektrický rušeň ~25kV/50Hz)
+MAV_V63_1
+MAV V63.1 (elektrický rušeň ~25kV/50Hz)
+OBB_1010_green
+ÖBB 1010 zelený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1010_orange
+ÖBB 1010 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1014_CAT
+ÖBB 1014 "City Airport Train" (elektrický dvojsystémový ruše
+OBB_1014_RCA
+ÖBB 1014 "Rail Cargo Austria" (elektrický dvojsystémový ruše
+OBB_1014_red
+ÖBB 1014 červený (elektrický dvojsystémový rušeň ~15kV/16,7H
+OBB_1040_green
+ÖBB 1040 zelený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1040_orange
+ÖBB 1040 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1041_green
+ÖBB 1041 zelený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1041_orange
+ÖBB 1041 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1042_5_orange
+ÖBB 1042.5 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1042_5_red
+ÖBB 1042.5 červený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1042_green
+ÖBB 1042 zelený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1042_orange
+ÖBB 1042 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1042_red
+ÖBB 1042 červený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1044_501
+ÖBB 1044.501 (testovací vysokorychlostný elektrický rušeň ~1
+OBB_1044_orange
+ÖBB 1044 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1044_red
+ÖBB 1044 červený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1114_red
+ÖBB 1114 červený (elektrický dvojsystémový rušeň ~15kV/16,7H
+OBB_1142_5_orange
+ÖBB 1142.5 oranžový (elektrický rušeň ~15kV/16,7Hz)
+OBB_1142_5_red
+ÖBB 1142.5 červený (elektrický rušeň ~15kV/16,7Hz)
+OBB_1144_red
+ÖBB 1144 červený (elektrický rušeň ~15kV/16,7Hz)
+OBB_2016
+ÖBB 2016 "Hercules" (motorový rušeň)
+OBB_4020
+ÖBB 4020 (elektrická jednotka ~15kV/16,7Hz - hnací vozeň 2. 
+OBB_4020_r
+ÖBB 4020 červený (elektrická jednotka ~15kV/16,7Hz - hnací v
+OBB_5047
+ÖBB 5047 (motorový vozeň - 2. trieda)
+OBB_5047_r1
+ÖBB 5047 červený (motorový vozeň - 2. trieda)
+OBB_5047_r2
+ÖBB 5047 červený II. (motorový vozeň - 2. trieda)
+OBB_5147-1
+ÖBB 5147 (predný motorový vozeň - 2. trieda)
+OBB_5147-2
+ÖBB 5147 (zadný motorový vozeň - 2. trieda)
+OBB_5247
+ÖBB 5247 (vložený motorový vozeň - 2. trieda)
+OBB_6020
+ÖBB 6020 (elektrická jednotka ~15kV/16,7Hz - riadiací vozeň 
+OBB_6020_r
+ÖBB 6020 červený (elektrická jednotka ~15kV/16,7Hz - riadiac
+OBB_7020
+ÖBB 7020 (elektrická jednotka ~15kV/16,7Hz - vložený vozeň 2
+OBB_7020_r
+ÖBB 7020 červený (elektrická jednotka ~15kV/16,7Hz - vložený
+OBB_ABmpz_3975
+ÖBB ABmpz 39-75 (1. a 2. trieda)
+OBB_ABmpz_3975_spar
+ÖBB ABmpz 39-75 Spar (1. a 2. trieda)
+OBB_ABmpz-l_3937
+ÖBB ABmpz-l 39-37 "City Shuttle" (1. a 2. trieda)
+OBB_ABmz_3070_dark
+ÖBB ABmz 30-70 tmavo šedý (1. a 2. trieda)
+OBB_ABmz_3070_light
+ÖBB ABmz 30-70 svetlo šedý (1. a 2. trieda)
+OBB_ABmz_3070_orange
+ÖBB ABmz 30-70 oranžový (1. a 2. trieda)
+OBB_ABmz_3090_light
+ÖBB ABmz 30-90 svetlo šedý (1. a 2. trieda)
+OBB_ABp_3735
+ÖBB ABp 37-35 "Schlieren" (1. a 2. trieda)
+OBB_ABpo_3735
+ÖBB ABpo 37-35 "Schlieren" (1. a 2. trieda)
+OBB_Ampz_1891_light
+ÖBB Ampz 18-91 svetlo šedý (1. trieda)
+OBB_Ampz_1975
+ÖBB Ampz 19-75 (1. trieda)
+OBB_Ampz_1975_spar
+ÖBB Ampz 19-75 Spar (1. trieda)
+OBB_Amz_1970_orange
+ÖBB Amz 19-70 oranžový (1. trieda)
+OBB_Amz_1971_orange
+ÖBB Amz 19-71 oranžový (1. trieda)
+OBB_Ap_1735
+ÖBB Ap 17-35 "Schlieren" (1. trieda)
+OBB_Apo_1735
+ÖBB Apo 17-35 "Schlieren" (1. trieda)
+OBB_BDmpsz_8275_spar-1
+ÖBB BDmpsz 82-75 Spar (2. trieda/služobný) 1/2
+OBB_BDmpsz_8275_spar-2
+ÖBB BDmpsz 82-75 Spar (2. trieda/služobný) 2/2
+OBB_BDmpsz_8275-1
+ÖBB BDmpsz 82-75 (2. trieda/služobný) 1/2
+OBB_BDmpsz_8275-2
+ÖBB BDmpsz 82-75 (2. trieda/služobný) 2/2
+OBB_BDmsz_8270_dark-1
+ÖBB BDmsz 82-70 tmavo šedý (2. trieda/služobný) 1/2
+OBB_BDmsz_8270_dark-2
+ÖBB BDmsz 82-70 tmavo šedý (2. trieda/služobný) 2/2
+OBB_BDmsz_8270_orange-1
+ÖBB BDmsz 82-70 oranžový (2. trieda/služobný) 1/2
+OBB_BDmsz_8270_orange-2
+ÖBB BDmsz 82-70 oranžový (2. trieda/služobný) 2/2
+OBB_BDp_8235_spar-1
+ÖBB BDp 82-35 Spar "Schlieren" (2. trieda/služobný) 1/2
+OBB_BDp_8235_spar-2
+ÖBB BDp 82-35 Spar "Schlieren" (2. trieda/služobný) 2/2
+OBB_BDp_8235-1
+ÖBB BDp 82-35 "Schlieren" (2. trieda/služobný) 1/2
+OBB_BDp_8235-2
+ÖBB BDp 82-35 "Schlieren" (2. trieda/služobný) 2/2
+OBB_BDpo_8235-1
+ÖBB BDpo 82-35 "Schlieren" (2. trieda/služobný) 1/2
+OBB_BDpo_8235-2
+ÖBB BDpo 82-35 "Schlieren" (2. trieda/služobný) 2/2
+OBB_Bmpz_2075
+ÖBB Bmpz 20-75 (2. trieda)
+OBB_Bmpz_2075_spar
+ÖBB Bmpz 20-75 Spar (2. trieda)
+OBB_Bmpz-dl_2633
+ÖBB Bmpz-dl 26-33 "City Shuttle" (2. trieda)
+OBB_Bmpz-dl_2633_CAT
+ÖBB Bmpz-dl 26-33 "City Airport Train" (2. trieda)
+OBB_Bmpz-ds_8033
+ÖBB Bmpz-ds 80-33 "City Shuttle" (predný riadiací vozeň - 2.
+OBB_Bmpz-ds_8033_CAT
+ÖBB Bmpz-ds 80-33 "City Airport Train" (predný riadiací voze
+OBB_Bmpz-ds_8033_CAT_otoc
+ÖBB Bmpz-ds 80-33 "City Airport Train" (zadný riadiací vozeň
+OBB_Bmpz-ds_8033_otoc
+ÖBB Bmpz-ds 80-33 "City Shuttle" (zadný riadiací vozeň - 2. 
+OBB_Bmpz-l_2173
+ÖBB Bmpz-l 21-73 "City Shuttle" (2. trieda)
+OBB_Bmpz-s_8073_otoc-1
+ÖBB Bmpz-s 80-73 "City Shuttle" (zadný riadiací vozeň - 2. t
+OBB_Bmpz-s_8073_otoc-2
+ÖBB Bmpz-s 80-73 "City Shuttle" (zadný riadiací vozeň - 2. t
+OBB_Bmpz-s_8073-1
+ÖBB Bmpz-s 80-73 "City Shuttle" (predný riadiací vozeň - 2. 
+OBB_Bmpz-s_8073-2
+ÖBB Bmpz-s 80-73 "City Shuttle" (predný riadiací vozeň - 2. 
+OBB_Bmz_2170_dark
+ÖBB Bmz 21-70 tmavo šedý (2. trieda)
+OBB_Bmz_2170_orange
+ÖBB Bmz 21-70 oranžový (2. trieda)
+OBB_Bmz_2171_orange
+ÖBB Bmz 21-71 oranžový (2. trieda)
+OBB_Bp_2833_spar
+ÖBB Bp 28-33 Spar "Schlieren" (2. trieda)
+OBB_Bp_2935
+ÖBB Bp 29-35 "Schlieren" (2. trieda)
+OBB_Bp_2935_spar
+ÖBB Bp 29-35 Spar "Schlieren" (2. trieda)
+OBB_Bpo_2935
+ÖBB Bpo 29-35 "Schlieren" (2. trieda)
+OBB_BRmpz_8575
+ÖBB BRmpz 85-75 (2. trieda/barový vozeň)
+OBB_Dmsz_9570_dark
+ÖBB Dmsz 95-70 tmavo šedý (služobný vozeň)
+OBB_Dmsz_9570_light
+ÖBB Dmsz 95-70 svetlo šedý (služobný vozeň)
+OBB_Dmsz_9570_orange
+ÖBB Dmsz 95-70 oranžový (služobný vozeň)
+OBB_Gabkqss-x
+ÖBB Gabkqss-x (batožinový vozeň pro prepravu bicyklov)
+OBB_Gabkqss-x_r
+ÖBB Gabkqss-x červený (batožinový vozeň pro prepravu bicyklo
+OBB_Gbkkss-vx
+ÖBB Gbkkss-vx (batožinový vozeň pro prepravu bicyklov)
+OBB_Postm_0033
+ÖBB Postm 00-33 (poštovný vozeň)
+OBB_Postm_0033_dark
+ÖBB Postm 00-33 tmavo šedý (poštovný vozeň)
+OBB_Postmz_0030
+ÖBB Postmz 00-30 (poštovný vozeň)
+OBB_Postmz_0030_dark
+ÖBB Postmz 00-30 tmavo šedý (poštovný vozeň)
+OBB_WRmz_8870_dark
+ÖBB WRmz 88-70 tmavo šedý (restauračný vozeň)
+OBB_WRmz_8870_orange
+ÖBB WRmz 88-70 oranžový (restauračný vozeň)
+OBB_WRmz_8890_dark
+ÖBB WRmz 88-90 tmavo šedý (restauračný vozeň)
+OBB_WRmz_8890_light
+ÖBB WRmz 88-90 svetlo šedý (restauračný vozeň)
+ZSR_050
+ŽSR 050 (2. trieda)
+ZSR_850
+ŽSR 850 "Krokodíl" (motorový vozeň - 2. trieda)
+ZSR_850_otoc
+ŽSR 850 "Krokodíl" (zadný motorový vozeň - 2. trieda)
+ZSR_850_otoc-1
+ŽSR 850 "Krokodíl" (zadný motorový vozeň - 2. trieda/služobn
+ZSR_850_otoc-2
+ŽSR 850 "Krokodíl" (zadný motorový vozeň - 2. trieda/služobn
+ZSR_850-1
+ŽSR 850 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 1/2
+ZSR_850-2
+ŽSR 850 "Krokodíl" (motorový vozeň - 2. trieda/služobný) 2/2

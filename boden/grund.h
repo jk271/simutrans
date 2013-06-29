@@ -132,28 +132,22 @@ public:
 
 protected:
 	/**
-	 * Zusammenfassung des Ding-Container als Objekt
-	 * @author V. Meyer
+	 * List of objects on this tile
 	 */
 	dingliste_t dinge;
 
 	/**
-	 * Koordinate in der Karte.
-	 * @author Hj. Malthaner
+	 * Coordinate
 	 */
 	koord3d pos;
 
 	/**
-	 * Flags für das neuzeichnen geänderter Untergründe
-	 * @author Hj. Malthaner
+	 * Flags to indicate existence of halts, ways, to mark dirty
 	 */
 	uint8 flags;
 
 	/**
-	 * 0..100: slopenr, (bild_nr%100), normal ground
-	 * (bild_nr/100)%17 left slope
-	 * (bild_nr/1700) right slope
-	 * @author Hj. Malthaner
+	 * Image number
 	 */
 	image_id bild_nr;
 
@@ -398,7 +392,24 @@ public:
 	 */
 	inline sint8 get_hoehe(hang_t::typ corner) const
 	{
-		return pos.z + (((hang_t::typ)slope & corner )?1:0);
+		switch(  corner  ) {
+			case hang_t::corner_SW: {
+				return pos.z + corner1(slope);
+				break;
+			}
+			case hang_t::corner_SE: {
+				return pos.z + corner2(slope);
+				break;
+			}
+			case hang_t::corner_NE: {
+				return pos.z + corner3(slope);
+				break;
+			}
+			default: {
+				return pos.z + corner4(slope);
+				break;
+			}
+		}
 	}
 
 	void set_hoehe(int h) { pos.z = h;}
@@ -516,16 +527,17 @@ public:
 	uint8 display_dinge_vh(const sint16 xpos, const sint16 ypos, const uint8 start_offset, const ribi_t::ribi ribi, const bool ontile) const;
 
 	/**
-	 *  displays all foreground images
+	 * displays all foreground images
 	 * @param is_global set to true, if this is called during the whole screen update
 	 * @author dwachs
 	 */
 	void display_dinge_fg(const sint16 xpos, const sint16 ypos, const bool is_global, const uint8 start_offset) const;
-	/* overlayer with signs, good levels and station coverage
+
+	/**
+	 * overlayer with signs, good levels and station coverage
 	 * resets the dirty flag
 	 * @author kierongreen
 	 */
-
 	void display_overlay(sint16 xpos, sint16 ypos);
 
 	inline ding_t *first_obj() const { return dinge.bei(offsets[flags/has_way1]); }
@@ -781,7 +793,9 @@ public:
 		 */
 		if(  way_slope != slope  ) {
 			if(  ist_bruecke()  &&  slope  ) {
-				h ++;	// end or start of a bridge
+				// calculate height quicker because we know that slope exists and is north, south, east or west
+				// single heights are not integer multiples of 8, double heights are
+				h += (slope & 7) ? 1 : 2;
 			}
 		}
 

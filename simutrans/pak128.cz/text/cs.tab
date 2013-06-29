@@ -5,7 +5,7 @@
 #                             Language: cz Cestina                             #
 #                             Encoding: ISO-8859-2                             #
 #                            Font : prop-latin2.fnt                            #
-#                           Date Created: 23.06 2013                           #
+#                           Date Created: 29.06 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -371,7 +371,7 @@ Hrad\n\nPůvodně zde stál gotický hrad.\nNicméně jeho majitel si na\nzačá
 RUIN_1
 Ruina\n\nToto je zřícenina slavného\nhradu. Hodně kapitol\nhistorie bylo napsáno právě\nzde. Z tohoto důvodu je\ntoto místo skutečným\nmagnetem pro turisty z\ncelého světa. Každý je\ndychtivý jej vidět.\nZřícenina je ještě k tomu\npoměrně romantická, nebo\nne?\n\n
 Russian_Cathedral
-Ruský kostel\n\n
+Pravoslavný kostel\n\n
 Secession_Chapel
 Secesní kaple\n\n
 sh_oasis_seasons
@@ -4437,9 +4437,9 @@ OBB_1014_RCA
 OBB_1014_red
 ÖBB 1014 červený (elektrická dvousystémová lokomotiva ~15kV/
 obb_1018_blut_rot
-OBB 1018 červená (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1018 červená (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1018_gruen
-OBB 1018 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1018 zelená (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1040_green
 ÖBB 1040 zelený (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1040_orange
@@ -4465,13 +4465,13 @@ OBB_1044_orange
 OBB_1044_red
 ÖBB 1044 červený (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1080_br
-OBB 1080 hnědá (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1080 hnědá (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1080_gr_1
-OBB 1080 zelená (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1080 zelená (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1114_red
 ÖBB 1114 červený (elektrická dvousystémová lokomotiva ~15kV/
 obb_1118_blut_rot
-OBB 1118 červená (elektrická lokomotiva ~15kV/16,7Hz)
+ÖBB 1118 červená (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1142_5_orange
 ÖBB 1142.5 oranžový (elektrická lokomotiva ~15kV/16,7Hz)
 OBB_1142_5_red
@@ -4479,19 +4479,19 @@ OBB_1142_5_red
 OBB_1144_red
 ÖBB 1144 červený (elektrická lokomotiva ~15kV/16,7Hz)
 obb_1189_02_a
-OBB 1189 oranžová (přední díl - tříčlánková elektrická lokom
+ÖBB 1189 oranžová (přední díl - tříčlánková elektrická lokom
 obb_1189_02_b
-OBB 1189 oranžová (střední díl - tříčlánková elektrická loko
+ÖBB 1189 oranžová (střední díl - tříčlánková elektrická loko
 obb_1189_02_c
-OBB 1189 oranžová (zadní díl - tříčlánková elektrická lokomo
+ÖBB 1189 oranžová (zadní díl - tříčlánková elektrická lokomo
 obb_1189_gruen_a
-OBB 1189 zelená (přední díl - tříčlánková elektrická lokomot
+ÖBB 1189 zelená (přední díl - tříčlánková elektrická lokomot
 obb_1189_gruen_b
-OBB 1189 zelená (střední díl - tříčlánková elektrická lokomo
+ÖBB 1189 zelená (střední díl - tříčlánková elektrická lokomo
 obb_1189_gruen_c
-OBB 1189 zelená (zadní díl - tříčlánková elektrická lokomoti
+ÖBB 1189 zelená (zadní díl - tříčlánková elektrická lokomoti
 OBB_2016
-OBB 2016 "Hercules" (motorová lokomotiva)
+ÖBB 2016 "Hercules" (motorová lokomotiva)
 OBB_4020
 ÖBB 4020 (elektrická jednotka ~15kV/16,7Hz - hnací vůz 2. tř
 OBB_4020_r
@@ -4507,7 +4507,7 @@ OBB_5147-1
 OBB_5147-2
 ÖBB 5147 (zadní motorový vůz - 2. třída)
 OBB_5247
-OBB 5247 (vložený motorový vůz - 2. třída)
+ÖBB 5247 (vložený motorový vůz - 2. třída)
 OBB_6020
 ÖBB 6020 (elektrická jednotka ~15kV/16,7Hz - řídící vůz 2. t
 OBB_6020_r
@@ -4565,7 +4565,7 @@ OBB_BDmsz_8270_dark-1
 OBB_BDmsz_8270_dark-2
 ÖBB BDmsz 82-70 tmavě šedý (2. třída/služební) 2/2
 OBB_BDmsz_8270_orange-1
-OBB BDmsz 82-70 oranžový (2. třída/služební) 1/2
+ÖBB BDmsz 82-70 oranžový (2. třída/služební) 1/2
 OBB_BDmsz_8270_orange-2
 ÖBB BDmsz 82-70 oranžový (2. třída/služební) 2/2
 OBB_BDp_8235_spar-1
@@ -4579,7 +4579,7 @@ OBB_BDp_8235-2
 OBB_BDpo_8235-1
 ÖBB BDpo 82-35 "Schlieren" (2. třída/služební) 1/2
 OBB_BDpo_8235-2
-OBB BDpo 82-35 "Schlieren" (2. třída/služební) 2/2
+ÖBB BDpo 82-35 "Schlieren" (2. třída/služební) 2/2
 OBB_Bmpz
 ÖBB Bmpz (2. třída)
 OBB_Bmpz_2075
@@ -4643,9 +4643,9 @@ OBB_Gbkkss-vx
 OBB_Postm_0033
 ÖBB Postm 00-33 (poštovní vůz)
 OBB_Postm_0033_dark
-OBB Postm 00-33 tmavě šedý (poštovní vůz)
+ÖBB Postm 00-33 tmavě šedý (poštovní vůz)
 OBB_Postmz_0030
-OBB Postmz 00-30 (poštovní vůz)
+ÖBB Postmz 00-30 (poštovní vůz)
 OBB_Postmz_0030_dark
 ÖBB Postmz 00-30 tmavě šedý (poštovní vůz)
 obb_setra_s431dt

@@ -33,8 +33,10 @@ map.editing_tools <- [ tool_add_city, tool_change_city_size, tool_land_chain, to
 
 // forbidden tools
 // default: map editing tools, switch player
-scenario.forbidden_tools <- map.editing_tools
-scenario.forbidden_tools.append( tool_switch_player )
+scenario.forbidden_tools <- [tool_switch_player]
+foreach(tool_id in map.editing_tools) {
+	scenario.forbidden_tools.append(tool_id)
+}
 
 /**
  * Called when filling toolbars, activating tools
@@ -45,7 +47,7 @@ scenario.forbidden_tools.append( tool_switch_player )
 function is_tool_allowed(pl, tool_id, wt)
 {
 	if (pl == 1) return true
-	return scenario.forbidden_tools.find( tool_id ) ? false : true
+	return scenario.forbidden_tools.find( tool_id )==null; // null => not found => allowed
 }
 
 /**
@@ -60,6 +62,13 @@ function is_work_allowed_here(pl, tool_id, pos)
 {
 	return null
 }
+
+
+function is_schedule_allowed(pl, schedule)
+{
+	return null
+}
+
 
 // declare getter functions
 function get_map_file()
@@ -128,7 +137,12 @@ function recursive_save(table, indent, table_stack)
 	foreach(key, val in table) {
 		str += indent
 		if (!isarray) {
-			str += key + " = "
+			if (typeof(key)=="string") {
+				str += key + " = "
+			}
+			else {
+				str += "[" + key + "] = "
+			}
 		}
 		while( typeof(val) == "weakref" )
 			val = val.ref
@@ -156,9 +170,15 @@ function recursive_save(table, indent, table_stack)
 			default:
 				str += "\"unknown\""
 		}
-		str += "\n"
+		if (str.slice(-1) != "\n") {
+			str += ",\n"
+		}
+		else {
+			str = str.slice(0,-1) + ",\n"
+		}
+
 	}
-	str += (isarray ? "]" : "}") + "\n"
+	str += indent.slice(0,-1) + (isarray ? "]" : "}") + "\n"
 	return str
 }
 
@@ -269,26 +289,29 @@ class ttextfile extends ttext {
 
 /////////////////////////////////////
 
+function _extend_get(index) {
+	if (index == "rawin"  ||  index == "rawget") {
+		throw null // invoke default delegate
+		return
+	}
+	local fname = "get_" + index
+	if (rawin(fname)) {
+		local func = rawget(fname)
+		if (typeof(func)=="function") {
+			return func.call(this)
+		}
+	}
+	throw null // invoke default delegate
+}
+
 /**
  * this class implements an extended get method:
  * everytime an index is not found it tries to call the method 'get_'+index
  */
 class extend_get {
 
-	function _get(index) {
-		if (index == "rawin"  ||  index == "rawget") {
-			throw null // invoke default delegate
-			return
-		}
-		local fname = "get_" + index
-		if (rawin(fname)) {
-			local func = rawget(fname)
-			if (typeof(func)=="function") {
-				return func.call(this)
-			}
-		}
-		throw null // invoke default delegate
-	}
+	_get = _extend_get
+
 }
 
 /**
@@ -383,6 +406,24 @@ class tile_x extends extend_get {
 		y = y_
 		z = z_
 	}
+
+	function get_objects()
+	{
+		return tile_object_list_x(x,y,z)
+	}
+}
+
+class tile_object_list_x {
+	/// coordinates
+	x = -1
+	y = -1
+	z = -1
+
+	constructor(x_, y_, z_) {
+		x = x_
+		y = y_
+		z = z_
+	}
 }
 
 /**
@@ -463,24 +504,83 @@ class settings {
 }
 
 /**
+ * base class of map objects (ding_t)
+ */
+class map_object_x extends extend_get {
+	/// coordinates
+	x = -1
+	y = -1
+	z = -1
+
+	// do not call this directly
+	constructor(x_, y_, z_) {
+		x = x_
+		y = y_
+		z = z_
+	}
+}
+
+class schedule_x {
+	/// waytype
+	waytype = 0
+	/// the entries
+	entries = null
+
+	constructor(w, e)
+	{
+		waytype = w
+		entries = e
+	}
+}
+
+class schedule_entry_x {
+	/// coordinate
+	x = -1
+	y = -1
+	z = -1
+	/// load percentage
+	load = 0
+	/// waiting
+	wait = 0
+
+	constructor(pos, l, w)
+	{
+		x = pos.x
+		y = pos.y
+		z = pos.z
+		load = l
+		wait = w
+	}
+}
+
+class dir {
+	static none           = 0
+	static north          = 1
+	static east           = 2
+	static northeast      = 3
+	static south          = 4
+	static northsouth     = 5
+	static southeast      = 6
+	static northsoutheast = 7
+	static west           = 8
+	static northwest      = 9
+	static eastwest       = 10
+	static northeastwest  = 11
+	static southwest      = 12
+	static northsouthwest = 13
+	static southeastwest  = 14
+	static all            = 15
+
+	static nsew = [1, 4, 2, 8]
+}
+/**
  * The same metamethod magic as in the class extend_get.
  * Seems to be impossible to achieve for both tables and classes without code duplication.
  */
 table_with_extend_get <- {
-	function _get(index) {
-		if (index == "rawin"  ||  index == "rawget") {
-			throw null // invoke default delegate
-			return
-		}
-		local fname = "get_" + index
-		if (rawin(fname)) {
-			local func = rawget(fname)
-			if (typeof(func)=="function") {
-				return func.call(this)
-			}
-		}
-		throw null // invoke default delegate
-	}
+
+	_get = _extend_get
+
 }
 
 /**

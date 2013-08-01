@@ -1,10 +1,12 @@
 /*
  * Copyright (c) 1997 - 2004 Hansjörg Malthaner
  *
- * Tool to place factories
- *
  * This file is part of the Simutrans project under the artistic licence.
  * (see licence.txt)
+ */
+
+/*
+ * Factories builder dialog
  */
 
 #include <stdio.h>
@@ -33,15 +35,11 @@ wkz_build_industries_city_t factory_edit_frame_t::city_chain_tool = wkz_build_in
 wkz_build_factory_t factory_edit_frame_t::fab_tool = wkz_build_factory_t();
 char factory_edit_frame_t::param_str[256];
 
-
-
 static bool compare_fabrik_besch(const fabrik_besch_t* a, const fabrik_besch_t* b)
 {
 	int diff = strcmp( translator::translate(a->get_name()), translator::translate(b->get_name()) );
 	return diff < 0;
 }
-
-
 
 factory_edit_frame_t::factory_edit_frame_t(spieler_t* sp_, karte_t* welt) :
 	extend_edit_gui_t(translator::translate("factorybuilder"), sp_, welt),
@@ -80,7 +78,9 @@ factory_edit_frame_t::factory_edit_frame_t(spieler_t* sp_, karte_t* welt) :
 	bt_right_rotate.add_listener(this);
 	add_komponente(&bt_right_rotate);
 
-	lb_rotation.set_pos( koord( get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2+44, offset_of_comp-4 ) );
+	//lb_rotation.set_pos( koord( get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2+44, offset_of_comp-4 ) );
+	lb_rotation.set_width( bt_right_rotate.get_pos().x - bt_left_rotate.get_pos().x - bt_left_rotate.get_groesse().x );
+	lb_rotation.align_to(&bt_left_rotate,ALIGN_EXTERIOR_H | ALIGN_LEFT | ALIGN_CENTER_V);
 	add_komponente(&lb_rotation);
 	offset_of_comp += D_BUTTON_HEIGHT;
 
@@ -117,7 +117,7 @@ void factory_edit_frame_t::fill_list( bool translate )
 	FOR(stringhashtable_tpl<fabrik_besch_t const*>, const& i, fabrikbauer_t::get_fabesch()) {
 		fabrik_besch_t const* const besch = i.value;
 		if(besch->get_gewichtung()>0) {
-			// DistributionWeight=0 is obsoluted item, only for backward compatibility
+			// DistributionWeight=0 is obsoleted item, only for backward compatibility
 
 			if(!use_timeline  ||  (!besch->get_haus()->is_future(month_now)  &&  (!besch->get_haus()->is_retired(month_now)  ||  allow_obsolete))  ) {
 				// timeline allows for this
@@ -139,7 +139,7 @@ void factory_edit_frame_t::fill_list( bool translate )
 		}
 	}
 
-	// now buil scrolled list
+	// now build scrolled list
 	scl.clear_elements();
 	scl.set_selection(-1);
 	FOR(vector_tpl<fabrik_besch_t const*>, const i, fablist) {
@@ -303,7 +303,7 @@ void factory_edit_frame_t::change_item_info(sint32 entry)
 			fab_besch = fablist[entry];
 		}
 
-		// change lable numbers
+		// change label numbers
 		if(rotation == 255) {
 			tstrncpy(rot_str, translator::translate("random"), lengthof(rot_str));
 		}

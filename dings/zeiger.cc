@@ -45,38 +45,39 @@ zeiger_t::zeiger_t(karte_t *welt, koord3d pos, spieler_t *sp) :
  */
 void zeiger_t::change_pos(koord3d k )
 {
-	if(k!=get_pos()) {
+	if(  k != get_pos()  ) {
 		// remove from old position
 		// and clear mark
-		grund_t *gr = welt->lookup(get_pos());
+		grund_t *gr = welt->lookup( get_pos() );
 		if(gr==NULL) {
-			gr = welt->lookup_kartenboden(get_pos().get_2d());
+			gr = welt->lookup_kartenboden( get_pos().get_2d() );
 		}
 		if(gr) {
-			if(gr->get_halt().is_bound()) {
+			if(  gr->get_halt().is_bound()  ) {
 				gr->get_halt()->mark_unmark_coverage( false );
 			}
 			welt->mark_area( get_pos()-(area*center)/2, area, false );
 		}
+		if(  get_pos().x >= welt->get_size().x-1  ||  get_pos().y >= welt->get_size().y-1  ) {
+			// the raise and lower tool actually can go to size!
+			welt->set_background_dirty();
+			// this removes crap form large cursors overlapping into the nirvana
+		}
 		mark_image_dirty( get_bild(), get_yoff() );
 		mark_image_dirty( get_after_bild(), get_yoff() );
-		set_flag(ding_t::dirty);
+		set_flag( ding_t::dirty );
 
-		ding_t::set_pos(k);
-		if(get_yoff()==Z_PLAN) {
-			gr = welt->lookup(k);
-			if(gr==NULL) {
-				gr = welt->lookup_kartenboden(k.get_2d());
+		ding_t::set_pos( k );
+		if(  get_yoff() == Z_PLAN  ) {
+			gr = welt->lookup( k );
+			if(  gr == NULL  ) {
+				gr = welt->lookup_kartenboden( k.get_2d() );
 			}
 			if(gr) {
-				if(gr->get_halt().is_bound()  &&  umgebung_t::station_coverage_show) {
+				if(  gr->get_halt().is_bound()  &&  umgebung_t::station_coverage_show  ) {
 					gr->get_halt()->mark_unmark_coverage( true );
 				}
-				// only mark this, if it is not in underground mode
-				// or in underground mode, if it is deep enough
-//				if(!grund_t::underground_mode  ||  get_pos().z<gr->get_hoehe()) {
-					welt->mark_area( k-(area*center)/2, area, true );
-				//}
+				welt->mark_area( k-(area*center)/2, area, true );
 			}
 		}
 	}
@@ -89,11 +90,6 @@ void zeiger_t::set_bild( image_id b )
 	mark_image_dirty( bild, get_yoff() );
 	mark_image_dirty( b, get_yoff() );
 	bild = b;
-	if(  (area.x|area.y)>1  ) {
-		welt->mark_area( get_pos()-(area*center)/2, area, false );
-	}
-	area = koord(0,0);
-	center = 0;
 }
 
 
@@ -103,11 +99,6 @@ void zeiger_t::set_after_bild( image_id b )
 	mark_image_dirty( after_bild, get_yoff() );
 	mark_image_dirty( b, get_yoff() );
 	after_bild = b;
-	if(  (area.x|area.y)>1  ) {
-		welt->mark_area( get_pos()-(area*center)/2, area, false );
-	}
-	area = koord(0,0);
-	center = 0;
 }
 
 

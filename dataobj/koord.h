@@ -75,7 +75,7 @@ public:
 
 private:
 	static const koord from_ribi[16];
-	static const koord from_hang[16];
+	static const koord from_hang[81];
 };
 
 
@@ -146,5 +146,4 @@ static inline koord operator - (const koord &a)
 {
 	return koord(-a.x, -a.y);
 }
-
 #endif

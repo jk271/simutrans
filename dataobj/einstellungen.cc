@@ -216,7 +216,7 @@ settings_t::settings_t() :
 	remove_dummy_player_months = 6;
 
 	// off
-	unprotect_abondoned_player_months = 0;
+	unprotect_abandoned_player_months = 0;
 
 	maint_building = 5000;	// normal buildings
 	way_toll_runningcost_percentage = 0;
@@ -259,7 +259,7 @@ settings_t::settings_t() :
 	way_count_leaving_road=25;
 
 	// defualt: joined capacities
-	seperate_halt_capacities = false;
+	separate_halt_capacities = false;
 
 	// this will pay for distance to next change station
 	pay_for_total_distance = TO_PREVIOUS;
@@ -431,6 +431,14 @@ void settings_t::rdwr(loadsave_t *file)
 				file->rdwr_short(climate_borders[i] );
 			}
 			file->rdwr_short(winter_snowline );
+		}
+
+		if(  file->is_loading()  &&  file->get_version() < 112007  ) {
+			grundwasser *= umgebung_t::pak_height_conversion_factor;
+			for(  int i = 0;  i < 8;  i++  ) {
+				climate_borders[i] *= umgebung_t::pak_height_conversion_factor;
+			}
+			winter_snowline *= umgebung_t::pak_height_conversion_factor;
 		}
 
 		// since vehicle will need realignment afterwards!
@@ -625,7 +633,7 @@ void settings_t::rdwr(loadsave_t *file)
 		}
 
 		if(file->get_version()>101000) {
-			file->rdwr_bool( seperate_halt_capacities );
+			file->rdwr_bool( separate_halt_capacities );
 			file->rdwr_byte( pay_for_total_distance );
 
 			file->rdwr_short(starting_month );
@@ -735,7 +743,7 @@ void settings_t::rdwr(loadsave_t *file)
 
 		if(  file->get_version()>=112002  ) {
 			file->rdwr_short( remove_dummy_player_months );
-			file->rdwr_short( unprotect_abondoned_player_months );
+			file->rdwr_short( unprotect_abandoned_player_months );
 		}
 
 		if(  file->get_version()>=112003  ) {
@@ -789,6 +797,9 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	umgebung_t::window_buttons_right = contents.get_int("window_buttons_right", umgebung_t::window_buttons_right );
 	umgebung_t::left_to_right_graphs = contents.get_int("left_to_right_graphs", umgebung_t::left_to_right_graphs );
 	umgebung_t::window_frame_active = contents.get_int("window_frame_active", umgebung_t::window_frame_active );
+	umgebung_t::second_open_closes_win = contents.get_int("second_open_closes_win", umgebung_t::second_open_closes_win );
+	umgebung_t::remember_window_positions = contents.get_int("remember_window_positions", umgebung_t::remember_window_positions );
+
 	umgebung_t::front_window_bar_color = contents.get_int("front_window_bar_color", umgebung_t::front_window_bar_color );
 	umgebung_t::front_window_text_color = contents.get_int("front_window_text_color", umgebung_t::front_window_text_color );
 	umgebung_t::bottom_window_bar_color = contents.get_int("bottom_window_bar_color", umgebung_t::bottom_window_bar_color );
@@ -802,6 +813,11 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	umgebung_t::toolbar_max_width = contents.get_int("toolbar_max_width", umgebung_t::toolbar_max_width );
 	umgebung_t::toolbar_max_height = contents.get_int("toolbar_max_height", umgebung_t::toolbar_max_height );
 	umgebung_t::cursor_overlay_color = contents.get_int("cursor_overlay_color", umgebung_t::cursor_overlay_color );
+
+	// how to show the stuff outside the map
+	umgebung_t::background_color = contents.get_int("background_color", umgebung_t::background_color );
+	umgebung_t::draw_earth_border = contents.get_int("draw_earth_border", umgebung_t::draw_earth_border ) != 0;
+	umgebung_t::draw_outside_tile = contents.get_int("draw_outside_tile", umgebung_t::draw_outside_tile ) != 0;
 
 	// display stuff
 	umgebung_t::show_names = contents.get_int("show_names", umgebung_t::show_names );
@@ -857,7 +873,7 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 		umgebung_t::nickname = ltrim(contents.get("nickname"));
 	}
 
-	// listen directive is a comma seperated list of IP addresses to listen on
+	// listen directive is a comma separated list of IP addresses to listen on
 	if(  *contents.get("listen")  ) {
 		umgebung_t::listen.clear();
 		std::string s = ltrim(contents.get("listen"));
@@ -1022,7 +1038,10 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	factory_maximum_intransit_percentage  = contents.get_int("maximum_intransit_percentage", factory_maximum_intransit_percentage);
 
 	tourist_percentage = contents.get_int("tourist_percentage", tourist_percentage );
-	seperate_halt_capacities = contents.get_int("seperate_halt_capacities", seperate_halt_capacities ) != 0;
+	// .. read twice: old and right spelling
+	separate_halt_capacities = contents.get_int("seperate_halt_capacities", separate_halt_capacities ) != 0;
+	separate_halt_capacities = contents.get_int("separate_halt_capacities", separate_halt_capacities ) != 0;
+
 	pay_for_total_distance = contents.get_int("pay_for_total_distance", pay_for_total_distance );
 	avoid_overcrowding = contents.get_int("avoid_overcrowding", avoid_overcrowding )!=0;
 	no_routing_over_overcrowding = contents.get_int("no_routing_over_overcrowded", no_routing_over_overcrowding )!=0;
@@ -1147,7 +1166,9 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 
 	// player stuff
 	remove_dummy_player_months = contents.get_int("remove_dummy_player_months", remove_dummy_player_months );
-	unprotect_abondoned_player_months = contents.get_int("unprotect_abondoned_player_months", unprotect_abondoned_player_months );
+	// .. read twice: old and right spelling
+	unprotect_abandoned_player_months = contents.get_int("unprotect_abondoned_player_months", unprotect_abandoned_player_months );
+	unprotect_abandoned_player_months = contents.get_int("unprotect_abandoned_player_months", unprotect_abandoned_player_months );
 	default_player_color_random = contents.get_int("random_player_colors", default_player_color_random ) != 0;
 	for(  int i = 0;  i<MAX_PLAYER_COUNT;  i++  ) {
 		char name[32];
@@ -1186,10 +1207,12 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	no_tree_climates = contents.get_int("no_tree_climates", no_tree_climates );
 	no_trees	= contents.get_int("no_trees", no_trees );
 
-	// those two are pak specific; but while the diagonal length affect traveling time (in is game critical) ...
+	// these are pak specific; the diagonal length affect traveling time (is game critical)
 	pak_diagonal_multiplier = contents.get_int("diagonal_multiplier", pak_diagonal_multiplier );
 	// the height in z-direction will only cause pixel errors but not a different behaviour
 	umgebung_t::pak_tile_height_step = contents.get_int("tile_height", umgebung_t::pak_tile_height_step );
+	// new height for old slopes after conversion - 1=single height, 2=double height
+	umgebung_t::pak_height_conversion_factor = contents.get_int("height_conversion_factor", umgebung_t::pak_height_conversion_factor );
 
 	min_factory_spacing = contents.get_int("factory_spacing", min_factory_spacing );
 	min_factory_spacing = contents.get_int("min_factory_spacing", min_factory_spacing );

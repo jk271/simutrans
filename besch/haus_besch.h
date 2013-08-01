@@ -175,7 +175,12 @@ class haus_besch_t : public obj_besch_std_name_t { // Daten für ein ganzes Gebäu
 	utyp            utype; // Hajo: if gtyp == gebaeude_t::unbekannt, then this is the real type
 
 	uint16 animation_time;	// in ms
-	uint32 extra_data;      // bauzeit (inhabitants) for city attractions, waytype for depots, player level for headquarters
+	uint32 extra_data;
+		// extra data:
+		// minimum population to build for city attractions,
+		// waytype for depots
+		// player level for headquarters
+		// cluster number for city buildings (0 means no clustering)
 	koord  groesse;
 	flag_t flags;
 	uint16 level;          // or passengers;
@@ -222,6 +227,9 @@ public:
 	uint8 get_all_layouts() const { return layouts; }
 
 	uint32 get_extra() const { return extra_data; }
+
+	/** Returns waytype used for finance stats (distinguishes between tram track and train track) */
+	waytype_t get_finance_waytype() const;
 
 	// ground is transparent
 	bool ist_mit_boden() const { return (flags & FLAG_NEED_GROUND) != 0; }
@@ -347,6 +355,16 @@ public:
 
 	bool can_be_built_underground() const { return allow_underground > 0; }
 	bool can_be_built_aboveground() const { return allow_underground != 1; }
+
+	uint32 get_clusters() const {
+		// Only meaningful for res, com, ind
+		if(  gtyp != gebaeude_t::wohnung  &&  gtyp != gebaeude_t::gewerbe  &&  gtyp != gebaeude_t::industrie  ) {
+			return 0;
+		}
+		else {
+			return extra_data;
+		}
+	}
 };
 
 ENUM_BITSET(haus_besch_t::flag_t)

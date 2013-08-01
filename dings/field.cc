@@ -49,7 +49,7 @@ const char *field_t::ist_entfernbar(const spieler_t *)
 // remove costs
 void field_t::entferne(spieler_t *sp)
 {
-	spieler_t::accounting(sp, welt->get_settings().cst_multiply_remove_field, get_pos().get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs(sp, welt->get_settings().cst_multiply_remove_field, get_pos().get_2d(), ignore_wt);
 	mark_image_dirty( get_bild(), 0 );
 }
 
@@ -60,7 +60,7 @@ image_id field_t::get_bild() const
 {
 	const skin_besch_t *s=besch->get_bilder();
 	uint16 anzahl=s->get_bild_anzahl() - besch->has_snow_image();
-	if(besch->has_snow_image()  &&  get_pos().z>=welt->get_snowline()) {
+	if(  besch->has_snow_image()  &&  (get_pos().z >= welt->get_snowline()  ||  welt->get_climate( get_pos().get_2d() ) == arctic_climate)  ) {
 		// last images will be shown above snowline
 		return s->get_bild_nr(anzahl);
 	}

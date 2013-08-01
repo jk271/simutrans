@@ -5,6 +5,10 @@
  * (see licence.txt)
  */
 
+/*
+ * The depot window, where to buy convois
+ */
+
 #ifndef gui_depot_frame2_t_h
 #define gui_depot_frame2_t_h
 
@@ -124,13 +128,17 @@ private:
 	button_t bt_copy_convoi;
 	button_t bt_apply_line;
 
-	vector_tpl<gui_image_list_t::image_data_t> convoi_pics;
+	vector_tpl<gui_image_list_t::image_data_t*> convoi_pics;
 	gui_image_list_t convoi;
 
-	vector_tpl<gui_image_list_t::image_data_t> pas_vec;
-	vector_tpl<gui_image_list_t::image_data_t> electrics_vec;
-	vector_tpl<gui_image_list_t::image_data_t> loks_vec;
-	vector_tpl<gui_image_list_t::image_data_t> waggons_vec;
+	/// image list of passenger cars
+	vector_tpl<gui_image_list_t::image_data_t*> pas_vec;
+	/// image list of electrified passenger carrier units
+	vector_tpl<gui_image_list_t::image_data_t*> electrics_vec;
+	/// image list of all other powered vehicles (and vehicles without freight capacity)
+	vector_tpl<gui_image_list_t::image_data_t*> loks_vec;
+	/// image list of all other cars (freight, non-powered)
+	vector_tpl<gui_image_list_t::image_data_t*> waggons_vec;
 
 	gui_image_list_t pas;
 	gui_image_list_t electrics;
@@ -176,7 +184,7 @@ private:
 	cbuffer_t txt_convoi_power;
 	cbuffer_t txt_convoi_weight;
 
-	KOORD_VAL second_column_x; // x position of the second text column
+	scr_coord_val second_column_x; // x position of the second text column
 
 	enum { va_append, va_insert, va_sell };
 	uint8 veh_action;
@@ -199,12 +207,12 @@ private:
 	void draw_vehicle_info_text(koord pos);
 
 	/**
-	 * Calulate the values of the vehicles of the given type owned by the
+	 * Calculate the values of the vehicles of the given type owned by the
 	 * player.
 	 * @author Volker Meyer
 	 * @date  09.06.2003
 	 */
-	sint32 calc_restwert(const vehikel_besch_t *veh_type);
+	sint64 calc_restwert(const vehikel_besch_t *veh_type);
 
 	/**
 	 * Does this window need a min size button in the title bar?
@@ -249,8 +257,10 @@ public:
 	// more general functions ...
 	depot_frame_t(depot_t* depot);
 
+	~depot_frame_t();
+
 	/**
-	 * Setzt die Fenstergroesse
+	 * Set the window size
 	 * @author (Mathew Hounsell)
 	 * @date   11-Mar-2003
 	 */
@@ -271,8 +281,8 @@ public:
 	void update_tabs();
 
 	/**
-	 * Manche Fenster haben einen Hilfetext assoziiert.
-	 * @return den Dateinamen für die Hilfe, oder NULL
+	 * Set the window associated helptext
+	 * @return the filename for the helptext, or NULL
 	 * @author Hj. Malthaner
 	 */
 	const char * get_hilfe_datei() const {return "depot.txt";}
@@ -295,7 +305,7 @@ public:
 	bool infowin_event(event_t const*) OVERRIDE;
 
 	/**
-	 * Zeichnet das Frame
+	 * Draw the Frame
 	 * @author Hansjörg Malthaner
 	 */
 	void zeichnen(koord pos, koord gr);

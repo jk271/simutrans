@@ -85,7 +85,7 @@ ding_t::~ding_t()
 {
 	destroy_win((ptrdiff_t)this);
 
-	if(flags&not_on_map  ||  !welt->ist_in_kartengrenzen(pos.get_2d())) {
+	if(flags&not_on_map  ||  !welt->is_within_limits(pos.get_2d())) {
 		return;
 	}
 
@@ -108,8 +108,8 @@ ding_t::~ding_t()
 
 		// then search entire map
 		koord k;
-		for(k.y=0; k.y<welt->get_groesse_y(); k.y++) {
-			for(k.x=0; k.x<welt->get_groesse_x(); k.x++) {
+		for(k.y=0; k.y<welt->get_size().y; k.y++) {
+			for(k.x=0; k.x<welt->get_size().x; k.x++) {
 				grund_t *gr = welt->access(k)->get_boden_von_obj(this);
 				if (gr && gr->obj_remove(this)) {
 					dbg->warning("ding_t::~ding_t()",
@@ -264,7 +264,7 @@ void ding_t::display(int xpos, int ypos) const
 void ding_t::rotate90()
 {
 	// most basic: rotate coordinate
-	pos.rotate90( welt->get_groesse_y()-1 );
+	pos.rotate90( welt->get_size().y-1 );
 	if(xoff!=0) {
 		sint8 new_dx = -2*yoff;
 		yoff = xoff/2;
@@ -316,6 +316,7 @@ void ding_t::display_after(int xpos, int ypos, bool) const
 void ding_t::mark_image_dirty(image_id bild,sint16 yoff) const
 {
 	if(bild!=IMG_LEER) {
+		const sint16 rasterweite = get_tile_raster_width();
 		int xpos=0, ypos=0;
 		if(  is_moving()  ) {
 			vehikel_basis_t const* const v = ding_cast<vehikel_basis_t>(this);
@@ -323,11 +324,21 @@ void ding_t::mark_image_dirty(image_id bild,sint16 yoff) const
 			v->get_screen_offset( xpos, ypos, get_tile_raster_width() );
 		}
 		// better not try to twist your brain to follow the retransformation ...
-		const sint16 rasterweite=get_tile_raster_width();
-		const koord diff = get_pos().get_2d()-welt->get_world_position()-welt->get_ansicht_ij_offset();
-		const sint16 x = (diff.x-diff.y)*(rasterweite/2) + tile_raster_scale_x(get_xoff(), rasterweite) + xpos;
-		const sint16 y = (diff.x+diff.y)*(rasterweite/4) + tile_raster_scale_y( yoff+get_yoff()-get_pos().z*TILE_HEIGHT_STEP, rasterweite) + ((display_get_width()/rasterweite)&1)*(rasterweite/4) + ypos;
+		const koord diff = get_pos().get_2d()-welt->get_world_position()-welt->get_view_ij_offset();
+		const sint16 x = (diff.x-diff.y)*(rasterweite/2) + tile_raster_scale_x(get_xoff(), rasterweite) + xpos + welt->get_x_off();
+		const sint16 y = (diff.x+diff.y)*(rasterweite/4) + tile_raster_scale_y( yoff+get_yoff()-get_pos().z*TILE_HEIGHT_STEP, rasterweite) + ((display_get_width()/rasterweite)&1)*(rasterweite/4) + ypos + welt->get_y_off();
 		// mark the region after the image as dirty
-		display_mark_img_dirty( bild, x+welt->get_x_off(), y+welt->get_y_off() );
+		display_mark_img_dirty( bild, x, y );
+
+		// too close to border => set dirty to be sure (smoke, skyscrapes, birds, or the like)
+		KOORD_VAL xbild, ybild, wbild, hbild;
+		display_get_image_offset( bild, &xbild, &ybild, &wbild, &hbild );
+		const sint16 distance_to_border = 3 - (yoff+get_yoff()+ybild)/(rasterweite/4);
+		if(  pos.x <= distance_to_border  ||  pos.y <= distance_to_border  ) {
+			// but only if the image is actually visible ...
+			if(  x+xbild+wbild >= 0  &&  xpos <= display_get_width()  &&  y+ybild+hbild >= 0  &&  ypos+ybild < display_get_height()  ) {
+				welt->set_background_dirty();
+			}
+		}
 	}
 }

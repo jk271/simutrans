@@ -27,7 +27,7 @@ class karte_t;
 #define MAP_MAX_BUTTONS (22)
 
 /**
- * Reliefkartenfenster für Simutrans.
+ * Minimap window
  *
  * @author Hj. Malthaner
  * @date 03-Mar-01
@@ -41,11 +41,11 @@ private:
 
 	/**
 	 * This is kind of hack: we know there can only be one map frame
-	 * at atime,and we want to save the current size for the next object
+	 * at a time, and we want to save the current size for the next object
 	 * so we use a static variable here.
 	 * @author Hj. Malthaner
 	 */
-	static koord size;
+	static koord window_size;
 	static koord screenpos;
 
 	static bool legend_visible;
@@ -58,10 +58,10 @@ private:
 	// Cache of factories in current game world
 	static stringhashtable_tpl<const fabrik_besch_t *> factory_list;
 
-	  /**
-	   * We need to keep track of trag/click events
-	   * @author Hj. Malthaner
-	   */
+	/**
+	 * We need to keep track of drag/click events
+	 * @author Hj. Malthaner
+	 */
 	bool is_dragging;
 
 	/**
@@ -70,21 +70,31 @@ private:
 	 */
 	bool zoomed;
 
-	gui_scrollpane_t scrolly;
+	gui_container_t
+		filter_container,
+		scale_container,
+		directory_container;
 
-	button_t filter_buttons[MAP_MAX_BUTTONS];
+	gui_scrollpane_t
+		scrolly;
+
+	button_t
+		filter_buttons[MAP_MAX_BUTTONS],
+		zoom_buttons[2],
+		b_rotate45,
+		b_show_legend,
+		b_show_scale,
+		b_show_directory,
+		b_overlay_networks,
+		b_filter_factory_list;
+
+	gui_label_t
+		zoom_label,
+		zoom_value_label,
+		min_label,
+		max_label;
 
 	void zoom(bool zoom_out);
-	button_t zoom_buttons[2];
-	gui_label_t zoom_label;
-	button_t b_rotate45;
-
-	button_t b_show_legend;
-	button_t b_show_scale;
-	button_t b_show_directory;
-	button_t b_overlay_networks;
-	button_t b_filter_factory_list;
-
 	void update_factory_legend();
 	void show_hide_legend(const bool show);
 	void show_hide_scale(const bool show);
@@ -93,8 +103,8 @@ private:
 public:
 
 	/**
-	 * Manche Fenster haben einen Hilfetext assoziiert.
-	 * @return den Dateinamen für die Hilfe, oder NULL
+	 * Set the window associated helptext
+	 * @return the filename for the helptext, or NULL
 	 * @author Hj. Malthaner
 	 */
 	const char * get_hilfe_datei() const {return "map.txt";}
@@ -107,7 +117,7 @@ public:
 	bool has_min_sizer() const {return true;}
 
 	/**
-	 * Konstruktor. Erzeugt alle notwendigen Subkomponenten.
+	 * Constructor. Adds all necessary Subcomponents.
 	 * @author Hj. Malthaner
 	 */
 	map_frame_t( karte_t *welt );
@@ -119,7 +129,7 @@ public:
 	bool infowin_event(event_t const*) OVERRIDE;
 
 	/**
-	 * Setzt die Fenstergroesse
+	 * Sets the window sizes
 	 * @author (Mathew Hounsell)
 	 * @date   11-Mar-2003
 	 */
@@ -130,12 +140,12 @@ public:
 	 * @author Hj. Malthaner
 	 * @date   01-Jun-2002
 	 */
-	void resize(const koord delta);
+	void resize(const koord delta=koord(0,0));
 
 	/**
-	 * komponente neu zeichnen. Die übergebenen Werte beziehen sich auf
-	 * das Fenster, d.h. es sind die Bildschirkoordinaten des Fensters
-	 * in dem die Komponente dargestellt wird.
+	 * Draw new component. The values to be passed refer to the window
+	 * i.e. It's the screen coordinates of the window where the
+	 * component is displayed.
 	 * @author Hj. Malthaner
 	 */
 	void zeichnen(koord pos, koord gr);

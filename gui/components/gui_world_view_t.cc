@@ -9,6 +9,7 @@
 
 #include "gui_world_view_t.h"
 #include "../../simworld.h"
+#include "../../simview.h"
 #include "../../simdings.h"
 #include "../../simgraph.h"
 #include "../../simcolor.h"
@@ -47,7 +48,7 @@ bool world_view_t::infowin_event(const event_t* ev)
 {
 	if(IS_LEFTRELEASE(ev)) {
 		koord3d const& pos = get_location();
-		if (welt->ist_in_kartengrenzen(pos.get_2d())) {
+		if (welt->is_within_limits(pos.get_2d())) {
 			welt->change_world_position(pos);
 		}
 	}
@@ -112,6 +113,9 @@ void world_view_t::internal_draw(const koord offset, ding_t const* const ding)
 	if(  grund_t::underground_mode  ) {
 		display_fillbox_wh(pos.x, pos.y, gr.x, gr.y, COL_BLACK, true);
 	}
+	else {
+		welt->get_view()->display_background(pos.x, pos.y, gr.x, gr.y, true);
+	}
 
 	const sint16 yoff = ding && ding->is_moving() ?
 		gr.y / 2 - raster * 3 / 4 : // align 1/4 raster from the bottom of the image
@@ -127,7 +131,7 @@ void world_view_t::internal_draw(const koord offset, ding_t const* const ding)
 			continue;
 		}
 
-		const grund_t * const kb = welt->lookup_kartenboden(k);
+		grund_t *kb = welt->lookup_kartenboden(k);
 		if(  !kb  ) {
 			continue;
 		}

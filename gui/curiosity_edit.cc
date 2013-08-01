@@ -1,10 +1,12 @@
 /*
  * Copyright (c) 1997 - 2004 Hansjörg Malthaner
  *
- * Tool to place curiosity buildings
- *
  * This file is part of the Simutrans project under the artistic licence.
  * (see licence.txt)
+ */
+
+/*
+ * Curiosity (attractions) builder dialog
  */
 
 #include <stdio.h>
@@ -81,7 +83,9 @@ curiosity_edit_frame_t::curiosity_edit_frame_t(spieler_t* sp_, karte_t* welt) :
 	bt_right_rotate.add_listener(this);
 	add_komponente(&bt_right_rotate);
 
-	lb_rotation.set_pos( koord( get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2+44, offset_of_comp-4 ) );
+	//lb_rotation.set_pos( koord( get_tab_panel_width()+2*MARGIN+COLUMN_WIDTH/2+44, offset_of_comp-4 ) );
+	lb_rotation.set_width( bt_right_rotate.get_pos().x - bt_left_rotate.get_pos().x - bt_left_rotate.get_groesse().x );
+	lb_rotation.align_to(&bt_left_rotate,ALIGN_EXTERIOR_H | ALIGN_LEFT | ALIGN_CENTER_V);
 	add_komponente(&lb_rotation);
 	offset_of_comp += D_BUTTON_HEIGHT;
 
@@ -92,7 +96,7 @@ curiosity_edit_frame_t::curiosity_edit_frame_t(spieler_t* sp_, karte_t* welt) :
 
 
 
-// fill the current fablist
+// fill the current hauslist
 void curiosity_edit_frame_t::fill_list( bool translate )
 {
 	const bool allow_obsolete = bt_obsolete.pressed;
@@ -128,7 +132,7 @@ void curiosity_edit_frame_t::fill_list( bool translate )
 		}
 	}
 
-	// now buil scrolled list
+	// now build scrolled list
 	scl.clear_elements();
 	scl.set_selection(-1);
 	FOR(vector_tpl<haus_besch_t const*>, const i, hauslist) {
@@ -241,7 +245,7 @@ void curiosity_edit_frame_t::change_item_info(sint32 entry)
 			}
 		}
 
-		// change lable numbers
+		// change label numbers
 		if(rotation == 255) {
 			tstrncpy(rot_str, translator::translate("random"), lengthof(rot_str));
 		}

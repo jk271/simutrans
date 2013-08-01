@@ -96,8 +96,8 @@ message_frame_t::message_frame_t(karte_t *welt) :
 		set_focus( &input );
 	}
 
-	set_fenstergroesse(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+gui_tab_panel_t::HEADER_VSIZE+2+16*(LINESPACE+1)+scrollbar_t::BAR_SIZE));
-	set_min_windowsize(koord(BUTTON3_X, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+gui_tab_panel_t::HEADER_VSIZE+2+3*(LINESPACE+1)+scrollbar_t::BAR_SIZE));
+	set_fenstergroesse(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+TAB_HEADER_V_SIZE+2+16*(LINESPACE+1)+button_t::gui_scrollbar_size.y));
+	set_min_windowsize(koord(BUTTON3_X, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+TAB_HEADER_V_SIZE+2+3*(LINESPACE+1)+button_t::gui_scrollbar_size.y));
 
 	set_resizemode(diagonal_resize);
 	resize(koord(0,0));
@@ -114,7 +114,7 @@ void message_frame_t::resize(const koord delta)
 {
 	gui_frame_t::resize(delta);
 	koord groesse = get_fenstergroesse()-koord(0,D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT);
-	input.set_groesse(koord(groesse.x-scrollbar_t::BAR_SIZE-BUTTON2_X, D_BUTTON_HEIGHT));
+	input.set_groesse(koord(groesse.x-button_t::gui_scrollbar_size.x-BUTTON2_X, D_BUTTON_HEIGHT));
 	tabs.set_groesse(groesse);
 	scrolly.set_groesse(groesse-koord(0,D_BUTTON_HEIGHT+4+1));
 }
@@ -132,7 +132,6 @@ bool message_frame_t::action_triggered( gui_action_creator_t *komp, value_t v )
 		network_send_server( nwchat );
 
 		ibuf[0] = 0;
-		set_focus(&input);
 	}
 	else if(  komp==&tabs  ) {
 		// Knightly : filter messages by type where necessary
@@ -158,8 +157,10 @@ void message_frame_t::rdwr(loadsave_t *file)
 	file->rdwr_long( scroll_y );
 
 	if(  file->is_loading()  ) {
-		tabs.set_active_tab_index( tabstate );
-		stats.filter_messages( categories[tabstate] );
+		if ( tabstate > 0  &&  (uint32)tabstate < tabs.get_count() ) {
+			tabs.set_active_tab_index( tabstate );
+			stats.filter_messages( tab_categories[tabstate] );
+		}
 		set_fenstergroesse( gr );
 		resize( koord(0,0) );
 		scrolly.set_scroll_position( scroll_x, scroll_y );

@@ -8,6 +8,7 @@
 
 #include "simtypes.h"
 #include "simunits.h"
+#include "simcolor.h"
 #include "linehandle_t.h"
 
 #include "ifc/sync_steppable.h"
@@ -47,6 +48,7 @@ public:
 		CONVOI_PROFIT,             // total profit of this convoi
 		CONVOI_DISTANCE,           // total distance traveled this month
 		CONVOI_MAXSPEED,           // average max. possible speed
+		CONVOI_WAYTOLL,
 		MAX_CONVOI_COST            // Total number of cost items
 	};
 
@@ -483,7 +485,7 @@ public:
 	/**
 	 * returns the total new purchase cost for all vehicles in convoy
 	 */
-	sint32 get_purchase_cost() const;
+	sint64 get_purchase_cost() const;
 
 	/**
 	* Constructor for loading from file,
@@ -500,6 +502,11 @@ public:
 	* @author Hj. Malthaner
 	*/
 	void rdwr(loadsave_t *file);
+
+	/**
+	 * method to load/save convoihandle_t
+	 */
+	static void rdwr_convoihandle_t(loadsave_t *file, convoihandle_t &cnv);
 
 	void laden_abschliessen();
 
@@ -564,6 +571,7 @@ public:
 	 */
 	const uint32 & get_sum_leistung() const {return sum_leistung;}
 	const sint32 & get_min_top_speed() const {return min_top_speed;}
+	const sint32 & get_speed_limit() const {return speed_limit;}
 
 	/// @returns weight of the convoy's vehicles (excluding freight)
 	const sint64 & get_sum_gewicht() const {return sum_gewicht;}
@@ -836,7 +844,7 @@ public:
 	void set_next_reservation_index(uint16 n);
 
 	/* the current state of the convoi */
-	uint8 get_status_color() const;
+	COLOR_VAL get_status_color() const;
 
 	// returns tiles needed for this convoi
 	uint16 get_tile_length() const;
@@ -857,6 +865,9 @@ public:
 	// calculates the speed used for the speedbonus base, and the max achievable speed at current power/weight for overtakers
 	void calc_speedbonus_kmh();
 	sint32 get_speedbonus_kmh() const;
+
+	// jus a guess of the speed
+	uint32 get_average_kmh() const;
 
 	// Overtaking for convois
 	virtual bool can_overtake(overtaker_t *other_overtaker, sint32 other_speed, sint16 steps_other);

@@ -12,14 +12,14 @@
 
 using namespace script_api;
 
-#define begin_class(c,p) push_class(vm, c);
-#define end_class() sq_pop(vm,1);
 #define STATIC
 
 void_t add_scenario_message_at(const char* text, koord pos)
 {
-	message_t *msg = welt->get_message();
-	msg->add_message(text, pos, message_t::scenario, PLAYER_FLAG|welt->get_active_player()->get_player_nr());
+	if (text) {
+		message_t *msg = welt->get_message();
+		msg->add_message(text, pos, message_t::scenario, PLAYER_FLAG|welt->get_active_player()->get_player_nr());
+	}
 	return void_t();
 }
 
@@ -29,7 +29,7 @@ void export_gui(HSQUIRRELVM vm)
 	/**
 	 * Table with methods to access gui functions.
 	 */
-	begin_class("gui", 0);
+	begin_class(vm, "gui", 0);
 
 	/**
 	 * Opens scenario info window.
@@ -56,5 +56,5 @@ void export_gui(HSQUIRRELVM vm)
 	 */
 	STATIC register_method_fv(vm, &add_scenario_message_at, "add_message", freevariable<koord>(koord::invalid) );
 
-	end_class();
+	end_class(vm);
 }

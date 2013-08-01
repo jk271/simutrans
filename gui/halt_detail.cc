@@ -24,8 +24,6 @@
 #include "halt_detail.h"
 
 
-
-
 halt_detail_t::halt_detail_t(halthandle_t halt_) :
 	gui_frame_t(halt_->get_name(), halt_->get_besitzer()),
 	halt(halt_),
@@ -42,8 +40,8 @@ halt_detail_t::halt_detail_t(halthandle_t halt_) :
 	scrolly.set_show_scroll_x(true);
 	add_komponente(&scrolly);
 
-	set_fenstergroesse(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+4+22*(LINESPACE)+scrollbar_t::BAR_SIZE+2));
-	set_min_windowsize(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+4+3*(LINESPACE)+scrollbar_t::BAR_SIZE+2));
+	set_fenstergroesse(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+4+22*(LINESPACE)+button_t::gui_scrollbar_size.y+2));
+	set_min_windowsize(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+4+3*(LINESPACE)+button_t::gui_scrollbar_size.y+2));
 
 	set_resizemode(diagonal_resize);
 	resize(koord(0,0));
@@ -325,7 +323,7 @@ void halt_detail_t::halt_detail_info()
 
 bool halt_detail_t::action_triggered( gui_action_creator_t *, value_t extra)
 {
-	if(extra.i&~1) {
+	if(  extra.i & ~1  ) {
 		koord k = *(const koord *)extra.p;
 		if(  k.x>=0  ) {
 			// goto button pressed

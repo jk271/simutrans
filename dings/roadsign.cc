@@ -5,6 +5,10 @@
  * (see licence.txt)
  */
 
+/*
+ * Roadsigns functions and dialogs
+ */
+
 #include <stdio.h>
 
 #include "../simunits.h"
@@ -568,7 +572,7 @@ void roadsign_t::rdwr(loadsave_t *file)
 
 void roadsign_t::entferne(spieler_t *sp)
 {
-	spieler_t::accounting(sp, -besch->get_preis(), get_pos().get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs(sp, -besch->get_preis(), get_pos().get_2d(), get_waytype());
 }
 
 

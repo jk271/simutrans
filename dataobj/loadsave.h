@@ -71,7 +71,12 @@ private:
 
 	friend void *loadsave_thread( void *ptr );
 
+	/**
+	 * Reads into buffer number @p buf_num.
+	 * @returns number of bytes read or -1 in case of error
+	 */
 	int fill_buffer(int buf_num);
+
 	void flush_buffer(int buf_num);
 
 public:
@@ -126,7 +131,12 @@ public:
 	// s is a buf of size given
 	void rdwr_str(char* s, size_t size);
 
-	void rdwr_str(plainstring&);
+	/**
+	 * Read/Write plainstring.
+	 * @param str the string to be read/written
+	 * @post str should not be NULL after reading.
+	 */
+	void rdwr_str(plainstring& str);
 
 	// only meaningful for XML
 	void start_tag( const char *tag );

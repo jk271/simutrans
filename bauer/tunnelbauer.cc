@@ -144,7 +144,7 @@ koord3d tunnelbauer_t::finde_ende(karte_t *welt, spieler_t *sp, koord3d pos, koo
 
 	while(true) {
 		pos = pos + zv;
-		if(!welt->ist_in_kartengrenzen(pos.get_2d())) {
+		if(!welt->is_within_limits(pos.get_2d())) {
 			return koord3d::invalid;
 		}
 
@@ -163,7 +163,9 @@ koord3d tunnelbauer_t::finde_ende(karte_t *welt, spieler_t *sp, koord3d pos, koo
 
 		gr = welt->lookup(pos);
 		if(gr) {
-			if(  gr->get_typ() != grund_t::boden  ||  gr->get_grund_hang() != hang_typ(-zv)  ||  gr->is_halt()  ||  ((wegtyp != powerline_wt)?gr->get_leitung()!=NULL:gr->hat_wege())) {
+			const uint8 slope = gr->get_grund_hang();
+			const uint8 slope_height = umgebung_t::pak_height_conversion_factor;
+			if(  gr->get_typ() != grund_t::boden  ||  slope != hang_typ(-zv) * slope_height  ||  gr->is_halt()  ||  ((wegtyp != powerline_wt) ? gr->get_leitung() != NULL : gr->hat_wege())  ) {
 				// must end on boden_t and correct slope and not on halts
 				// ways cannot end on powerlines, powerlines cannot end on ways
 				return koord3d::invalid;
@@ -204,9 +206,17 @@ koord3d tunnelbauer_t::finde_ende(karte_t *welt, spieler_t *sp, koord3d pos, koo
 			}
 			return koord3d::invalid;  // Was im Weg (schräger Hang oder so)
 		}
-		// tunnel slope underneath?
-		gr = welt->lookup(pos +koord3d(0,0,-1));
-		if (gr && gr->get_grund_hang()!=hang_t::flach) {
+
+		if(  umgebung_t::pak_height_conversion_factor == 2  ) {
+			// no grounds one above or below
+			if(  welt->lookup( pos + koord3d(0, 0, -1) )  ||  welt->lookup( pos + koord3d(0, 0, 1) )  ) {
+				return koord3d::invalid;
+			}
+			// tunnel slope underneath?
+			gr = welt->lookup( pos + koord3d(0, 0, -2) );
+		}
+
+		if(  gr  &&  gr->get_grund_hang() != hang_t::flach  ) {
 			return koord3d::invalid;
 		}
 
@@ -226,35 +236,41 @@ const char *tunnelbauer_t::baue( karte_t *welt, spieler_t *sp, koord pos, const 
 
 	koord zv;
 	const waytype_t wegtyp = besch->get_waytype();
+	const hang_t::typ slope = gr->get_grund_hang();
 
-	if(wegtyp != powerline_wt) {
+	if(  wegtyp != powerline_wt  ) {
 		const weg_t *weg = gr->get_weg(wegtyp);
 
 		if(  gr->get_typ() != grund_t::boden  ||  gr->is_halt()  ||  gr->get_leitung()) {
 			return "Tunnel must start on single way!";
 		}
 		// If there is a way on this tile, it must have the right ribis.
-		if( weg  &&  (weg->get_ribi_unmasked() & ~ribi_t::rueckwaerts(ribi_typ(gr->get_grund_hang())))  ) {
-		return "Tunnel must start on single way!";
+		if(  weg  &&  (weg->get_ribi_unmasked() & ~ribi_t::rueckwaerts( ribi_typ(slope) ))  ) {
+			return "Tunnel must start on single way!";
 		}
 	}
 	else {
 		leitung_t *lt = gr->find<leitung_t>();
-		if(gr->get_typ() != grund_t::boden || gr->hat_wege()) {
+		if(  gr->get_typ() != grund_t::boden  ||  gr->hat_wege()  ) {
 			return "Tunnel must start on single way!";
 		}
-		if(lt && lt->get_ribi() & ~ribi_t::rueckwaerts(ribi_typ(gr->get_grund_hang()))) {
+		if(  lt  &&  (lt->get_ribi() & ~ribi_t::rueckwaerts( ribi_typ(slope) ))  ) {
 			return "Tunnel must start on single way!";
 		}
 	}
-	if(!hang_t::ist_einfach(gr->get_grund_hang())) {
+	if(  !hang_t::ist_einfach(slope)  ) {
+		return "Tunnel muss an\neinfachem\nHang beginnen!\n";
+	}
+
+	// for conversion factor 1, must be single height, for conversion factor 2, must be double
+	if(  (umgebung_t::pak_height_conversion_factor == 1  &&  !(slope & 7))  ||  (umgebung_t::pak_height_conversion_factor == 2  &&  (slope & 7))  ) {
 		return "Tunnel muss an\neinfachem\nHang beginnen!\n";
 	}
 
 	if(  gr->has_two_ways()  &&  wegtyp != road_wt  ) {
 		return "Tunnel must start on single way!";
 	}
-	zv = koord(gr->get_grund_hang());
+	zv = koord(slope);
 
 	// Tunnelende suchen
 	koord3d end = koord3d::invalid;
@@ -267,12 +283,13 @@ const char *tunnelbauer_t::baue( karte_t *welt, spieler_t *sp, koord pos, const 
 	}
 	else {
 		end = gr->get_pos()+zv;
-		if(welt->lookup(end)  ||  welt->lookup_kartenboden(pos+zv)->get_hoehe()<=end.z) {
+		grund_t *gr_end = welt->lookup_kartenboden(pos+zv);
+		if (gr_end == NULL  ||  gr_end->get_hoehe()<=end.z) {
 			end = koord3d::invalid;
 		}
 	}
 
-	if(!welt->ist_in_kartengrenzen(end.get_2d())) {
+	if(!welt->is_within_limits(end.get_2d())) {
 		return "Tunnel must start on single way!";
 	}
 
@@ -336,20 +353,20 @@ DBG_MESSAGE("tunnelbauer_t::baue()","build from (%d,%d,%d) to (%d,%d,%d) ", pos.
 			weg->set_besch(weg_besch);
 			weg->set_max_speed(besch->get_topspeed());
 			tunnel->neuen_weg_bauen(weg, ribi_t::doppelt(ribi), sp);
-			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		}
 		else {
 			lt = new leitung_t(welt, tunnel->get_pos(), sp);
 			lt->set_besch(weg_besch);
 			tunnel->obj_add( lt );
 			lt->laden_abschliessen();
-			spieler_t::add_maintenance( sp, -weg_besch->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg_besch->get_wartung(), powerline_wt );
 		}
 		tunnel->obj_add(new tunnel_t(welt, pos, sp, besch));
 		tunnel->calc_bild();
 		tunnel->set_flag(grund_t::dirty);
 		assert(!tunnel->ist_karten_boden());
-		spieler_t::add_maintenance( sp, besch->get_wartung() );
+		spieler_t::add_maintenance( sp, besch->get_wartung(), besch->get_finance_waytype() );
 		cost += besch->get_preis();
 		pos = pos + zv;
 	}
@@ -372,24 +389,24 @@ DBG_MESSAGE("tunnelbauer_t::baue()","build from (%d,%d,%d) to (%d,%d,%d) ", pos.
 			weg->set_besch(weg_besch);
 			weg->set_max_speed(besch->get_topspeed());
 			tunnel->neuen_weg_bauen(weg, ribi, sp);
-			spieler_t::add_maintenance( sp,  -weg->get_besch()->get_wartung() );
+			spieler_t::add_maintenance( sp,  -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		}
 		else {
 			lt = new leitung_t(welt, tunnel->get_pos(), sp);
 			lt->set_besch(weg_besch);
 			tunnel->obj_add( lt );
 			lt->laden_abschliessen();
-			spieler_t::add_maintenance( sp, -weg_besch->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg_besch->get_wartung(), powerline_wt );
 		}
 		tunnel->obj_add(new tunnel_t(welt, pos, sp, besch));
 		tunnel->calc_bild();
 		tunnel->set_flag(grund_t::dirty);
 		assert(!tunnel->ist_karten_boden());
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_finance_waytype() );
 		cost += besch->get_preis();
 	}
 
-	spieler_t::accounting(sp, -cost, start.get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs(sp, -cost, start.get_2d(), besch->get_waytype());
 	return true;
 }
 
@@ -425,7 +442,7 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 			}
 			tunnel->neuen_weg_bauen( weg, ribi, sp );
 		}
-		spieler_t::add_maintenance( sp,  -weg->get_besch()->get_wartung() );
+		spieler_t::add_maintenance( sp, -weg->get_besch()->get_wartung(), weg->get_besch()->get_finance_waytype() );
 		weg->set_max_speed( besch->get_topspeed() );
 	}
 	else {
@@ -434,12 +451,12 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 			lt = new leitung_t(welt, tunnel->get_pos(), sp);
 			lt->set_besch(weg_besch);
 			tunnel->obj_add( lt );
-			spieler_t::add_maintenance( sp, -weg_besch->get_wartung() );
+			spieler_t::add_maintenance( sp, -weg_besch->get_wartung(), powerline_wt );
 		}
 		else {
 			// subtract twice maintenance: once for the already existing powerline
 			// once since leitung_t::laden_abschliessen will add it again
-			spieler_t::add_maintenance( sp, -2*lt->get_besch()->get_wartung());
+			spieler_t::add_maintenance( sp, -2*lt->get_besch()->get_wartung(), powerline_wt );
 		}
 		lt->laden_abschliessen();
 	}
@@ -483,7 +500,7 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 
 
 	if(sp!=NULL) {
-		spieler_t::add_maintenance( sp,  besch->get_wartung() );
+		spieler_t::add_maintenance( sp,  besch->get_wartung(), besch->get_finance_waytype() );
 	}
 	cost += besch->get_preis();
 }
@@ -491,7 +508,7 @@ void tunnelbauer_t::baue_einfahrt(karte_t *welt, spieler_t *sp, koord3d end, koo
 
 const char *tunnelbauer_t::remove(karte_t *welt, spieler_t *sp, koord3d start, waytype_t wegtyp)
 {
-	marker_t    marker(welt->get_groesse_x(),welt->get_groesse_y());
+	marker_t    marker(welt->get_size().x, welt->get_size().y);
 	slist_tpl<koord3d>  end_list;
 	slist_tpl<koord3d>  part_list;
 	slist_tpl<koord3d>  tmp_list;
@@ -569,6 +586,13 @@ const char *tunnelbauer_t::remove(karte_t *welt, spieler_t *sp, koord3d start, w
 			if(t) {
 				t->entferne(sp);
 				delete t;
+			}
+			if (leitung_t *lt = gr->get_leitung()) {
+				// remove single powerlines
+				if ( (lt->get_ribi()  & ~ribi_typ(gr->get_grund_hang())) == ribi_t::keine ) {
+					lt->entferne(sp);
+					delete lt;
+				}
 			}
 		}
 		else {

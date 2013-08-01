@@ -1,8 +1,7 @@
 /*
- * dialog zur Eingabe der Werte fuer die Kartenerzeugung
+ * dialog for setting the climate border and other map related parameters
  *
  * Hj. Malthaner
- *
  * April 2000
  */
 
@@ -29,33 +28,43 @@ private:
 	settings_t* sets;
 
 	enum { MAX_CLIMATE_LABEL=14 };
-
-	// since decrease/increase buttons always pair these ...
-	gui_numberinput_t water_level, mountain_height, mountain_roughness;
-
-	gui_numberinput_t snowline_winter;
-
-	gui_numberinput_t climate_borders_ui[rocky_climate];
-
-	gui_label_t numberinput_lbl[MAX_CLIMATE_LABEL], summer_snowline;
-
 	char snowline_txt[16];
 
-	button_t no_tree; // without tree
+	// since decrease/increase buttons always pair these ...
+	gui_numberinput_t
+		water_level,
+		mountain_height,
+		mountain_roughness;
 
-	gui_numberinput_t river_n, river_min, river_max;
+	gui_numberinput_t
+		snowline_winter;
+
+	gui_numberinput_t
+		climate_borders_ui[rocky_climate];
+
+	gui_label_t
+		numberinput_lbl[MAX_CLIMATE_LABEL],
+		summer_snowline;
+
+	button_t
+		no_tree; // without tree
+
+	gui_numberinput_t
+		river_n,
+		river_min,
+		river_max;
 
 public:
 	climate_gui_t(settings_t*);
 
 	/**
-	 * Manche Fenster haben einen Hilfetext assoziiert.
-	 * @return den Dateinamen für die Hilfe, oder NULL
+	 * Set the window associated helptext
+	 * @return the filename for the helptext, or NULL
 	 * @author Hj. Malthaner
 	 */
 	const char * get_hilfe_datei() const {return "climates.txt";}
 
-	// does not work during new world dialoge
+	// does not work during new world dialog
 	virtual bool has_sticky() const { return false; }
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;

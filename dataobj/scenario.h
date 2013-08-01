@@ -6,11 +6,13 @@
 #include "koord3d.h"
 #include "../utils/plainstring.h"
 #include "../script/dynamic_string.h"
+#include "../dataobj/ribi.h"
 
 class loadsave_t;
 class stadt_t;
 class fabrik_t;
 class karte_t;
+class schedule_t;
 
 /**
  * @class scenario_t
@@ -144,6 +146,10 @@ private:
 	/// list of forbidden tools
 	vector_tpl<forbidden_t*>forbidden_tools;
 
+	/// set to true if rules changed to update toolbars,
+	/// toolbars will be updated in next call to step()
+	bool need_toolbar_update;
+
 	/**
 	 * helper function:
 	 * @param other given record
@@ -235,7 +241,7 @@ public:
 	void rotate90(const sint16 y_size);
 
 	/// @{
-	/// @name Coordinate transform between script and world
+	/// @name Coordinate and direction transform between script and world
 	/**
 	 * rotate actual world coordinates back
 	 * coordinates after transform are like in the
@@ -247,6 +253,17 @@ public:
 	 * rotate original coordinates to actual world coordinates
 	 */
 	void koord_sq2w(koord &);
+
+	/**
+	 * rotate original direction to actual world coordinates direction
+	 */
+	void ribi_w2sq(ribi_t::ribi &r) const;
+
+	/**
+	 * rotate actual world coordinates direction to original direction
+	 */
+	void ribi_sq2w(ribi_t::ribi &r) const;
+
 	/// @}
 
 	/**
@@ -377,10 +394,21 @@ public:
 	bool is_tool_allowed(spieler_t* sp, uint16 wkz_id, sint16 wt=invalid_wt);
 
 	/**
-	 * Checks if player can use the tool at this position
+	 * Checks if player can use the tool at this position.
 	 * @return NULL if allowed otherwise error message
 	 */
 	const char* is_work_allowed_here(spieler_t* sp, uint16 wkz_id, sint16 wt, koord3d pos);
+
+	/**
+	 * Checks if player can use this schedule.
+	 *
+	 * @param sp player
+	 * @param schedule the schedule
+	 *
+	 * @return null if allowed, an error message otherwise
+	 */
+	const char* is_schedule_allowed(spieler_t* sp, schedule_t* schedule);
+
 
 	/// @return debug dump of forbidden tools
 	const char* get_forbidden_text();

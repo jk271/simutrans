@@ -633,15 +633,16 @@ fabrik_t::fabrik_t(karte_t* wl, loadsave_t* file)
 	power_demand = 0;
 	prodfactor_electric = 0;
 	lieferziele_active_last_month = 0;
+	pos = koord3d::invalid;
 
 	rdwr(file);
 
 	if(  besch == NULL  ) {
-		dbg->warning( "fabrik_t::fabrik_t()", "No pak-file for factory at (%s) - will not be built!", pos.get_str() );
+		dbg->warning( "fabrik_t::fabrik_t()", "No pak-file for factory at (%s) - will not be built!", pos_origin.get_str() );
 		return;
 	}
-	else if(  !welt->ist_in_kartengrenzen(pos.get_2d())  ) {
-		dbg->warning( "fabrik_t::fabrik_t()", "%s is not a valid position! (Will not be built!)", pos.get_str() );
+	else if(  !welt->is_within_limits(pos_origin.get_2d())  ) {
+		dbg->warning( "fabrik_t::fabrik_t()", "%s is not a valid position! (Will not be built!)", pos_origin.get_str() );
 		besch = NULL; // to get rid of this broken factory later...
 	}
 	else {
@@ -895,8 +896,8 @@ void fabrik_t::remove_field_at(koord pos)
 bool fabrik_t::ist_bauplatz(karte_t *welt, koord pos, koord groesse,bool wasser,climate_bits cl)
 {
 	if(pos.x > 0 && pos.y > 0 &&
-		pos.x+groesse.x < welt->get_groesse_x() && pos.y+groesse.y < welt->get_groesse_y() &&
-		( wasser  ||  welt->ist_platz_frei(pos, groesse.x, groesse.y, NULL, cl) )&&
+		pos.x+groesse.x < welt->get_size().x && pos.y+groesse.y < welt->get_size().y &&
+		( wasser  ||  welt->square_is_free(pos, groesse.x, groesse.y, NULL, cl) )&&
 		!ist_da_eine(welt,pos-koord(5,5),pos+groesse+koord(3,3))) {
 
 		// check for water (no shore in sight!)
@@ -1123,6 +1124,11 @@ DBG_DEBUG("fabrik_t::rdwr()","loading factory '%s'",s);
 
 	if(  file->get_version()>=112002  ) {
 		file->rdwr_long( lieferziele_active_last_month );
+	}
+
+	// suppliers / consumers will be recalculated in laden_abschliessen
+	if (file->is_loading()  &&  welt->get_settings().is_crossconnect_factories()) {
+		lieferziele.clear();
 	}
 
 	// information on fields ...

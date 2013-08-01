@@ -5,13 +5,21 @@
  * (see licence.txt)
  */
 
+/*
+ * A simple text input field. It has no Text Buffer,
+ * only a pointer to a buffer created by someone else.
+ *
+ * @date 19-Apr-01
+ * @author Hj. Malthaner
+ */
+
 #include <string.h>
 
+#include "../gui_frame.h"
 #include "gui_textinput.h"
 #include "../../simwin.h"
 #include "../../simsys.h"
 #include "../../dataobj/translator.h"
-
 
 gui_textinput_t::gui_textinput_t() :
 	gui_komponente_t(true),
@@ -35,7 +43,8 @@ gui_textinput_t::gui_textinput_t() :
 size_t gui_textinput_t::calc_cursor_pos(const int x)
 {
 	size_t new_cursor_pos = 0;
-	if (  text  ) {
+	if(  text  ) {
+
 		const char* tmp_text = text;
 		uint8 byte_length = 0;
 		uint8 pixel_width = 0;
@@ -323,13 +332,19 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 		// acting on release causes unwanted recalculations of cursor position for long strings and (scroll_offset>0)
 		// moreover, only (click) or (release) event happened inside textinput, the other one could lie outside
 		// Knightly : use mouse *click* position; update both head and tail cursors
-		tail_cursor_pos = head_cursor_pos = calc_cursor_pos(ev->cx);
+		tail_cursor_pos = 0;
+		if(  text  ) {
+			tail_cursor_pos = head_cursor_pos = display_fit_proportional( text, ev->cx - 2 + scroll_offset );
+		}
 		cursor_reference_time = dr_time();	// update reference time for cursor blinking
 		return true;
 	}
 	else if(  IS_LEFTDRAG(ev)  ) {
 		// Knightly : use mouse *move* position; update head cursor only in order to enable text selection
-		head_cursor_pos = calc_cursor_pos(ev->mx);
+		head_cursor_pos = 0;
+		if(  text  ) {
+			head_cursor_pos = head_cursor_pos = display_fit_proportional( text, ev->mx - 1 + scroll_offset );
+		}
 		cursor_reference_time = dr_time();	// update reference time for cursor blinking
 		return true;
 	}
@@ -365,7 +380,7 @@ bool gui_textinput_t::infowin_event(const event_t *ev)
 
 
 /**
- * Zeichnet die Komponente
+ * Draw the component
  * @author Hj. Malthaner
  */
 void gui_textinput_t::zeichnen(koord offset)
@@ -450,7 +465,8 @@ void gui_textinput_t::display_with_cursor(koord offset, bool cursor_active, bool
 		display_set_clip_wh( clip_x, clip_y, min(old_clip.xx, text_clip_x+text_clip_w)-clip_x, min(old_clip.yy, text_clip_y+text_clip_h)-clip_y );
 
 		// display text
-		display_proportional_clip(pos.x+offset.x+2-scroll_offset, pos.y+offset.y+1+(groesse.y-LINESPACE)/2, text, ALIGN_LEFT, textcol, true);
+		//offset.x += D_GET_CENTER_ALIGN_OFFSET(LINESPACE,groesse.y);
+		display_proportional_clip(pos.x+offset.x+2-scroll_offset, pos.y+offset.y+D_GET_CENTER_ALIGN_OFFSET(LINESPACE,groesse.y), text, ALIGN_LEFT, textcol, true);
 
 		if(  cursor_active  ) {
 			// Knightly : display selected text block with light grey text on charcoal bounding box
@@ -459,13 +475,13 @@ void gui_textinput_t::display_with_cursor(koord offset, bool cursor_active, bool
 				const size_t end_pos = ::max(head_cursor_pos, tail_cursor_pos);
 				const KOORD_VAL start_offset = proportional_string_len_width(text, start_pos);
 				const KOORD_VAL highlight_width = proportional_string_len_width(text+start_pos, end_pos-start_pos);
-				display_fillbox_wh_clip(pos.x+offset.x+2-scroll_offset+start_offset, pos.y+offset.y+1, highlight_width, 11, COL_GREY2, true);
-				display_text_proportional_len_clip(pos.x+offset.x+2-scroll_offset+start_offset, pos.y+offset.y+1+(groesse.y-LINESPACE)/2, text+start_pos, ALIGN_LEFT|DT_DIRTY|DT_CLIP, COL_GREY5, end_pos-start_pos);
+				display_fillbox_wh_clip(pos.x+offset.x+2-scroll_offset+start_offset, pos.y+offset.y+D_GET_CENTER_ALIGN_OFFSET(LINESPACE,groesse.y), highlight_width, 11, COL_GREY2, true);
+				display_text_proportional_len_clip(pos.x+offset.x+2-scroll_offset+start_offset, pos.y+offset.y+D_GET_CENTER_ALIGN_OFFSET(LINESPACE,groesse.y), text+start_pos, ALIGN_LEFT|DT_DIRTY|DT_CLIP, COL_GREY5, end_pos-start_pos);
 			}
 
 			// display blinking cursor
 			if(  cursor_visible  ) {
-				display_fillbox_wh_clip(pos.x+offset.x+1-scroll_offset+cursor_offset, pos.y+offset.y+1, 1, 11, COL_WHITE, true);
+				display_fillbox_wh_clip(pos.x+offset.x+1-scroll_offset+cursor_offset, pos.y+offset.y+D_GET_CENTER_ALIGN_OFFSET(LINESPACE,groesse.y), 1, 11, COL_WHITE, true);
 			}
 		}
 
@@ -516,7 +532,7 @@ void gui_hidden_textinput_t::display_with_cursor(koord const offset, bool, bool 
 	display_ddd_box_clip(pos.x+offset.x, pos.y+offset.y,groesse.x, groesse.y,MN_GREY0, MN_GREY4);
 
 	if(  text  ) {
-		// the text will be all asterics, thus we draw them letter by letter
+		// the text will be all asterisk, thus we draw them letter by letter
 
 		// set clipping to be within textinput button
 		const clip_dimension old_clip = display_get_clip_wh();

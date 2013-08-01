@@ -100,7 +100,7 @@ gebaeude_t::gebaeude_t(karte_t *welt, koord3d pos, spieler_t *sp, const haus_til
 	init();
 	if(t) {
 		set_tile(t,true);	// this will set init time etc.
-		spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level());
+		spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), tile->get_besch()->get_finance_waytype());
 	}
 
 	grund_t *gr=welt->lookup(pos);
@@ -135,7 +135,7 @@ gebaeude_t::~gebaeude_t()
 	count = 0;
 	anim_time = 0;
 	if(tile) {
-		spieler_t::add_maintenance(get_besitzer(), -welt->get_settings().maint_building*tile->get_besch()->get_level());
+		spieler_t::add_maintenance(get_besitzer(), -welt->get_settings().maint_building*tile->get_besch()->get_level(), tile->get_besch()->get_finance_waytype());
 	}
 }
 
@@ -364,18 +364,18 @@ void gebaeude_t::calc_bild()
 	// snow image?
 	snow = 0;
 	if(  tile->get_seasons()>1  ) {
-		snow = (!gr->ist_tunnel()  ||  gr->ist_karten_boden())  &&  (get_pos().z-(get_yoff()/TILE_HEIGHT_STEP)>= welt->get_snowline());
+		snow = (!gr->ist_tunnel()  ||  gr->ist_karten_boden())  &&  (get_pos().z - (get_yoff() / TILE_HEIGHT_STEP) >= welt->get_snowline()  ||  welt->get_climate( get_pos().get_2d() ) == arctic_climate);
 	}
 }
 
 
 image_id gebaeude_t::get_bild() const
 {
-	if(umgebung_t::hide_buildings!=0) {
+	if(umgebung_t::hide_buildings!=0  &&  tile->has_image()) {
 		// opaque houses
 		if(get_haustyp()!=unbekannt) {
 			return umgebung_t::hide_with_transparency ? skinverwaltung_t::fussweg->get_bild_nr(0) : skinverwaltung_t::construction_site->get_bild_nr(0);
-		} else if(  (umgebung_t::hide_buildings == umgebung_t::ALL_HIDDEN_BUIDLING  &&  tile->get_besch()->get_utyp() < haus_besch_t::weitere)  ||  !tile->has_image()) {
+		} else if(  (umgebung_t::hide_buildings == umgebung_t::ALL_HIDDEN_BUIDLING  &&  tile->get_besch()->get_utyp() < haus_besch_t::weitere)) {
 			// hide with transparency or tile without information
 			if(umgebung_t::hide_with_transparency) {
 				if(tile->get_besch()->get_utyp() == haus_besch_t::fabrik  &&  ptr.fab->get_besch()->get_platzierung() == fabrik_besch_t::Wasser) {
@@ -778,9 +778,9 @@ void gebaeude_t::rdwr(loadsave_t *file)
 				switch(type) {
 					case gebaeude_t::wohnung:
 						{
-							const haus_besch_t *hb = hausbauer_t::get_wohnhaus(level,welt->get_timeline_year_month(),welt->get_climate(get_pos().z));
+							const haus_besch_t *hb = hausbauer_t::get_residential( level, welt->get_timeline_year_month(), welt->get_climate( get_pos().get_2d() ) );
 							if(hb==NULL) {
-								hb = hausbauer_t::get_wohnhaus(level,0, MAX_CLIMATES );
+								hb = hausbauer_t::get_residential(level,0, MAX_CLIMATES );
 							}
 							if( hb) {
 								dbg->message("gebaeude_t::rwdr", "replace unknown building %s with residence level %i by %s",buf,level,hb->get_name());
@@ -791,9 +791,9 @@ void gebaeude_t::rdwr(loadsave_t *file)
 
 					case gebaeude_t::gewerbe:
 						{
-							const haus_besch_t *hb = hausbauer_t::get_gewerbe(level,welt->get_timeline_year_month(),welt->get_climate(get_pos().z));
+							const haus_besch_t *hb = hausbauer_t::get_commercial( level, welt->get_timeline_year_month(), welt->get_climate( get_pos().get_2d() ) );
 							if(hb==NULL) {
-								hb = hausbauer_t::get_gewerbe(level,0, MAX_CLIMATES );
+								hb = hausbauer_t::get_commercial(level,0, MAX_CLIMATES );
 							}
 							if(hb) {
 								dbg->message("gebaeude_t::rwdr", "replace unknown building %s with commercial level %i by %s",buf,level,hb->get_name());
@@ -804,11 +804,11 @@ void gebaeude_t::rdwr(loadsave_t *file)
 
 					case gebaeude_t::industrie:
 						{
-							const haus_besch_t *hb = hausbauer_t::get_industrie(level,welt->get_timeline_year_month(),welt->get_climate(get_pos().z));
+							const haus_besch_t *hb = hausbauer_t::get_industrial( level, welt->get_timeline_year_month(), welt->get_climate( get_pos().get_2d() ) );
 							if(hb==NULL) {
-								hb = hausbauer_t::get_industrie(level,0, MAX_CLIMATES );
+								hb = hausbauer_t::get_industrial(level,0, MAX_CLIMATES );
 								if(hb==NULL) {
-									hb = hausbauer_t::get_gewerbe(level,0, MAX_CLIMATES );
+									hb = hausbauer_t::get_residential(level,0, MAX_CLIMATES );
 								}
 							}
 							if (hb) {
@@ -875,7 +875,7 @@ void gebaeude_t::rdwr(loadsave_t *file)
  */
 void gebaeude_t::laden_abschliessen()
 {
-	spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level());
+	spieler_t::add_maintenance(get_besitzer(), welt->get_settings().maint_building * tile->get_besch()->get_level(), tile->get_besch()->get_finance_waytype());
 
 	// citybuilding, but no town?
 	if(  tile->get_offset()==koord(0,0)  ) {
@@ -907,7 +907,7 @@ void gebaeude_t::entferne(spieler_t *sp)
 	if (tile->get_besch()->get_utyp() < haus_besch_t::bahnhof) {
 		cost *= tile->get_besch()->get_level() + 1;
 	}
-	spieler_t::accounting(sp, cost, get_pos().get_2d(), COST_CONSTRUCTION);
+	spieler_t::book_construction_costs(sp, cost, get_pos().get_2d(), tile->get_besch()->get_finance_waytype());
 
 	// may need to update next buildings, in the case of start, middle, end buildings
 	if(tile->get_besch()->get_all_layouts()>1  &&  get_haustyp()==unbekannt) {

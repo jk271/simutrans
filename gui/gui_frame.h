@@ -6,6 +6,7 @@
  */
 
 /*
+ * The window frame all dialogs are based
  * [Mathew Hounsell] Min Size Button On Map Window 20030313
  */
 
@@ -14,34 +15,64 @@
 
 #include "../dataobj/koord.h"
 #include "../simgraph.h"
-#include "gui_container.h"
 #include "../simcolor.h"
 #include "../dataobj/koord3d.h"
-
+#include "gui_container.h"
+#include "components/gui_button.h"
 
 class loadsave_t;
 class spieler_t;
 
 
 /*
- * The following gives positioning aids for elements in dialoges
+ * The following gives positioning aids for elements in dialogues
  * Only those, LINESPACE, and dimensions of elements itself must be
  * exclusively used to calculate positions in dialogues to have a
- * scaleable interface
+ * scalable interface
+ *
+ * Max Kielland:
+ * Added more defines for theme testing.
+ * These is going to be moved into the theme handling later.
  */
 
+#define D_INDICATOR_BOX_HEIGHT (button_t::gui_indicator_box_size.y)
+#define D_INDICATOR_BOX_WIDTH  (button_t::gui_indicator_box_size.x)
+
+// default edit field height
+#define D_EDIT_HEIGHT (LINESPACE+4)
+
+// default square button xy size (replace with real values from the skin images)
+#define D_BUTTON_SQUARE (button_t::gui_checkbox_size.y)
+
+// statusbar bottom of screen
+#define D_STATUSBAR_HEIGHT (16)
+
+// gadget size
+#define D_GADGET_SIZE (D_TITLEBAR_HEIGHT)
+
+// Scrollbar params (replace with real values from the skin images)
+#define KNOB_SIZE        (32)
+
 // default button width (may change with langugae and font)
-#define D_BUTTON_WIDTH (gui_frame_t::gui_button_width)
-#define D_BUTTON_HEIGHT (gui_frame_t::gui_button_height)
+#define D_BUTTON_WIDTH (button_t::gui_button_size.x)
+#define D_BUTTON_HEIGHT (button_t::gui_button_size.y)
 
 // titlebar height
 #define D_TITLEBAR_HEIGHT (gui_frame_t::gui_titlebar_height)
+
+#define D_DIVIDER_HEIGHT (gui_frame_t::gui_divider_height)
+
+// Tab page params (replace with real values from the skin images)
+#define TAB_HEADER_V_SIZE (gui_tab_panel_t::header_vsize)
 
 // dialog borders
 #define D_MARGIN_LEFT (gui_frame_t::gui_frame_left)
 #define D_MARGIN_TOP (gui_frame_t::gui_frame_top)
 #define D_MARGIN_RIGHT (gui_frame_t::gui_frame_right)
 #define D_MARGIN_BOTTOM (gui_frame_t::gui_frame_bottom)
+
+#define D_MARGINS_X (D_MARGIN_LEFT + D_MARGIN_RIGHT)
+#define D_MARGINS_Y (D_MARGIN_TOP + D_MARGIN_BOTTOM)
 
 // space between two elements
 #define D_H_SPACE (gui_frame_t::gui_hspace)
@@ -52,21 +83,28 @@ class spieler_t;
 #define BUTTON3_X (D_MARGIN_LEFT+2*(D_BUTTON_WIDTH+D_H_SPACE))
 #define BUTTON4_X (D_MARGIN_LEFT+3*(D_BUTTON_WIDTH+D_H_SPACE))
 
+#define BUTTON_X(col) ( (col) * (D_BUTTON_WIDTH  + D_H_SPACE) )
+#define BUTTON_Y(row) ( (row) * (D_BUTTON_HEIGHT + D_V_SPACE) )
+
+// Max Kielland: align helper, returns the offset to apply to N1 for a center alignment around N2
+#define D_GET_CENTER_ALIGN_OFFSET(N1,N2) ((N2-N1)>>1)
+#define D_GET_FAR_ALIGN_OFFSET(N1,N2) (N2-N1)
+
 // The width of a typical dialoge (either list/covoi/factory) and intial width when it makes sense
-#define D_DEFAULT_WIDTH (D_MARGIN_LEFT+4*D_BUTTON_WIDTH+3*D_H_SPACE+D_MARGIN_RIGHT)
+#define D_DEFAULT_WIDTH (D_MARGIN_LEFT + 4*D_BUTTON_WIDTH + 3*D_H_SPACE + D_MARGIN_RIGHT)
 
 // dimensions of indicator bars (not yet a gui element ...)
 #define D_INDICATOR_WIDTH (gui_frame_t::gui_indicator_width)
 #define D_INDICATOR_HEIGHT (gui_frame_t::gui_indicator_height)
 
-
-
+#define TOOLTIP_MOUSE_OFFSET_X (16)
+#define TOOLTIP_MOUSE_OFFSET_Y (12)
 
 /**
- * Eine Klasse für Fenster mit Komponenten.
- * Anders als die anderen Fensterklasen in Simutrans ist dies
- * ein richtig Komponentenorientiertes Fenster, das alle
- * aktionen an die Komponenten delegiert.
+ * A Class for window with Component.
+ * Unlike other Window Classes in Simutrans, this is
+ * a true component-oriented window that all actions
+ * delegates to its component.
  *
  * @author Hj. Malthaner
  */
@@ -83,11 +121,14 @@ public:
 	};
 
 	// default button sizes
-	static KOORD_VAL gui_button_width;
-	static KOORD_VAL gui_button_height;
+	//static KOORD_VAL gui_button_width;
+	//static KOORD_VAL gui_button_height;
 
 	// titlebar height
 	static KOORD_VAL gui_titlebar_height;
+
+	// gadget size
+	static KOORD_VAL gui_gadget_size;
 
 	// dialog borders
 	static KOORD_VAL gui_frame_left;
@@ -103,10 +144,13 @@ public:
 	static KOORD_VAL gui_indicator_width;
 	static KOORD_VAL gui_indicator_height;
 
+	// default divider height
+	static KOORD_VAL gui_divider_height;
+
 private:
 	gui_container_t container;
 
-	const char * name;
+	const char *name;
 	koord groesse;
 
 	/**
@@ -127,7 +171,9 @@ private:
 	COLOR_VAL color_transparent;
 
 protected:
-	void set_dirty() { dirty=1; }
+	void set_dirty() { dirty=true; }
+
+	void unset_dirty() { dirty=false; }
 
 	/**
 	 * resize window in response to a resize event
@@ -142,8 +188,8 @@ protected:
 
 public:
 	/**
-	 * @param name Fenstertitel
-	 * @param sp owner for color
+	 * @param name, Window title
+	 * @param sp, owner for color
 	 * @author Hj. Malthaner
 	 */
 	gui_frame_t(const char *name, const spieler_t *sp=NULL);
@@ -151,31 +197,31 @@ public:
 	virtual ~gui_frame_t() {}
 
 	/**
-	 * Fügt eine Komponente zum Fenster hinzu.
+	 * Adds the component to the window
 	 * @author Hj. Malthaner
 	 */
 	void add_komponente(gui_komponente_t *komp) { container.add_komponente(komp); }
 
 	/**
-	 * Entfernt eine Komponente aus dem Container.
+	 * Removes the component from the container.
 	 * @author Hj. Malthaner
 	 */
 	void remove_komponente(gui_komponente_t *komp) { container.remove_komponente(komp); }
 
 	/**
-	 * Der Name wird in der Titelzeile dargestellt
-	 * @return den nicht uebersetzten Namen der Komponente
+	 * The name is displayed in the titlebar
+	 * @return the non-translated name of the Component
 	 * @author Hj. Malthaner
 	 */
 	const char *get_name() const { return name; }
 
 	/**
-	 * setzt den Namen (Fenstertitel)
+	 * sets the Name (Window title)
 	 * @author Hj. Malthaner
 	 */
 	void set_name(const char *name) { this->name=name; }
 
-	/* this returns an unique id, if the dialoge can be saved
+	/* this returns an unique id, if the dialogue can be saved
 	 * if this is defined, you better define a matching constructor with karte_t * and loadsave_t *
 	 */
 	virtual uint32 get_rdwr_id() { return 0; }
@@ -183,20 +229,20 @@ public:
 	virtual void rdwr( loadsave_t * ) {}
 
 	/**
-	 * gibt farbinformationen fuer Fenstertitel, -ränder und -körper
-	 * zurück
+	 * get color information for the window title
+	 * -borders and -body background
 	 * @author Hj. Malthaner
 	 */
 	virtual PLAYER_COLOR_VAL get_titelcolor() const;
 
 	/**
-	 * @return gibt wunschgroesse für das Darstellungsfenster zurueck
+	 * @return gets the window sizes
 	 * @author Hj. Malthaner
 	 */
 	koord get_fenstergroesse() const { return groesse; }
 
 	/**
-	 * Setzt die Fenstergroesse
+	 * Sets the window sizes
 	 * @author Hj. Malthaner
 	 */
 	virtual void set_fenstergroesse(koord groesse);
@@ -216,15 +262,18 @@ public:
 	koord get_min_windowsize() { return min_windowsize; }
 
 	/**
+	 * Max Kielland 2013: Client size auto calculation with title bar and margins.
 	 * @return returns the usable width and heigth of the window
 	 * @author Markus Weber
 	 * @date   11-May-2002
 	*/
-	koord get_client_windowsize() const {return groesse-koord(0,D_TITLEBAR_HEIGHT); }
+	koord get_client_windowsize() const {
+		return groesse - koord(0, ( has_title()*D_TITLEBAR_HEIGHT ) );
+	}
 
 	/**
-	 * Manche Fenster haben einen Hilfetext assoziiert.
-	 * @return den Dateinamen für die Hilfe, oder NULL
+	 * Set the window associated helptext
+	 * @return the filename for the helptext, or NULL
 	 * @author Hj. Malthaner
 	 */
 	virtual const char * get_hilfe_datei() const {return NULL;}
@@ -295,9 +344,9 @@ public:
 	virtual bool infowin_event(const event_t *ev);
 
 	/**
-	 * komponente neu zeichnen. Die übergebenen Werte beziehen sich auf
-	 * das Fenster, d.h. es sind die Bildschirkoordinaten des Fensters
-	 * in dem die Komponente dargestellt wird.
+	 * Draw new component. The values to be passed refer to the window
+	 * i.e. It's the screen coordinates of the window where the
+	 * component is displayed.
 	 * @author Hj. Malthaner
 	 */
 	virtual void zeichnen(koord pos, koord gr);
@@ -305,7 +354,16 @@ public:
 	// called, when the map is rotated
 	virtual void map_rotate90( sint16 /*new_ysize*/ ) { }
 
+
+	/**
+	 * Set focus to component.
+	 *
+	 * @warning Calling this method from anything called from
+	 * gui_container_t::infowin_event (e.g. in action_triggered)
+	 * will have NO effect.
+	 */
 	void set_focus( gui_komponente_t *k ) { container.set_focus(k); }
+
 	virtual gui_komponente_t *get_focus() { return container.get_focus(); }
 };
 

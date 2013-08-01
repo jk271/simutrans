@@ -7,6 +7,13 @@
  * (see licence.txt)
  */
 
+/*
+ * Displays a scrollable list of all stations of a player
+ *
+ * @author Markus Weber
+ * @date 02-Jan-02
+ */
+
 #include <algorithm>
 #include <string.h>
 
@@ -46,7 +53,7 @@ halt_list_frame_t::sort_mode_t halt_list_frame_t::sortby = nach_name;
 bool halt_list_frame_t::sortreverse = false;
 
 /**
- * Default filter: keine Ölbohrinseln!
+ * Default filter: no Oil rigs!
  */
 int halt_list_frame_t::filter_flags = 0;
 
@@ -93,8 +100,7 @@ bool halt_list_frame_t::compare_halts(halthandle_t const halt1, halthandle_t con
 		order = strcmp(halt1->get_name(), halt2->get_name());
 	}
 	/***********************************
-	 * Beruecksichtige die
-	 * Sortierreihenfolge
+	 * Consider sorting order
 	 ***********************************/
 	return sortreverse ? order > 0 : order < 0;
 }
@@ -286,7 +292,7 @@ halt_list_frame_t::~halt_list_frame_t()
 
 
 /**
-* This function refreshs the station-list
+* This function refreshes the station-list
 * @author Markus Weber/Volker Meyer
 */
 void halt_list_frame_t::display_list(void)
@@ -335,7 +341,7 @@ void halt_list_frame_t::display_list(void)
 
 bool halt_list_frame_t::infowin_event(const event_t *ev)
 {
-	const sint16 xr = vscroll.is_visible() ? scrollbar_t::BAR_SIZE : 1;
+	const sint16 xr = vscroll.is_visible() ? button_t::gui_scrollbar_size.x : 1;
 
 	if(ev->ev_class == INFOWIN  &&  ev->ev_code == WIN_CLOSE) {
 		if(filter_frame) {
@@ -415,8 +421,8 @@ void halt_list_frame_t::resize(const koord size_change)
 	else {
 		add_komponente(&vscroll);
 		vscroll.set_visible(true);
-		vscroll.set_pos(koord(groesse.x-scrollbar_t::BAR_SIZE, 47-D_TITLEBAR_HEIGHT-1));
-		vscroll.set_groesse(groesse-koord(scrollbar_t::BAR_SIZE,scrollbar_t::BAR_SIZE));
+		vscroll.set_pos(koord(groesse.x-button_t::gui_scrollbar_size.x, 47-D_TITLEBAR_HEIGHT-1));
+		vscroll.set_groesse(groesse-button_t::gui_scrollbar_size);
 		vscroll.set_scroll_amount( 1 );
 	}
 }
@@ -428,7 +434,7 @@ void halt_list_frame_t::zeichnen(koord pos, koord gr)
 
 	gui_frame_t::zeichnen(pos, gr);
 
-	const sint16 xr = vscroll.is_visible() ? scrollbar_t::BAR_SIZE+4 : 6;
+	const sint16 xr = vscroll.is_visible() ? button_t::gui_scrollbar_size.x+4 : 6;
 	PUSH_CLIP(pos.x, pos.y+47, gr.x-xr, gr.y-48 );
 
 	const sint32 start = vscroll.get_knob_offset();

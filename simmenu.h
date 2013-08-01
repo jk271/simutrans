@@ -66,6 +66,8 @@ enum {
 	WKZ_BUY_HOUSE,
 	WKZ_CITYROAD,
 	WKZ_ERR_MESSAGE_TOOL,
+	WKZ_CHANGE_WATER_HEIGHT,
+	WKZ_SET_CLIMATE,
 	GENERAL_TOOL_COUNT,
 	GENERAL_TOOL = 0x1000
 };
@@ -216,7 +218,17 @@ public:
 
 	static uint16 const dummy_id = 0xFFFFU;
 
-	werkzeug_t(uint16 const id) : id(id), cursor_area(1,1) { cursor = icon = IMG_LEER; ok_sound = NO_SOUND; offset = Z_PLAN; default_param = NULL; command_key = 0; cursor_centered = false;}
+	werkzeug_t(uint16 const id) : id(id), cursor_area(1,1)
+	{
+		cursor = icon = IMG_LEER;
+		ok_sound = NO_SOUND;
+		offset = Z_PLAN;
+		default_param = NULL;
+		command_key = 0;
+		cursor_centered = false;
+		flags = 0;
+	}
+
 	virtual ~werkzeug_t() {}
 
 	virtual image_id get_icon(spieler_t *) const { return icon; }
@@ -244,9 +256,14 @@ public:
 	virtual bool is_work_here_network_save(karte_t *, spieler_t *, koord3d) { return false; }
 
 	// will draw a dark frame, if selected
-	virtual void draw_after( karte_t *w, koord pos ) const;
+	virtual void draw_after(karte_t *w, koord pos, bool dirty) const;
 
 	virtual const char *get_tooltip(const spieler_t *) const { return NULL; }
+
+	/**
+	 * @return true if this tool operates over the grid, not the map tiles.
+	 */
+	virtual bool is_grid_tool() const {return false;}
 
 	/**
 	 * Returning false on init will automatically invoke previous tool.
@@ -270,6 +287,21 @@ public:
 	virtual const char *check_pos( karte_t *, spieler_t *, koord3d );
 	virtual const char *work( karte_t *, spieler_t *, koord3d ) { return NULL; }
 	virtual const char *move( karte_t *, spieler_t *, uint16 /* buttonstate */, koord3d ) { return ""; }
+
+	/**
+	 * Returns whether the 2d koordinate passed it's a valid position for this tool to highlight a tile,
+	 * just takes into account is_grid_tool. It does not check if work is allowed there, that's check_pos() work.
+	 * @see check_pos
+	 * @return true is the coordinate it's found valid, false otherwise.
+	 */
+	bool check_valid_pos( karte_t *w, koord k ) const;
+
+	/**
+	 * Specifies if the cursor will need a position update after this tool takes effect (ie: changed the height of the tile)
+	 * @note only used on lower_raise tools atm.
+	 * @return true if the cursor has to be moved.
+	 */
+	virtual bool update_pos_after_use() const { return false; }
 
 	virtual waytype_t get_waytype() const { return invalid_wt; }
 };

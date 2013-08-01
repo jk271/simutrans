@@ -5,6 +5,10 @@
  * (see licence.txt)
  */
 
+/*
+ * Server game listing and current game information window
+ */
+
 #include "../simworld.h"
 #include "../simcolor.h"
 #include "../simgraph.h"
@@ -81,7 +85,6 @@ server_frame_t::server_frame_t(karte_t* w) :
 			add_komponente( &show_offline );
 		}
 
-
 		pos_y += D_BUTTON_HEIGHT;
 		pos_y += D_V_SPACE * 2;                // GUI line goes here
 
@@ -98,11 +101,12 @@ server_frame_t::server_frame_t(karte_t* w) :
 		addinput.add_listener( this );
 		add_komponente( &addinput );
 
-		add.init( button_t::box, "Query server", koord( ww - D_BUTTON_WIDTH - D_MARGIN_RIGHT, pos_y ), koord( D_BUTTON_WIDTH, D_BUTTON_HEIGHT) );
+		add.init( button_t::roundbox, "Query server", koord( ww - D_BUTTON_WIDTH - D_MARGIN_RIGHT, pos_y ), koord( D_BUTTON_WIDTH, D_BUTTON_HEIGHT) );
 		add.add_listener( this );
 
 		pos_y += D_BUTTON_HEIGHT;
 		pos_y += D_V_SPACE * 2;                // GUI line goes here
+
 	}
 
 	revision.set_pos( koord( D_MARGIN_LEFT, pos_y ) );
@@ -123,8 +127,8 @@ server_frame_t::server_frame_t(karte_t* w) :
 	pos_y += LINESPACE;
 	pos_y += D_V_SPACE * 2;        // GUI line goes here
 
-	date.set_pos( koord( ww - D_MARGIN_LEFT, pos_y ) );
-	date.set_align( gui_label_t::right );
+	date.set_pos( koord( ww - D_MARGIN_LEFT - date.get_groesse().x, pos_y ) );
+	//date.set_align( gui_label_t::right );
 	add_komponente( &date );
 
 	// Leave room for elements added during draw phase (multiline text + map)
@@ -133,7 +137,7 @@ server_frame_t::server_frame_t(karte_t* w) :
 	pos_y += D_V_SPACE * 2;        // GUI line goes here
 
 	const int nick_width = 80;
-	nick_label.set_pos( koord( D_MARGIN_LEFT, pos_y ) );
+	nick_label.set_pos( koord( D_MARGIN_LEFT, pos_y + D_GET_CENTER_ALIGN_OFFSET(LINESPACE,D_BUTTON_HEIGHT) ) );
 	nick_label.set_text( "Nickname:" );
 	add_komponente( &nick_label );
 
@@ -151,11 +155,11 @@ server_frame_t::server_frame_t(karte_t* w) :
 
 		const int button_width = 112;
 
-		find_mismatch.init( button_t::box, "find mismatch", koord( ww - D_MARGIN_RIGHT - D_H_SPACE - button_width * 2, pos_y ), koord( button_width, D_BUTTON_HEIGHT) );
+		find_mismatch.init( button_t::roundbox, "find mismatch", koord( ww - D_MARGIN_RIGHT - D_H_SPACE - button_width * 2, pos_y ), koord( button_width, D_BUTTON_HEIGHT) );
 		find_mismatch.add_listener( this );
 		add_komponente( &find_mismatch );
 
-		join.init( button_t::box, "join game", koord( ww - D_MARGIN_RIGHT - button_width, pos_y ), koord( button_width, D_BUTTON_HEIGHT) );
+		join.init( button_t::roundbox, "join game", koord( ww - D_MARGIN_RIGHT - button_width, pos_y ), koord( button_width, D_BUTTON_HEIGHT) );
 		join.disable();
 		join.add_listener( this );
 		add_komponente( &join );
@@ -181,6 +185,7 @@ void server_frame_t::update_error (const char* errortext)
 	buf.clear();
 	display_map = false;
 	date.set_text( errortext );
+	date.set_pos( koord( get_fenstergroesse().x - D_MARGIN_RIGHT - date.get_groesse().x, date.get_pos().y ) );
 	revision.set_text( "" );
 	pak_version.set_text( "" );
 	join.disable();
@@ -276,6 +281,7 @@ void server_frame_t::update_info ()
 			break;
 	}
 	date.set_text( time );
+	date.set_pos( koord( get_fenstergroesse().x - D_MARGIN_RIGHT - date.get_groesse().x, date.get_pos().y ) );
 	set_dirty();
 }
 
@@ -394,19 +400,20 @@ bool server_frame_t::action_triggered (gui_action_creator_t *komp, value_t p)
 		}
 		else {
 			join.disable();
-			if (  ((server_scrollitem_t*)serverlist.get_element( p.i ))->online()  ) {
+			server_scrollitem_t *item = (server_scrollitem_t*)serverlist.get_element( p.i );
+			if(  item->online()  ) {
 				const char *err = network_gameinfo( ((server_scrollitem_t*)serverlist.get_element( p.i ))->get_dns(), &gi );
 				if (  err == NULL  ) {
-					serverlist.get_element( p.i )->set_color( COL_BLACK );
+					item->set_color( COL_BLACK );
 					update_info();
 				}
 				else {
-					serverlist.get_element( p.i )->set_color( COL_RED );
+					item->set_color( COL_RED );
 					update_error( "Server did not respond!" );
 				}
 			}
 			else {
-				serverlist.get_element( p.i )->set_color( COL_RED );
+				item->set_color( COL_RED );
 				update_error( "Cannot connect to offline server!" );
 			}
 		}
@@ -466,13 +473,13 @@ bool server_frame_t::action_triggered (gui_action_creator_t *komp, value_t p)
 		if (  serverlist.get_selection() >= 0  ) {
 			filename += ((server_scrollitem_t*)serverlist.get_element(serverlist.get_selection()))->get_dns();
 			destroy_win( this );
-			welt->laden( filename.c_str() );
+			welt->load( filename.c_str() );
 		}
 		// If we have a valid custom server entry, connect to that
 		else if (  custom_valid  ) {
 			filename += newserver_name;
 			destroy_win( this );
-			welt->laden( filename.c_str() );
+			welt->load( filename.c_str() );
 		}
 		else {
 			dbg->error( "server_frame_t::action_triggered()", "join pressed without valid selection or custom server entry" );
@@ -572,6 +579,7 @@ void server_frame_t::zeichnen (koord pos, koord gr)
 		pos_y += D_V_SPACE;
 
 		// drawing twice, but otherwise it will not overlay image
-		serverlist.zeichnen( pos + koord( 0, 16 ) );
+		// Overlay what image? It draws fine the first time, this second redraw paints it in teh wrong place anyway...
+		// serverlist.zeichnen( pos + koord( 0, 16 ) );
 	}
 }

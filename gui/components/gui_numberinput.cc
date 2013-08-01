@@ -5,6 +5,11 @@
  * (see licence.txt)
  */
 
+/*
+ * An input field for integer numbers (with arrow buttons for dec/inc)
+ * @author Dwachs 2008
+ */
+
 #include "../gui_frame.h"
 #include "gui_numberinput.h"
 #include "../../simwin.h"
@@ -12,9 +17,9 @@
 #include "../../macros.h"
 #include "../../dataobj/translator.h"
 
+#define ARROW_GAP (1)
 
 char gui_numberinput_t::tooltip[256];
-
 
 gui_numberinput_t::gui_numberinput_t() :
 	gui_komponente_t(true)
@@ -37,15 +42,20 @@ gui_numberinput_t::gui_numberinput_t() :
 	b_enabled = true;
 }
 
+void gui_numberinput_t::set_groesse(koord size_par) {
+//void gui_numberinput_t::set_groesse(KOORD_VAL size_x_par, KOORD_VAL size_y_par) {
 
-void gui_numberinput_t::set_groesse(koord gr)
-{
-	bt_left.set_pos( koord(0, (gr.y - bt_left.get_groesse().y) / 2) );
-	textinp.set_pos( koord( bt_left.get_groesse().x + 2, 0) );
-	textinp.set_groesse( koord( gr.x - bt_left.get_groesse().x - bt_right.get_groesse().x - 6, gr.y) );
-	bt_right.set_pos( koord( gr.x - bt_right.get_groesse().x - 2, (gr.y - bt_right.get_groesse().y) / 2) );
+	gui_komponente_t::set_groesse(size_par);
 
-	gui_komponente_t::groesse = gr;
+	textinp.set_groesse( koord( size_par.x - bt_left.get_groesse().x - bt_right.get_groesse().x, size_par.y) );
+	//bt_left.set_pos( koord(0, (bt_left.get_groesse().y - size_par.y) / 2) );
+	bt_left.align_to(&textinp, ALIGN_CENTER_V);
+	//textinp.set_pos( koord( bt_left.get_groesse().x, 0) );
+	textinp.align_to(&bt_left, ALIGN_EXTERIOR_H | ALIGN_LEFT);
+
+	//bt_right.set_pos( koord( size_par.x - bt_right.get_groesse().x, (size_par.y - bt_right.get_groesse().y) / 2) );
+	bt_right.align_to(&textinp, ALIGN_CENTER_V | ALIGN_EXTERIOR_H | ALIGN_LEFT);
+
 }
 
 
@@ -54,7 +64,7 @@ void gui_numberinput_t::set_value(sint32 new_value)
 	value = clamp( new_value, min_value, max_value );
 	gui_frame_t *win = win_get_top();
 	if(  win  &&  win->get_focus()!=this  ) {
-		// final value should be correct, but during editing wrng values are allowed
+		// final value should be correct, but during editing wrong values are allowed
 		new_value = value;
 	}
 	// To preserve cursor position if text was edited, only set new text if changed (or empty before)
@@ -145,7 +155,7 @@ sint32 gui_numberinput_t::get_next_value()
 			}
 			return max_value;
 		}
-		// pregressive (used for loading bars
+		// progressive (used for loading bars)
 		case PROGRESS:
 		{
 			sint64 diff = (sint64)max_value - (sint64)min_value;
@@ -304,7 +314,7 @@ bool gui_numberinput_t::infowin_event(const event_t *ev)
 	if(  ev->ev_class == INFOWIN  &&  ev->ev_code == WIN_UNTOP  ) {
 		// loosing focus ...
 		set_value( get_text_value() );
-		// just to be sure: call listenern (value may be same)
+		// just to be sure: call listener (value may be same)
 		call_listeners(value_t(value));
 	}
 
@@ -313,7 +323,7 @@ bool gui_numberinput_t::infowin_event(const event_t *ev)
 
 
 /**
- * Zeichnet die Komponente
+ * Draw the component
  * @author Dwachs
  */
 void gui_numberinput_t::zeichnen(koord offset)
@@ -326,6 +336,6 @@ void gui_numberinput_t::zeichnen(koord offset)
 
 	if(getroffen( get_maus_x()-offset.x, get_maus_y()-offset.y )) {
 		sprintf( tooltip, translator::translate("enter a value between %i and %i"), min_value, max_value );
-		win_set_tooltip(get_maus_x() + 16, new_offset.y + groesse.y + 12, tooltip, this);
+		win_set_tooltip(get_maus_x() + TOOLTIP_MOUSE_OFFSET_X, new_offset.y + groesse.y + TOOLTIP_MOUSE_OFFSET_Y, tooltip, this);
 	}
 }

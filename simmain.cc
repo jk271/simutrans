@@ -403,8 +403,9 @@ int simu_main(int argc, char** argv)
 			"---------------------------------------\n"
 			"command line parameters available: \n"
 			" -addons             loads also addons (with -objects)\n"
-			" -async              asynchronic images, only for SDL\n"
-			" -debug NUM          enables debuging (1..5)\n"
+			" -async              asynchronous images, only for SDL\n"
+			" -use_hw             hardware double buffering, only for SDL\n"
+			" -debug NUM          enables debugging (1..5)\n"
 			" -freeplay           play with endless money\n"
 			" -fullscreen         starts simutrans in fullscreen mode\n"
 			" -fps COUNT          framerate (from 5 to 100)\n"
@@ -436,6 +437,7 @@ int simu_main(int argc, char** argv)
 			" -sizes              Show current size of some structures\n"
 #endif
 			" -startyear N        start in year N\n"
+			" -theme N            user directory containing theme files\n"
 			" -timeline           enables timeline\n"
 #if defined DEBUG || defined PROFILE
 			" -times              does some simple profiling\n"
@@ -469,11 +471,33 @@ int simu_main(int argc, char** argv)
 		strcpy( umgebung_t::program_dir, argv[0] );
 		*(strrchr( umgebung_t::program_dir, path_sep[0] )+1) = 0;
 
+#ifdef __APPLE__
+		// change working directory from binary dir to bundle dir
+		if(  !strcmp((umgebung_t::program_dir + (strlen(umgebung_t::program_dir) - 20 )), ".app/Contents/MacOS/")  ) {
+			umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 20] = 0;
+			while(  umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] != '/'  ) {
+				umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] = 0;
+			}
+		}
+#endif
+
+#ifdef __APPLE__
+		// Detect if the binary is started inside an application bundle
+		// Change working dir to bundle dir if that is the case or the game will search for the files inside the bundle
+		if (!strcmp((umgebung_t::program_dir + (strlen(umgebung_t::program_dir) - 20 )), ".app/Contents/MacOS/"))
+		{
+			umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 20] = 0;
+			while (umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] != '/') {
+				umgebung_t::program_dir[strlen(umgebung_t::program_dir) - 1] = 0;
+			}
+		}
+#endif
+
 		chdir( umgebung_t::program_dir );
 	}
 	printf("Use work dir %s\n", umgebung_t::program_dir);
 
-	// only the pak specifiy conf should overide this!
+	// only the specified pak conf should override this!
 	uint16 pak_diagonal_multiplier = umgebung_t::default_einstellungen.get_pak_diagonal_multiplier();
 	sint8 pak_tile_height = TILE_HEIGHT_STEP;
 
@@ -541,11 +565,13 @@ int simu_main(int argc, char** argv)
 		if (  cli_syslog_tag  ) {
 			printf("Init logging with syslog tag: %s\n", cli_syslog_tag);
 			init_logging( "syslog", true, true, version, cli_syslog_tag );
-		} else {
+		}
+		else {
 			printf("Init logging with default syslog tag\n");
 			init_logging( "syslog", true, true, version, "simutrans" );
 		}
-	} else if (gimme_arg(argc, argv, "-log", 0)) {
+	}
+	else if (gimme_arg(argc, argv, "-log", 0)) {
 		chdir( umgebung_t::user_dir );
 		char temp_log_name[256];
 		const char *logname = "simu.log";
@@ -556,14 +582,14 @@ int simu_main(int argc, char** argv)
 			logname = temp_log_name;
 		}
 		init_logging( logname, true, gimme_arg(argc, argv, "-log", 0 ) != NULL, version, NULL );
-	} else if (gimme_arg(argc, argv, "-debug", 0) != NULL) {
+	}
+	else if (gimme_arg(argc, argv, "-debug", 0) != NULL) {
 		init_logging( "stderr", true, gimme_arg(argc, argv, "-debug", 0 ) != NULL, version, NULL );
-	} else {
+	}
+	else {
 		init_logging(NULL, false, false, version, NULL);
 	}
-
 	/*** End logging set up ***/
-
 
 	// now read last setting (might be overwritten by the tab-files)
 	loadsave_t file;
@@ -602,13 +628,13 @@ int simu_main(int argc, char** argv)
 		umgebung_t::default_einstellungen.parse_simuconf( simuconf, disp_width, disp_height, fullscreen, umgebung_t::objfilename );
 	}
 
-	// umgebung: overide previous settings
+	// umgebung: override previous settings
 	if(  (gimme_arg(argc, argv, "-freeplay", 0) != NULL)  ) {
 		umgebung_t::default_einstellungen.set_freeplay( true );
 	}
 
-	// now set the desired objectfilename (overide all previous settings)
-	if (gimme_arg(argc, argv, "-objects", 1)) {
+	// now set the desired objectfilename (override all previous settings)
+	if(  gimme_arg(argc, argv, "-objects", 1)  ) {
 		umgebung_t::objfilename = gimme_arg(argc, argv, "-objects", 1);
 		// append slash / replace trailing backslash if necessary
 		uint16 len = umgebung_t::objfilename.length();
@@ -654,9 +680,18 @@ int simu_main(int argc, char** argv)
 
 	// prepare skins first
 	obj_reader_t::init();
+	bool themes_ok = false;
+	if(  const char *themestr = gimme_arg(argc, argv, "-theme", 1)  ) {
+		chdir( umgebung_t::user_dir );
+		themes_ok = themes_init(themestr);
+	}
+	if(  !themes_ok  ) {
+		chdir( umgebung_t::program_dir );
+		themes_ok = themes_init("theme");
+	}
 	chdir( umgebung_t::program_dir );
 
-	// likely only the programm without graphics was downloaded
+	// likely only the program without graphics was downloaded
 	if (gimme_arg(argc, argv, "-res", 0) != NULL) {
 		const char* res_str = gimme_arg(argc, argv, "-res", 1);
 		const int res = *res_str - '1';
@@ -702,8 +737,8 @@ int simu_main(int argc, char** argv)
 	}
 
 	int parameter[2];
-	parameter[0] = gimme_arg(argc, argv, "-net",   0)==NULL;
-	parameter[1] = gimme_arg(argc, argv, "-async", 0)==NULL;
+	parameter[0] = gimme_arg( argc, argv, "-async", 0) != NULL;
+	parameter[1] = gimme_arg( argc, argv, "-use_hw", 0) != NULL;
 	if (!dr_os_init(parameter)) {
 		dr_fatal_notify("Failed to initialize backend.\n");
 		return EXIT_FAILURE;
@@ -727,8 +762,6 @@ int simu_main(int argc, char** argv)
 	DBG_MESSAGE("simmain", ".. results in disp_width=%d, disp_height=%d", display_get_width(), display_get_height());
 
 	// The loading screen needs to be initialized
-	loadingscreen::bootstrap();
-
 	show_pointer(1);
 
 	// if no object files given, we ask the user
@@ -755,6 +788,22 @@ int simu_main(int argc, char** argv)
 				return 0;
 			}
 		}
+	}
+
+	// check for valid pak path
+	{
+		cbuffer_t buf;
+		buf.append( umgebung_t::program_dir );
+		buf.append( umgebung_t::objfilename.c_str() );
+		buf.append("ground.Outside.pak");
+
+		FILE* const f = fopen(buf, "r");
+		if(  !f  ) {
+			dr_fatal_notify("*** No pak set found ***\n\nMost likely, you have no pak set installed.\nPlease download and install a pak set (graphics).\n");
+			simgraph_exit();
+			return 0;
+		}
+		fclose(f);
 	}
 
 	// now find the pak specific tab file ...
@@ -825,7 +874,7 @@ int simu_main(int argc, char** argv)
 		sound_set_mute(true);
 	}
 
-	// Adam - Moved away loading from simmain and placed into translator for better modularisation
+	// Adam - Moved away loading from simmain and placed into translator for better modularization
 	if(  !translator::load(umgebung_t::objfilename)  ) {
 		// installation error: likely only program started
 		dbg->fatal("simmain::main()", "Unable to load any language files\n"
@@ -995,7 +1044,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 
 	karte_t *welt = new karte_t();
 	karte_ansicht_t *view = new karte_ansicht_t(welt);
-	welt->set_ansicht( view );
+	welt->set_view( view );
 
 	// some messages about old vehicle may appear ...
 	welt->get_message()->set_message_flags(0, 0, 0, 0);
@@ -1030,7 +1079,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 	setsimrand(dr_time(), dr_time());
 	clear_random_mode( 7 );	// allow all
 
-	if(  loadgame==""  ||  !welt->laden(loadgame.c_str())  ) {
+	if(  loadgame==""  ||  !welt->load(loadgame.c_str())  ) {
 		// create a default map
 		DBG_MESSAGE("init with default map","(failing will be a pak error!)");
 		// no autosave on initial map during the first six month ...
@@ -1050,7 +1099,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 		welt->init(&sets,0);
 		//  start in June ...
 		intr_set(welt, view);
-		win_set_welt(welt);
+		win_set_world(welt);
 		werkzeug_t::toolbar_tool[0]->init(welt,welt->get_active_player());
 		welt->set_fast_forward(true);
 		welt->sync_step(5000,true,false);
@@ -1066,7 +1115,7 @@ DBG_MESSAGE("simmain","loadgame file found at %s",buffer);
 		}
 		// just init view (world was loaded from file)
 		intr_set(welt, view);
-		win_set_welt(welt);
+		win_set_world(welt);
 		werkzeug_t::toolbar_tool[0]->init(welt,welt->get_active_player());
 	}
 

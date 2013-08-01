@@ -42,7 +42,7 @@ char fahrplan_gui_t::no_line[128];	// contains the current translation of "<no l
 karte_t *fahrplan_gui_t::welt = NULL;
 
 
-// shows/deletes highliting of tiles
+// shows/deletes highlighting of tiles
 void fahrplan_gui_stats_t::highlight_schedule( schedule_t *markfpl, bool marking )
 {
 	marking &= umgebung_t::visualize_schedule;
@@ -323,12 +323,14 @@ fahrplan_gui_t::fahrplan_gui_t(schedule_t* fpl_, spieler_t* sp_, convoihandle_t 
 		sprintf( str_parts_month, "1/%d",  1<<(16-fpl->get_current_eintrag().waiting_time_shift) );
 	}
 	lb_waitlevel.set_text_pointer( str_parts_month );
-	lb_waitlevel.set_pos( koord( D_BUTTON_WIDTH*2-20, ypos+2 ) );
+	lb_waitlevel.set_pos( koord(0, ypos+2 ) );
+	lb_waitlevel.align_to(&bt_wait_prev,ALIGN_EXTERIOR_H | ALIGN_LEFT | ALIGN_CENTER_V);
 	add_komponente(&lb_waitlevel);
 
 	bt_wait_next.set_pos( koord( D_BUTTON_WIDTH*2-17, ypos+2 ) );
 	bt_wait_next.set_typ(button_t::arrowright);
 	bt_wait_next.add_listener(this);
+	lb_waitlevel.set_width( bt_wait_next.get_pos().x-bt_wait_prev.get_pos().x-bt_wait_prev.get_groesse().x );
 	add_komponente(&bt_wait_next);
 
 	if(  !umgebung_t::hide_rail_return_ticket  ||  fpl->get_waytype()==road_wt  ||  fpl->get_waytype()==air_wt  ||  fpl->get_waytype()==water_wt  ) {
@@ -441,8 +443,7 @@ void fahrplan_gui_t::update_selection()
 
 
 /**
- * Mausklicks werden hiermit an die GUI-Komponenten
- * gemeldet
+ * Mouse click are hereby reported to its GUI-Components
  */
 bool fahrplan_gui_t::infowin_event(const event_t *ev)
 {
@@ -626,7 +627,7 @@ DBG_MESSAGE("fahrplan_gui_t::action_triggered()","komp=%p combo=%p",komp,&line_s
 			new_line = linehandle_t();
 			line_selector.set_selection(0);
 		}
-		// only assing old line, when new_line is not equal
+		// only assign old line, when new_line is not equal
 		if(  !new_line.is_bound()  &&  old_line.is_bound()  &&   fpl->matches(sp->get_welt(),old_line->get_schedule())  ) {
 			new_line = old_line;
 			init_line_selector();
@@ -739,51 +740,37 @@ void fahrplan_gui_t::rdwr(loadsave_t *file)
 {
 	// this handles only schedules of bound convois
 	// lines are handled by line_management_gui_t
-	koord3d cnv_pos;
-	char cnv_name[256];
-	uint8 player_nr;
+
+	// window size
 	koord gr = get_fenstergroesse();
-	if(  file->is_saving()  ) {
-		tstrncpy( cnv_name, cnv->get_name(), sizeof(cnv_name) );
-		player_nr = sp->get_player_nr();
-		cnv_pos = cnv->get_pos();
+	gr.rdwr( file );
+
+	// convoy data
+	if (file->get_version() <=112002) {
+		// dummy data
+		uint8 player_nr = 0;
+		koord3d cnv_pos( koord3d::invalid);
+		char name[128];
+		name[0] = 0;
+		file->rdwr_byte( player_nr );
+		file->rdwr_str( name, lengthof(name) );
+		cnv_pos.rdwr( file );
 	}
 	else {
+		// handle
+		convoi_t::rdwr_convoihandle_t(file, cnv);
+	}
+
+	// schedules
+	if(  file->is_loading()  ) {
 		// dummy types
 		old_fpl = new autofahrplan_t();
 		fpl = new autofahrplan_t();
 	}
-	gr.rdwr( file );
-	file->rdwr_byte( player_nr );
-	file->rdwr_str( cnv_name, sizeof(cnv_name) );
-	cnv_pos.rdwr( file );
 	old_fpl->rdwr(file);
 	fpl->rdwr(file);
+
 	if(  file->is_loading()  ) {
-		// find convoi by name and position (since there could be two convois with the same name)
-		if(  grund_t *gr = welt->lookup(cnv_pos)  ) {
-			for(  uint8 i=0;  i<gr->get_top();  i++  ) {
-				if(  gr->obj_bei(i)->is_moving()  ) {
-					vehikel_t const* const v = ding_cast<vehikel_t>(gr->obj_bei(i));
-					if(  v  &&  v->get_besitzer()->get_player_nr()==player_nr  &&  v->get_convoi()  &&  strcmp(v->get_convoi()->get_name(),cnv_name)==0  &&  old_fpl->matches( welt, v->get_convoi()->get_schedule() )  ) {
-						cnv = v->get_convoi()->self;
-						break;
-					}
-				}
-			}
-		}
-		if(  !cnv.is_bound() ) {
-			// not found (most likely convoi in depot ... )
-			FOR(vector_tpl<convoihandle_t>, const i, welt->convoys()) {
-				if (i->get_besitzer()->get_player_nr()    == player_nr &&
-						strncmp(i->get_name(), cnv_name, 256) == 0         &&
-						old_fpl->matches(welt, i->get_schedule())) {
-					// valid convoi found
-					cnv = i;
-					break;
-				}
-			}
-		}
 		if(  cnv.is_bound() ) {
 			// now we can open the window ...
 			koord const& pos = win_get_pos(this);
@@ -795,7 +782,7 @@ void fahrplan_gui_t::rdwr(loadsave_t *file)
 			w->fpl->eingabe_abschliessen();
 		}
 		else {
-			dbg->error( "fahrplan_gui_t::rdwr", "Could not restore schedule window for %s", cnv_name );
+			dbg->error( "fahrplan_gui_t::rdwr", "Could not restore schedule window for (%d)", cnv.get_id() );
 		}
 		sp = NULL;
 		delete old_fpl;

@@ -5,6 +5,10 @@
  * (see licence.txt)
  */
 
+/*
+ * Displays an information window for a convoi
+ */
+
 #include <stdio.h>
 
 #include "convoi_info_t.h"
@@ -38,7 +42,7 @@
 
 static const char cost_type[convoi_t::MAX_CONVOI_COST][64] =
 {
-	"Free Capacity", "Transported", "Revenue", "Operation", "Profit", "Distance", "Maxspeed"
+	"Free Capacity", "Transported", "Revenue", "Operation", "Profit", "Distance", "Maxspeed", "Way toll"
 };
 
 static const int cost_type_color[convoi_t::MAX_CONVOI_COST] =
@@ -49,12 +53,13 @@ static const int cost_type_color[convoi_t::MAX_CONVOI_COST] =
 	COL_OPERATION,
 	COL_PROFIT,
 	COL_DISTANCE,
-	COL_MAXSPEED
+	COL_MAXSPEED,
+	COL_TOLL
 };
 
 static const bool cost_type_money[convoi_t::MAX_CONVOI_COST] =
 {
-	false, false, true, true, true, false
+	false, false, true, true, true, false, false, true
 };
 
 
@@ -117,6 +122,7 @@ convoi_info_t::convoi_info_t(convoihandle_t cnv)
 	no_load_button.add_listener(this);
 	add_komponente(&no_load_button);
 
+	//Position is set in convoi_info_t::set_fenstergroesse()
 	follow_button.init(button_t::roundbox_state, "follow me", koord(view.get_pos().x, view.get_groesse().y + 21), koord(view.get_groesse().x, D_BUTTON_HEIGHT));
 	follow_button.set_tooltip("Follow the convoi on the map.");
 	follow_button.add_listener(this);
@@ -185,8 +191,8 @@ convoi_info_t::convoi_info_t(convoihandle_t cnv)
 
 	cnv->set_sortby( umgebung_t::default_sortmode );
 
-	set_fenstergroesse(koord(total_width, view.get_groesse().y+208+scrollbar_t::BAR_SIZE));
-	set_min_windowsize(koord(total_width, view.get_groesse().y+131+scrollbar_t::BAR_SIZE));
+	set_fenstergroesse(koord(total_width, view.get_groesse().y+208+button_t::gui_scrollbar_size.y));
+	set_min_windowsize(koord(total_width, view.get_groesse().y+131+button_t::gui_scrollbar_size.y));
 
 	set_resizemode(diagonal_resize);
 	resize(koord(0,0));
@@ -202,9 +208,9 @@ convoi_info_t::~convoi_info_t()
 
 
 /**
- * komponente neu zeichnen. Die übergebenen Werte beziehen sich auf
- * das Fenster, d.h. es sind die Bildschirkoordinaten des Fensters
- * in dem die Komponente dargestellt wird.
+ * Draw new component. The values to be passed refer to the window
+ * i.e. It's the screen coordinates of the window where the
+ * component is displayed.
  * @author Hj. Malthaner
  */
 void convoi_info_t::zeichnen(koord pos, koord gr)
@@ -582,60 +588,49 @@ convoi_info_t::convoi_info_t(karte_t *welt)
 
 void convoi_info_t::rdwr(loadsave_t *file)
 {
-	koord3d cnv_pos;
-	char name[128];
-	koord gr = get_fenstergroesse();
+	// convoy data
+	if (file->get_version() <=112002) {
+		// dummy data
+		koord3d cnv_pos( koord3d::invalid);
+		char name[128];
+		name[0] = 0;
+		cnv_pos.rdwr( file );
+		file->rdwr_str( name, lengthof(name) );
+	}
+	else {
+		// handle
+		convoi_t::rdwr_convoihandle_t(file, cnv);
+	}
+
+	// window data
 	uint32 flags = 0;
-	bool stats = toggler.pressed;
-	sint32 xoff = scrolly.get_scroll_x();
-	sint32 yoff = scrolly.get_scroll_y();
-	if(  file->is_saving()  ) {
-		cnv_pos = cnv->front()->get_pos();
+	if (file->is_saving()) {
 		for(  int i = 0;  i < convoi_t::MAX_CONVOI_COST;  i++  ) {
 			if(  filterButtons[i].pressed  ) {
 				flags |= (1<<i);
 			}
 		}
-		tstrncpy(name, cnv->get_name(), lengthof(name));
 	}
-	cnv_pos.rdwr( file );
-	file->rdwr_str( name, lengthof(name) );
+	koord gr = get_fenstergroesse();
+	bool stats = toggler.pressed;
+	sint32 xoff = scrolly.get_scroll_x();
+	sint32 yoff = scrolly.get_scroll_y();
+
 	gr.rdwr( file );
 	file->rdwr_long( flags );
 	file->rdwr_byte( umgebung_t::default_sortmode );
 	file->rdwr_bool( stats );
 	file->rdwr_long( xoff );
 	file->rdwr_long( yoff );
+
 	if(  file->is_loading()  ) {
-		// find convoi by name and position
-		if(  grund_t *gr = welt->lookup(cnv_pos)  ) {
-			for(  uint8 i=0;  i<gr->get_top();  i++  ) {
-				if(  gr->obj_bei(i)->is_moving()  ) {
-					vehikel_t const* const v = ding_cast<vehikel_t>(gr->obj_bei(i));
-					if(  v  &&  v->get_convoi()  ) {
-						if(  strcmp(v->get_convoi()->get_name(),name)==0  ) {
-							cnv = v->get_convoi()->self;
-							break;
-						}
-					}
-				}
-			}
-		}
-		// we might be unlucky, then search all convois for a convoi with this name
+		// convoy vanished
 		if(  !cnv.is_bound()  ) {
-			FOR(vector_tpl<convoihandle_t>, const i, welt->convoys()) {
-				if (strcmp(i->get_name(), name) == 0) {
-					cnv = i;
-					break;
-				}
-			}
-		}
-		// still not found?
-		if(  !cnv.is_bound()  ) {
-			dbg->error( "convoi_info_t::rdwr()", "Could not restore convoi info window of %s", name );
+			dbg->error( "convoi_info_t::rdwr()", "Could not restore convoi info window of (%d)", cnv.get_id() );
 			destroy_win( this );
 			return;
 		}
+
 		// now we can open the window ...
 		koord const& pos = win_get_pos(this);
 		convoi_info_t *w = new convoi_info_t(cnv);
@@ -646,6 +641,14 @@ void convoi_info_t::rdwr(loadsave_t *file)
 		w->set_fenstergroesse( gr );
 		if(  file->get_version()<111001  ) {
 			for(  int i = 0;  i < 6;  i++  ) {
+				w->filterButtons[i].pressed = (flags>>i)&1;
+				if(w->filterButtons[i].pressed) {
+					w->chart.show_curve(i);
+				}
+			}
+		}
+		else if(  file->get_version()<112008  ) {
+			for(  int i = 0;  i < 7;  i++  ) {
 				w->filterButtons[i].pressed = (flags>>i)&1;
 				if(w->filterButtons[i].pressed) {
 					w->chart.show_curve(i);

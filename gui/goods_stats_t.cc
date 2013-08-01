@@ -5,6 +5,12 @@
  * (see licence.txt)
  */
 
+/*
+ * Display information about each configured good
+ * as a list like display
+ * @author Hj. Malthaner
+ */
+
 #include "goods_stats_t.h"
 
 #include "../simgraph.h"
@@ -19,6 +25,7 @@
 #include "../utils/simstring.h"
 
 #include "gui_frame.h"
+#include "../gui/components/gui_button.h"
 
 
 karte_t *goods_stats_t::welt = NULL;
@@ -40,7 +47,7 @@ void goods_stats_t::update_goodslist( uint16 *g, int b, int l )
 
 
 /**
- * Zeichnet die Komponente
+ * Draw the component
  * @author Hj. Malthaner
  */
 void goods_stats_t::zeichnen(koord offset)

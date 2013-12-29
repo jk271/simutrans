@@ -1,0 +1,196 @@
+§################################################################################
+#                                                                              #
+#                Simutrans Scenario Specific Translation File                  #
+#                          Scenario: Pak128.Britain-Ex                         #
+#                             Language: cz Cestina                             #
+#                             Encoding: utf-8                                  #
+#                            Font : cyr.bdf                                    #
+#                           Date Created: 29.12 2013                           #
+#                                                                              #
+#                                   authors:                                   #
+#                                    - An_dz                                   #
+#                   note: Verified where all texts are shown                   #
+#                                    - Dwachs                                  #
+#                                    note:                                     #
+#                              Frank Penz - FrankP                             #
+#                                    note:                                     #
+#                                    - JOHNY                                   #
+#                                    note:                                     #
+#                                     - PTM                                    #
+#                                    note:                                     #
+#                        Václav Macůrek - VaclavMacurek                        #
+#                                    note:                                     #
+#                                   - hernajs                                  #
+#                                    note:                                     #
+#                              Honza Korbel - jk271                            #
+#                                    note:                                     #
+#                           Jiri Svoboda - jxsvoboda                           #
+#                                    note:                                     #
+#                              Tomáš Kubeš - napik                             #
+#                                    note:                                     #
+#                          Markus Pristovsek - prissi                          #
+#                                    note:                                     #
+#                            Oliver Mayer - rakishly                           #
+#                                    note:                                     #
+#                         Tomáš Vrbický - vrbicky_tomas                        #
+#                     note: Don´thurry up! Death is faster.                    #
+#                            Vladimír Slávik - vsys                            #
+#                                    note:                                     #
+#                                                                              #
+################################################################################
+#____________________________________factory____________________________________
+#____________________________________factory____________________________________
+Bakery1750
+Pekárna
+Bakery1840
+Pekárna
+Bakery1910
+Pekárna
+Bakery1945
+Pekárna
+Bookshop1860
+Knihkupectví
+Bookshop1920
+Knihkupectví
+Bookshop1950
+Knihkupectví
+Bookshop1970
+Knihkupectví
+Butchery1820
+Řeznictví
+Butchery1840
+Řeznictví
+Butchery1910
+Řeznictví
+Butchery1945
+Řeznictví
+Dairy1750
+Mlékárna
+Dairy1840
+Mlékárna
+Dairy1910
+Mlékárna
+Dairy1945
+Mlékárna
+Dairy1975
+Mlékárna
+IronOreMine1750
+Železnorudný důl
+IronOreMine1850
+Železnorudný důl
+IronOreMine1920
+Železnorudný důl
+IronOreMine1950
+Železnorudný důl
+IronOreMine1970
+Železnorudný důl
+OilWell1910
+Ropný vrt
+OilWell1925
+Ropný vrt
+OilWell1955
+Ropný vrt
+PaperMill1860
+Papírna
+PaperMill1920
+Papírna
+PaperMill1950
+Papírna
+PaperMill1970
+Papírna
+PetrolStation1910
+Čerpací stanice
+PetrolStation1925
+Čerpací stanice
+PetrolStation1955
+Čerpací stanice
+PetrolStation1975
+Čerpací stanice
+Printworks1860
+Tiskárna
+Printworks1920
+Tiskárna
+Printworks1950
+Tiskárna
+Printworks1970
+Tiskárna
+#_____________________________________good______________________________________
+#_____________________________________good______________________________________
+Autos
+Auta
+beer
+Pivo
+Bretter
+Prkna
+bricks
+Cihly
+Bucher
+Knihy
+canned_food
+Konzervy
+Chemicals
+Chemikálie
+china
+Porcelán
+cider
+Mošt
+clay
+Jíl
+Eisenerz
+Železná ruda
+fish
+Ryby
+flour
+Mouka
+FreshFish
+Čerstvé ryby
+fruit
+Ovoce
+FuelOil
+Nafta
+Gasoline
+Benzín
+grain
+Obilí
+hardware
+Železné zboží
+Kohle
+Uhlí
+livestock
+Dobytek
+meat
+Maso
+milk
+Mléko
+Moebel
+Nábytek
+newspaper
+Noviny
+None
+Nic
+Oel
+Ropa
+Papier
+Papír
+Passagiere
+Cestující
+pharmaceuticals
+Léky
+Plastik
+Plasty
+Post
+Pošta
+Stahl
+Ocel
+Stone
+Kámen
+textile
+Textil
+vegetables
+Zelenina
+woodchip
+Dřevní štěpka
+wool
+Vlna
+WroughtIron
+Kované železo

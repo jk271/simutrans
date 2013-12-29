@@ -4,7 +4,8 @@
 #                           Scenario: pak128.britain                           #
 #                             Language: cz Cestina_utf8                        #
 #                             Encoding: utf-8                                  #
-#                           Date Created: 21.04 2013                           #
+#                               Font : cyr.bdf                                 #
+#                           Date Created: 27.12 2013                           #
 #                                                                              #
 #                                   authors:                                   #
 #                                    - An_dz                                   #
@@ -14,6 +15,8 @@
 #                              Frank Penz - FrankP                             #
 #                                    note:                                     #
 #                                    - JOHNY                                   #
+#                                    note:                                     #
+#                                     - PTM                                    #
 #                                    note:                                     #
 #                        Václav Macůrek - VaclavMacurek                        #
 #                                    note:                                     #
@@ -169,6 +172,16 @@ CarFactory1950
 Automobilka
 CarFactory1970
 Automobilka
+CattleFarm1750
+statek
+CattleFarm1840
+statek
+CattleFarm1910
+Statek
+CattleFarm1945
+statek
+CattleFarm1975
+statek
 CementWorks1800
 Cementárna
 CementWorks1850
@@ -179,6 +192,8 @@ CementWorks1960
 Cementárna
 CementWorks1985
 Cementárna
+ChinaShop1750
+Obchod s porcelánem
 ChinaShop1850
 Obchod s porcelánem
 ChinaShop1905
@@ -211,6 +226,24 @@ Dairy1945
 Mlékárna
 Dairy1975
 Mlékárna
+ForestSawmill1750
+Pila s lesem
+ForestSawmill1850
+Pila s lesem
+ForestSawmill1920
+Pila s lesem
+ForestSawmill1950
+Pila s lesem
+ForestSawmill1970
+Pila s lesem
+FurnitureShop1750
+Obchod s nábytkem
+FurnitureShop1850
+Obchod s nábytkem
+FurnitureShop1920
+Obchod s nábytkem
+FurnitureShop1950
+Obchod s nábytkem
 GasPowerStation1985kraftwerk
 Plynová elektrárna
 GasPowerStation1995kraftwerk
@@ -261,6 +294,16 @@ OilWell1925
 Ropný vrt
 OilWell1955
 Ropný vrt
+Orchard1750
+Ovocný sad
+Orchard1840
+Ovocný sad
+Orchard1910
+Ovocný sad
+Orchard1945
+Ovocný sad
+Orchard1975
+Ovocný sad
 PaperMill1860
 Papírna
 PaperMill1920
@@ -303,6 +346,16 @@ Quarry1960
 Lom
 Quarry1985
 Lom
+SheepFarm1750
+Ovčín
+SheepFarm1840
+Ovčín
+SheepFarm1910
+Ovčín
+SheepFarm1945
+Ovčín
+SheepFarm1975
+Ovčín
 Slaughterhouse1750
 Jatka
 Slaughterhouse1840

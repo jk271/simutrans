@@ -22,8 +22,8 @@ V seznamu budou zobrazena pouze vozidla, která nemají příjem, nemají defino
 
 <p>
 <em>4.) Podle přepravovaného zboží:</em><br>
-V seznamu budou zobrazena pouze vozdila, která přepravují zvolené komodity.
-Tlačítko <strong>vše</strong> vybere všechny komodity, tklačítko <strong>nic</strong> naopak všechny odvybere. Tlačítkem <strong>inv</strong> obrátíte aktuální výběr.
+V seznamu budou zobrazena pouze vozidla, která přepravují zvolené komodity.
+Tlačítko <strong>vše</strong> vybere všechny komodity, tlačítko <strong>nic</strong> naopak všechny odvybere. Tlačítkem <strong>inv</strong> obrátíte aktuální výběr.
 </p>
 
 <p>
@@ -32,4 +32,7 @@ Tlačítko <strong>vše</strong> vybere všechny komodity, tklačítko <strong>n
 
 <p>
 -><a href="about.txt">Informace o překladu</a>
+</p>
+<p>
+Nápověda odpovídá verzi 112.1, poslední úprava 4.1.2012.
 </p>

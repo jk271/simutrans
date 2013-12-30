@@ -7,7 +7,9 @@
 <em>Výkon</em> soupravy (součet výkonu všech vozidel v soupravě).<br>
 <em>Kilometrovník</em> ukazuje počet ujetých kilometrů za celou dobu životnosti soupravy.<br>
 <em>Zastavěná plocha</em> je počet políček potřebných ke správnému naložení/vyložení celé soupravy.<br>
-<em>Cena za prodej</em> je množství peněz získané při prodeji soupravy.</p>
+<em>Cena za prodej</em> je množství peněz získané při prodeji soupravy.<br/>
+<em>Nejvyšší možná rychlost</em> je nejvyšší rychlost, jaké může souprava dosáhnout, aniž by překročila nejvyšší rychlost kteréhokoliv z vozidel.
+</p>
 <p>UPOZORNĚNÍ: Při kliknutí na tlačítko <em>Prodávat</em> je celá souprava okamžitě prodána. Žádná další potvrzení není požadováno.<br></p>
 <h1>Detaily vozitel v soupravě</h1>
 <p>V seznamu jsou ukaždého z vozidel zobrazeny následující iformace: <br>
@@ -18,6 +20,9 @@
 - <em>Výkon</em> je výkon jednotlivých vozidel.<br>
 - <em>Převod</em> je číslo, kterým se násobí výkon.<br>
 - <em>Okamžitý koeficient tření</em> ukazuje jak moc jsou vozidla bržděna. Při průjezdu zatáčkami a při stoupání je vyšší, než při jízdě po rovině.<br>
-- <em>Max zisk</em> je maximální možný výnos z typu zboží naloženého v tomto vozidle<br>
+- <em>Max. zisk</em> je maximální možný výnos z typu zboží naloženého v tomto vozidle<br>
 - <em>naložené položky</em> včetně množství.
+</p>
+<p>
+Nápověda odpovídá verzi 112.1, poslední úprava 21.1.2013.
 </p>

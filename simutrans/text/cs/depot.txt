@@ -30,7 +30,7 @@ Dále je zde sada tlačítek pro práci s vybraným konvojem. Úplně nalevo je 
 </p>
 
 <p>
-Druhá řádka tlačítek usnadňuje práci při tvorbě většího množství konvojů. Tlačítko <strong>nová linka</strong> založí novou linku, otevře okno pro úpravu jejího <a href="schedule.txt"jízdního plánu</a> a vybere ji v seznamu výše. Tlačítkem <strong>přiřadit linku</strong> je aktuální konvoj přiřazen na vybranou linku. <strong>Změnit linku</strong> umožňuje upravit jízdní řád vybrané linky. <strong>Kopírovat</strong> vytvoří duplikát aktuálního konvoje z vozidel dostupných v depu nebo nově nakoupených, včetně přiřazení linky nebo nastavení jízdního plánu.
+Druhá řádka tlačítek usnadňuje práci při tvorbě většího množství konvojů. Tlačítko <strong>nová linka</strong> založí novou linku, otevře okno pro úpravu jejího <a href="schedule.txt">jízdního plánu</a> a vybere ji v seznamu výše. Tlačítkem <strong>přiřadit linku</strong> je aktuální konvoj přiřazen na vybranou linku. <strong>Změnit linku</strong> umožňuje upravit jízdní řád vybrané linky. <strong>Kopírovat</strong> vytvoří duplikát aktuálního konvoje z vozidel dostupných v depu nebo nově nakoupených, včetně přiřazení linky nebo nastavení jízdního plánu.
 </p>
 
 <p>

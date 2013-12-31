@@ -12,8 +12,8 @@
 #include "linehandle_t.h"
 #include "halthandle_t.h"
 
-#include "simdings.h"
-#include "simgraph.h"
+#include "simobj.h"
+#include "display/simgraph.h"
 #include "simtypes.h"
 
 #include "bauer/warenbauer.h"
@@ -21,6 +21,8 @@
 #include "besch/ware_besch.h"
 
 #include "dataobj/koord.h"
+
+#include "tpl/inthashtable_tpl.h"
 
 #include "tpl/slist_tpl.h"
 #include "tpl/vector_tpl.h"
@@ -46,6 +48,7 @@ class cbuffer_t;
 class grund_t;
 class fabrik_t;
 class karte_t;
+class karte_ptr_t;
 class koord3d;
 class loadsave_t;
 class schedule_t;
@@ -77,13 +80,20 @@ private:
 	 * deshalb verwaltet die Klasse eine Liste aller Haltestellen
 	 * @author Hj. Malthaner
 	 */
-	static slist_tpl<halthandle_t> alle_haltestellen;
+	static vector_tpl<halthandle_t> alle_haltestellen;
 
 	/**
 	 * finds a stop by its name
 	 * @author prissi
 	 */
 	static stringhashtable_tpl<halthandle_t> all_names;
+
+	/**
+	 * Finds a stop by coordinate.
+	 * only used during loading.
+	 * @author prissi
+	 */
+	static inthashtable_tpl<sint32,halthandle_t> *all_koords;
 
 	/*
 	 * struct holds new financial history for line
@@ -148,33 +158,40 @@ public:
 	 *
 	 * @author Hj. Malthaner
 	 */
-	static int erzeuge_fussgaenger(karte_t *welt, const koord3d pos, int anzahl);
+	static int erzeuge_fussgaenger(const koord3d pos, int anzahl);
 
-	/* we allow only for a single stop per planquadrat
+	/**
+	 * Returns an index to a halt at koord k
+   	 * optionally limit to that owned by player sp
+   	 * by default create a new halt if none found
+	 * Only used during loading.
+	 */
+	static halthandle_t get_halt_koord_index(koord k);
+
+	/*
 	 * this will only return something if this stop belongs to same player or is public, or is a dock (when on water)
 	 */
-	static halthandle_t get_halt(const karte_t *welt, const koord3d pos, const spieler_t *sp );
-	static halthandle_t get_halt_2d(const karte_t *welt, const koord pos, const spieler_t *sp );
+	static halthandle_t get_halt(const koord3d pos, const spieler_t *sp );
 
-	static const slist_tpl<halthandle_t>& get_alle_haltestellen() { return alle_haltestellen; }
-
-	/**
-	 * Station factory method. Returns handles instead of pointers.
-	 * @author Hj. Malthaner
-	 */
-	static halthandle_t create(karte_t *welt, koord pos, spieler_t *sp);
+	static const vector_tpl<halthandle_t>& get_alle_haltestellen() { return alle_haltestellen; }
 
 	/**
 	 * Station factory method. Returns handles instead of pointers.
 	 * @author Hj. Malthaner
 	 */
-	static halthandle_t create(karte_t *welt, loadsave_t *file);
+	static halthandle_t create(koord pos, spieler_t *sp);
+
+	/**
+	 * Station factory method. Returns handles instead of pointers.
+	 * @author Hj. Malthaner
+	 */
+	static halthandle_t create(loadsave_t *file);
 
 	/*
 	* removes a ground tile from a station, deletes the building and, if last tile, also the halthandle
 	* @author prissi
 	*/
-	static bool remove(karte_t *welt, spieler_t *sp, koord3d pos);
+	static bool remove(spieler_t *sp, koord3d pos);
 
 	/**
 	 * Station destruction method.
@@ -186,7 +203,7 @@ public:
 	 * destroys all stations
 	 * @author Hj. Malthaner
 	 */
-	static void destroy_all(karte_t *);
+	static void destroy_all();
 
 	/**
 	 * Liste aller felder (Grund-Objekte) die zu dieser Haltestelle gehören
@@ -214,10 +231,12 @@ public:
 		/// directly reachable halt
 		halthandle_t halt;
 		/// best connection weight to reach this destination
-		uint16 weight;
+		uint16 weight:15;
+		/// is halt a transfer halt
+		bool is_transfer:1;
 
-		connection_t() : weight(0) { }
-		connection_t(halthandle_t _halt, uint16 _weight=0) : halt(_halt), weight(_weight) { }
+		connection_t() : weight(0), is_transfer(false) { }
+		connection_t(halthandle_t _halt, uint16 _weight=0) : halt(_halt), weight(_weight), is_transfer(false) { }
 
 		bool operator == (const connection_t &other) const { return halt == other.halt; }
 		bool operator != (const connection_t &other) const { return halt != other.halt; }
@@ -281,6 +300,7 @@ private:
 	/**
 	 * Helper method: This halt (and all its connected neighbors) belong
 	 * to the same component.
+	 * Also sets connection_t::is_transfer.
 	 * @param catg category of cargo network
 	 * @param comp number of component
 	 */
@@ -297,7 +317,7 @@ private:
 	slist_tpl<fabrik_t *> fab_list;
 
 	spieler_t *besitzer_p;
-	static karte_t *welt;
+	static karte_ptr_t welt;
 
 	/**
 	 * What is that for a station (for the image)
@@ -348,8 +368,8 @@ private:
 	uint8 sortierung;
 	bool resort_freight_info;
 
-	haltestelle_t(karte_t *welt, loadsave_t *file);
-	haltestelle_t(karte_t *welt, koord pos, spieler_t *sp);
+	haltestelle_t(loadsave_t *file);
+	haltestelle_t(koord pos, spieler_t *sp);
 	~haltestelle_t();
 
 public:
@@ -433,8 +453,6 @@ public:
 	 * @author Hj. Malthaner
 	 */
 	void neuer_monat();
-
-	static karte_t* get_welt() { return welt; }
 
 private:
 	/* Node used during route search */
@@ -623,7 +641,7 @@ public:
 	/* checks, if there is an unoccupied loading bay for this kind of thing
 	* @author prissi
 	*/
-	bool find_free_position(const waytype_t w ,convoihandle_t cnv,const ding_t::typ d) const;
+	bool find_free_position(const waytype_t w ,convoihandle_t cnv,const obj_t::typ d) const;
 
 	/* reserves a position (caution: railblocks work differently!
 	* @author prissi
@@ -686,6 +704,20 @@ public:
 	void rdwr(loadsave_t *file);
 
 	void laden_abschliessen();
+
+	/**
+	 * Called before savegame will be loaded.
+	 * Creates all_koords table.
+	 */
+	static void start_load_game();
+
+	/**
+	 * Called after loading of savegame almost finished,
+	 * i.e. after laden_abschliessen is finished.
+	 * Deletes all_koords table.
+	 */
+	static void end_load_game();
+
 
 	/*
 	 * called, if a line serves this stop

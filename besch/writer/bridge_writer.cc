@@ -59,14 +59,13 @@ void write_bridge_images(FILE* outfp, obj_node_t& node, tabfileobj_t& obj, int s
 				//intf("BACK: %s -> %s\n", keybuf, value.chars());
 				sprintf( keybuf, "front%s[%s][%d]", keyname, keyindex, season );
 			}
-			value = obj.get( keybuf );
 
-			if(  value.size() > 2  ) {
-				frontkeys.append( value );
-				//intf("FRNT: %s -> %s\n", keybuf, value.chars());
-			}
-			else {
-				printf("WARNING: not %s specified (but might be still working)\n", keybuf );
+			// must append to front keys even if empty to keep order correct (but warn anyway)
+			value = obj.get( keybuf );
+			frontkeys.append( value );
+			//intf("FRNT: %s -> %s\n", keybuf, value.chars());
+			if(  value.size() <= 2  ) {
+				dbg->warning( obj_writer_t::last_name, "No %s specified (might still work)", keybuf );
 			}
 
 			keyindex = *ptr++;

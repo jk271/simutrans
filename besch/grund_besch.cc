@@ -13,11 +13,11 @@
 
 #include "../simdebug.h"
 #include "../simworld.h"
-#include "../simgraph.h"
+#include "../display/simgraph.h"
 #include "../simconst.h"
 #include "spezial_obj_tpl.h"
 #include "grund_besch.h"
-#include "../dataobj/umgebung.h"
+#include "../dataobj/environment.h"
 
 const int totalslopes_single = 16;
 const int totalslopes = 81;
@@ -27,8 +27,6 @@ const int totalslopes = 81;
 * some functions for manipulations/blending images
 * maybe they should be put in their own module, even though they are only used here ...
 */
-
-typedef uint16 PIXVAL;
 
 #define red_comp(pix)			(((pix)>>10)&0x001f)
 #define green_comp(pix)		(((pix)>>5)&0x001f)
@@ -321,7 +319,7 @@ static bild_besch_t* create_alpha_tile(const bild_besch_t* bild_lightmap, hang_t
 
 				// first; check, if we are front or back half
 				// back half means, we are above a line from the left_y (corner1), middle_y, right_y (corner2)
-				const sint16 back_y = (tile_x < x_y / 2) ? corner1_y + ((middle_y - corner1_y) * tile_x) / (x_y / 2) : middle_y + ((corner3_y - middle_y) * (tile_x - (x_y / 2))) / (x_y / 2);
+				const sint16 back_y = (x_y < 2) ? 0 : ( (tile_x < x_y / 2) ? corner1_y + ((middle_y - corner1_y) * tile_x) / (x_y / 2) : middle_y + ((corner3_y - middle_y) * (tile_x - (x_y / 2))) / (x_y / 2) );
 				// in the middle? the it is just the diagonal in the mixmap
 				if(  back_y == tile_y  ) {
 					tile_y_corrected = 0;
@@ -351,15 +349,16 @@ static bild_besch_t* create_alpha_tile(const bild_besch_t* bild_lightmap, hang_t
 				else {
 					// left quadrant calulation: mirror of right quadrat
 					sint16 x = tile_x;
-					if(  x >= x_y / 2  ) {
+					// put condition this way, testing (x >= x_y) breaks if x_y == 1.
+					if(  2*x >= x_y ) {
 						x = x_y - tile_x;
 					}
 					// we are in the front tile => calculate border y
-					sint16 frontborder_y;
+					sint16 frontborder_y = 0;
 					if(  tile_x > x_y / 2  ) {
 						frontborder_y = corner2_y + ((corner3_y - corner2_y) * (x_y / 2 - x)) / (x_y / 2);
 					}
-					else {
+					else if(  x_y >=2  ) {
 						frontborder_y = corner1_y + ((corner2_y - corner1_y) * x) / (x_y / 2);
 					}
 					// ok, now we have to calculate the y coordinate ...
@@ -410,14 +409,28 @@ karte_t *grund_besch_t::welt = NULL;
  */
 const uint8 grund_besch_t::slopetable[80] =
 {
-	0, 1 , 0xFF,
-	2 , 3 , 0xFF, 0xFF, 0xFF, 0xFF,
-	4 , 5, 0xFF, 6, 7, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	8, 9, 0xFF, 10, 11, 0xFF, 0xFF, 0xFF, 0xFF, 12, 13, 0xFF,  14, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+	0,	1,	0xFF,	2,	3,	0xFF,	0xFF,	0xFF,	0xFF,	4,
+	5, 	0xFF,	6,	7,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,
+	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	8,	9,	0xFF,
+	10,	11,	0xFF,	0xFF,	0xFF,	0xFF,	12,	13,	0xFF,	14,
+	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,
+	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,
+	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,
+	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF,	0xFF
 };
+
+
+// since we only use valid slope (to gain some more image slots) we use this lookup table
+// 255 slopes are invalid
+/* for double slope it should look like this, and for single slope like above
+	0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+	16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+	32, 33, 34, 35, 36, 37, 38, 39, 255, 255, 40, 255, 255, 41, 42, 43,
+	44, 255, 255, 45, 255, 255, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
+	56, 57, 58, 255, 255, 59, 255, 255, 60, 61, 62, 63, 255, 255, 64, 255, 255
+*/
+uint16 doubleslope_to_imgnr[81];
+
 
 // how many animation stages we got for waves
 uint16 grund_besch_t::water_animation_stages = 1;
@@ -464,7 +477,7 @@ static const char* const climate_names[MAX_CLIMATES] =
 image_id grund_besch_t::image_offset = IMG_LEER;
 static const uint8 number_of_climates = 7;
 static slist_tpl<bild_besch_t *> ground_bild_list;
-static uint16 climate_bild[32];
+static image_id climate_bild[32], water_bild;
 image_id alpha_bild[totalslopes];
 image_id alpha_corners_bild[totalslopes * 15];
 image_id alpha_water_bild[totalslopes * 15];
@@ -489,14 +502,14 @@ bool grund_besch_t::register_besch(const grund_besch_t *besch)
 		}
 		// then ignore all ms settings
 		if(water_animation_stages==1) {
-			umgebung_t::water_animation = 0;
+			env_t::water_animation = 0;
 		}
 		water_depth_levels = besch->get_child<bildliste2d_besch_t>(2)->get_anzahl()-2;
 		if(water_depth_levels<=0) {
 			water_depth_levels = 0;
 		}
 	}
-	return 	::register_besch(grounds, besch);
+	return ::register_besch(grounds, besch);
 }
 
 
@@ -545,18 +558,41 @@ void grund_besch_t::init_ground_textures(karte_t *w)
 
 	bild_besch_t *final_tile;
 
+	bool full_climate = true;
 	// check if there are double slopes available
-	for(  int imgindex = 4;  imgindex < 15;  imgindex++  ) {
-		if(  transition_slope_texture->get_bild_ptr(imgindex) == NULL  ) {
+	for(  int imgindex = 16;  imgindex < totalslopes;  imgindex++  ) {
+		if(  light_map->get_bild_ptr(imgindex) == NULL  ) {
 			double_grounds = false;
 			break;
 		}
 	}
+	for(  int imgindex = 4;  imgindex < 15;  imgindex++  ) {
+		if(  transition_slope_texture->get_bild_ptr(imgindex) == NULL   ||
+			(imgindex<=11  &&  transition_water_texture->get_bild_ptr(imgindex) == NULL) ) {
+			full_climate = false;
+			break;
+		}
+	}
+	// double slope needs full climates
+	assert(!double_grounds  ||  full_climate);
 
 	// calculate the matching slopes ...
-	for(  int slope = 1;  slope < totalslopes;  slope++  ) {
+	doubleslope_to_imgnr[0] = 0;
+	for(  int slope = 1, slopeimgnr=1;  slope < totalslopes;  slope++  ) {
 		all_rotations_beach[slope] = NULL;
 		all_rotations_slope[slope] = NULL;
+		doubleslope_to_imgnr[slope] = 255;
+		if(  hang_t::is_all_up(slope)  ) {
+			// no need to initilise illegal tiles
+			continue;
+		}
+		if(  !double_grounds  &&  hang_t::max_diff(slope)>1  ) {
+			// no need to initialize unneeded slopes
+			continue;
+		}
+		// now add this image
+		doubleslope_to_imgnr[slope] = slopeimgnr;
+		slopeimgnr ++;
 		bild_besch_t *tmp_pic = NULL;
 		switch(  slope  ) {
 			case hang_t::nord: {
@@ -641,7 +677,7 @@ void grund_besch_t::init_ground_textures(karte_t *w)
 				break;
 			}
 			default: {
-				if(  double_grounds  ) {
+				if(  full_climate  ) {
 					switch(  slope  ) {
 						case hang_t::nord * 2: {
 							all_rotations_slope[slope] = transition_slope_texture->get_bild_ptr(4)->copy_rotate(180);
@@ -876,58 +912,86 @@ void grund_besch_t::init_ground_textures(karte_t *w)
 				}
 				else {
 					all_rotations_slope[slope] = NULL;
+					if (slope == hang_t::suedwest * 2 + hang_t::nordost * 2 + hang_t::suedost * 2 + hang_t::nordwest * 2) {
+						all_rotations_slope[slope] = transition_slope_texture->get_bild_ptr(0)->copy_rotate(0);
+						all_rotations_beach[slope] = transition_water_texture->get_bild_ptr(0)->copy_rotate(0);
+					}
 				}
 				break;
 			}
 		}
 	}
 
+	// from here one the images are generated by us => deletion also by us then
+	image_offset = get_image_count();
+	DBG_MESSAGE("grund_besch_t::init_ground_textures()","image_offset=%d", image_offset );
+
 	// water images for water and overlay
+	water_bild = image_offset;
 	for(  int dslope = 0;  dslope < totalslopes - 1;  dslope++  ) {
-		int slope = double_grounds ? dslope : slopetable[dslope];
-		final_tile = create_textured_tile( light_map->get_bild_ptr( slope ), boden_texture->get_bild_ptr( water_climate ) );
-		ground_bild_list.append( final_tile );
+		if(  doubleslope_to_imgnr[dslope] != 255  ) {
+			int slope = double_grounds ? dslope : slopetable[dslope];
+			final_tile = create_textured_tile( light_map->get_bild_ptr( slope ), boden_texture->get_bild_ptr( water_climate ) );
+			ground_bild_list.append( final_tile );
+		}
 	}
-	image_offset = final_tile->get_nummer() - totalslopes + 2;
-	DBG_MESSAGE("grund_besch_t::calc_water_level()","image_offset=%d", image_offset );
 
 	// now the other transitions
 	for(  int i=0;  i < number_of_climates;  i++  ) {
 		// normal tile (no transition, not snow)
-		climate_bild[i] = final_tile->get_nummer() + 1;
+		climate_bild[i] = get_image_count();
 		for(  int dslope = 0;  dslope < totalslopes - 1;  dslope++  ) {
-			int slope = double_grounds ? dslope : slopetable[dslope];
-			final_tile = create_textured_tile( light_map->get_bild_ptr( slope ), boden_texture->get_bild_ptr( i+1 ) );
-			ground_bild_list.append( final_tile );
+			if(  doubleslope_to_imgnr[dslope] != 255  ) {
+				int slope = double_grounds ? dslope : slopetable[dslope];
+				final_tile = create_textured_tile( light_map->get_bild_ptr( slope ), boden_texture->get_bild_ptr( i+1 ) );
+				ground_bild_list.append( final_tile );
+			}
 		}
 	}
 	// finally full snow
 	climate_bild[number_of_climates] = final_tile->get_nummer() + 1;
 	for(  int dslope = 0;  dslope < totalslopes - 1;  dslope++  ) {
-		int slope = double_grounds ? dslope : slopetable[dslope];
-		final_tile = create_textured_tile( light_map->get_bild_ptr( slope ), boden_texture->get_bild_ptr( arctic_climate ) );
-		ground_bild_list.append( final_tile );
+		if(  doubleslope_to_imgnr[dslope] != 255  ) {
+			int slope = double_grounds ? dslope : slopetable[dslope];
+			final_tile = create_textured_tile( light_map->get_bild_ptr( slope ), boden_texture->get_bild_ptr( arctic_climate ) );
+			ground_bild_list.append( final_tile );
+		}
 	}
 
 	// alpha slopes for snowline
 	for(  int dslope = 1;  dslope < totalslopes - 1;  dslope++  ) {
-		int slope = double_grounds ? dslope : slopetable[dslope];
-		final_tile = create_alpha_tile( light_map->get_bild_ptr( slope ), dslope, all_rotations_slope[dslope] );
-		alpha_bild[dslope] = final_tile->get_nummer();
+		if(  doubleslope_to_imgnr[dslope] != 255  ) {
+			int slope = double_grounds ? dslope : slopetable[dslope];
+			final_tile = create_alpha_tile( light_map->get_bild_ptr( slope ), dslope, all_rotations_slope[dslope] );
+			alpha_bild[dslope] = final_tile->get_nummer();
+		}
+		else {
+			alpha_bild[dslope] = IMG_LEER;
+		}
 	}
 
 	// alpha transitions for climates
 	for(  int dslope = 0;  dslope < totalslopes - 1;  dslope++  ) {
 		for(  int corners = 1;  corners < 16;  corners++  ) {
-			int slope = double_grounds ? dslope : slopetable[dslope];
-			uint8 double_corners = corners == 15 ? 80 : scorner1(corners) + 3 * scorner2(corners) + 9 * scorner3(corners) + 27 * scorner4(corners);
-			final_tile = create_alpha_tile( light_map->get_bild_ptr( slope ), dslope, all_rotations_slope[double_corners] );
-			alpha_corners_bild[dslope * 15 + corners - 1] = final_tile->get_nummer();
+			if(  doubleslope_to_imgnr[dslope] != 255  ) {
+				// slope of tile
+				int slope = double_grounds ? dslope : slopetable[dslope];
+				// corners with transition
+				uint8 double_corners = corners == 15 ? 80 : scorner1(corners) + 3 * scorner2(corners) + 9 * scorner3(corners) + 27 * scorner4(corners);
 
-			double_corners = corners == 15 ? 80 : (1 - scorner1(corners)) + 3 * (1 - scorner2(corners)) + 9 * (1 - scorner3(corners)) + 27 * (1 - scorner4(corners));
-			if(  all_rotations_beach[double_corners]  ) {
-				final_tile = create_alpha_tile( light_map->get_bild_ptr( slope ), dslope, all_rotations_beach[double_corners] );
-				alpha_water_bild[dslope * 15 + corners - 1] = final_tile->get_nummer();
+				// create alpha image
+				final_tile = create_alpha_tile( light_map->get_bild_ptr( slope ), dslope, all_rotations_slope[double_corners] );
+				alpha_corners_bild[dslope * 15 + corners - 1] = final_tile->get_nummer();
+
+				double_corners = corners == 15 ? 80 : (1 - scorner1(corners)) + 3 * (1 - scorner2(corners)) + 9 * (1 - scorner3(corners)) + 27 * (1 - scorner4(corners));
+				if(  all_rotations_beach[double_corners]  ) {
+					final_tile = create_alpha_tile( light_map->get_bild_ptr( slope ), dslope, all_rotations_beach[double_corners] );
+					alpha_water_bild[dslope * 15 + corners - 1] = final_tile->get_nummer();
+				}
+			}
+			else {
+				alpha_corners_bild[dslope * 15 + corners - 1] = IMG_LEER;
+				alpha_water_bild[dslope * 15 + corners - 1] = IMG_LEER;
 			}
 		}
 	}
@@ -970,7 +1034,7 @@ image_id grund_besch_t::get_ground_tile(grund_t *gr)
 		const bool snow = height >= welt->get_snowline();
 		const sint16 climate_nr = snow ? number_of_climates : (welt->get_climate(k) > 1 ? welt->get_climate(k) - 1 : 0);
 		// returns base climate for tile, transitions will be overlayed later
-		return climate_bild[climate_nr] + (uint16)slope;
+		return climate_bild[climate_nr] + doubleslope_to_imgnr[slope];
 	}
 	return IMG_LEER;
 }
@@ -978,19 +1042,19 @@ image_id grund_besch_t::get_ground_tile(grund_t *gr)
 
 image_id grund_besch_t::get_water_tile(hang_t::typ slope)
 {
-	return climate_bild[0] - totalslopes + 1 + (uint16)slope;
+	return water_bild + doubleslope_to_imgnr[slope];
 }
 
 
 image_id grund_besch_t::get_climate_tile(climate cl, hang_t::typ slope)
 {
-	return climate_bild[cl <= 0 ? 0 : cl - 1] + (uint16)slope;
+	return climate_bild[cl <= 0 ? 0 : cl - 1] + doubleslope_to_imgnr[slope];
 }
 
 
 image_id grund_besch_t::get_snow_tile(hang_t::typ slope)
 {
-	return climate_bild[number_of_climates] + (uint16)slope;
+	return climate_bild[number_of_climates] + doubleslope_to_imgnr[slope];
 }
 
 

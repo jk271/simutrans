@@ -16,10 +16,11 @@
 #include "../vehicle/simvehikel.h"
 #include "../simconvoi.h"
 #include "../simdepot.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 #include "../simcolor.h"
 #include "../simdebug.h"
-#include "../simgraph.h"
+#include "../display/simgraph.h"
+#include "../display/viewport.h"
 #include "../simline.h"
 #include "../simlinemgmt.h"
 #include "../simmenu.h"
@@ -41,7 +42,7 @@
 #include "../bauer/vehikelbauer.h"
 #include "../dataobj/fahrplan.h"
 #include "../dataobj/translator.h"
-#include "../dataobj/umgebung.h"
+#include "../dataobj/environment.h"
 
 #include "../player/simplay.h"
 
@@ -74,15 +75,8 @@ depot_frame_t::depot_frame_t(depot_t* depot) :
 	gui_frame_t( translator::translate(depot->get_name()), depot->get_besitzer()),
 	depot(depot),
 	icnv(depot->convoi_count()-1),
-	lb_convois(NULL, COL_BLACK, gui_label_t::left),
-	lb_convoi_count(NULL, COL_BLACK, gui_label_t::left),
-	lb_convoi_speed(NULL, COL_BLACK, gui_label_t::left),
-	lb_convoi_cost(NULL, COL_BLACK, gui_label_t::left),
-	lb_convoi_value(NULL, COL_BLACK, gui_label_t::left),
-	lb_convoi_power(NULL, COL_BLACK, gui_label_t::left),
-	lb_convoi_weight(NULL, COL_BLACK, gui_label_t::left),
 	lb_convoi_line("Serves Line:", COL_BLACK, gui_label_t::left),
-	lb_veh_action("Fahrzeuge:", COL_BLACK, gui_label_t::right),
+	lb_veh_action("Fahrzeuge:", SYSCOL_STATIC_TEXT, gui_label_t::right),
 	convoi_pics(depot->get_max_convoi_length()),
 	convoi(&convoi_pics),
 	pas(&pas_vec),
@@ -93,8 +87,10 @@ depot_frame_t::depot_frame_t(depot_t* depot) :
 	scrolly_electrics(&cont_electrics),
 	scrolly_loks(&cont_loks),
 	scrolly_waggons(&cont_waggons),
-	lb_vehicle_filter("Filter:", COL_BLACK, gui_label_t::right)
+	lb_vehicle_filter("Filter:", SYSCOL_STATIC_TEXT, gui_label_t::right)
 {
+	scr_size size = scr_size(0,0);
+
 DBG_DEBUG("depot_frame_t::depot_frame_t()","get_max_convoi_length()=%i",depot->get_max_convoi_length());
 	last_selected_line = depot->get_last_selected_line();
 	no_schedule_text     = translator::translate("<no schedule set>");
@@ -122,7 +118,6 @@ DBG_DEBUG("depot_frame_t::depot_frame_t()","get_max_convoi_length()=%i",depot->g
 	line_selector.set_wrapping(false);
 	line_selector.set_focusable(true);
 	add_komponente(&line_selector);
-	depot->get_besitzer()->simlinemgmt.sort_lines();
 
 	// goto line button
 	line_button.set_typ(button_t::posbutton);
@@ -223,7 +218,7 @@ DBG_DEBUG("depot_frame_t::depot_frame_t()","get_max_convoi_length()=%i",depot->g
 
 	bt_obsolete.set_typ(button_t::square);
 	bt_obsolete.set_text("Show obsolete");
-	if(  get_welt()->get_settings().get_allow_buying_obsolete_vehicles()  ) {
+	if(  welt->get_settings().get_allow_buying_obsolete_vehicles()  ) {
 		bt_obsolete.add_listener(this);
 		bt_obsolete.set_tooltip("Show also vehicles no longer in production.");
 		add_komponente(&bt_obsolete);
@@ -233,10 +228,7 @@ DBG_DEBUG("depot_frame_t::depot_frame_t()","get_max_convoi_length()=%i",depot->g
 	vehicle_filter.add_listener(this);
 	add_komponente(&vehicle_filter);
 
-	koord gr = koord(0,0);
 	build_vehicle_lists();
-	layout(&gr);
-	gui_frame_t::set_fenstergroesse(gr);
 
 	// text will be translated by ourselves (after update data)!
 	lb_convois.set_text_pointer( txt_convois );
@@ -250,6 +242,17 @@ DBG_DEBUG("depot_frame_t::depot_frame_t()","get_max_convoi_length()=%i",depot->g
 	// Bolt image for electrified depots:
 	add_komponente(&img_bolt);
 
+	scrolly_pas.set_scrollbar_mode       ( scrollbar_t::show_disabled );
+	scrolly_pas.set_size_corner(false);
+	scrolly_electrics.set_scrollbar_mode ( scrollbar_t::show_disabled );
+	scrolly_electrics.set_size_corner(false);
+	scrolly_loks.set_scrollbar_mode      ( scrollbar_t::show_disabled );
+	scrolly_loks.set_size_corner(false);
+	scrolly_waggons.set_scrollbar_mode   ( scrollbar_t::show_disabled );
+	scrolly_waggons.set_size_corner(false);
+
+	layout(&size);
+	gui_frame_t::set_windowsize(size);
 	set_resizemode( diagonal_resize );
 
 	depot->clear_command_pending();
@@ -273,14 +276,14 @@ koord3d depot_frame_t::get_weltpos(bool)
 }
 
 
-void depot_frame_t::layout(koord *gr)
+void depot_frame_t::layout(scr_size *size)
 {
-	koord placement;
-	koord grid;
-	int grid_dx;
-	int placement_dx;
+	scr_coord placement;
+	scr_coord grid;
+	scr_coord_val grid_dx;
+	scr_coord_val placement_dx;
 
-	koord fgr = (gr!=NULL)? *gr : get_fenstergroesse();
+	scr_size win_size = (size!=NULL)? *size : get_windowsize();
 
 	/*
 	* These parameter are adjusted to resolution.
@@ -312,12 +315,12 @@ void depot_frame_t::layout(koord *gr)
 	*
 	*  PREV and NEXT are small buttons - Label is adjusted to total width.
 	*/
-	const int SELECT_HEIGHT = 14;
-	const int selector_x = max(max(max(max(max(102, proportional_string_width(translator::translate("no convois")) + 4),
+	const scr_coord_val SELECT_HEIGHT = 14;
+	const scr_coord_val selector_x = max(max(max(max(max(102, proportional_string_width(translator::translate("no convois")) + 4),
 		proportional_string_width(translator::translate("1 convoi")) + 4),
 		proportional_string_width(translator::translate("%d convois")) + 4),
 		proportional_string_width(translator::translate("convoi %d of %d")) + 4),
-		line_button.get_groesse().x + 2 + proportional_string_width(translator::translate(lb_convoi_line.get_text_pointer())) + 4
+		line_button.get_size().w + 2 + proportional_string_width(translator::translate(lb_convoi_line.get_text_pointer())) + 4
 		);
 
 	/*
@@ -328,10 +331,10 @@ void depot_frame_t::layout(koord *gr)
 	*
 	* The image list is horizontally "condensed".
 	*/
-	const int CLIST_WIDTH = depot->get_max_convoi_length() * (grid.x - grid_dx) + 2 * gui_image_list_t::BORDER;
-	const int CLIST_HEIGHT = grid.y + 2 * gui_image_list_t::BORDER + 5;
-	const int CINFO_HEIGHT = LINESPACE * 4 + 1;
-	const int CONVOI_WIDTH = CLIST_WIDTH + placement_dx;
+	const scr_coord_val CLIST_WIDTH = depot->get_max_convoi_length() * (grid.x - grid_dx) + 2 * gui_image_list_t::BORDER;
+	const scr_coord_val CLIST_HEIGHT = grid.y + 2 * gui_image_list_t::BORDER + 5;
+	const scr_coord_val CINFO_HEIGHT = LINESPACE * 4 + 1;
+	const scr_coord_val CONVOI_WIDTH = CLIST_WIDTH + placement_dx;
 
 	/*
 	*	Structure of [ACTIONS] is a row of buttons:
@@ -339,28 +342,28 @@ void depot_frame_t::layout(koord *gr)
 	*	    [Start][Schedule][Destroy][Sell]
 	*	    [new Route][change Route][delete Route]
 	*/
-	const int ACTIONS_WIDTH = D_DEFAULT_WIDTH;
-	const int ACTIONS_HEIGHT = D_BUTTON_HEIGHT;
+	const scr_coord_val ACTIONS_WIDTH = D_DEFAULT_WIDTH;
+	const scr_coord_val ACTIONS_HEIGHT = D_BUTTON_HEIGHT;
 
 	/*
 	*	Structure of [VINFO] is one multiline text.
 	*/
-	const int VINFO_HEIGHT = 9 * LINESPACE - 1;
+	const scr_coord_val VINFO_HEIGHT = 9 * LINESPACE - 1;
 
 	/*
 	* Total width is the max from [CONVOI] and [ACTIONS] width.
 	*/
-	const int MIN_DEPOT_FRAME_WIDTH = max(CONVOI_WIDTH, ACTIONS_WIDTH);
-	const int DEPOT_FRAME_WIDTH = max(fgr.x, max(CONVOI_WIDTH, ACTIONS_WIDTH));
+	const scr_coord_val MIN_DEPOT_FRAME_WIDTH = max(CONVOI_WIDTH, ACTIONS_WIDTH);
+	const scr_coord_val DEPOT_FRAME_WIDTH = max(win_size.w, max(CONVOI_WIDTH, ACTIONS_WIDTH));
 
 	/*
 	*  Now we can do the first vertical adjustment:
 	*/
-	const int SELECT_VSTART = D_MARGIN_TOP;
-	const int CONVOI_VSTART = SELECT_VSTART + SELECT_HEIGHT + LINESPACE;
-	const int CINFO_VSTART = CONVOI_VSTART + CLIST_HEIGHT;
-	const int ACTIONS_VSTART = CINFO_VSTART + CINFO_HEIGHT;
-	const int PANEL_VSTART = ACTIONS_VSTART + ACTIONS_HEIGHT;
+	const scr_coord_val SELECT_VSTART = D_MARGIN_TOP;
+	const scr_coord_val CONVOI_VSTART = SELECT_VSTART + SELECT_HEIGHT + LINESPACE;
+	const scr_coord_val CINFO_VSTART = CONVOI_VSTART + CLIST_HEIGHT;
+	const scr_coord_val ACTIONS_VSTART = CINFO_VSTART + CINFO_HEIGHT;
+	const scr_coord_val PANEL_VSTART = ACTIONS_VSTART + ACTIONS_HEIGHT;
 
 	/*
 	* Now we determine the row/col layout for the panel and the total panel
@@ -368,178 +371,192 @@ void depot_frame_t::layout(koord *gr)
 	* build_vehicle_lists() fills loks_vec and waggon_vec.
 	* Total width will be expanded to match complete columns in panel.
 	*/
-	const int total_h = PANEL_VSTART + VINFO_HEIGHT + 17 + gui_tab_panel_t::HEADER_VSIZE + 2 * gui_image_list_t::BORDER + D_MARGIN_BOTTOM;
-	int PANEL_ROWS = max(1, ((fgr.y-total_h)/grid.y) );
-	if(  gr  &&  gr->y == 0  ) {
+	const scr_coord_val total_h = PANEL_VSTART + VINFO_HEIGHT + D_TITLEBAR_HEIGHT + TAB_HEADER_V_SIZE + 2 * gui_image_list_t::BORDER + D_MARGIN_BOTTOM + 1;
+	scr_coord_val PANEL_ROWS = max(1, ((win_size.h-total_h)/grid.y) );
+	if(  size  &&  size->h == 0  ) {
 		PANEL_ROWS = 3;
 	}
-	const int PANEL_HEIGHT = PANEL_ROWS * grid.y + gui_tab_panel_t::HEADER_VSIZE + 2 * gui_image_list_t::BORDER;
-	const int MIN_PANEL_HEIGHT = grid.y + gui_tab_panel_t::HEADER_VSIZE + 2 * gui_image_list_t::BORDER;
+	const scr_coord_val PANEL_HEIGHT = PANEL_ROWS * grid.y + TAB_HEADER_V_SIZE + 2 * gui_image_list_t::BORDER;
+	const scr_coord_val MIN_PANEL_HEIGHT = grid.y + TAB_HEADER_V_SIZE + 2 * gui_image_list_t::BORDER;
+	const scr_coord_val INFO_VSTART = PANEL_VSTART + PANEL_HEIGHT + div_tabbottom.get_size().h;
 
 	/*
 	*  Now we can do the complete vertical adjustment:
 	*/
-	const int TOTAL_HEIGHT = PANEL_VSTART + PANEL_HEIGHT + VINFO_HEIGHT + 17 + D_MARGIN_BOTTOM;
-	const int MIN_TOTAL_HEIGHT = PANEL_VSTART + MIN_PANEL_HEIGHT + VINFO_HEIGHT + 17 + D_MARGIN_BOTTOM;
+	const scr_coord_val TOTAL_HEIGHT = PANEL_VSTART + PANEL_HEIGHT + D_V_SPACE + VINFO_HEIGHT + D_TITLEBAR_HEIGHT + 1 + D_MARGIN_BOTTOM;
+	const scr_coord_val MIN_TOTAL_HEIGHT = PANEL_VSTART + MIN_PANEL_HEIGHT + D_V_SPACE + VINFO_HEIGHT + D_TITLEBAR_HEIGHT + 1 + D_MARGIN_BOTTOM;
 
 	/*
 	* DONE with layout planning - now build everything.
 	*/
-	set_min_windowsize(koord(MIN_DEPOT_FRAME_WIDTH, MIN_TOTAL_HEIGHT));
-	if(  fgr.x < DEPOT_FRAME_WIDTH  ) {
-		gui_frame_t::set_fenstergroesse(koord(MIN_DEPOT_FRAME_WIDTH, max(fgr.y,MIN_TOTAL_HEIGHT) ));
+	set_min_windowsize(scr_size(MIN_DEPOT_FRAME_WIDTH, MIN_TOTAL_HEIGHT));
+	if(  win_size.w < DEPOT_FRAME_WIDTH  ) {
+		gui_frame_t::set_windowsize(scr_size(MIN_DEPOT_FRAME_WIDTH, max(win_size.h,MIN_TOTAL_HEIGHT) ));
 	}
-	if(  gr  &&  gr->x == 0  ) {
-		gr->x = DEPOT_FRAME_WIDTH;
+	if(  size  &&  size->w == 0  ) {
+		size->w = DEPOT_FRAME_WIDTH;
 	}
-	if(  gr  &&  gr->y == 0  ) {
-		gr->y = TOTAL_HEIGHT;
+	if(  size  &&  size->h == 0  ) {
+		size->h = TOTAL_HEIGHT;
 	}
 
 	second_column_x = D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4;
+	const scr_coord_val second_column_w = DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - second_column_x;
 
 	/*
 	 * [SELECT]:
 	 */
-	lb_convois.set_pos(koord(D_MARGIN_LEFT, SELECT_VSTART + 3));
+	lb_convois.set_pos(scr_coord(D_MARGIN_LEFT, SELECT_VSTART + 3));
+	lb_convois.set_width( selector_x - D_H_SPACE );
 
-	convoy_selector.set_pos(koord(D_MARGIN_LEFT + selector_x, SELECT_VSTART));
-	convoy_selector.set_groesse(koord(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, D_BUTTON_HEIGHT));
-	convoy_selector.set_max_size(koord(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, LINESPACE * 13 + 2 + 16));
+	convoy_selector.set_pos(scr_coord(D_MARGIN_LEFT + selector_x, SELECT_VSTART));
+	convoy_selector.set_size(scr_size(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, D_BUTTON_HEIGHT));
+	convoy_selector.set_max_size(scr_size(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, LINESPACE * 13 + 2 + 16));
 
 	/*
 	 * [SELECT ROUTE]:
 	 * @author hsiegeln
 	 */
-	line_button.set_pos(koord(D_MARGIN_LEFT, SELECT_VSTART + D_BUTTON_HEIGHT + 3));
-	lb_convoi_line.set_pos(koord(D_MARGIN_LEFT + line_button.get_groesse().x + 2, SELECT_VSTART + D_BUTTON_HEIGHT + 3));
+	line_button.set_pos(scr_coord(D_MARGIN_LEFT, SELECT_VSTART + D_BUTTON_HEIGHT + 3));
+	lb_convoi_line.set_pos(scr_coord(D_MARGIN_LEFT + line_button.get_size().w + 2, SELECT_VSTART + D_BUTTON_HEIGHT + 3));
+	lb_convoi_line.set_width( selector_x - line_button.get_size().w - 2 - D_H_SPACE );
 
-	line_selector.set_pos(koord(D_MARGIN_LEFT + selector_x, SELECT_VSTART + D_BUTTON_HEIGHT));
-	line_selector.set_groesse(koord(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, D_BUTTON_HEIGHT));
-	line_selector.set_max_size(koord(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, LINESPACE * 13 + 2 + 16));
+	line_selector.set_pos(scr_coord(D_MARGIN_LEFT + selector_x, SELECT_VSTART + D_BUTTON_HEIGHT));
+	line_selector.set_size(scr_size(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, D_BUTTON_HEIGHT));
+	line_selector.set_max_size(scr_size(DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT - selector_x, LINESPACE * 13 + 2 + 16));
 
 	/*
 	 * [CONVOI]
 	 */
-	convoi.set_grid(koord(grid.x - grid_dx, grid.y));
-	convoi.set_placement(koord(placement.x - placement_dx, placement.y));
-	convoi.set_pos(koord((DEPOT_FRAME_WIDTH-CLIST_WIDTH) / 2, CONVOI_VSTART));
-	convoi.set_groesse(koord(CLIST_WIDTH, CLIST_HEIGHT));
+	convoi.set_grid(scr_coord(grid.x - grid_dx, grid.y));
+	convoi.set_placement(scr_coord(placement.x - placement_dx, placement.y));
+	convoi.set_pos(scr_coord((DEPOT_FRAME_WIDTH-CLIST_WIDTH) / 2, CONVOI_VSTART));
+	convoi.set_size(scr_size(CLIST_WIDTH, CLIST_HEIGHT));
 
-	sb_convoi_length.set_pos(koord((DEPOT_FRAME_WIDTH-CLIST_WIDTH) / 2 + 5,CONVOI_VSTART + grid.y + 5));
-	sb_convoi_length.set_groesse(koord(CLIST_WIDTH - 10, 4));
+	sb_convoi_length.set_pos(scr_coord((DEPOT_FRAME_WIDTH-CLIST_WIDTH) / 2 + 5,CONVOI_VSTART + grid.y + 5));
+	sb_convoi_length.set_size(scr_size(CLIST_WIDTH - 10, 4));
 
-	lb_convoi_count.set_pos(koord(D_MARGIN_LEFT, CINFO_VSTART));
-	cont_convoi_capacity.set_pos(koord(second_column_x, CINFO_VSTART));
-	lb_convoi_cost.set_pos(koord(D_MARGIN_LEFT, CINFO_VSTART + LINESPACE * 1));
-	lb_convoi_value.set_pos(koord(second_column_x, CINFO_VSTART + LINESPACE * 1));
-	lb_convoi_power.set_pos(koord(D_MARGIN_LEFT, CINFO_VSTART + LINESPACE * 2));
-	lb_convoi_weight.set_pos(koord(second_column_x, CINFO_VSTART + LINESPACE * 2));
-	lb_convoi_speed.set_pos(koord(D_MARGIN_LEFT, CINFO_VSTART + LINESPACE * 3));
+	lb_convoi_count.set_pos(scr_coord(D_MARGIN_LEFT, CINFO_VSTART));
+	lb_convoi_count.set_width( second_column_w - D_H_SPACE );
+	cont_convoi_capacity.set_pos(scr_coord(second_column_x, CINFO_VSTART));
+	cont_convoi_capacity.set_width(second_column_w);
+
+	lb_convoi_cost.set_pos(scr_coord(D_MARGIN_LEFT, CINFO_VSTART + LINESPACE * 1));
+	lb_convoi_cost.set_width( second_column_w - D_H_SPACE );
+	lb_convoi_value.set_pos(scr_coord(second_column_x, CINFO_VSTART + LINESPACE * 1));
+	lb_convoi_value.set_width(second_column_w);
+
+	lb_convoi_power.set_pos(scr_coord(D_MARGIN_LEFT, CINFO_VSTART + LINESPACE * 2));
+	lb_convoi_power.set_width( second_column_w - D_H_SPACE );
+	lb_convoi_weight.set_pos(scr_coord(second_column_x, CINFO_VSTART + LINESPACE * 2));
+	lb_convoi_weight.set_width(second_column_w);
+
+	lb_convoi_speed.set_pos(scr_coord(D_MARGIN_LEFT, CINFO_VSTART + LINESPACE * 3));
+	lb_convoi_speed.set_width( DEPOT_FRAME_WIDTH - D_MARGIN_RIGHT - D_MARGIN_LEFT );
 
 	/*
 	 * [ACTIONS]
 	 */
-	bt_start.set_pos(koord(D_MARGIN_LEFT, ACTIONS_VSTART));
-	bt_start.set_groesse(koord((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) / 4 - 3, D_BUTTON_HEIGHT));
+	bt_start.set_pos(scr_coord(D_MARGIN_LEFT, ACTIONS_VSTART));
+	bt_start.set_size(scr_size((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) / 4 - 3, D_BUTTON_HEIGHT));
 	bt_start.set_text("Start");
 
-	bt_schedule.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) / 4 + 1, ACTIONS_VSTART));
-	bt_schedule.set_groesse(koord((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4 - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) / 4 - 3, D_BUTTON_HEIGHT));
+	bt_schedule.set_pos(scr_coord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) / 4 + 1, ACTIONS_VSTART));
+	bt_schedule.set_size(scr_size((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4 - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) / 4 - 3, D_BUTTON_HEIGHT));
 	bt_schedule.set_text("Fahrplan");
 
-	bt_copy_convoi.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4 + 2, ACTIONS_VSTART));
-	bt_copy_convoi.set_groesse(koord((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4 - 3, D_BUTTON_HEIGHT));
+	bt_copy_convoi.set_pos(scr_coord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4 + 2, ACTIONS_VSTART));
+	bt_copy_convoi.set_size(scr_size((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 2 / 4 - 3, D_BUTTON_HEIGHT));
 	bt_copy_convoi.set_text("Copy Convoi");
 
-	bt_sell.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3, ACTIONS_VSTART));
-	bt_sell.set_groesse(koord((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - 3, D_BUTTON_HEIGHT));
+	bt_sell.set_pos(scr_coord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3, ACTIONS_VSTART));
+	bt_sell.set_size(scr_size((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - 3, D_BUTTON_HEIGHT));
 	bt_sell.set_text("verkaufen");
 
 	/*
 	* [PANEL]
 	*/
-	tabs.set_pos(koord(0, PANEL_VSTART));
-	tabs.set_groesse(koord(DEPOT_FRAME_WIDTH, PANEL_HEIGHT));
+	tabs.set_pos(scr_coord(0, PANEL_VSTART));
+	tabs.set_size(scr_size(DEPOT_FRAME_WIDTH, PANEL_HEIGHT));
 
 	pas.set_grid(grid);
 	pas.set_placement(placement);
-	pas.set_groesse(tabs.get_groesse() - koord(scrollbar_t::BAR_SIZE,0));
+	pas.set_size(tabs.get_size() - scr_size(D_SCROLLBAR_WIDTH,0));
 	pas.recalc_size();
-	pas.set_pos(koord(0,0));
-	cont_pas.set_groesse(pas.get_groesse());
-	scrolly_pas.set_groesse(scrolly_pas.get_groesse());
+	pas.set_pos(scr_coord(0,0));
+	cont_pas.set_size(pas.get_size());
+	scrolly_pas.set_size(scrolly_pas.get_size());
 	scrolly_pas.set_scroll_amount_y(grid.y);
 	scrolly_pas.set_scroll_discrete_y(false);
 	scrolly_pas.set_size_corner(false);
 
 	electrics.set_grid(grid);
 	electrics.set_placement(placement);
-	electrics.set_groesse(tabs.get_groesse() - koord(scrollbar_t::BAR_SIZE,0));
+	electrics.set_size(tabs.get_size() - scr_size(D_SCROLLBAR_WIDTH,0));
 	electrics.recalc_size();
-	electrics.set_pos(koord(0,0));
-	cont_electrics.set_groesse(electrics.get_groesse());
-	scrolly_electrics.set_groesse(scrolly_electrics.get_groesse());
+	electrics.set_pos(scr_coord(0,0));
+	cont_electrics.set_size(electrics.get_size());
+	scrolly_electrics.set_size(scrolly_electrics.get_size());
 	scrolly_electrics.set_scroll_amount_y(grid.y);
 	scrolly_electrics.set_scroll_discrete_y(false);
 	scrolly_electrics.set_size_corner(false);
 
 	loks.set_grid(grid);
 	loks.set_placement(placement);
-	loks.set_groesse(tabs.get_groesse() - koord(scrollbar_t::BAR_SIZE,0));
+	loks.set_size(tabs.get_size() - scr_size(D_SCROLLBAR_WIDTH,0));
 	loks.recalc_size();
-	loks.set_pos(koord(0,0));
-	cont_loks.set_groesse(loks.get_groesse());
-	scrolly_loks.set_groesse(scrolly_loks.get_groesse());
+	loks.set_pos(scr_coord(0,0));
+	cont_loks.set_size(loks.get_size());
+	scrolly_loks.set_size(scrolly_loks.get_size());
 	scrolly_loks.set_scroll_amount_y(grid.y);
 	scrolly_loks.set_scroll_discrete_y(false);
 	scrolly_loks.set_size_corner(false);
 
 	waggons.set_grid(grid);
 	waggons.set_placement(placement);
-	waggons.set_groesse(tabs.get_groesse() - koord(scrollbar_t::BAR_SIZE,0));
+	waggons.set_size(tabs.get_size() - scr_size(D_SCROLLBAR_WIDTH,0));
 	waggons.recalc_size();
-	waggons.set_pos(koord(0,0));
-	cont_waggons.set_groesse(waggons.get_groesse());
-	scrolly_waggons.set_groesse(scrolly_waggons.get_groesse());
+	waggons.set_pos(scr_coord(0,0));
+	cont_waggons.set_size(waggons.get_size());
+	scrolly_waggons.set_size(scrolly_waggons.get_size());
 	scrolly_waggons.set_scroll_amount_y(grid.y);
 	scrolly_waggons.set_scroll_discrete_y(false);
 	scrolly_waggons.set_size_corner(false);
 
-	div_tabbottom.set_pos(koord(0,PANEL_VSTART + PANEL_HEIGHT));
-	div_tabbottom.set_groesse(koord(DEPOT_FRAME_WIDTH,0));
+	div_tabbottom.set_pos(scr_coord(0,PANEL_VSTART + PANEL_HEIGHT));
+	div_tabbottom.set_width(DEPOT_FRAME_WIDTH);
 
 	/*
 	* [BOTTOM]
 	*/
-	lb_veh_action.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3 - 4, PANEL_VSTART + PANEL_HEIGHT + 2 + 2));
+	bt_veh_action.set_pos(scr_coord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3, INFO_VSTART));
+	bt_veh_action.set_size(scr_size((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - 3, D_BUTTON_HEIGHT));
 
-	bt_veh_action.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3, PANEL_VSTART + PANEL_HEIGHT + 2));
-	bt_veh_action.set_groesse(koord((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - 3, D_BUTTON_HEIGHT));
+	lb_veh_action.align_to(&bt_veh_action, ALIGN_RIGHT | ALIGN_EXTERIOR_H | ALIGN_CENTER_V, scr_coord(D_V_SPACE,0));
 
-	bt_show_all.set_pos(koord(D_MARGIN_LEFT, PANEL_VSTART + PANEL_HEIGHT + 2 + D_BUTTON_HEIGHT + 1));
+	bt_show_all.set_pos(scr_coord(D_MARGIN_LEFT, INFO_VSTART + D_BUTTON_HEIGHT + 1));
 	bt_show_all.pressed = show_all;
 
-	int w = max(72, bt_show_all.get_groesse().x);
-	bt_obsolete.set_pos(koord(D_MARGIN_LEFT + w + 4 + 6, PANEL_VSTART + PANEL_HEIGHT + 2 + D_BUTTON_HEIGHT + 1));
+	const int w = max(72, bt_show_all.get_size().w);
+	bt_obsolete.set_pos(scr_coord(D_MARGIN_LEFT + w + 4 + 6, INFO_VSTART + D_BUTTON_HEIGHT + 1));
 	bt_obsolete.pressed = show_retired_vehicles;
 
-	lb_vehicle_filter.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3 - 4, PANEL_VSTART + PANEL_HEIGHT + 2 + D_BUTTON_HEIGHT + 3));
+	vehicle_filter.set_pos(scr_coord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3, INFO_VSTART + D_BUTTON_HEIGHT));
+	vehicle_filter.set_size(scr_size((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - 3, D_BUTTON_HEIGHT));
+	vehicle_filter.set_max_size(scr_size(D_BUTTON_WIDTH + 60, LINESPACE * 7));
 
-	vehicle_filter.set_pos(koord(D_MARGIN_LEFT + (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 + 3, PANEL_VSTART + PANEL_HEIGHT + 2 + D_BUTTON_HEIGHT));
-	vehicle_filter.set_groesse(koord((DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) - (DEPOT_FRAME_WIDTH - D_MARGIN_LEFT - D_MARGIN_RIGHT) * 3 / 4 - 3, D_BUTTON_HEIGHT));
-	vehicle_filter.set_max_size(koord(D_BUTTON_WIDTH + 60, LINESPACE * 7));
+	lb_vehicle_filter.align_to(&vehicle_filter, ALIGN_RIGHT | ALIGN_EXTERIOR_H | ALIGN_TOP, scr_coord(D_V_SPACE,D_GET_CENTER_ALIGN_OFFSET(LINESPACE,D_EDIT_HEIGHT)));
 
-	const uint8 margin = 4;
-	img_bolt.set_pos(koord(get_fenstergroesse().x - skinverwaltung_t::electricity->get_bild(0)->get_pic()->w - margin, margin));
+	const scr_coord_val margin = 4;
+	img_bolt.set_pos(scr_coord(get_windowsize().w - skinverwaltung_t::electricity->get_bild(0)->get_pic()->w - margin, margin));
 }
 
 
-void depot_frame_t::set_fenstergroesse( koord gr )
+void depot_frame_t::set_windowsize( scr_size size )
 {
-	layout(&gr);
 	update_data();
-	gui_frame_t::set_fenstergroesse(gr);
+	layout(&size);
+	gui_frame_t::set_windowsize(size);
 }
 
 
@@ -582,7 +599,7 @@ void depot_frame_t::add_to_vehicle_list(const vehikel_besch_t *info)
 		if (depot->selected_filter == VEHICLE_FILTER_RELEVANT) {
 			if(freight->get_catg_index() >= 3) {
 				bool found = false;
-				FOR(vector_tpl<ware_besch_t const*>, const i, get_welt()->get_goods_list()) {
+				FOR(vector_tpl<ware_besch_t const*>, const i, welt->get_goods_list()) {
 					if (freight->get_catg_index() == i->get_catg_index()) {
 						found = true;
 						break;
@@ -592,11 +609,12 @@ void depot_frame_t::add_to_vehicle_list(const vehikel_besch_t *info)
 				// If no current goods can be transported by this vehicle, don't display it
 				if (!found) return;
 			}
-		} else if (depot->selected_filter > VEHICLE_FILTER_RELEVANT) {
+		}
+		else if (depot->selected_filter > VEHICLE_FILTER_RELEVANT) {
 			// Filter on specific selected good
 			uint32 goods_index = depot->selected_filter - VEHICLE_FILTER_GOODS_OFFSET;
-			if (goods_index < get_welt()->get_goods_list().get_count()) {
-				const ware_besch_t *selected_good = get_welt()->get_goods_list()[goods_index];
+			if (goods_index < welt->get_goods_list().get_count()) {
+				const ware_besch_t *selected_good = welt->get_goods_list()[goods_index];
 				if (freight->get_catg_index() != selected_good->get_catg_index()) {
 					return; // This vehicle can't transport the selected good
 				}
@@ -635,7 +653,7 @@ void depot_frame_t::build_vehicle_lists()
 		return;
 	}
 
-	const int month_now = get_welt()->get_timeline_year_month();
+	const int month_now = welt->get_timeline_year_month();
 
 	// free vectors
 	clear_ptr_vector(pas_vec);
@@ -647,7 +665,7 @@ void depot_frame_t::build_vehicle_lists()
 
 	// we do not allow to built electric vehicle in a depot without electrification
 	const waytype_t wt = depot->get_waytype();
-	const weg_t *w = get_welt()->lookup(depot->get_pos())->get_weg(wt!=tram_wt ? wt : track_wt);
+	const weg_t *w = welt->lookup(depot->get_pos())->get_weg(wt!=tram_wt ? wt : track_wt);
 	const bool weg_electrified = w ? w->is_electrified() : false;
 
 	img_bolt.set_image( weg_electrified ? skinverwaltung_t::electricity->get_bild_nr(0) : IMG_LEER );
@@ -706,7 +724,7 @@ void depot_frame_t::update_data()
 	static const char *txt_veh_action[3] = { "anhaengen", "voranstellen", "verkaufen" };
 
 	// change green into blue for retired vehicles
-	const int month_now = get_welt()->get_timeline_year_month();
+	const int month_now = welt->get_timeline_year_month();
 
 	bt_veh_action.set_text(txt_veh_action[veh_action]);
 
@@ -780,9 +798,9 @@ void depot_frame_t::update_data()
 			convoi_pics[i - 1]->rcolor = cnv->get_vehikel(i-1)->get_besch()->can_lead(NULL) ? COL_GREEN : COL_YELLOW;
 		}
 
-		// change green into blue for retired vehicles
+		// change green into blue for vehicles that are not available
 		for(  unsigned i = 0;  i < cnv->get_vehikel_anzahl();  i++  ) {
-			if(  cnv->get_vehikel(i)->get_besch()->is_future(month_now)  ||  cnv->get_vehikel(i)->get_besch()->is_retired(month_now)  ) {
+			if(  !cnv->get_vehikel(i)->get_besch()->is_available(month_now)  ) {
 				if(  convoi_pics[i]->lcolor == COL_GREEN  ) {
 					convoi_pics[i]->lcolor = COL_BLUE;
 				}
@@ -798,7 +816,7 @@ void depot_frame_t::update_data()
 	FOR(vehicle_image_map, const& i, vehicle_map) {
 		vehikel_besch_t const* const    info = i.key;
 		gui_image_list_t::image_data_t& img  = *i.value;
-		const uint8 ok_color = info->is_future(month_now) || info->is_retired(month_now) ? COL_BLUE: COL_GREEN;
+		const uint8 ok_color = info->is_available(month_now) ? COL_GREEN : COL_BLUE;
 
 		img.count = 0;
 		img.lcolor = ok_color;
@@ -849,45 +867,50 @@ void depot_frame_t::update_data()
 
 	// update the line selector
 	line_selector.clear_elements();
+
+	if(  last_selected_line.is_bound()  ) {
+		line_selector.insert_element( new line_scrollitem_t( last_selected_line ) );
+	}
 	if(  cnv.is_bound()  &&  cnv->get_schedule()  &&  !cnv->get_schedule()->empty()  ) {
 		if(  cnv->get_line().is_bound()  ) {
-			line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( clear_schedule_text, COL_BLACK ) );
-			line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( new_line_text, COL_BLACK ) );
+			line_selector.insert_element( new gui_scrolled_list_t::const_text_scrollitem_t( new_line_text, COL_BLACK ) );
+			line_selector.insert_element( new gui_scrolled_list_t::const_text_scrollitem_t( clear_schedule_text, COL_BLACK ) );
 		}
 		else {
-			line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( unique_schedule_text, COL_BLACK ) );
-			line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( promote_to_line_text, COL_BLACK ) );
+			line_selector.insert_element( new gui_scrolled_list_t::const_text_scrollitem_t( promote_to_line_text, COL_BLACK ) );
+			line_selector.insert_element( new gui_scrolled_list_t::const_text_scrollitem_t( unique_schedule_text, COL_BLACK ) );
 		}
 	}
 	else {
-		line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( no_schedule_text, COL_BLACK ) );
-		line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( new_line_text, COL_BLACK ) );
+		line_selector.insert_element( new gui_scrolled_list_t::const_text_scrollitem_t( new_line_text, COL_BLACK ) );
+		line_selector.insert_element( new gui_scrolled_list_t::const_text_scrollitem_t( no_schedule_text, COL_BLACK ) );
 	}
-
-	if(  last_selected_line.is_bound()  ) {
-		line_selector.append_element( new line_scrollitem_t( last_selected_line ) );
+	if(  !selected_line.is_bound()  ) {
+		// select "create new schedule"
+		line_selector.set_selection( 0 );
 	}
 	line_selector.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( line_seperator, COL_BLACK ) );
-	line_selector.set_selection(0);
-	selected_line = linehandle_t();
 
 	// check all matching lines
+	selected_line = linehandle_t();
 	vector_tpl<linehandle_t> lines;
 	get_line_list(depot, &lines);
-	FOR(vector_tpl<linehandle_t>, const line, lines) {
+	line_selector.set_selection( 0 );
+	FOR(  vector_tpl<linehandle_t>,  const line,  lines  ) {
 		line_selector.append_element( new line_scrollitem_t(line) );
 		if(  cnv.is_bound()  &&  line == cnv->get_line()  ) {
 			line_selector.set_selection( line_selector.count_elements() - 1 );
 			selected_line = line;
 		}
 	}
+	line_selector.sort( last_selected_line.is_bound()+3, NULL );
 
 	// Update vehicle filter
 	vehicle_filter.clear_elements();
 	vehicle_filter.append_element(new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate("All"), COL_BLACK));
 	vehicle_filter.append_element(new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate("Relevant"), COL_BLACK));
 
-	FOR(vector_tpl<ware_besch_t const*>, const i, get_welt()->get_goods_list()) {
+	FOR(vector_tpl<ware_besch_t const*>, const i, welt->get_goods_list()) {
 		vehicle_filter.append_element(new gui_scrolled_list_t::const_text_scrollitem_t(translator::translate(i->get_name()), COL_BLACK));
 	}
 
@@ -995,7 +1018,7 @@ bool depot_frame_t::action_triggered( gui_action_creator_t *komp, value_t p)
 		else if(  komp == &line_button  ) {
 			if(  cnv.is_bound()  ) {
 				cnv->get_besitzer()->simlinemgmt.show_lineinfo( cnv->get_besitzer(), cnv->get_line() );
-				cnv->get_welt()->set_dirty();
+				welt->set_dirty();
 			}
 		}
 		else if(  komp == &bt_sell  ) {
@@ -1036,7 +1059,7 @@ bool depot_frame_t::action_triggered( gui_action_creator_t *komp, value_t p)
 		}
 		else if(  komp == &bt_copy_convoi  ) {
 			if(  cnv.is_bound()  ) {
-				if(  !get_welt()->use_timeline()  ||  get_welt()->get_settings().get_allow_buying_obsolete_vehicles()  ||  depot->check_obsolete_inventory( cnv )  ) {
+				if(  !welt->use_timeline()  ||  welt->get_settings().get_allow_buying_obsolete_vehicles()  ||  depot->check_obsolete_inventory( cnv )  ) {
 					depot->call_depot_tool('c', cnv, NULL);
 				}
 				else {
@@ -1055,7 +1078,7 @@ bool depot_frame_t::action_triggered( gui_action_creator_t *komp, value_t p)
 			}
 		}
 		else if(  komp == &line_selector  ) {
-			int selection = p.i;
+			const int selection = p.i;
 			if(  selection == 0  ) { // unique
 				if(  selected_line.is_bound()  ) {
 					selected_line = linehandle_t();
@@ -1088,15 +1111,12 @@ bool depot_frame_t::action_triggered( gui_action_creator_t *komp, value_t p)
 					apply_line();
 					return true;
 				}
-				selection -= 4;
 			}
-			else { // skip separator
-				selection -= 3;
-			}
-			if(  selection >= 0  &&  (uint32)selection < (uint32)line_selector.count_elements()  ) {
-				vector_tpl<linehandle_t> lines;
-				get_line_list( depot, &lines );
-				selected_line = lines[selection];
+
+			// access the selected element to get selected line
+			line_scrollitem_t *item = dynamic_cast<line_scrollitem_t*>(line_selector.get_element(selection));
+			if(  item  ) {
+				selected_line = item->get_line();
 				depot->set_last_selected_line( selected_line );
 				last_selected_line = selected_line;
 				apply_line();
@@ -1123,16 +1143,30 @@ bool depot_frame_t::action_triggered( gui_action_creator_t *komp, value_t p)
 
 bool depot_frame_t::infowin_event(const event_t *ev)
 {
-	if(ev->ev_code!=WIN_CLOSE  &&  get_welt()->get_active_player() != depot->get_besitzer()) {
-		destroy_win(this);
-		return true;
+	// enable disable button actions
+	const bool action_allowed = welt->get_active_player() == depot->get_besitzer();
+	bt_new_line.enable( action_allowed );
+	bt_change_line.enable( action_allowed );
+	bt_copy_convoi.enable( action_allowed );
+	bt_apply_line.enable( action_allowed );
+	bt_start.enable( action_allowed );
+	bt_schedule.enable( action_allowed );
+	bt_destroy.enable( action_allowed );
+	bt_sell.enable( action_allowed );
+	bt_obsolete.enable( action_allowed );
+	bt_show_all.enable( action_allowed );
+	bt_veh_action.enable( action_allowed );
+	line_button.enable( action_allowed );
+//	convoy_selector.
+	if(  !action_allowed  &&  ev->ev_class <= INFOWIN  ) {
+		return false;
 	}
 
 	const bool swallowed = gui_frame_t::infowin_event(ev);
 
 	// HACK make line_selector focusable again
 	// now we can release focus
-	if (!line_selector.is_focusable( ) ) {
+	if(  !line_selector.is_focusable( ) ) {
 		line_selector.set_focusable( true );
 		set_focus(NULL);
 	}
@@ -1157,16 +1191,16 @@ bool depot_frame_t::infowin_event(const event_t *ev)
 			 * Replace our depot_frame_t with a new at the same position.
 			 * Volker Meyer
 			 */
-			koord const pos = win_get_pos(this);
+			scr_coord const pos = win_get_pos(this);
 			destroy_win( this );
 
 			next_dep->zeige_info();
 			win_set_pos(win_get_magic((ptrdiff_t)next_dep), pos.x, pos.y);
-			get_welt()->change_world_position(next_dep->get_pos());
+			welt->get_viewport()->change_world_position(next_dep->get_pos());
 		}
 		else {
 			// recenter on current depot
-			get_welt()->change_world_position(depot->get_pos());
+			welt->get_viewport()->change_world_position(depot->get_pos());
 		}
 
 		return true;
@@ -1199,12 +1233,21 @@ bool depot_frame_t::infowin_event(const event_t *ev)
 }
 
 
-void depot_frame_t::zeichnen(koord pos, koord groesse)
+void depot_frame_t::draw(scr_coord pos, scr_size size)
 {
-	if(  get_welt()->get_active_player() != depot->get_besitzer()  ) {
-		destroy_win(this);
-		return;
-	}
+	const bool action_allowed = welt->get_active_player() == depot->get_besitzer();
+	bt_new_line.enable( action_allowed );
+	bt_change_line.enable( action_allowed );
+	bt_copy_convoi.enable( action_allowed );
+	bt_apply_line.enable( action_allowed );
+	bt_start.enable( action_allowed );
+	bt_schedule.enable( action_allowed );
+	bt_destroy.enable( action_allowed );
+	bt_sell.enable( action_allowed );
+	bt_obsolete.enable( action_allowed );
+	bt_show_all.enable( action_allowed );
+	bt_veh_action.enable( action_allowed );
+	line_button.enable( action_allowed );
 
 	convoihandle_t cnv = depot->get_convoi(icnv);
 	// check for data inconsistencies (can happen with withdraw-all and vehicle in depot)
@@ -1314,8 +1357,14 @@ void depot_frame_t::zeichnen(koord pos, koord groesse)
 				txt_convoi_value.printf("%s %8s", translator::translate("Restwert:"), buf );
 
 				txt_convoi_cost.clear();
-				money_to_string(  buf, cnv->get_purchase_cost() / 100.0, false );
-				txt_convoi_cost.printf( translator::translate("Cost: %8s (%.2f$/km)\n"), buf, (double)cnv->get_running_cost() / 100.0 );
+				if(  sint32 fix_cost = welt->scale_with_month_length(cnv->get_fix_cost())  ) {
+					money_to_string(  buf, fix_cost / 100.0, false );
+					txt_convoi_cost.printf( translator::translate("Cost: %8s (%.2f$/km %.f$/m)\n"), buf, (double)cnv->get_running_cost()/100.0, (double)fix_cost/100.0 );
+				}
+				else {
+					money_to_string(  buf, cnv->get_purchase_cost() / 100.0, false );
+					txt_convoi_cost.printf( translator::translate("Cost: %8s (%.2f$/km)\n"), buf, (double)cnv->get_running_cost() / 100.0 );
+				}
 			}
 
 			txt_convoi_power.clear();
@@ -1361,7 +1410,7 @@ void depot_frame_t::zeichnen(koord pos, koord groesse)
 	bt_obsolete.pressed = show_retired_vehicles;	// otherwise the button would not show depressed
 	bt_show_all.pressed = show_all;	// otherwise the button would not show depressed
 
-	gui_frame_t::zeichnen(pos, groesse);
+	gui_frame_t::draw(pos, size);
 	draw_vehicle_info_text(pos);
 }
 
@@ -1411,7 +1460,7 @@ void depot_frame_t::fahrplaneingabe()
 			assert(fpl!=NULL);
 			gui_frame_t *fplwin = win_get_magic( (ptrdiff_t)fpl );
 			if(  fplwin == NULL  ) {
-				cnv->open_schedule_window( get_welt()->get_active_player() == cnv->get_besitzer() );
+				cnv->open_schedule_window( welt->get_active_player() == cnv->get_besitzer() );
 			}
 			else {
 				top_win( fplwin );
@@ -1424,11 +1473,11 @@ void depot_frame_t::fahrplaneingabe()
 }
 
 
-void depot_frame_t::draw_vehicle_info_text(koord pos)
+void depot_frame_t::draw_vehicle_info_text(scr_coord pos)
 {
-	char buf[1024];
-	const koord size = get_fenstergroesse();
-	PUSH_CLIP(pos.x, pos.y, size.x-1, size.y-1);
+	cbuffer_t buf;
+	const scr_size size = get_windowsize();
+	PUSH_CLIP(pos.x, pos.y, size.w-1, size.h-1);
 
 	gui_komponente_t const* const tab = tabs.get_aktives_tab();
 	gui_image_list_t const* const lst =
@@ -1441,10 +1490,10 @@ void depot_frame_t::draw_vehicle_info_text(koord pos)
 	double resale_value = -1.0;
 	const vehikel_besch_t *veh_type = NULL;
 	bool new_vehicle_length_sb_force_zero = false;
-	koord relpos = koord( 0, ((gui_scrollpane_t *)tabs.get_aktives_tab())->get_scroll_y() );
-	int sel_index = lst->index_at( pos + tabs.get_pos() - relpos, x, y - 16 - gui_tab_panel_t::HEADER_VSIZE);
+	scr_coord relpos = scr_coord( 0, ((gui_scrollpane_t *)tabs.get_aktives_tab())->get_scroll_y() );
+	int sel_index = lst->index_at( pos + tabs.get_pos() - relpos, x, y - D_TITLEBAR_HEIGHT - TAB_HEADER_V_SIZE);
 
-	if(  (sel_index != -1)  &&  (tabs.getroffen(x - pos.x, y - pos.y - 16))  ) {
+	if(  (sel_index != -1)  &&  (tabs.getroffen(x - pos.x, y - pos.y - D_TITLEBAR_HEIGHT))  ) {
 		// cursor over a vehicle in the selection list
 		const vector_tpl<gui_image_list_t::image_data_t*>& vec = (lst == &electrics ? electrics_vec : (lst == &pas ? pas_vec : (lst == &loks ? loks_vec : waggons_vec)));
 		veh_type = vehikelbauer_t::get_info( vec[sel_index]->text );
@@ -1458,7 +1507,7 @@ void depot_frame_t::draw_vehicle_info_text(koord pos)
 	}
 	else {
 		// cursor over a vehicle in the convoi
-		sel_index = convoi.index_at( pos , x, y - 16);
+		sel_index = convoi.index_at( pos , x, y - D_TITLEBAR_HEIGHT);
 		if(  sel_index != -1  ) {
 			convoihandle_t cnv = depot->get_convoi( icnv );
 			veh_type = cnv->get_vehikel( sel_index )->get_besch();
@@ -1479,91 +1528,99 @@ void depot_frame_t::draw_vehicle_info_text(koord pos)
 				break;
 			}
 			default: {
-				sprintf( buf, translator::translate("%d Einzelfahrzeuge im Depot"), count );
+				buf.printf( translator::translate("%d Einzelfahrzeuge im Depot"), count );
 				c = buf;
 				break;
 			}
 		}
-		display_proportional( pos.x + D_MARGIN_LEFT, pos.y + tabs.get_pos().y + tabs.get_groesse().y + 16 + 4, c, ALIGN_LEFT, COL_BLACK, true );
+		display_proportional( pos.x + D_MARGIN_LEFT, pos.y + D_TITLEBAR_HEIGHT + div_tabbottom.get_pos().y + div_tabbottom.get_size().h + 1, c, ALIGN_LEFT, COL_BLACK, true );
 	}
 
 	if(  veh_type  ) {
+
 		// column 1
-		int n = sprintf( buf, "%s", translator::translate( veh_type->get_name(), depot->get_welt()->get_settings().get_name_language_id() ) );
+		buf.clear();
+		buf.printf( "%s", translator::translate( veh_type->get_name(), welt->get_settings().get_name_language_id() ) );
 
 		if(  veh_type->get_leistung() > 0  ) { // LOCO
-			n += sprintf( buf + n, " (%s)\n", translator::translate( engine_type_names[veh_type->get_engine_type()+1] ) );
+			buf.printf( " (%s)\n", translator::translate( engine_type_names[veh_type->get_engine_type()+1] ) );
 		}
 		else {
-			n += sprintf( buf + n, "\n");
+			buf.append( "\n" );
 		}
 
-		{
+		if(  sint32 fix_cost = welt->scale_with_month_length(veh_type->get_maintenance())  ) {
 			char tmp[128];
 			money_to_string( tmp, veh_type->get_preis() / 100.0, false );
-			n += sprintf( buf + n, translator::translate("Cost: %8s (%.2f$/km)\n"), tmp, veh_type->get_betriebskosten() / 100.0 );
+			buf.printf( translator::translate("Cost: %8s (%.2f$/km %.f$/m)\n"), tmp, veh_type->get_betriebskosten()/100.0, fix_cost/100.0 );
+		}
+		else {
+			char tmp[128];
+			money_to_string(  tmp, veh_type->get_preis() / 100.0, false );
+			buf.printf( translator::translate("Cost: %8s (%.2f$/km)\n"), tmp, veh_type->get_betriebskosten()/100.0 );
 		}
 
 		if(  veh_type->get_zuladung() > 0  ) { // must translate as "Capacity: %3d%s %s\n"
-			n += sprintf( buf + n, translator::translate("Capacity: %d%s %s\n"),
+			buf.printf( translator::translate("Capacity: %d%s %s\n"),
 				veh_type->get_zuladung(),
 				translator::translate( veh_type->get_ware()->get_mass() ),
 				veh_type->get_ware()->get_catg()==0 ? translator::translate( veh_type->get_ware()->get_name() ) : translator::translate( veh_type->get_ware()->get_catg_name() )
 				);
 		}
 		else {
-			n += sprintf( buf + n, "\n");
+			buf.append( "\n" );
 		}
 
 		if(  veh_type->get_leistung() > 0  ) { // LOCO
-			n += sprintf( buf + n, translator::translate("Power: %4d kW\n"), veh_type->get_leistung() );
+			buf.printf( translator::translate("Power: %4d kW\n"), veh_type->get_leistung() );
 		}
 		else {
-			n += sprintf( buf + n, "\n");
+			buf.append( "\n" );
 		}
 
-		n += sprintf( buf + n, "%s %4.1ft\n", translator::translate("Weight:"), veh_type->get_gewicht() / 1000.0 );
-		sprintf( buf + n, "%s %3d km/h", translator::translate("Max. speed:"), veh_type->get_geschw() );
+		buf.printf( "%s %4.1ft\n", translator::translate("Weight:"), veh_type->get_gewicht() / 1000.0 );
+		buf.printf( "%s %3d km/h", translator::translate("Max. speed:"), veh_type->get_geschw() );
 
-		display_multiline_text( pos.x + D_MARGIN_LEFT, pos.y + tabs.get_pos().y + tabs.get_groesse().y + 31 + LINESPACE + 4, buf,  COL_BLACK);
+		display_multiline_text( pos.x + D_MARGIN_LEFT, pos.y + D_TITLEBAR_HEIGHT + bt_show_all.get_pos().y + bt_show_all.get_size().h + D_V_SPACE, buf, SYSCOL_STATIC_TEXT);
 
 		// column 2
-		n = sprintf( buf, "%s %s %04d\n",
+		buf.clear();
+		buf.printf( "%s %s %04d\n",
 			translator::translate("Intro. date:"),
 			translator::get_month_name( veh_type->get_intro_year_month() % 12 ),
 			veh_type->get_intro_year_month() / 12
 			);
 
 		if(  veh_type->get_retire_year_month() != DEFAULT_RETIRE_DATE * 12  ) {
-			n += sprintf( buf + n, "%s %s %04d\n",
+			buf.printf( "%s %s %04d\n",
 				translator::translate("Retire. date:"),
 				translator::get_month_name( veh_type->get_retire_year_month() % 12 ),
 				veh_type->get_retire_year_month() / 12
 				);
 		}
 		else {
-			n += sprintf( buf + n, "\n");
+			buf.append( "\n" );
 		}
 
 		if(  veh_type->get_leistung() > 0  &&  veh_type->get_gear() != 64  ) {
-			n += sprintf( buf + n, "%s %0.2f : 1\n", translator::translate("Gear:"), veh_type->get_gear() / 64.0 );
+			buf.printf( "%s %0.2f : 1\n", translator::translate("Gear:"), veh_type->get_gear() / 64.0 );
 		}
 		else {
-			n += sprintf( buf + n, "\n");
+			buf.append( "\n" );
 		}
 
 		if(  char const* const copyright = veh_type->get_copyright()  ) {
-			n += sprintf( buf + n, translator::translate("Constructed by %s"), copyright );
+			buf.printf( translator::translate("Constructed by %s"), copyright );
 		}
-		n += sprintf( buf +  n, "\n");
+		buf.append( "\n" );
 
 		if(  resale_value != -1.0  ) {
 			char tmp[128];
 			money_to_string(  tmp, resale_value / 100.0, false );
-			sprintf( buf + n, "%s %8s", translator::translate("Restwert:"), tmp );
+			buf.printf( "%s %8s", translator::translate("Restwert:"), tmp );
 		}
 
-		display_multiline_text( pos.x + second_column_x, pos.y + tabs.get_pos().y + tabs.get_groesse().y + 31 + LINESPACE * 2 + 4, buf, COL_BLACK);
+		display_multiline_text( pos.x + second_column_x, pos.y + D_TITLEBAR_HEIGHT + bt_show_all.get_pos().y + bt_show_all.get_size().h + D_V_SPACE + LINESPACE, buf, SYSCOL_STATIC_TEXT);
 
 		// update speedbar
 		new_vehicle_length_sb = new_vehicle_length_sb_force_zero ? 0 : convoi_length_ok_sb + convoi_length_slower_sb + convoi_length_too_slow_sb + veh_type->get_length();
@@ -1639,25 +1696,25 @@ void depot_convoi_capacity_t::set_totals(uint32 pax, uint32 mail, uint32 goods)
 }
 
 
-void depot_convoi_capacity_t::zeichnen(koord off)
+void depot_convoi_capacity_t::draw(scr_coord off)
 {
 	cbuffer_t cbuf;
 
-	int w = 0;
+	scr_coord_val w = 0;
 	cbuf.clear();
 	cbuf.printf("%s %d", translator::translate("Capacity:"), total_pax );
-	w += display_proportional_clip( pos.x+off.x + w, pos.y+off.y , cbuf, ALIGN_LEFT, COL_BLACK, true);
+	w += display_proportional_clip( pos.x+off.x + w, pos.y+off.y , cbuf, ALIGN_LEFT, SYSCOL_STATIC_TEXT, true);
 	display_color_img( skinverwaltung_t::passagiere->get_bild_nr(0), pos.x + off.x + w, pos.y + off.y, 0, false, false);
 
 	w += 16;
 	cbuf.clear();
 	cbuf.printf("%d", total_mail );
-	w += display_proportional_clip( pos.x+off.x + w, pos.y+off.y, cbuf, ALIGN_LEFT, COL_BLACK, true);
+	w += display_proportional_clip( pos.x+off.x + w, pos.y+off.y, cbuf, ALIGN_LEFT, SYSCOL_STATIC_TEXT, true);
 	display_color_img( skinverwaltung_t::post->get_bild_nr(0), pos.x + off.x + w, pos.y + off.y, 0, false, false);
 
 	w += 16;
 	cbuf.clear();
 	cbuf.printf("%d", total_goods );
-	w += display_proportional_clip( pos.x+off.x + w, pos.y+off.y, cbuf, ALIGN_LEFT, COL_BLACK, true);
+	w += display_proportional_clip( pos.x+off.x + w, pos.y+off.y, cbuf, ALIGN_LEFT, SYSCOL_STATIC_TEXT, true);
 	display_color_img( skinverwaltung_t::waren->get_bild_nr(0), pos.x + off.x + w, pos.y + off.y, 0, false, false);
 }

@@ -41,9 +41,9 @@ ware_t::ware_t(const ware_besch_t *wtyp) : ziel(), zwischenziel(), zielpos(-1, -
 	to_factory = 0;
 }
 
-ware_t::ware_t(karte_t *welt,loadsave_t *file)
+ware_t::ware_t(loadsave_t *file)
 {
-	rdwr(welt,file);
+	rdwr(file);
 }
 
 
@@ -54,7 +54,7 @@ void ware_t::set_besch(const ware_besch_t* type)
 
 
 
-void ware_t::rdwr(karte_t *welt,loadsave_t *file)
+void ware_t::rdwr(loadsave_t *file)
 {
 	sint32 amount = menge;
 	file->rdwr_long(amount);
@@ -125,16 +125,16 @@ void ware_t::rdwr(karte_t *welt,loadsave_t *file)
 		else {
 			koord ziel_koord;
 			ziel_koord.rdwr(file);
-			ziel = welt->get_halt_koord_index(ziel_koord);
+			ziel = haltestelle_t::get_halt_koord_index(ziel_koord);
 			koord zwischen_ziel_koord;
 			zwischen_ziel_koord.rdwr(file);
-			zwischenziel = welt->get_halt_koord_index(zwischen_ziel_koord);
+			zwischenziel = haltestelle_t::get_halt_koord_index(zwischen_ziel_koord);
 		}
 	}
 	zielpos.rdwr(file);
 	// restore factory-flag
 	if(  file->get_version()<110005  &&  file->is_loading()  ) {
-		if (fabrik_t::get_fab(welt, zielpos)) {
+		if (fabrik_t::get_fab(zielpos)) {
 			to_factory = 1;
 		}
 	}
@@ -142,33 +142,35 @@ void ware_t::rdwr(karte_t *welt,loadsave_t *file)
 
 
 
-void ware_t::laden_abschliessen(karte_t *welt,spieler_t * /*sp*/)
+void ware_t::laden_abschliessen(karte_t *welt)
 {
-	// since some halt was referred by with several koordinates
-	// this routine will correct it
-	if(ziel.is_bound()) {
-		ziel = welt->lookup(ziel->get_init_pos())->get_halt();
+	if(  welt->load_version<=111005  ) {
+		// since some halt was referred by with several koordinates
+		// this routine will correct it
+		if(ziel.is_bound()) {
+			ziel = haltestelle_t::get_halt_koord_index(ziel->get_init_pos());
+		}
+		if(zwischenziel.is_bound()) {
+			zwischenziel = haltestelle_t::get_halt_koord_index(zwischenziel->get_init_pos());
+		}
 	}
-	if(zwischenziel.is_bound()) {
-		zwischenziel = welt->lookup(zwischenziel->get_init_pos())->get_halt();
-	}
-	update_factory_target(welt);
+	update_factory_target();
 }
 
 
-void ware_t::rotate90( karte_t *welt, sint16 y_size )
+void ware_t::rotate90(sint16 y_size )
 {
 	zielpos.rotate90( y_size );
-	update_factory_target(welt);
+	update_factory_target();
 }
 
 
-void ware_t::update_factory_target(karte_t *welt)
+void ware_t::update_factory_target()
 {
 	if (to_factory) {
 		// assert that target coordinates are unique for cargo going to the same factory
 		// as new cargo will be generated with possibly new factory coordinates
-		fabrik_t *fab = fabrik_t::get_fab( welt, zielpos );
+		fabrik_t *fab = fabrik_t::get_fab(zielpos );
 		if (fab) {
 			zielpos = fab->get_pos().get_2d();
 		}

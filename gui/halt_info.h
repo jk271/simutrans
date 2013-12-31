@@ -25,13 +25,12 @@
 
 #include "../utils/cbuffer_t.h"
 #include "../simhalt.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 
 
 class halt_info_t : public gui_frame_t, private action_listener_t
 {
 private:
-	static karte_t *welt;
 
 	/**
 	* Buffer for freight info text string.
@@ -85,7 +84,7 @@ private:
 	void show_hide_departures( bool show );
 
 public:
-	halt_info_t(karte_t *welt, halthandle_t halt);
+	halt_info_t(halthandle_t halt);
 
 	virtual ~halt_info_t();
 
@@ -102,13 +101,13 @@ public:
 	 * component is displayed.
 	 * @author Hj. Malthaner
 	 */
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	/**
 	 * Set window size and adjust component sizes and/or positions accordingly
 	 * @author Hj. Malthaner
 	 */
-	virtual void set_fenstergroesse(koord groesse);
+	virtual void set_windowsize(scr_size size);
 
 	virtual koord3d get_weltpos(bool);
 
@@ -119,7 +118,7 @@ public:
 	void map_rotate90( sint16 );
 
 	// this constructor is only used during loading
-	halt_info_t(karte_t *welt);
+	halt_info_t();
 
 	void rdwr( loadsave_t *file );
 

@@ -22,7 +22,7 @@
 
 #include "../convoihandle_t.h"
 #include "../linehandle_t.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 #include "../tpl/vector_tpl.h"
 
 
@@ -31,14 +31,12 @@ class schedule_t;
 struct linieneintrag_t;
 class spieler_t;
 class cbuffer_t;
-class karte_t;
 class loadsave_t;
 
 
-class fahrplan_gui_stats_t : public gui_komponente_t
+class fahrplan_gui_stats_t : public gui_world_component_t
 {
 private:
-	static karte_t *welt;
 	static cbuffer_t buf;
 	static zeiger_t *aktuell_mark;
 
@@ -47,7 +45,7 @@ private:
 	spieler_t* sp;
 
 public:
-	fahrplan_gui_stats_t(karte_t* w, spieler_t *s);
+	fahrplan_gui_stats_t(spieler_t *s);
 	~fahrplan_gui_stats_t();
 
 	void set_fahrplan( schedule_t* f ) { fpl = f; }
@@ -55,7 +53,7 @@ public:
 	void highlight_schedule( schedule_t *markfpl, bool marking );
 
 	// Draw the component
-	void zeichnen(koord offset);
+	void draw(scr_coord offset);
 };
 
 
@@ -76,11 +74,7 @@ public:
 	static void gimme_short_stop_name(cbuffer_t& buf, karte_t* welt, spieler_t const* sp, linieneintrag_t const& entry, int max_chars);
 
 private:
-	static char no_line[128];
-
 	enum mode_t {adding, inserting, removing, undefined_mode};
-
-	vector_tpl<linehandle_t> lines;
 
 	mode_t mode;
 
@@ -115,7 +109,6 @@ private:
 	void update_selection();
 
 protected:
-	static karte_t *welt;
 	schedule_t *fpl;
 	schedule_t* old_fpl;
 	spieler_t *sp;
@@ -139,13 +132,13 @@ public:
 	 * Draw the Frame
 	 * @author Hansjörg Malthaner
 	 */
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	/**
 	 * Set window size and adjust component sizes and/or positions accordingly
 	 * @author Hj. Malthaner
 	 */
-	virtual void set_fenstergroesse(koord groesse);
+	virtual void set_windowsize(scr_size size);
 
 	/**
 	 * show or hide the line selector combobox and its associated label
@@ -164,7 +157,7 @@ public:
 	void map_rotate90( sint16 );
 
 	// this constructor is only used during loading
-	fahrplan_gui_t(karte_t *welt);
+	fahrplan_gui_t();
 
 	virtual void rdwr( loadsave_t *file );
 

@@ -15,7 +15,7 @@
 #include "simlinemgmt.h"
 
 uint8 convoi_to_line_catgory_[convoi_t::MAX_CONVOI_COST] = {
-	LINE_CAPACITY, LINE_TRANSPORTED_GOODS, LINE_REVENUE, LINE_OPERATIONS, LINE_PROFIT, LINE_DISTANCE, LINE_MAXSPEED
+	LINE_CAPACITY, LINE_TRANSPORTED_GOODS, LINE_REVENUE, LINE_OPERATIONS, LINE_PROFIT, LINE_DISTANCE, LINE_MAXSPEED, LINE_WAYTOLL
 };
 
 uint8 simline_t::convoi_to_line_catgory(uint8 cnv_cost)
@@ -25,10 +25,10 @@ uint8 simline_t::convoi_to_line_catgory(uint8 cnv_cost)
 }
 
 
-karte_t *simline_t::welt=NULL;
+karte_ptr_t simline_t::welt;
 
 
-simline_t::simline_t(karte_t* welt, spieler_t* sp, linetype type)
+simline_t::simline_t(spieler_t* sp, linetype type)
 {
 	self = linehandle_t(this);
 	char printname[128];
@@ -37,7 +37,6 @@ simline_t::simline_t(karte_t* welt, spieler_t* sp, linetype type)
 
 	init_financial_history();
 	this->type = type;
-	this->welt = welt;
 	this->fpl = NULL;
 	this->sp = sp;
 	withdraw = false;
@@ -46,12 +45,11 @@ simline_t::simline_t(karte_t* welt, spieler_t* sp, linetype type)
 }
 
 
-simline_t::simline_t(karte_t* welt, spieler_t* sp, linetype type, loadsave_t *file)
+simline_t::simline_t(spieler_t* sp, linetype type, loadsave_t *file)
 {
 	// id will be read and assigned during rdwr
 	self = linehandle_t();
 	this->type = type;
-	this->welt = welt;
 	this->fpl = NULL;
 	this->sp = sp;
 	withdraw = false;
@@ -222,6 +220,7 @@ void simline_t::rdwr(loadsave_t *file)
 		for (size_t k = MAX_MONTHS; k-- != 0;) {
 			financial_history[k][LINE_DISTANCE] = 0;
 			financial_history[k][LINE_MAXSPEED] = 0;
+			financial_history[k][LINE_WAYTOLL] = 0;
 		}
 	}
 	else if(  file->get_version()<111001  ) {
@@ -232,6 +231,17 @@ void simline_t::rdwr(loadsave_t *file)
 		}
 		for (size_t k = MAX_MONTHS; k-- != 0;) {
 			financial_history[k][LINE_MAXSPEED] = 0;
+			financial_history[k][LINE_WAYTOLL] = 0;
+		}
+	}
+	else if(  file->get_version()<112008  ) {
+		for (int j = 0; j<8; j++) {
+			for (size_t k = MAX_MONTHS; k-- != 0;) {
+				file->rdwr_longlong(financial_history[k][j]);
+			}
+		}
+		for (size_t k = MAX_MONTHS; k-- != 0;) {
+			financial_history[k][LINE_WAYTOLL] = 0;
 		}
 	}
 	else {
@@ -272,7 +282,7 @@ void simline_t::register_stops(schedule_t * fpl)
 {
 DBG_DEBUG("simline_t::register_stops()", "%d fpl entries in schedule %p", fpl->get_count(),fpl);
 	FOR(minivec_tpl<linieneintrag_t>, const& i, fpl->eintrag) {
-		halthandle_t const halt = haltestelle_t::get_halt(welt, i.pos, sp);
+		halthandle_t const halt = haltestelle_t::get_halt(i.pos, sp);
 		if(halt.is_bound()) {
 //DBG_DEBUG("simline_t::register_stops()", "halt not null");
 			halt->add_line(self);
@@ -294,7 +304,7 @@ void simline_t::unregister_stops()
 void simline_t::unregister_stops(schedule_t * fpl)
 {
 	FOR(minivec_tpl<linieneintrag_t>, const& i, fpl->eintrag) {
-		halthandle_t const halt = haltestelle_t::get_halt(welt, i.pos, sp);
+		halthandle_t const halt = haltestelle_t::get_halt(i.pos, sp);
 		if(halt.is_bound()) {
 			halt->remove_line(self);
 		}
@@ -368,7 +378,8 @@ void simline_t::recalc_status()
 	else if(financial_history[0][LINE_PROFIT]<0) {
 		// ok, not performing best
 		state_color = COL_RED;
-	} else if((financial_history[0][LINE_OPERATIONS]|financial_history[1][LINE_OPERATIONS])==0) {
+	}
+	else if((financial_history[0][LINE_OPERATIONS]|financial_history[1][LINE_OPERATIONS])==0) {
 		// nothing moved
 		state_color = COL_YELLOW;
 	}

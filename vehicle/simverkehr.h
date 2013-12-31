@@ -2,10 +2,10 @@
 #define _simmover_h
 
 /**
- * Bewegliche Objekte fuer Simutrans.
- * Transportfahrzeuge sind in simvehikel.h definiert, da sie sich
- * stark von den hier definierten Fahrzeugen fuer den Individualverkehr
- * unterscheiden.
+ * Moving objects for Simutrans.
+ * Transport vehicles are defined in simvehikel.h, because they greatly
+ * differ from the vehicles defined herein for the individual traffic
+ * (pedestrians, citycars, movingobj aka flock of sheep).
  *
  * Hj. Malthaner
  *
@@ -29,7 +29,7 @@ class verkehrsteilnehmer_t : public vehikel_basis_t, public sync_steppable
 {
 protected:
 	/**
-	 * Entfernungszaehler
+	 * Distance count
 	 * @author Hj. Malthaner
 	 */
 	uint32 weg_next;
@@ -43,8 +43,14 @@ protected:
 
 	virtual bool hop_check() {return true;}
 
-	verkehrsteilnehmer_t(karte_t *welt);
-	verkehrsteilnehmer_t(karte_t *welt, koord3d pos, uint16 random);
+	verkehrsteilnehmer_t();
+
+	/**
+	 * Creates thing at position given by @p gr.
+	 * Does not add it to the tile!
+	 * @param random number to compute initial direction.
+	 */
+	verkehrsteilnehmer_t(grund_t* gr, uint16 random);
 
 public:
 	virtual ~verkehrsteilnehmer_t();
@@ -53,7 +59,7 @@ public:
 	typ get_typ() const  = 0;
 
 	/**
-	 * Öffnet ein neues Beobachtungsfenster für das Objekt.
+	 * Open a new observation window for the object.
 	 * @author Hj. Malthaner
 	 */
 	virtual void zeige_info();
@@ -82,7 +88,7 @@ private:
 	koord3d pos_next_next;
 
 	/**
-	 * Aktuelle Geschwindigkeit
+	 * Actual speed
 	 * @author Hj. Malthaner
 	 */
 	uint16 current_speed;
@@ -97,8 +103,13 @@ protected:
 	void calc_bild();
 
 public:
-	stadtauto_t(karte_t *welt, loadsave_t *file);
-	stadtauto_t(karte_t *welt, koord3d pos, koord target);
+	stadtauto_t(loadsave_t *file);
+
+	/**
+	 * Creates citycar at position given by @p gr.
+	 * Does not add car to the tile!
+	 */
+	stadtauto_t(grund_t* gr, koord target);
 
 	virtual ~stadtauto_t();
 
@@ -111,15 +122,15 @@ public:
 
 	grund_t* betrete_feld();
 
-	void calc_current_speed();
+	void calc_current_speed(grund_t*);
 	uint16 get_current_speed() const {return current_speed;}
 
 	const char *get_name() const {return "Verkehrsteilnehmer";}
 	typ get_typ() const { return verkehr; }
 
 	/**
-	 * @return Einen Beschreibungsstring für das Objekt, der z.B. in einem
-	 * Beobachtungsfenster angezeigt wird.
+	 * @return a description string for the object
+	 * e.g. for the observation window/dialog
 	 * @author Hj. Malthaner
 	 * @see simwin
 	 */
@@ -128,7 +139,7 @@ public:
 	// true, if this vehicle did not moved for some time
 	virtual bool is_stuck() { return current_speed==0;}
 
-	/* this function builts the list of the allowed citycars
+	/* this function builds the list of the allowed citycars
 	 * it should be called every month and in the beginning of a new game
 	 * @author prissi
 	 */

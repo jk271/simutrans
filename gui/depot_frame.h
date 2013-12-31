@@ -42,7 +42,7 @@ private:
 public:
 	depot_convoi_capacity_t();
 	void set_totals(uint32 pax, uint32 mail, uint32 goods);
-	void zeichnen(koord offset);
+	void draw(scr_coord offset);
 };
 
 
@@ -184,7 +184,7 @@ private:
 	cbuffer_t txt_convoi_power;
 	cbuffer_t txt_convoi_weight;
 
-	KOORD_VAL second_column_x; // x position of the second text column
+	scr_coord_val second_column_x; // x position of the second text column
 
 	enum { va_append, va_insert, va_sell };
 	uint8 veh_action;
@@ -204,7 +204,7 @@ private:
 	 * @date  09.06.2003
 	 * @update 09-Jan-04
 	 */
-	void draw_vehicle_info_text(koord pos);
+	void draw_vehicle_info_text(scr_coord pos);
 
 	/**
 	 * Calculate the values of the vehicles of the given type owned by the
@@ -232,8 +232,6 @@ private:
 
 	void image_from_storage_list(gui_image_list_t::image_data_t *bild_data);
 
-	karte_t* get_welt() { return depot->get_welt(); }
-
 public:
 	// the next two are only needed for depot_t update notifications
 	void activate_convoi( convoihandle_t cnv );
@@ -245,7 +243,7 @@ public:
 	 * @author Volker Meyer
 	 * @date  18.06.2003
 	 */
-	void layout(koord *);
+	void layout(scr_size *);
 
 	/**
 	 * Update texts, image lists and buttons according to the current state.
@@ -264,7 +262,7 @@ public:
 	 * @author (Mathew Hounsell)
 	 * @date   11-Mar-2003
 	 */
-	void set_fenstergroesse(koord groesse);
+	void set_windowsize(scr_size size);
 
 	/**
 	 * Create and fill loks_vec and waggons_vec.
@@ -308,7 +306,7 @@ public:
 	 * Draw the Frame
 	 * @author Hansjörg Malthaner
 	 */
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	// @author hsiegeln
 	void apply_line();

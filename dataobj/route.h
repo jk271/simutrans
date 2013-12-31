@@ -19,7 +19,7 @@ class fahrer_t;
 class grund_t;
 
 /**
- * Routen, zB für Fahrzeuge
+ * Route, e.q. for vehicles
  *
  * @author Hj. Malthaner
  * @date 15.01.00
@@ -28,13 +28,14 @@ class route_t
 {
 private:
 	/**
-	 * Die eigentliche Routensuche
+	 * The actual route search
 	 * @author Hj. Malthaner
 	 */
 	bool intern_calc_route(karte_t *w, koord3d start, koord3d ziel, fahrer_t *fahr, const sint32 max_kmh, const uint32 max_cost);
 
-	koord3d_vector_t route;           // Die Koordinaten fuer die Fahrtroute
+	koord3d_vector_t route;           // The coordinates for the vehicle route
 
+	void postprocess_water_route(karte_t *welt);
 public:
 	typedef enum { no_route=0, valid_route=1, valid_route_halt_too_short=3 } route_result_t;
 
@@ -47,6 +48,7 @@ public:
 		uint8 dir;
 		uint8 ribi_from; /// we came from this direction
 		uint16 count;
+		uint8 jps_ribi;  /// extra ribi mask for jump-point search
 
 		inline bool operator <= (const ANode &k) const { return f==k.f ? g<=k.g : f<=k.f; }
 		// next one only needed for sorted_heap_tpl

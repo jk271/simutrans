@@ -20,12 +20,12 @@
 #include "components/gui_button.h"
 #include "components/gui_label.h"
 #include "components/gui_chart.h"
-#include "components/gui_ding_view_t.h"
+#include "components/gui_obj_view_t.h"
 #include "components/action_listener.h"
 #include "../convoihandle_t.h"
 #include "../linehandle_t.h"
 #include "../simconvoi.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 
 #include "../utils/cbuffer_t.h"
 
@@ -36,7 +36,6 @@ public:
 	enum sort_mode_t { by_destination=0, by_via=1, by_amount_via=2, by_amount=3, SORT_MODES=4 };
 
 private:
-	static karte_t *welt;
 
 	/**
 	* Buffer for freight info text string.
@@ -46,7 +45,7 @@ private:
 
 	gui_scrollpane_t scrolly;
 	gui_textarea_t text;
-	ding_view_t view;
+	obj_view_t view;
 	gui_label_t sort_label;
 	gui_textinput_t input;
 	gui_speedbar_t filled_bar;
@@ -106,13 +105,13 @@ public:
 	 * component is displayed.
 	 * @author Hj. Malthaner
 	 */
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	/**
 	 * Set window size and adjust component sizes and/or positions accordingly
 	 * @author Hj. Malthaner
 	 */
-	virtual void set_fenstergroesse(koord groesse);
+	virtual void set_windowsize(scr_size size);
 
 	virtual bool is_weltpos();
 
@@ -126,7 +125,7 @@ public:
 	void update_data() { reset_cnv_name(); set_dirty(); }
 
 	// this constructor is only used during loading
-	convoi_info_t(karte_t *welt);
+	convoi_info_t();
 
 	void rdwr( loadsave_t *file );
 

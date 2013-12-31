@@ -5,10 +5,6 @@
  * (see licence.txt)
  */
 
-/*
- * Intro banner and everything else
- */
-
 #ifndef banner_h
 #define banner_h
 
@@ -16,14 +12,12 @@
 #include "components/gui_image.h"
 #include "gui_frame.h"
 
-class karte_t;
 
-/**
- * Eine Klasse, die ein Fenster zur Auswahl von bis zu acht
- * Parametern für ein Werkzeug per Icon darstellt.
- *
- * @author Hj. Malthaner
+/*
+ * Class to generates the welcome screen with the scrolling
+ * text to celebrate contributors.
  */
+
 class banner_t : public gui_frame_t, action_listener_t
 {
 private:
@@ -31,13 +25,17 @@ private:
 	int line;
 	sint16 xoff, yoff;
 
-	button_t new_map, load_map, load_scenario, join_map, quit;
+	button_t
+		new_map,
+		load_map,
+		load_scenario,
+		join_map, quit;
+
 	gui_image_t logo;
 
-	karte_t *welt;
 
 public:
-	banner_t( karte_t *w );
+	banner_t();
 
 	bool has_sticky() const { return false; }
 
@@ -66,7 +64,7 @@ public:
 	* component is displayed.
 	* @author Hj. Malthaner
 	*/
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 };

@@ -16,7 +16,7 @@
 #include "action_listener.h"
 #include "gui_action_creator.h"
 #include "../../simcolor.h"
-#include "../../simgraph.h"
+#include "../../display/simgraph.h"
 #include "../../utils/plainstring.h"
 #include "../../tpl/vector_tpl.h"
 
@@ -26,7 +26,7 @@ class gui_scrolled_list_t :
 	public gui_komponente_t
 {
 public:
-	enum type { list, select };
+	enum type { windowskin, listskin };
 
 	/**
 	 * Container for list entries - consisting of text and color
@@ -34,11 +34,12 @@ public:
 	class scrollitem_t {
 	public:
 		virtual ~scrollitem_t() {}
-		virtual KOORD_VAL get_h() const = 0;	// largest object in this list
-		virtual KOORD_VAL zeichnen( koord pos, KOORD_VAL width, bool is_selected, bool has_focus ) = 0;
+		virtual scr_coord_val get_h() const = 0;	// largest object in this list
+		virtual scr_coord_val draw( scr_coord pos, scr_coord_val width, bool is_selected, bool has_focus ) = 0;
 		virtual char const* get_text() const = 0;
 		virtual bool is_valid() { return true; }	//  can be used to indicate invalid entries
 		virtual bool is_editable() { return false; }
+		virtual bool sort( vector_tpl<scrollitem_t *> &, int, void * ) const { return false; } // not sorted, leave vector as before
 	};
 
 	// only uses pointer, non-editable
@@ -46,17 +47,20 @@ public:
 	protected:
 		const char *consttext;
 		COLOR_VAL color;
+		static bool compare( scrollitem_t *a, scrollitem_t *b );
 	public:
 		const_text_scrollitem_t(char const* const t, uint8 const col) : consttext(t), color(col) {}
 
-		virtual KOORD_VAL zeichnen( koord pos, KOORD_VAL width, bool is_selected, bool has_focus );
-		virtual KOORD_VAL get_h() const { return LINESPACE; }
+		virtual scr_coord_val draw( scr_coord pos, scr_coord_val width, bool is_selected, bool has_focus );
+		virtual scr_coord_val get_h() const { return LINESPACE; }
 
 		virtual uint8 get_color() { return color; }
 		virtual void set_color(uint8 col) { color = col; }
 
 		virtual char const* get_text() const { return consttext; }
 		virtual void set_text(char const *) {}
+
+		virtual bool sort( vector_tpl<scrollitem_t *>&v, int, void * ) const OVERRIDE;
 	};
 
 	// editable text
@@ -76,8 +80,8 @@ public:
 
 private:
 	enum type type;
-	int selection; // only used when type is 'select'.
-	int border; // must be subtracted from groesse.y to get netto size
+	sint32 selection; // only used when type is 'select'.
+	int border; // must be subtracted from size.h to get net size
 	int offset; // vertical offset of top left position.
 
 	/**
@@ -112,7 +116,17 @@ public:
 	 *  with recalculate_slider() to update the scrollbar properly. */
 	void clear_elements();
 	void append_element( scrollitem_t *item );
+	void insert_element( scrollitem_t *item );
 	scrollitem_t *get_element(sint32 i) const { return ((uint32)i<item_list.get_count()) ? item_list[i] : NULL; }
+
+	/**
+	 * Sorts the list.
+	 * Calls the virtual method scrollitem_t::sort of element at position @p offset.
+	 * Adjusts scrollbar.
+	 * @param offset sort list from element offset to end
+	 * @param sort_param will be used in call to scrollitem_t::sort
+	 */
+	void sort( int offset, void *sort_param );
 
 	// set the first element to be shown in the list
 	sint32 get_sb_offset() { return sb.get_knob_offset(); }
@@ -123,16 +137,16 @@ public:
 	/**
 	 * request other pane-size. returns realized size.
 	 * use this for flexible sized lists
-	 * for fixed sized used only set_groesse()
+	 * for fixed sized used only set_size()
 	 * @return value can be in between full-size wanted.
 	 */
-	koord request_groesse(koord request);
+	scr_size request_size(scr_size size);
 
-	void set_groesse(koord groesse) OVERRIDE;
+	void set_size(scr_size size) OVERRIDE;
 
 	bool infowin_event(event_t const*) OVERRIDE;
 
-	void zeichnen(koord pos);
+	void draw(scr_coord pos);
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 };

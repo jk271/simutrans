@@ -44,21 +44,21 @@ static bool compare_baum_besch(const baum_besch_t* a, const baum_besch_t* b)
 }
 
 
-baum_edit_frame_t::baum_edit_frame_t(spieler_t* sp_, karte_t* welt) :
-	extend_edit_gui_t(translator::translate("baum builder"), sp_, welt),
+baum_edit_frame_t::baum_edit_frame_t(spieler_t* sp_) :
+	extend_edit_gui_t(translator::translate("baum builder"), sp_),
 	baumlist(16)
 {
 	bt_timeline.set_text( "Random age" );
 
 	remove_komponente( &bt_obsolete );
-	offset_of_comp -= D_BUTTON_HEIGHT;
+	//offset_of_comp -= D_BUTTON_HEIGHT;
 
 	besch = NULL;
 	baum_tool.set_default_param(NULL);
 
 	fill_list( is_show_trans_name );
 
-	resize( koord(0,0) );
+	resize( scr_coord(0,0) );
 }
 
 
@@ -128,7 +128,7 @@ void baum_edit_frame_t::change_item_info(sint32 entry)
 		}
 
 		info_text.recalc_size();
-		cont.set_groesse( info_text.get_groesse() + koord(0, 20) );
+		cont.set_size( info_text.get_size() + scr_size(0, 20) );
 
 		img[3].set_image( besch->get_bild_nr( 0, 3 ) );
 

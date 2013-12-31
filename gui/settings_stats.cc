@@ -6,10 +6,10 @@
  */
 
 #include "welt.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 #include "../simversion.h"
-#include "../dataobj/einstellungen.h"
-#include "../dataobj/umgebung.h"
+#include "../dataobj/settings.h"
+#include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
 #include "../player/finance.h" // MAX_PLAYER_HISTORY_YEARS
 #include "../vehicle/simvehikel.h"
@@ -17,7 +17,7 @@
 
 
 /* stuff not set here ....
-INIT_NUM( "intercity_road_length", umgebung_t::intercity_road_length);
+INIT_NUM( "intercity_road_length", env_t::intercity_road_length);
 INIT_NUM( "diagonal_multiplier", pak_diagonal_multiplier);
 */
 
@@ -75,11 +75,11 @@ void settings_general_stats_t::init(settings_t const* const sets)
 	INIT_INIT
 
 	// combobox for savegame version
-	savegame.set_pos( koord(D_MARGIN_LEFT, ypos) );
-	savegame.set_groesse( koord(70, D_BUTTON_HEIGHT) );
+	savegame.set_pos( scr_coord(0, ypos) );
+	savegame.set_size( scr_size(70, D_BUTTON_HEIGHT) );
 	for(  uint32 i=0;  i<lengthof(version);  i++  ) {
 		savegame.append_element( new gui_scrolled_list_t::const_text_scrollitem_t( version[i]+2, COL_BLACK ) );
-		if(  strcmp(version[i],umgebung_t::savegame_version_str)==0  ) {
+		if(  strcmp(version[i],env_t::savegame_version_str)==0  ) {
 			savegame.set_selection( i );
 		}
 	}
@@ -87,34 +87,35 @@ void settings_general_stats_t::init(settings_t const* const sets)
 	add_komponente( &savegame );
 	savegame.add_listener( this );
 	INIT_LB( "savegame version" );
-	label.back()->set_pos( koord( D_MARGIN_LEFT + 70 + 6, label.back()->get_pos().y + 2 ) );
+	label.back()->set_pos( scr_coord( 70 + 6, label.back()->get_pos().y + 2 ) );
 	SEPERATOR
 	INIT_BOOL( "drive_left", sets->is_drive_left() );
 	INIT_BOOL( "signals_on_left", sets->is_signals_left() );
 	SEPERATOR
-	INIT_NUM( "autosave", umgebung_t::autosave, 0, 12, gui_numberinput_t::AUTOLINEAR, false );
-	INIT_NUM( "fast_forward", umgebung_t::max_acceleration, 1, 1000, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM( "autosave", env_t::autosave, 0, 12, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM( "fast_forward", env_t::max_acceleration, 1, 1000, gui_numberinput_t::AUTOLINEAR, false );
 	SEPERATOR
 	INIT_BOOL( "numbered_stations", sets->get_numbered_stations() );
-	INIT_NUM( "show_names", umgebung_t::show_names, 0, 3, gui_numberinput_t::AUTOLINEAR, true );
+	INIT_NUM( "show_names", env_t::show_names, 0, 3, gui_numberinput_t::AUTOLINEAR, true );
 	SEPERATOR
 	INIT_NUM( "bits_per_month", sets->get_bits_per_month(), 16, 24, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM( "use_timeline", sets->get_use_timeline(), 0, 3, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM_NEW( "starting_year", sets->get_starting_year(), 0, 2999, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM_NEW( "starting_month", sets->get_starting_month(), 0, 11, gui_numberinput_t::AUTOLINEAR, false );
-	INIT_NUM( "show_month", umgebung_t::show_month, 0, 7, gui_numberinput_t::AUTOLINEAR, true );
+	INIT_NUM( "show_month", env_t::show_month, 0, 7, gui_numberinput_t::AUTOLINEAR, true );
 	SEPERATOR
-	INIT_NUM( "random_grounds_probability", umgebung_t::ground_object_probability, 0, 0x7FFFFFFFul, gui_numberinput_t::POWER2, false );
-	INIT_NUM( "random_wildlife_probability", umgebung_t::moving_object_probability, 0, 0x7FFFFFFFul, gui_numberinput_t::POWER2, false );
+	INIT_NUM( "random_grounds_probability", env_t::ground_object_probability, 0, 0x7FFFFFFFul, gui_numberinput_t::POWER2, false );
+	INIT_NUM( "random_wildlife_probability", env_t::moving_object_probability, 0, 0x7FFFFFFFul, gui_numberinput_t::POWER2, false );
 	SEPERATOR
-	INIT_BOOL( "pedes_and_car_info", umgebung_t::verkehrsteilnehmer_info );
-	INIT_BOOL( "tree_info", umgebung_t::tree_info );
-	INIT_BOOL( "ground_info", umgebung_t::ground_info );
-	INIT_BOOL( "townhall_info", umgebung_t::townhall_info );
-	INIT_BOOL( "only_single_info", umgebung_t::single_info );
+	INIT_BOOL( "pedes_and_car_info", env_t::verkehrsteilnehmer_info );
+	INIT_BOOL( "tree_info", env_t::tree_info );
+	INIT_BOOL( "ground_info", env_t::ground_info );
+	INIT_BOOL( "townhall_info", env_t::townhall_info );
+	INIT_BOOL( "only_single_info", env_t::single_info );
 
 	clear_dirty();
-	set_groesse( settings_stats_t::get_groesse() );
+	height = ypos;
+	set_size( settings_stats_t::get_size() );
 }
 
 void settings_general_stats_t::read(settings_t* const sets)
@@ -123,93 +124,94 @@ void settings_general_stats_t::read(settings_t* const sets)
 
 	int selected = savegame.get_selection();
 	if(  0 <= selected  &&  (uint32)selected < lengthof(version)  ) {
-		umgebung_t::savegame_version_str = version[ selected ];
+		env_t::savegame_version_str = version[ selected ];
 	}
 
 	READ_BOOL_VALUE( sets->drive_on_left );
 	vehikel_basis_t::set_overtaking_offsets( sets->drive_on_left );
 	READ_BOOL_VALUE( sets->signals_on_left );
 
-	READ_NUM_VALUE( umgebung_t::autosave );
-	READ_NUM_VALUE( umgebung_t::max_acceleration );
+	READ_NUM_VALUE( env_t::autosave );
+	READ_NUM_VALUE( env_t::max_acceleration );
 
 	READ_BOOL_VALUE( sets->numbered_stations );
-	READ_NUM_VALUE( umgebung_t::show_names );
+	READ_NUM_VALUE( env_t::show_names );
 
 	READ_NUM_VALUE( sets->bits_per_month );
 	READ_NUM_VALUE( sets->use_timeline );
 	READ_NUM_VALUE_NEW( sets->starting_year );
 	READ_NUM_VALUE_NEW( sets->starting_month );
-	READ_NUM_VALUE( umgebung_t::show_month );
+	READ_NUM_VALUE( env_t::show_month );
 
-	READ_NUM_VALUE( umgebung_t::ground_object_probability );
-	READ_NUM_VALUE( umgebung_t::moving_object_probability );
+	READ_NUM_VALUE( env_t::ground_object_probability );
+	READ_NUM_VALUE( env_t::moving_object_probability );
 
-	READ_BOOL_VALUE( umgebung_t::verkehrsteilnehmer_info );
-	READ_BOOL_VALUE( umgebung_t::tree_info );
-	READ_BOOL_VALUE( umgebung_t::ground_info );
-	READ_BOOL_VALUE( umgebung_t::townhall_info );
-	READ_BOOL_VALUE( umgebung_t::single_info );
+	READ_BOOL_VALUE( env_t::verkehrsteilnehmer_info );
+	READ_BOOL_VALUE( env_t::tree_info );
+	READ_BOOL_VALUE( env_t::ground_info );
+	READ_BOOL_VALUE( env_t::townhall_info );
+	READ_BOOL_VALUE( env_t::single_info );
 }
 
 void settings_display_stats_t::init(settings_t const* const)
 {
 	INIT_INIT
-	INIT_NUM( "frames_per_second",umgebung_t::fps, 10, 25, gui_numberinput_t::AUTOLINEAR, false );
-	INIT_NUM( "simple_drawing_tile_size",umgebung_t::simple_drawing_default, 2, 256, gui_numberinput_t::POWER2, false );
-	INIT_BOOL( "simple_drawing_fast_forward",umgebung_t::simple_drawing_fast_forward );
-	INIT_NUM( "water_animation_ms", umgebung_t::water_animation, 0, 1000, 25, false );
+	INIT_NUM( "frames_per_second",env_t::fps, 10, 25, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM( "simple_drawing_tile_size",env_t::simple_drawing_default, 2, 256, gui_numberinput_t::POWER2, false );
+	INIT_BOOL( "simple_drawing_fast_forward",env_t::simple_drawing_fast_forward );
+	INIT_NUM( "water_animation_ms", env_t::water_animation, 0, 1000, 25, false );
 	SEPERATOR
-	INIT_BOOL( "window_buttons_right", umgebung_t::window_buttons_right );
-	INIT_BOOL( "window_frame_active", umgebung_t::window_frame_active );
-	INIT_NUM( "front_window_bar_color", umgebung_t::front_window_bar_color, 0, 6, gui_numberinput_t::AUTOLINEAR, 0 );
-	INIT_NUM( "front_window_text_color", umgebung_t::front_window_text_color, 208, 240, gui_numberinput_t::AUTOLINEAR, 0 );
-	INIT_NUM( "bottom_window_bar_color", umgebung_t::bottom_window_bar_color, 0, 6, gui_numberinput_t::AUTOLINEAR, 0 );
-	INIT_NUM( "bottom_window_text_color", umgebung_t::bottom_window_text_color, 208, 240, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_BOOL( "window_buttons_right", env_t::window_buttons_right );
+	INIT_BOOL( "window_frame_active", env_t::window_frame_active );
+	INIT_NUM( "front_window_bar_color", env_t::front_window_bar_color, 0, 6, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_NUM( "front_window_text_color", env_t::front_window_text_color, 208, 240, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_NUM( "bottom_window_bar_color", env_t::bottom_window_bar_color, 0, 6, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_NUM( "bottom_window_text_color", env_t::bottom_window_text_color, 208, 240, gui_numberinput_t::AUTOLINEAR, 0 );
 	SEPERATOR
-	INIT_BOOL( "show_tooltips", umgebung_t::show_tooltips );
-	INIT_NUM( "tooltip_background_color", umgebung_t::tooltip_color, 0, 255, 1, 0 );
-	INIT_NUM( "tooltip_text_color", umgebung_t::tooltip_textcolor, 0, 255, 1, 0 );
-	INIT_NUM( "tooltip_delay", umgebung_t::tooltip_delay, 0, 10000, gui_numberinput_t::AUTOLINEAR, 0 );
-	INIT_NUM( "tooltip_duration", umgebung_t::tooltip_duration, 0, 30000, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_BOOL( "show_tooltips", env_t::show_tooltips );
+	INIT_NUM( "tooltip_background_color", env_t::tooltip_color, 0, 255, 1, 0 );
+	INIT_NUM( "tooltip_text_color", env_t::tooltip_textcolor, 0, 255, 1, 0 );
+	INIT_NUM( "tooltip_delay", env_t::tooltip_delay, 0, 10000, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_NUM( "tooltip_duration", env_t::tooltip_duration, 0, 30000, gui_numberinput_t::AUTOLINEAR, 0 );
 	SEPERATOR
-	INIT_NUM( "cursor_overlay_color", umgebung_t::cursor_overlay_color, 0, 255, gui_numberinput_t::AUTOLINEAR, 0 );
-	INIT_BOOL( "left_to_right_graphs", umgebung_t::left_to_right_graphs );
+	INIT_NUM( "cursor_overlay_color", env_t::cursor_overlay_color, 0, 255, gui_numberinput_t::AUTOLINEAR, 0 );
+	INIT_BOOL( "left_to_right_graphs", env_t::left_to_right_graphs );
 
 	clear_dirty();
-	set_groesse( settings_stats_t::get_groesse() );
+	height = ypos;
+	set_size( settings_stats_t::get_size() );
 }
 
 void settings_display_stats_t::read(settings_t* const)
 {
 	READ_INIT
 	// all visual stuff
-	READ_NUM_VALUE( umgebung_t::fps );
-	READ_NUM_VALUE( umgebung_t::simple_drawing_default );
-	READ_BOOL_VALUE( umgebung_t::simple_drawing_fast_forward );
-	READ_NUM_VALUE( umgebung_t::water_animation );
+	READ_NUM_VALUE( env_t::fps );
+	READ_NUM_VALUE( env_t::simple_drawing_default );
+	READ_BOOL_VALUE( env_t::simple_drawing_fast_forward );
+	READ_NUM_VALUE( env_t::water_animation );
 
-	READ_BOOL_VALUE( umgebung_t::window_buttons_right );
-	READ_BOOL_VALUE( umgebung_t::window_frame_active );
-	READ_NUM_VALUE( umgebung_t::front_window_bar_color );
-	READ_NUM_VALUE( umgebung_t::front_window_text_color );
-	READ_NUM_VALUE( umgebung_t::bottom_window_bar_color );
-	READ_NUM_VALUE( umgebung_t::bottom_window_text_color );
+	READ_BOOL_VALUE( env_t::window_buttons_right );
+	READ_BOOL_VALUE( env_t::window_frame_active );
+	READ_NUM_VALUE( env_t::front_window_bar_color );
+	READ_NUM_VALUE( env_t::front_window_text_color );
+	READ_NUM_VALUE( env_t::bottom_window_bar_color );
+	READ_NUM_VALUE( env_t::bottom_window_text_color );
 
-	READ_BOOL_VALUE( umgebung_t::show_tooltips );
-	READ_NUM_VALUE( umgebung_t::tooltip_color );
-	READ_NUM_VALUE( umgebung_t::tooltip_textcolor );
-	READ_NUM_VALUE( umgebung_t::tooltip_delay );
-	READ_NUM_VALUE( umgebung_t::tooltip_duration );
+	READ_BOOL_VALUE( env_t::show_tooltips );
+	READ_NUM_VALUE( env_t::tooltip_color );
+	READ_NUM_VALUE( env_t::tooltip_textcolor );
+	READ_NUM_VALUE( env_t::tooltip_delay );
+	READ_NUM_VALUE( env_t::tooltip_duration );
 
-	READ_NUM_VALUE( umgebung_t::cursor_overlay_color );
-	READ_BOOL_VALUE( umgebung_t::left_to_right_graphs );
+	READ_NUM_VALUE( env_t::cursor_overlay_color );
+	READ_BOOL_VALUE( env_t::left_to_right_graphs );
 }
 
 void settings_routing_stats_t::init(settings_t const* const sets)
 {
 	INIT_INIT
-	INIT_BOOL( "seperate_halt_capacities", sets->is_seperate_halt_capacities() );
+	INIT_BOOL( "separate_halt_capacities", sets->is_separate_halt_capacities() );
 	INIT_BOOL( "avoid_overcrowding", sets->is_avoid_overcrowding() );
 	INIT_BOOL( "no_routing_over_overcrowded", sets->is_no_routing_over_overcrowding() );
 	INIT_NUM( "station_coverage", sets->get_station_coverage(), 1, 8, gui_numberinput_t::AUTOLINEAR, false );
@@ -228,14 +230,15 @@ void settings_routing_stats_t::init(settings_t const* const sets)
 	INIT_NUM( "way_leaving_road", sets->way_count_leaving_road, 1, 1000, gui_numberinput_t::AUTOLINEAR, false );
 
 	clear_dirty();
-	set_groesse( settings_stats_t::get_groesse() );
+	height = ypos;
+	set_size( settings_stats_t::get_size() );
 }
 
 void settings_routing_stats_t::read(settings_t* const sets)
 {
 	READ_INIT
 	// routing of goods
-	READ_BOOL_VALUE( sets->seperate_halt_capacities );
+	READ_BOOL_VALUE( sets->separate_halt_capacities );
 	READ_BOOL_VALUE( sets->avoid_overcrowding );
 	READ_BOOL_VALUE( sets->no_routing_over_overcrowding );
 	READ_NUM_VALUE( sets->station_coverage_size );
@@ -258,7 +261,7 @@ void settings_economy_stats_t::init(settings_t const* const sets)
 {
 	INIT_INIT
 	INIT_NUM( "remove_dummy_player_months", sets->get_remove_dummy_player_months(), 0, MAX_PLAYER_HISTORY_YEARS*12, 12, false );
-	INIT_NUM( "unprotect_abondoned_player_months", sets->get_unprotect_abondoned_player_months(), 0, MAX_PLAYER_HISTORY_YEARS*12, 12, false );
+	INIT_NUM( "unprotect_abandoned_player_months", sets->get_unprotect_abandoned_player_months(), 0, MAX_PLAYER_HISTORY_YEARS*12, 12, false );
 	SEPERATOR
 	INIT_COST( "starting_money", sets->get_starting_money(sets->get_starting_year()), 1, 0x7FFFFFFFul, 10000, false );
 	INIT_NUM( "pay_for_total_distance", sets->get_pay_for_total_distance_mode(), 0, 2, gui_numberinput_t::AUTOLINEAR, true );
@@ -330,7 +333,8 @@ void settings_economy_stats_t::init(settings_t const* const sets)
 	INIT_NUM( "default_citycar_life", sets->get_stadtauto_duration(), 1, 1200, 12, false );
 
 	clear_dirty();
-	set_groesse( settings_stats_t::get_groesse() );
+	height = ypos;
+	set_size( settings_stats_t::get_size() );
 }
 
 void settings_economy_stats_t::read(settings_t* const sets)
@@ -338,7 +342,7 @@ void settings_economy_stats_t::read(settings_t* const sets)
 	READ_INIT
 	sint64 start_money_temp;
 	READ_NUM_VALUE( sets->remove_dummy_player_months );
-	READ_NUM_VALUE( sets->unprotect_abondoned_player_months );
+	READ_NUM_VALUE( sets->unprotect_abandoned_player_months );
 	READ_COST_VALUE( start_money_temp );
 	if(  sets->get_starting_money(sets->get_starting_year())!=start_money_temp  ) {
 		// because this will render the table based values invalid, we do this only when needed
@@ -409,6 +413,7 @@ void settings_costs_stats_t::init(settings_t const* const sets)
 	INIT_COST( "cost_buy_land", -sets->cst_buy_land, 1, 100000000, 10, false );
 	INIT_COST( "cost_alter_land", -sets->cst_alter_land, 1, 100000000, 10, false );
 	INIT_COST( "cost_set_slope", -sets->cst_set_slope, 1, 100000000, 10, false );
+	INIT_COST( "cost_alter_climate", -sets->cst_alter_climate, 1, 100000000, 10, false );
 	INIT_COST( "cost_found_city", -sets->cst_found_city, 1, 100000000, 10, false );
 	INIT_COST( "cost_multiply_found_industry", -sets->cst_multiply_found_industry, 1, 100000000, 10, false );
 	INIT_COST( "cost_remove_tree", -sets->cst_remove_tree, 1, 100000000, 10, false );
@@ -416,7 +421,9 @@ void settings_costs_stats_t::init(settings_t const* const sets)
 	INIT_COST( "cost_multiply_remove_field", -sets->cst_multiply_remove_field, 1, 100000000, 10, false );
 	INIT_COST( "cost_transformer", -sets->cst_transformer, 1, 100000000, 10, false );
 	INIT_COST( "cost_maintain_transformer", -sets->cst_maintain_transformer, 1, 100000000, 10, false );
-	set_groesse( settings_stats_t::get_groesse() );
+
+	height = ypos;
+	set_size( settings_stats_t::get_size() );
 }
 
 
@@ -438,6 +445,7 @@ void settings_costs_stats_t::read(settings_t* const sets)
 	READ_COST_VALUE( sets->cst_buy_land )*(-1);
 	READ_COST_VALUE( sets->cst_alter_land )*(-1);
 	READ_COST_VALUE( sets->cst_set_slope )*(-1);
+	READ_COST_VALUE( sets->cst_alter_climate )*(-1);
 	READ_COST_VALUE( sets->cst_found_city )*(-1);
 	READ_COST_VALUE( sets->cst_multiply_found_industry )*(-1);
 	READ_COST_VALUE( sets->cst_remove_tree )*(-1);
@@ -447,7 +455,7 @@ void settings_costs_stats_t::read(settings_t* const sets)
 	READ_COST_VALUE( sets->cst_maintain_transformer )*(-1);
 
 	clear_dirty();
-	set_groesse( settings_stats_t::get_groesse() );
+	set_size( settings_stats_t::get_size() );
 }
 
 
@@ -456,11 +464,14 @@ void settings_costs_stats_t::read(settings_t* const sets)
 
 void settings_climates_stats_t::init(settings_t* const sets)
 {
+	int mountain_height_start = (int)sets->get_max_mountain_height();
+	int mountain_roughness_start = (int)(sets->get_map_roughness()*20.0 + 0.5)-8;
+
 	local_sets = sets;
 	INIT_INIT
 	INIT_NUM_NEW( "Water level", sets->get_grundwasser(), -10, 0, gui_numberinput_t::AUTOLINEAR, false );
-	INIT_NUM_NEW( "Mountain height", sets->get_max_mountain_height(), 0, 320, 10, false );
-	INIT_NUM_NEW( "Map roughness", (sets->get_map_roughness()*20.0 + 0.5)-8, 0, 7, gui_numberinput_t::AUTOLINEAR, false );
+	INIT_NUM_NEW( "Mountain height", mountain_height_start, 0, min(1000,100*(11-mountain_roughness_start)), 10, false );
+	INIT_NUM_NEW( "Map roughness", mountain_roughness_start, 0, min(10, 11-((mountain_height_start+99)/100)), gui_numberinput_t::AUTOLINEAR, false );
 	SEPERATOR
 	INIT_LB( "Summer snowline" );
 	INIT_NUM( "Winter snowline", sets->get_winter_snowline(), sets->get_grundwasser(), 24, gui_numberinput_t::AUTOLINEAR, false );
@@ -478,6 +489,7 @@ void settings_climates_stats_t::init(settings_t* const sets)
 	buf.printf( "%s %i", translator::translate( "Summer snowline" ), arctic );
 	label.at(3)->set_text( buf );
 	SEPERATOR
+	INIT_BOOL( "lake", sets->get_lake() );
 	INIT_NUM_NEW( "Number of rivers", sets->get_river_number(), 0, 1024, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM_NEW( "minimum length of rivers", sets->get_min_river_length(), 0, max(16,sets->get_max_river_length())-16, gui_numberinput_t::AUTOLINEAR, false );
 	INIT_NUM_NEW( "maximum length of rivers", sets->get_max_river_length(), sets->get_min_river_length()+16, 8196, gui_numberinput_t::AUTOLINEAR, false );
@@ -497,7 +509,8 @@ void settings_climates_stats_t::init(settings_t* const sets)
 	INIT_NUM_NEW( "no_tree_climates", sets->get_no_tree_climates(), 0, 255, 1, false );
 
 	clear_dirty();
-	set_groesse( settings_stats_t::get_groesse() );
+	height = ypos;
+	set_size( settings_stats_t::get_size() );
 }
 
 
@@ -526,6 +539,7 @@ void settings_climates_stats_t::read(settings_t* const sets)
 	buf.clear();
 	buf.printf( "%s %i", translator::translate( "Summer snowline" ), arctic );
 	label.at(3)->set_text( buf );
+	READ_BOOL_VALUE( sets->lake );
 	READ_NUM_VALUE_NEW( sets->river_number );
 	READ_NUM_VALUE_NEW( sets->min_river_length );
 	READ_NUM_VALUE_NEW( sets->max_river_length );

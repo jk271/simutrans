@@ -8,9 +8,9 @@
 #include <string>
 #include "../simcity.h"
 #include "../simsys.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 
-#include "../dataobj/umgebung.h"
+#include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/loadsave.h"
 #include "../dataobj/tabfile.h"
@@ -31,10 +31,10 @@ settings_frame_t::settings_frame_t(settings_t* const s) :
 	scrolly_costs(&costs),
 	scrolly_climates(&climates)
 {
-	revert_to_default.init( button_t::roundbox, "Simuconf.tab", koord( BUTTON1_X, 0), koord( D_BUTTON_WIDTH, D_BUTTON_HEIGHT ) );
+	revert_to_default.init( button_t::roundbox, "Simuconf.tab", scr_coord( BUTTON1_X, 0) );
 	revert_to_default.add_listener( this );
 	add_komponente( &revert_to_default );
-	revert_to_last_save.init( button_t::roundbox, "Default.sve", koord( BUTTON2_X, 0), koord( D_BUTTON_WIDTH, D_BUTTON_HEIGHT ) );
+	revert_to_last_save.init( button_t::roundbox, "Default.sve", scr_coord( BUTTON2_X, 0) );
 	revert_to_last_save.add_listener( this );
 	add_komponente( &revert_to_last_save );
 
@@ -51,7 +51,7 @@ settings_frame_t::settings_frame_t(settings_t* const s) :
 	scrolly_costs.set_scroll_amount_y(D_BUTTON_HEIGHT/2);
 	scrolly_climates.set_scroll_amount_y(D_BUTTON_HEIGHT/2);
 
-	tabs.set_pos(koord(0,D_BUTTON_HEIGHT));
+	tabs.set_pos(scr_coord(D_MARGIN_LEFT,D_BUTTON_HEIGHT));
 	tabs.add_tab(&scrolly_general, translator::translate("General"));
 	tabs.add_tab(&scrolly_display, translator::translate("Helligk."));
 	tabs.add_tab(&scrolly_economy, translator::translate("Economy"));
@@ -60,11 +60,11 @@ settings_frame_t::settings_frame_t(settings_t* const s) :
 	tabs.add_tab(&scrolly_climates, translator::translate("Climate Control"));
 	add_komponente(&tabs);
 
-	set_fenstergroesse(koord(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+gui_tab_panel_t::HEADER_VSIZE+18*(D_BUTTON_HEIGHT/2)+2+1));
-	set_min_windowsize(koord(BUTTON3_X, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+gui_tab_panel_t::HEADER_VSIZE+6*(D_BUTTON_HEIGHT/2)+2+1));
+	set_windowsize(scr_size(D_DEFAULT_WIDTH, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+TAB_HEADER_V_SIZE+18*(D_BUTTON_HEIGHT/2)+2+1));
+	set_min_windowsize(scr_size(BUTTON3_X, D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT+TAB_HEADER_V_SIZE+6*(D_BUTTON_HEIGHT/2)+2+1));
 
 	set_resizemode(diagonal_resize);
-	resize(koord(0,0));
+	resize(scr_coord(0,0));
 }
 
 
@@ -74,11 +74,11 @@ settings_frame_t::settings_frame_t(settings_t* const s) :
  * @author Hj. Malthaner
  * @date   16-Oct-2003
  */
-void settings_frame_t::resize(const koord delta)
+void settings_frame_t::resize(const scr_coord delta)
 {
 	gui_frame_t::resize(delta);
-	koord groesse = get_fenstergroesse()-koord(0,D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT);
-	tabs.set_groesse(groesse);
+	scr_size size = get_windowsize()-scr_size(D_MARGIN_LEFT,D_TITLEBAR_HEIGHT+D_BUTTON_HEIGHT/*+D_MARGIN_BOTTOM*/);
+	tabs.set_size(size);
 }
 
 
@@ -89,23 +89,23 @@ bool settings_frame_t::action_triggered( gui_action_creator_t *komp, value_t )
 	if(  komp==&revert_to_default  ) {
 		// reread from simucon.tab(s) the settings and apply them
 		tabfile_t simuconf;
-		umgebung_t::init();
+		env_t::init();
 		*sets = settings_t();
-		chdir( umgebung_t::program_dir );
+		chdir( env_t::program_dir );
 		if(simuconf.open("config/simuconf.tab")) {
 			sint16 dummy16;
 			string dummy_str;
 			sets->parse_simuconf( simuconf, dummy16, dummy16, dummy16, dummy_str );
 		}
-		stadt_t::cityrules_init(umgebung_t::objfilename);
-		chdir( umgebung_t::program_dir );
-		chdir( umgebung_t::objfilename.c_str() );
+		stadt_t::cityrules_init(env_t::objfilename);
+		chdir( env_t::program_dir );
+		chdir( env_t::objfilename.c_str() );
 		if(simuconf.open("config/simuconf.tab")) {
 			sint16 dummy16;
 			string dummy_str;
 			sets->parse_simuconf( simuconf, dummy16, dummy16, dummy16, dummy_str );
 		}
-		chdir(  umgebung_t::user_dir  );
+		chdir(  env_t::user_dir  );
 		if(simuconf.open("simuconf.tab")) {
 			sint16 dummy16;
 			string dummy_str;
@@ -124,7 +124,7 @@ bool settings_frame_t::action_triggered( gui_action_creator_t *komp, value_t )
 	else if(  komp==&revert_to_last_save  ) {
 		// load settings of last generated map
 		loadsave_t file;
-		chdir( umgebung_t::user_dir  );
+		chdir( env_t::user_dir  );
 		if(  file.rd_open("default.sve")  ) {
 			sets->rdwr(&file);
 			file.close();

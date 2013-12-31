@@ -207,7 +207,7 @@ private:
 	vector_tpl<stadt_t *> target_cities;
 
 	spieler_t *besitzer_p;
-	static karte_t *welt;
+	static karte_ptr_t welt;
 
 	const fabrik_besch_t *besch;
 
@@ -374,7 +374,7 @@ private:
 	uint32 scale_output_production(const uint32 product, uint32 menge) const;
 
 public:
-	fabrik_t(karte_t *welt, loadsave_t *file);
+	fabrik_t(loadsave_t *file);
 	fabrik_t(koord3d pos, spieler_t* sp, const fabrik_besch_t* fabesch, sint32 initial_prod_base);
 	~fabrik_t();
 
@@ -409,7 +409,7 @@ public:
 		return value;
 	}
 
-	static fabrik_t * get_fab(const karte_t *welt, const koord &pos);
+	static fabrik_t * get_fab(const koord &pos);
 
 	/**
 	 * @return vehicle description object
@@ -526,15 +526,8 @@ public:
 	 *
 	 * @author Hj. Malthaner
 	 */
-	static vector_tpl<fabrik_t *> & sind_da_welche(karte_t *welt, koord min, koord max);
+	static vector_tpl<fabrik_t *> & sind_da_welche(koord min, koord max);
 
-	/**
-	 * gibt true zurueck wenn sich ein fabrik im feld befindet
-	 *
-	 * @author Hj. Malthaner
-	 */
-	static bool ist_da_eine(karte_t *welt, koord min, koord max);
-	static bool ist_bauplatz(karte_t *welt, koord pos, koord groesse, bool water, climate_bits cl);
 
 	// hier die methoden zum parametrisieren der Fabrik
 
@@ -577,7 +570,7 @@ public:
 	sint32 get_base_production() const { return prodbase; }
 	void set_base_production(sint32 p);
 
-	sint32 get_current_production() const { return ((sint64)prodbase * (sint64)(get_prodfactor()))>>(26l-(long)welt->ticks_per_world_month_shift); }
+	sint32 get_current_production() const { return (sint32)welt->scale_with_month_length( ((sint64)prodbase * (sint64)get_prodfactor())>>8 ); }
 
 	/* prissi: returns the status of the current factory, as well as output */
 	enum { bad, medium, good, inactive, nothing };

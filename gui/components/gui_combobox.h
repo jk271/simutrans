@@ -53,7 +53,7 @@ private:
 	 * the max size this component can have
 	 * @author hsiegeln
 	 */
-	koord max_size;
+	scr_size max_size;
 
 	/**
 	 * renames the selected item if necessary
@@ -72,17 +72,25 @@ public:
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 
+	void sort( int offset, void *sort_param ) { droplist.sort( offset, sort_param ); }
+
 	/**
 	 * Draw the component
 	 * @author Hj. Malthaner
 	 */
-	void zeichnen(koord offset);
+	void draw(scr_coord offset);
 
 	/**
 	 * add element to droplist
 	 * @author hsiegeln
 	 */
 	void append_element( gui_scrolled_list_t::scrollitem_t *item ) { droplist.append_element( item ); set_max_size( max_size ); }
+
+	/**
+	 * add insert to droplist
+	 * @author hsiegeln
+	 */
+	void insert_element( gui_scrolled_list_t::scrollitem_t *item ) { droplist.insert_element( item ); set_max_size( max_size ); }
 
 	/**
 	 * remove all elements from droplist
@@ -112,7 +120,7 @@ public:
 	 * set maximum size for control
 	 * @author hsiegeln
 	 */
-	void set_max_size(koord max);
+	void set_max_size(scr_size max);
 
 	/**
 	 * returns the selection id
@@ -130,9 +138,9 @@ public:
 	* Set this component's position.
 	* @author Hj. Malthaner
 	*/
-	virtual void set_pos(koord pos_par);
+	virtual void set_pos(scr_coord pos_par);
 
-	void set_groesse(koord groesse) OVERRIDE;
+	void set_size(scr_size size) OVERRIDE;
 
 	/**
 	 * called when the focus should be released

@@ -14,19 +14,19 @@
 
 #include "../simdebug.h"
 #include "../pathes.h"
-#include "../simimg.h"
+#include "../display/simimg.h"
 #include "../simskin.h"
 #include "../besch/skin_besch.h"
 #include "sprachen.h"
 
-#include "../font.h"
+#include "../display/font.h"
 
-#include "../dataobj/umgebung.h"
+#include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
 #include "../simsys.h"
 #include "../utils/simstring.h"
 
-#define DIALOG_WIDTH (220)
+#define L_DIALOG_WIDTH (220)
 
 int sprachengui_t::cmp_language_button(sprachengui_t::language_button_t a, sprachengui_t::language_button_t b)
 {
@@ -52,9 +52,9 @@ void sprachengui_t::init_font_from_lang()
 	// load large font
 	char prop_font_file_name [1024];
 	sprintf(prop_font_file_name, "%s%s", FONT_PATH_X, prop_font_file);
-	chdir(umgebung_t::program_dir);
+	chdir(env_t::program_dir);
 	display_load_font(prop_font_file_name);
-	chdir(umgebung_t::user_dir);
+	chdir(env_t::user_dir);
 
 	const char * p = translator::translate("SEP_THOUSAND");
 	char c = ',';
@@ -89,24 +89,24 @@ sprachengui_t::sprachengui_t() :
 	flags(skinverwaltung_t::flaggensymbol?skinverwaltung_t::flaggensymbol->get_bild_nr(0):IMG_LEER),
 	buttons(translator::get_language_count())
 {
-	// Coordinates are relative to parent (TITLEHEIGHT already substracted)
-	koord cursor = koord(D_MARGIN_LEFT,D_MARGIN_TOP);
+	// Coordinates are relative to parent (TITLEHEIGHT already subtracted)
+	scr_coord cursor = scr_coord(D_MARGIN_LEFT,D_MARGIN_TOP);
 
 	flags.enable_offset_removal(true);
-	flags.set_pos( koord(DIALOG_WIDTH-D_MARGIN_RIGHT-flags.get_groesse().x, cursor.y) );
+	flags.set_pos( scr_coord(L_DIALOG_WIDTH-D_MARGIN_RIGHT-flags.get_size().w, cursor.y) );
 	add_komponente( &flags);
 
 	buf.clear();
 	buf.append(translator::translate("LANG_CHOOSE\n"));
 	text_label.set_pos( cursor );
-	text_label.set_buf(&buf); // force recalculation of size (groesse)
+	text_label.set_buf(&buf); // force recalculation of size (size)
 	add_komponente( &text_label );
-	cursor.y += text_label.get_groesse().y;
+	cursor.y += text_label.get_size().h;
 
 	seperator.set_pos( cursor );
-	seperator.set_width( DIALOG_WIDTH-D_MARGIN_LEFT-D_H_SPACE-flags.get_groesse().x-D_MARGIN_RIGHT );
+	seperator.set_width( L_DIALOG_WIDTH-D_MARGINS_X-D_H_SPACE-flags.get_size().w );
 	add_komponente( &seperator );
-	cursor.y = max( seperator.get_pos().y + D_DIVIDER_HEIGHT, flags.get_pos().y + flags.get_groesse().y);
+	cursor.y = max( seperator.get_pos().y + D_DIVIDER_HEIGHT, flags.get_pos().y + flags.get_size().h);
 
 	const translator::lang_info* lang = translator::get_langs();
 	for (int i = 0; i < translator::get_language_count(); ++i, ++lang) {
@@ -117,7 +117,7 @@ sprachengui_t::sprachengui_t() :
 		b->set_no_translate(true);
 
 		// check, if font exists
-		chdir(umgebung_t::program_dir);
+		chdir(env_t::program_dir);
 		const char* fontname = lang->translate("PROP_FONT_FILE");
 		char prop_font_file_name [1024];
 		sprintf(prop_font_file_name, "%s%s", FONT_PATH_X, fontname);
@@ -160,18 +160,20 @@ sprachengui_t::sprachengui_t() :
 
 	// now set position
 	const uint32 count = buttons.get_count();
+	const scr_coord_val width = ((L_DIALOG_WIDTH - D_MARGINS_X - D_H_SPACE) >> 1);
 	for(uint32 i=0; i<count; i++)
 	{
 		const bool right = (2*i >= count);
-		const sint16 x = cursor.x + (right  ? (DIALOG_WIDTH-D_MARGIN_LEFT-D_MARGIN_RIGHT)/2 : 0);
-		const sint16 y = cursor.y + (D_BUTTON_SQUARE+D_V_SPACE)*(right ? i - (count+1)/2: i);
-		buttons[i].button->set_pos(koord(x,y+D_V_SPACE));
+		const scr_coord_val x = cursor.x + (right ? width + D_H_SPACE : 0);
+		const scr_coord_val y = cursor.y + (max(D_CHECKBOX_HEIGHT, LINESPACE) + D_V_SPACE) * (right ? i - (count + 1) / 2: i);
+		buttons[i].button->set_pos( scr_coord( x, y + D_V_SPACE ) );
+		buttons[i].button->set_width( width );
 		add_komponente( buttons[i].button );
 	}
 
-	chdir(umgebung_t::user_dir);
+	chdir(env_t::user_dir);
 
-	set_fenstergroesse( koord(DIALOG_WIDTH, D_TITLEBAR_HEIGHT + cursor.y + ((count+1)>>1)*(D_BUTTON_SQUARE+D_V_SPACE) + D_MARGIN_BOTTOM ) );
+	set_windowsize( scr_size(L_DIALOG_WIDTH, D_TITLEBAR_HEIGHT + cursor.y + ((count+1)>>1)*(max(D_CHECKBOX_HEIGHT, LINESPACE)+D_V_SPACE) + D_MARGIN_BOTTOM ) );
 }
 
 

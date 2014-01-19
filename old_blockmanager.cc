@@ -11,31 +11,31 @@
 #include "simworld.h"
 #include "player/simplay.h"
 #include "simmesg.h"
-#include "simimg.h"
-#include "dings/signal.h"
-#include "dings/tunnel.h"
+#include "display/simimg.h"
+#include "obj/signal.h"
+#include "obj/tunnel.h"
 #include "boden/grund.h"
 #include "boden/wege/schiene.h"
 
 #include "dataobj/loadsave.h"
 #include "dataobj/translator.h"
-#include "dataobj/umgebung.h"
+#include "dataobj/environment.h"
 
 #include "tpl/slist_tpl.h"
 
 #include "old_blockmanager.h"
 
 // only needed for loading old games
-class oldsignal_t : public ding_t
+class oldsignal_t : public obj_t
 {
 protected:
 	uint8 zustand;
 	uint8 blockend;
 	uint8 dir;
-	ding_t::typ type;
+	obj_t::typ type;
 
 public:
-	oldsignal_t(karte_t *welt, loadsave_t *file, ding_t::typ type);
+	oldsignal_t(loadsave_t *file, obj_t::typ type);
 
 	/*
 	* return direction or the state of the traffic light
@@ -45,7 +45,7 @@ public:
 
 	bool ist_blockiert() const {return blockend != 0;}
 
-	ding_t::typ get_typ() const 	{ return type; }
+	obj_t::typ get_typ() const 	{ return type; }
 
 	void rdwr(loadsave_t *file);
 
@@ -59,7 +59,7 @@ static slist_tpl <oldsignal_t *> signale;
 // only there to convert old games to 89.02 and higher
 
 // these two routines for compatibility
-oldsignal_t::oldsignal_t(karte_t *welt, loadsave_t *file, ding_t::typ type) : ding_t (welt)
+oldsignal_t::oldsignal_t(loadsave_t *file, obj_t::typ type) : obj_t ()
 {
 	this->type = type;
 	rdwr(file);
@@ -72,7 +72,7 @@ oldsignal_t::rdwr(loadsave_t *file)
 		dbg->fatal("oldsignal_t::rdwr()","cannot be saved!");
 	}
 	// loading from blockmanager!
-	ding_t::rdwr(file);
+	obj_t::rdwr(file);
 	file->rdwr_byte(blockend);
 	file->rdwr_byte(zustand);
 	file->rdwr_byte(dir);
@@ -82,10 +82,10 @@ oldsignal_t::rdwr(loadsave_t *file)
 
 // now the old block reader
 void
-old_blockmanager_t::rdwr_block(karte_t *welt,loadsave_t *file)
+old_blockmanager_t::rdwr_block(karte_t *,loadsave_t *file)
 {
 	sint32 count;
-	short int typ = ding_t::signal;
+	short int typ = obj_t::signal;
 
 	// signale laden
 	file->rdwr_long(count);
@@ -93,7 +93,7 @@ old_blockmanager_t::rdwr_block(karte_t *welt,loadsave_t *file)
 	for(int i=0; i<count; i++) {
 		// read the old signals (only opurpose of the here
 		typ=file->rd_obj_id();
-		oldsignal_t *sig = new oldsignal_t(welt, file, (ding_t::typ)typ);
+		oldsignal_t *sig = new oldsignal_t(file, (obj_t::typ)typ);
 		DBG_MESSAGE("oldsignal_t()","on %i,%i with dir=%i blockend=%i",sig->get_pos().x,sig->get_pos().y,sig->get_dir(),sig->ist_blockiert());
 		signale.insert( sig );
 	}
@@ -183,10 +183,10 @@ old_blockmanager_t::laden_abschliessen(karte_t *welt)
 			grund_t *tmp=to;
 			to = gr;
 			gr = tmp;
-			if(os2->get_typ()==ding_t::old_presignal) {
+			if(os2->get_typ()==obj_t::old_presignal) {
 				type = roadsign_besch_t::SIGN_PRE_SIGNAL;
 			}
-			else if(os2->get_typ()==ding_t::old_choosesignal) {
+			else if(os2->get_typ()==obj_t::old_choosesignal) {
 				type |= roadsign_besch_t::CHOOSE_SIGN;
 			}
 			dir = os2->get_dir();
@@ -195,10 +195,10 @@ old_blockmanager_t::laden_abschliessen(karte_t *welt)
 		else {
 			// gr is already the first choice
 			// so we just have to determine the type
-			if(os1->get_typ()==ding_t::old_presignal) {
+			if(os1->get_typ()==obj_t::old_presignal) {
 				type = roadsign_besch_t::SIGN_PRE_SIGNAL;
 			}
-			else if(os1->get_typ()==ding_t::old_choosesignal) {
+			else if(os1->get_typ()==obj_t::old_choosesignal) {
 				type |= roadsign_besch_t::CHOOSE_SIGN;
 			}
 		}
@@ -223,7 +223,7 @@ old_blockmanager_t::laden_abschliessen(karte_t *welt)
 		if(new_signal_gr  &&  dir!=0) {
 			const roadsign_besch_t *sb=roadsign_t::roadsign_search(type,wt,0);
 			if(sb!=NULL) {
-				signal_t *sig = new signal_t(welt,new_signal_gr->get_weg(wt)->get_besitzer(),new_signal_gr->get_pos(),dir,sb);
+				signal_t *sig = new signal_t(new_signal_gr->get_weg(wt)->get_besitzer(),new_signal_gr->get_pos(),dir,sb);
 				new_signal_gr->obj_add(sig);
 //DBG_MESSAGE("old_blockmanager::laden_abschliessen()","signal restored at %i,%i with dir %i",gr->get_pos().x,gr->get_pos().y,dir);
 			}

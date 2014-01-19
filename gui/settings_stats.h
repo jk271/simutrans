@@ -14,7 +14,7 @@
 #include "../tpl/array_tpl.h"
 #include "../utils/cbuffer_t.h"
 
-#include "gui_container.h"
+#include "components/gui_container.h"
 #include "components/gui_komponente.h"
 #include "components/gui_numberinput.h"
 #include "components/gui_label.h"
@@ -25,10 +25,10 @@
 class settings_t;
 
 /* With the following macros, elements could be added to the property lists.
- * ATTENTION: In the init and read preocedures, the order of the item MUST be identical!
+ * ATTENTION: In the init and read procedures, the order of the items MUST be identical!
  */
 
-// call this befor any init is done ...
+// call this before any init is done ...
 #define INIT_INIT \
 	width = 16;\
 	height = 0;\
@@ -44,13 +44,13 @@ class settings_t;
 	width = max(width, proportional_string_width(t)+66);\
 	gui_numberinput_t *ni = new gui_numberinput_t();\
 	ni->init( (sint32)(a), (b), (c), (d), (e) );\
-	ni->set_pos( koord( 0, ypos ) );\
-	ni->set_groesse( koord( 37+7*max(1,(sint16)(log10((double)(c)+1.0)+0.5)), D_EDIT_HEIGHT ) );\
+	ni->set_pos( scr_coord( 0, ypos ) );\
+	ni->set_size( scr_size( 37+7*max(1,(sint16)(log10((double)(c)+1.0)+0.5)), D_EDIT_HEIGHT ) );\
 	numinp.append( ni );\
 	add_komponente( ni );\
 	gui_label_t *lb = new gui_label_t();\
 	lb->set_text_pointer(t);\
-	lb->align_to(ni, ALIGN_CENTER_V + ALIGN_EXTERIOR_H + ALIGN_LEFT, koord(D_H_SPACE,0) );\
+	lb->align_to(ni, ALIGN_CENTER_V + ALIGN_EXTERIOR_H + ALIGN_LEFT, scr_coord(D_H_SPACE,0) );\
 	label.append( lb );\
 	add_komponente( lb );\
 	ypos += D_EDIT_HEIGHT;\
@@ -63,13 +63,13 @@ class settings_t;
 	width = max(width, proportional_string_width(t)+66);\
 	gui_numberinput_t *ni = new gui_numberinput_t();\
 	ni->init( (sint32)( (a)/(sint64)100 ), (b), (c), (d), (e) );\
-	ni->set_pos( koord( 0, ypos ) );\
-	ni->set_groesse( koord( 37+7*max(1,(sint16)(log10((double)(c)+1.0)+0.5)), D_EDIT_HEIGHT ) );\
+	ni->set_pos( scr_coord( 0, ypos ) );\
+	ni->set_size( scr_size( 37+7*max(1,(sint16)(log10((double)(c)+1.0)+0.5)), D_EDIT_HEIGHT ) );\
 	numinp.append( ni );\
 	add_komponente( ni );\
 	gui_label_t *lb = new gui_label_t();\
 	lb->set_text_pointer(t);\
-	lb->align_to(ni, ALIGN_CENTER_V + ALIGN_EXTERIOR_H + ALIGN_LEFT, koord(D_H_SPACE,0) );\
+	lb->align_to(ni, ALIGN_CENTER_V + ALIGN_EXTERIOR_H + ALIGN_LEFT, scr_coord(D_H_SPACE,0) );\
 	label.append( lb );\
 	add_komponente( lb );\
 	ypos += D_EDIT_HEIGHT;\
@@ -82,7 +82,7 @@ class settings_t;
 	width = max(width, proportional_string_width(t)+4);\
 	gui_label_t *lb = new gui_label_t();\
 	lb->set_text_pointer(t);\
-	lb->set_pos( koord( 0, ypos ) );\
+	lb->set_pos( scr_coord( 0, ypos ) );\
 	label.append( lb );\
 	add_komponente( lb );\
 	ypos += LINESPACE;\
@@ -94,11 +94,11 @@ class settings_t;
 {\
 	width = max(width, proportional_string_width(t)+20);\
 	button_t *bt = new button_t();\
-	bt->init( button_t::square_automatic, (t), koord( 0, ypos ) );\
+	bt->init( button_t::square_automatic, (t), scr_coord( 0, ypos ) );\
 	bt->pressed = (a);\
 	button.append( bt );\
 	add_komponente( bt );\
-	ypos += D_BUTTON_SQUARE;\
+	ypos += D_CHECKBOX_HEIGHT;\
 }\
 
 #define INIT_BOOL_NEW(t,a) if(  new_world  ) INIT_BOOL( (t), (a) )
@@ -161,9 +161,9 @@ public:
 	void init(settings_t const*);
 	void read(settings_t const*);
 
-	koord get_groesse() const {
-		//return koord(width,(button.get_count()*D_BUTTON_HEIGHT+label.get_count())*LINESPACE+seperator*D_V_SPACE+6);
-		return koord(width,height);
+	scr_size get_size() const {
+		//return scr_size(width,(button.get_count()*D_BUTTON_HEIGHT+label.get_count())*LINESPACE+seperator*D_V_SPACE+6);
+		return scr_size(width,height);
 	}
 };
 

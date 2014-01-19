@@ -2,7 +2,7 @@
 
 #include "bruecke_besch.h"
 #include "grund_besch.h"
-#include "../utils/checksum.h"
+#include "../network/checksum.h"
 
 
 /*
@@ -129,17 +129,17 @@ bool bruecke_besch_t::has_double_ramp() const
 	return (get_hintergrund(bruecke_besch_t::N_Rampe2, 0)!=IMG_LEER || get_vordergrund(bruecke_besch_t::N_Rampe2, 0)!=IMG_LEER);
 }
 
+bool bruecke_besch_t::has_double_start() const
+{
+	return (get_hintergrund(bruecke_besch_t::N_Start2, 0) != IMG_LEER  ||  get_vordergrund(bruecke_besch_t::N_Start2, 0) != IMG_LEER);
+}
+
 
 void bruecke_besch_t::calc_checksum(checksum_t *chk) const
 {
-	chk->input(topspeed);
-	chk->input(preis);
-	chk->input(maintenance);
-	chk->input(wegtyp);
+	obj_besch_transport_infrastructure_t::calc_checksum(chk);
 	chk->input(pillars_every);
 	chk->input(pillars_asymmetric);
 	chk->input(max_length);
 	chk->input(max_height);
-	chk->input(intro_date);
-	chk->input(obsolete_date);
 }

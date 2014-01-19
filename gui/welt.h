@@ -21,7 +21,6 @@
 #include "../tpl/array2d_tpl.h"
 
 class settings_t;
-class karte_t;
 
 /**
  * The dialog for new world generation
@@ -39,9 +38,8 @@ class welt_gui_t  :
 		* Mini Map-Preview
 		* @author Hj. Malthaner
 		*/
-		karte_t             *world;
 		array2d_tpl<uint8>   map;
-		koord                map_size;
+		scr_size            map_size;
 
 		bool load_heightfield;
 		bool loaded_heightfield;
@@ -112,7 +110,7 @@ class welt_gui_t  :
 	void update_densities();
 
 	public:
-		welt_gui_t(karte_t*, settings_t*);
+		welt_gui_t(settings_t*);
 
 		/**
 		* Berechnet Preview-Karte neu. Inititialisiert RNG neu!
@@ -143,7 +141,7 @@ class welt_gui_t  :
 		 * component is displayed.
 		 * @author Hj. Malthaner
 		 */
-		void zeichnen(koord pos, koord gr);
+		void draw(scr_coord pos, scr_size size);
 
 		bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 };

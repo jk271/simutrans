@@ -9,7 +9,7 @@
 #define _simdepot_h
 
 #include "tpl/slist_tpl.h"
-#include "dings/gebaeude.h"
+#include "obj/gebaeude.h"
 #include "convoihandle_t.h"
 #include "simline.h"
 
@@ -55,12 +55,12 @@ public:
 	int selected_filter;
 
 	// finds the next/previous depot relative to the current position
-	static depot_t *find_depot( koord3d start, const ding_t::typ depot_type, const spieler_t *sp, bool next);
+	static depot_t *find_depot( koord3d start, const obj_t::typ depot_type, const spieler_t *sp, bool next);
 
 	static const slist_tpl<depot_t *>& get_depot_list() { return all_depots; }
 
-	depot_t(karte_t *welt,loadsave_t *file);
-	depot_t(karte_t *welt, koord3d pos, spieler_t *sp, const haus_tile_besch_t *t);
+	depot_t(loadsave_t *file);
+	depot_t(koord3d pos, spieler_t *sp, const haus_tile_besch_t *t);
 	virtual ~depot_t();
 
 	void call_depot_tool( char tool, convoihandle_t cnv, const char *extra );
@@ -254,8 +254,8 @@ public:
 class bahndepot_t : public depot_t
 {
 public:
-	bahndepot_t(karte_t *welt, loadsave_t *file) : depot_t(welt,file) {}
-	bahndepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t) : depot_t(welt,pos,sp,t) {}
+	bahndepot_t(loadsave_t *file) : depot_t(file) {}
+	bahndepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t) : depot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::trainline; }
 
@@ -272,7 +272,7 @@ public:
 	int get_y_grid() const { return 24; }
 	unsigned get_max_convoi_length() const;
 
-	virtual ding_t::typ get_typ() const { return bahndepot; }
+	virtual obj_t::typ get_typ() const { return bahndepot; }
 	virtual const char *get_name() const {return "Bahndepot"; }
 };
 
@@ -280,48 +280,48 @@ public:
 class tramdepot_t : public bahndepot_t
 {
 public:
-	tramdepot_t(karte_t *welt, loadsave_t *file):bahndepot_t(welt,file) {}
-	tramdepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(welt,pos,sp,t) {}
+	tramdepot_t(loadsave_t *file):bahndepot_t(file) {}
+	tramdepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::tramline; }
 
-	virtual ding_t::typ get_typ() const { return tramdepot; }
+	virtual obj_t::typ get_typ() const { return tramdepot; }
 	virtual const char *get_name() const {return "Tramdepot"; }
 };
 
 class monoraildepot_t : public bahndepot_t
 {
 public:
-	monoraildepot_t(karte_t *welt, loadsave_t *file):bahndepot_t(welt,file) {}
-	monoraildepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(welt,pos,sp,t) {}
+	monoraildepot_t(loadsave_t *file):bahndepot_t(file) {}
+	monoraildepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::monorailline; }
 
-	virtual ding_t::typ get_typ() const { return monoraildepot; }
+	virtual obj_t::typ get_typ() const { return monoraildepot; }
 	virtual const char *get_name() const {return "Monoraildepot"; }
 };
 
 class maglevdepot_t : public bahndepot_t
 {
 public:
-	maglevdepot_t(karte_t *welt, loadsave_t *file):bahndepot_t(welt,file) {}
-	maglevdepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(welt,pos,sp,t) {}
+	maglevdepot_t(loadsave_t *file):bahndepot_t(file) {}
+	maglevdepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::maglevline; }
 
-	virtual ding_t::typ get_typ() const { return maglevdepot; }
+	virtual obj_t::typ get_typ() const { return maglevdepot; }
 	virtual const char *get_name() const {return "Maglevdepot"; }
 };
 
 class narrowgaugedepot_t : public bahndepot_t
 {
 public:
-	narrowgaugedepot_t(karte_t *welt, loadsave_t *file):bahndepot_t(welt,file) {}
-	narrowgaugedepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(welt,pos,sp,t) {}
+	narrowgaugedepot_t(loadsave_t *file):bahndepot_t(file) {}
+	narrowgaugedepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t): bahndepot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::narrowgaugeline; }
 
-	virtual ding_t::typ get_typ() const { return narrowgaugedepot; }
+	virtual obj_t::typ get_typ() const { return narrowgaugedepot; }
 	virtual const char *get_name() const {return "Narrowgaugedepot"; }
 };
 
@@ -341,8 +341,8 @@ protected:
 	virtual const char * get_haenger_name() { return "Anhaenger_tab"; }
 
 public:
-	strassendepot_t(karte_t *welt, loadsave_t *file) : depot_t(welt,file) {}
-	strassendepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t) : depot_t(welt,pos,sp,t) {}
+	strassendepot_t(loadsave_t *file) : depot_t(file) {}
+	strassendepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t) : depot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::truckline; }
 
@@ -357,7 +357,7 @@ public:
 	int get_y_grid() const { return 24; }
 	unsigned get_max_convoi_length() const { return 4; }
 
-	ding_t::typ get_typ() const { return strassendepot; }
+	obj_t::typ get_typ() const { return strassendepot; }
 	const char *get_name() const {return "Strassendepot";}
 };
 
@@ -377,8 +377,8 @@ protected:
 	virtual const char * get_haenger_name() { return "Schleppkahn_tab"; }
 
 public:
-	schiffdepot_t(karte_t *welt, loadsave_t *file) : depot_t(welt,file) {}
-	schiffdepot_t(karte_t *welt, koord3d pos, spieler_t *sp, const haus_tile_besch_t *t) : depot_t(welt,pos,sp,t) {}
+	schiffdepot_t(loadsave_t *file) : depot_t(file) {}
+	schiffdepot_t(koord3d pos, spieler_t *sp, const haus_tile_besch_t *t) : depot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::shipline; }
 
@@ -393,7 +393,7 @@ public:
 	int get_y_grid() const { return 46; }
 
 	unsigned get_max_convoi_length() const { return 4; }
-	ding_t::typ get_typ() const { return schiffdepot; }
+	obj_t::typ get_typ() const { return schiffdepot; }
 	const char *get_name() const {return "Schiffdepot";}
 };
 
@@ -408,8 +408,8 @@ protected:
 	virtual const char * get_passenger_name() { return "Flug_tab"; }
 
 public:
-	airdepot_t(karte_t *welt, loadsave_t *file) : depot_t(welt,file) {}
-	airdepot_t(karte_t *welt, koord3d pos,spieler_t *sp, const haus_tile_besch_t *t) : depot_t(welt,pos,sp,t) {}
+	airdepot_t(loadsave_t *file) : depot_t(file) {}
+	airdepot_t(koord3d pos,spieler_t *sp, const haus_tile_besch_t *t) : depot_t(pos,sp,t) {}
 
 	virtual simline_t::linetype get_line_type() const { return simline_t::airline; }
 
@@ -424,7 +424,7 @@ public:
 	int get_y_grid() const { return 36; }
 	unsigned get_max_convoi_length() const { return 1; }
 
-	ding_t::typ get_typ() const { return airdepot; }
+	obj_t::typ get_typ() const { return airdepot; }
 	const char *get_name() const {return "Hangar";}
 };
 

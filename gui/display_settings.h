@@ -12,10 +12,9 @@
 #include "components/gui_button.h"
 #include "components/gui_numberinput.h"
 
-#define COLORS_MAX_BUTTONS (23)
+#define COLORS_MAX_BUTTONS (24)
 #define BUF_MAXLEN_MS_FORMAT (10)
 
-class karte_t;
 
 /**
  * Display settings dialog
@@ -24,7 +23,6 @@ class karte_t;
 class color_gui_t : public gui_frame_t, private action_listener_t
 {
 private:
-	karte_t *welt;
 
 	button_t buttons[COLORS_MAX_BUTTONS];
 
@@ -56,6 +54,10 @@ private:
 		divider3,
 		divider4;
 
+	gui_container_t
+		label_container,
+		value_container;
+
 	// Non translated text buffers for label values
 	char frame_time_buf[BUF_MAXLEN_MS_FORMAT];
 	char idle_time_buf[BUF_MAXLEN_MS_FORMAT];
@@ -63,7 +65,7 @@ private:
 	char simloops_buf[BUF_MAXLEN_MS_FORMAT];
 
 public:
-	color_gui_t(karte_t *welt);
+	color_gui_t();
 
 	/**
 	 * Some windows have associated help text.
@@ -72,11 +74,11 @@ public:
 	 */
 	const char * get_hilfe_datei() const { return "display.txt"; }
 
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 
-	virtual void set_fenstergroesse(koord groesse);
+	virtual void set_windowsize(scr_size size);
 };
 
 #endif

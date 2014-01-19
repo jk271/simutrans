@@ -17,7 +17,8 @@
 #include "../simcolor.h"
 #include "../simconvoi.h"
 #include "../simintr.h"
-#include "../simgraph.h"
+#include "../display/simgraph.h"
+#include "../display/viewport.h"
 #include "../simmenu.h"
 #include "../simskin.h"
 #include "../simline.h"
@@ -25,7 +26,7 @@
 #include "../freight_list_sorter.h"
 
 #include "../dataobj/fahrplan.h"
-#include "../dataobj/umgebung.h"
+#include "../dataobj/environment.h"
 #include "../dataobj/translator.h"
 #include "../dataobj/loadsave.h"
 
@@ -37,7 +38,6 @@
 
 
 
-karte_t *halt_info_t::welt = NULL;
 
 
 static const char *sort_text[4] = {
@@ -89,21 +89,20 @@ const int cost_type_color[MAX_HALT_COST] =
 	COL_LILAC
 };
 
-halt_info_t::halt_info_t(karte_t *welt, halthandle_t halt) :
+halt_info_t::halt_info_t(halthandle_t halt) :
 		gui_frame_t( halt->get_name(), halt->get_besitzer() ),
 		scrolly(&text),
 		text(&freight_info),
 		sort_label(translator::translate("Hier warten/lagern:")),
-		view(welt, halt->get_basis_pos3d(), koord(max(64, get_base_tile_raster_width()), max(56, get_base_tile_raster_width() * 7 / 8)))
+		view(halt->get_basis_pos3d(), scr_size(max(64, get_base_tile_raster_width()), max(56, get_base_tile_raster_width() * 7 / 8)))
 {
 	this->halt = halt;
-	this->welt = welt;
-	halt->set_sortby( umgebung_t::default_sortmode );
+	halt->set_sortby( env_t::default_sortmode );
 
-	const sint16 offset_below_viewport = 21 + view.get_groesse().y;
-	const sint16 total_width = D_MARGIN_LEFT + 3*(D_BUTTON_WIDTH + D_H_SPACE) + max( D_BUTTON_WIDTH, view.get_groesse().x ) + D_MARGIN_RIGHT;
+	const sint16 offset_below_viewport = 21 + view.get_size().h;
+	const sint16 total_width = D_MARGIN_LEFT + 3*(D_BUTTON_WIDTH + D_H_SPACE) + max( D_BUTTON_WIDTH, view.get_size().w ) + D_MARGIN_RIGHT;
 
-	input.set_pos(koord(10,4));
+	input.set_pos(scr_coord(10,4));
 	tstrncpy(edit_name, halt->get_name(), lengthof(edit_name));
 	input.set_text(edit_name, lengthof(edit_name));
 	input.add_listener(this);
@@ -112,18 +111,18 @@ halt_info_t::halt_info_t(karte_t *welt, halthandle_t halt) :
 	add_komponente(&view);
 
 	// chart
-	chart.set_pos(koord(66,offset_below_viewport+2));
-	chart.set_groesse(koord(total_width-66-10, 100));
+	chart.set_pos(scr_coord(66,offset_below_viewport+2));
+	chart.set_size(scr_size(total_width-66-10, 100));
 	chart.set_dimension(12, 10000);
 	chart.set_visible(false);
 	chart.set_background(MN_GREY1);
 	for (int cost = 0; cost<MAX_HALT_COST; cost++) {
 		chart.add_curve(cost_type_color[cost], halt->get_finance_history(), MAX_HALT_COST, index_of_haltinfo[cost], MAX_MONTHS, 0, false, true, 0);
 		filterButtons[cost].init(button_t::box_state, cost_type[cost],
-			koord(BUTTON1_X+(D_BUTTON_WIDTH+D_H_SPACE)*(cost%4), view.get_groesse().y+141+(D_BUTTON_HEIGHT+2)*(cost/4) ),
-			koord(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
+			scr_coord(BUTTON1_X+(D_BUTTON_WIDTH+D_H_SPACE)*(cost%4), view.get_size().h+141+(D_BUTTON_HEIGHT+2)*(cost/4) ),
+			scr_size(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
 		filterButtons[cost].add_listener(this);
-		filterButtons[cost].background = cost_type_color[cost];
+		filterButtons[cost].background_color = cost_type_color[cost];
 		filterButtons[cost].set_visible(false);
 		filterButtons[cost].pressed = false;
 		add_komponente(filterButtons + cost);
@@ -135,35 +134,35 @@ halt_info_t::halt_info_t(karte_t *welt, halthandle_t halt) :
 	const sint16 yoff = offset_below_viewport+D_BUTTON_HEIGHT+1-D_BUTTON_HEIGHT-2;
 
 	// hsiegeln: added sort_button
-	sort_button.init(button_t::roundbox, sort_text[umgebung_t::default_sortmode],koord(BUTTON1_X, yoff), koord(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
+	sort_button.init(button_t::roundbox, sort_text[env_t::default_sortmode],scr_coord(BUTTON1_X, yoff), scr_size(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
 	sort_button.set_tooltip("Sort waiting list by");
 	sort_button.add_listener(this);
 	add_komponente(&sort_button);
 
-	toggler_departures.init( button_t::roundbox_state, "Departure board", koord( BUTTON2_X, yoff ), koord( D_BUTTON_WIDTH, D_BUTTON_HEIGHT ) );
+	toggler_departures.init( button_t::roundbox_state, "Departure board", scr_coord( BUTTON2_X, yoff ), scr_size( D_BUTTON_WIDTH, D_BUTTON_HEIGHT ) );
 	toggler_departures.set_tooltip("Show/hide estimated arrival times");
 	toggler_departures.add_listener( this );
 	add_komponente( &toggler_departures );
 
-	toggler.init(button_t::roundbox_state, "Chart", koord(BUTTON3_X, yoff), koord(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
+	toggler.init(button_t::roundbox_state, "Chart", scr_coord(BUTTON3_X, yoff), scr_size(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
 	toggler.set_tooltip("Show/hide statistics");
 	toggler.add_listener(this);
 	add_komponente(&toggler);
 
-	button.init(button_t::roundbox, "Details", koord(BUTTON4_X, yoff), koord(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
+	button.init(button_t::roundbox, "Details", scr_coord(BUTTON4_X, yoff), scr_size(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
 	button.set_tooltip("Open station/stop details");
 	button.add_listener(this);
 	add_komponente(&button);
 
-	scrolly.set_pos(koord(0, offset_below_viewport+D_BUTTON_HEIGHT+3));
+	scrolly.set_pos(scr_coord(0, offset_below_viewport+D_BUTTON_HEIGHT+3));
 	scrolly.set_show_scroll_x(true);
 	add_komponente(&scrolly);
 
-	set_fenstergroesse(koord(total_width, view.get_groesse().y+208+button_t::gui_scrollbar_size.y));
-	set_min_windowsize(koord(total_width, view.get_groesse().y+131+button_t::gui_scrollbar_size.y));
+	set_windowsize(scr_size(total_width, view.get_size().h+208+D_SCROLLBAR_HEIGHT));
+	set_min_windowsize(scr_size(total_width, view.get_size().h+131+D_SCROLLBAR_HEIGHT));
 
 	set_resizemode(diagonal_resize);     // 31-May-02	markus weber	added
-	resize(koord(0,0));
+	resize(scr_coord(0,0));
 }
 
 
@@ -175,7 +174,7 @@ halt_info_t::~halt_info_t()
 		buf.printf( "h%u,%s", halt.get_id(), edit_name );
 		werkzeug_t *w = create_tool( WKZ_RENAME_TOOL | SIMPLE_TOOL );
 		w->set_default_param( buf );
-		halt->get_welt()->set_werkzeug( w, halt->get_besitzer() );
+		welt->set_werkzeug( w, halt->get_besitzer() );
 		// since init always returns false, it is safe to delete immediately
 		delete w;
 	}
@@ -190,8 +189,7 @@ koord3d halt_info_t::get_weltpos(bool)
 
 bool halt_info_t::is_weltpos()
 {
-	return ( welt->get_x_off() | welt->get_y_off()) == 0  &&
-		welt->get_world_position() == welt->calculate_world_position( get_weltpos(false) );
+	return ( welt->get_viewport()->is_on_center(get_weltpos(false)));
 }
 
 
@@ -201,7 +199,7 @@ bool halt_info_t::is_weltpos()
  * component is displayed.
  * @author Hj. Malthaner
  */
-void halt_info_t::zeichnen(koord pos, koord gr)
+void halt_info_t::draw(scr_coord pos, scr_size size)
 {
 	if(halt.is_bound()) {
 
@@ -219,7 +217,7 @@ void halt_info_t::zeichnen(koord pos, koord gr)
 			text.recalc_size();
 		}
 
-		gui_frame_t::zeichnen(pos, gr);
+		gui_frame_t::draw(pos, size);
 		set_dirty();
 
 		sint16 top = pos.y+36;
@@ -319,12 +317,12 @@ void halt_info_t::zeichnen(koord pos, koord gr)
 void halt_info_t::show_hide_statistics( bool show )
 {
 	toggler.pressed = show;
-	const koord offset = show ? koord(0, 165) : koord(0, -165);
+	const scr_coord offset = show ? scr_coord(0, 165) : scr_coord(0, -165);
 	set_min_windowsize(get_min_windowsize() + offset);
 	scrolly.set_pos(scrolly.get_pos() + offset);
 	chart.set_visible(show);
-	set_fenstergroesse(get_fenstergroesse() + offset);
-	resize(koord(0,0));
+	set_windowsize(get_windowsize() + offset);
+	resize(scr_coord(0,0));
 	for (int i=0;i<MAX_HALT_COST;i++) {
 		filterButtons[i].set_visible(toggler.pressed);
 	}
@@ -387,7 +385,6 @@ void halt_info_t::update_departures()
 	if (!halt.is_bound()) {
 		return;
 	}
-	karte_t * welt = halt->get_welt();
 
 	vector_tpl<halt_info_t::dest_info_t> old_origins(origins);
 
@@ -409,7 +406,7 @@ void halt_info_t::update_departures()
 		if(  next_halt.is_bound()  ) {
 			halt_info_t::dest_info_t next( next_halt, 0, cnv );
 			destinations.append_unique( next );
-			if(  grund_t *gr = welt->lookup_kartenboden( cnv->get_vehikel(0)->last_stop_pos )  ) {
+			if(  grund_t *gr = welt->lookup( cnv->get_vehikel(0)->last_stop_pos )  ) {
 				if(  gr->get_halt().is_bound()  &&  gr->get_halt() != halt  ) {
 					halt_info_t::dest_info_t prev( gr->get_halt(), 0, cnv );
 					origins.append_unique( prev );
@@ -422,8 +419,8 @@ void halt_info_t::update_departures()
 	FOR(  vector_tpl<linehandle_t>, line, halt->registered_lines ) {
 		for(  uint j = 0;  j < line->count_convoys();  j++  ) {
 			convoihandle_t cnv = line->get_convoy(j);
-			if(  cnv.is_bound()  &&  ( cnv->get_state() == convoi_t::DRIVING  ||  cnv->is_waiting() )  &&  haltestelle_t::get_halt( welt, cnv->get_schedule()->get_current_eintrag().pos, cnv->get_besitzer() ) == halt  ) {
-				halthandle_t prev_halt = haltestelle_t::get_halt_2d( welt, cnv->front()->last_stop_pos, cnv->get_besitzer() );
+			if(  cnv.is_bound()  &&  ( cnv->get_state() == convoi_t::DRIVING  ||  cnv->is_waiting() )  &&  haltestelle_t::get_halt( cnv->get_schedule()->get_current_eintrag().pos, cnv->get_besitzer() ) == halt  ) {
+				halthandle_t prev_halt = haltestelle_t::get_halt( cnv->front()->last_stop_pos, cnv->get_besitzer() );
 				sint32 delta_t = cur_ticks + calc_ticks_until_arrival( cnv );
 				if(  prev_halt.is_bound()  ) {
 					halt_info_t::dest_info_t prev( prev_halt, delta_t, cnv );
@@ -447,8 +444,8 @@ void halt_info_t::update_departures()
 	}
 
 	FOR( vector_tpl<convoihandle_t>, cnv, halt->registered_convoys ) {
-		if(  cnv.is_bound()  &&  ( cnv->get_state() == convoi_t::DRIVING  ||  cnv->is_waiting() )  &&  haltestelle_t::get_halt( welt, cnv->get_schedule()->get_current_eintrag().pos, cnv->get_besitzer() ) == halt  ) {
-			halthandle_t prev_halt = haltestelle_t::get_halt_2d( welt, cnv->front()->last_stop_pos, cnv->get_besitzer() );
+		if(  cnv.is_bound()  &&  ( cnv->get_state() == convoi_t::DRIVING  ||  cnv->is_waiting() )  &&  haltestelle_t::get_halt( cnv->get_schedule()->get_current_eintrag().pos, cnv->get_besitzer() ) == halt  ) {
+			halthandle_t prev_halt = haltestelle_t::get_halt( cnv->front()->last_stop_pos, cnv->get_besitzer() );
 			sint32 delta_t = cur_ticks + calc_ticks_until_arrival( cnv );
 			if(  prev_halt.is_bound()  ) {
 				halt_info_t::dest_info_t prev( prev_halt, delta_t, cnv );
@@ -477,7 +474,7 @@ void halt_info_t::update_departures()
 		joined_buf.append( " " );
 		joined_buf.append( translator::translate( "Departures to\n" ) );
 		FOR( vector_tpl<halt_info_t::dest_info_t>, hi, destinations ) {
-			if(  freight_list_sorter_t::by_via_sum != umgebung_t::default_sortmode  ||  !exclude.is_contained( hi.halt )  ) {
+			if(  freight_list_sorter_t::by_via_sum != env_t::default_sortmode  ||  !exclude.is_contained( hi.halt )  ) {
 				joined_buf.printf( "  %s %s\n", tick_to_string( hi.delta_ticks, false ), hi.halt->get_name() );
 				exclude.append( hi.halt );
 			}
@@ -489,7 +486,7 @@ void halt_info_t::update_departures()
 	if(  origins.get_count()>0  ) {
 		joined_buf.append( translator::translate( "Arrivals from\n" ) );
 		FOR( vector_tpl<halt_info_t::dest_info_t>, hi, origins ) {
-			if(  freight_list_sorter_t::by_via_sum != umgebung_t::default_sortmode  ||  !exclude.is_contained( hi.halt )  ) {
+			if(  freight_list_sorter_t::by_via_sum != env_t::default_sortmode  ||  !exclude.is_contained( hi.halt )  ) {
 				joined_buf.printf( "  %s %s\n", tick_to_string( hi.delta_ticks, false ), hi.halt->get_name() );
 				exclude.append( hi.halt );
 			}
@@ -511,9 +508,9 @@ bool halt_info_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 		create_win( new halt_detail_t(halt), w_info, magic_halt_detail + halt.get_id() );
 	}
 	else if (comp == &sort_button) { 	// @author hsiegeln sort button pressed
-		umgebung_t::default_sortmode = ((int)(halt->get_sortby())+1)%4;
-		halt->set_sortby((freight_list_sorter_t::sort_mode_t) umgebung_t::default_sortmode);
-		sort_button.set_text(sort_text[umgebung_t::default_sortmode]);
+		env_t::default_sortmode = ((int)(halt->get_sortby())+1)%4;
+		halt->set_sortby((freight_list_sorter_t::sort_mode_t) env_t::default_sortmode);
+		sort_button.set_text(sort_text[env_t::default_sortmode]);
 	}
 	else  if (comp == &toggler) {
 		show_hide_statistics( toggler.pressed^1 );
@@ -528,7 +525,7 @@ bool halt_info_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
 			buf.printf( "h%u,%s", halt.get_id(), edit_name );
 			werkzeug_t *w = create_tool( WKZ_RENAME_TOOL | SIMPLE_TOOL );
 			w->set_default_param( buf );
-			halt->get_welt()->set_werkzeug( w, halt->get_besitzer() );
+			welt->set_werkzeug( w, halt->get_besitzer() );
 			// since init always returns false, it is safe to delete immediately
 			delete w;
 		}
@@ -556,22 +553,22 @@ bool halt_info_t::action_triggered( gui_action_creator_t *comp,value_t /* */)
  * Set window size and adjust component sizes and/or positions accordingly
  * @author Markus Weber
  */
-void halt_info_t::set_fenstergroesse(koord groesse)
+void halt_info_t::set_windowsize(scr_size size)
 {
-	gui_frame_t::set_fenstergroesse(groesse);
+	gui_frame_t::set_windowsize(size);
 
-	input.set_groesse(koord(get_fenstergroesse().x-20, 13));
+	input.set_size(scr_size(get_windowsize().w-20, 13));
 
-	view.set_pos(koord(get_fenstergroesse().x - view.get_groesse().x - 10 , 21));
+	view.set_pos(scr_coord(get_windowsize().w - view.get_size().w - 10 , 21));
 
-	scrolly.set_groesse(get_client_windowsize()-scrolly.get_pos());
+	scrolly.set_size(get_client_windowsize()-scrolly.get_pos());
 
 	const sint16 yoff = scrolly.get_pos().y-D_BUTTON_HEIGHT-3;
-	sort_button.set_pos(koord(BUTTON1_X,yoff));
-	toggler_departures.set_pos(koord(BUTTON2_X,yoff));
-	toggler.set_pos(koord(BUTTON3_X,yoff));
-	button.set_pos(koord(BUTTON4_X,yoff));
-	sort_label.set_pos(koord(2,yoff-LINESPACE-1));
+	sort_button.set_pos(scr_coord(BUTTON1_X,yoff));
+	toggler_departures.set_pos(scr_coord(BUTTON2_X,yoff));
+	toggler.set_pos(scr_coord(BUTTON3_X,yoff));
+	button.set_pos(scr_coord(BUTTON4_X,yoff));
+	sort_label.set_pos(scr_coord(10,yoff-LINESPACE-1));
 }
 
 
@@ -582,22 +579,21 @@ void halt_info_t::map_rotate90( sint16 new_ysize )
 }
 
 
-halt_info_t::halt_info_t(karte_t *welt):
+halt_info_t::halt_info_t():
 	gui_frame_t("", NULL),
 	scrolly(&text),
 	text(&freight_info),
 	sort_label(NULL),
-	view(welt, koord3d::invalid, koord(64, 64))
+	view(koord3d::invalid, scr_size(64, 64))
 {
 	// just a dummy
-	this->welt = welt;
 }
 
 
 void halt_info_t::rdwr(loadsave_t *file)
 {
 	koord3d halt_pos;
-	koord gr = get_fenstergroesse();
+	scr_size size = get_windowsize();
 	uint32 flags = 0;
 	bool stats = toggler.pressed;
 	bool departures = toggler_departures.pressed;
@@ -612,9 +608,9 @@ void halt_info_t::rdwr(loadsave_t *file)
 		}
 	}
 	halt_pos.rdwr( file );
-	gr.rdwr( file );
+	size.rdwr( file );
 	file->rdwr_long( flags );
-	file->rdwr_byte( umgebung_t::default_sortmode );
+	file->rdwr_byte( env_t::default_sortmode );
 	file->rdwr_bool( stats );
 	file->rdwr_bool( departures );
 	file->rdwr_long( xoff );
@@ -622,13 +618,13 @@ void halt_info_t::rdwr(loadsave_t *file)
 	if(  file->is_loading()  ) {
 		halt = welt->lookup( halt_pos )->get_halt();
 		// now we can open the window ...
-		koord const& pos = win_get_pos(this);
-		halt_info_t *w = new halt_info_t(welt,halt);
+		scr_coord const& pos = win_get_pos(this);
+		halt_info_t *w = new halt_info_t(halt);
 		create_win(pos.x, pos.y, w, w_info, magic_halt_info + halt.get_id());
 		if(  stats  ) {
-			gr.y -= 170;
+			size.h -= 170;
 		}
-		w->set_fenstergroesse( gr );
+		w->set_windowsize( size );
 		for( int i = 0; i<MAX_HALT_COST; i++) {
 			w->filterButtons[i].pressed = (flags>>i)&1;
 			if(w->filterButtons[i].pressed) {

@@ -27,7 +27,7 @@
 
 #include "../dataobj/loadsave.h"
 
-#include "../dings/zeiger.h"
+#include "../obj/zeiger.h"
 
 #include "../utils/cbuffer_t.h"
 
@@ -75,7 +75,7 @@ bool ai_bauplatz_mit_strasse_sucher_t::ist_platz_ok(koord pos, sint16 b, sint16 
 halthandle_t ai_t::get_halt(const koord pos ) const
 {
 	if(  grund_t *gr = welt->lookup_kartenboden(pos)  ) {
-		return haltestelle_t::get_halt( welt, gr->get_pos(), this );
+		return haltestelle_t::get_halt( gr->get_pos(), this );
 	}
 	return halthandle_t();
 }
@@ -88,7 +88,7 @@ halthandle_t ai_t::get_halt(const koord pos ) const
 bool ai_t::is_connected( const koord start_pos, const koord dest_pos, const ware_besch_t *wtyp ) const
 {
 	// Dario: Check if there's a stop near destination
-	const planquadrat_t* start_plan = welt->lookup(start_pos);
+	const planquadrat_t* start_plan = welt->access(start_pos);
 	const halthandle_t* start_list = start_plan->get_haltlist();
 	const uint16 start_halt_count  = start_plan->get_haltlist_count();
 
@@ -108,7 +108,7 @@ bool ai_t::init_general_tool( int tool, const char *param )
 {
 	const char *old_param = werkzeug_t::general_tool[tool]->get_default_param();
 	werkzeug_t::general_tool[tool]->set_default_param(param);
-	bool ok = werkzeug_t::general_tool[tool]->init( welt, this );
+	bool ok = werkzeug_t::general_tool[tool]->init( this );
 	werkzeug_t::general_tool[tool]->set_default_param(old_param);
 	return ok;
 }
@@ -122,7 +122,7 @@ bool ai_t::call_general_tool( int tool, koord k, const char *param )
 	koord3d pos = gr ? gr->get_pos() : koord3d::invalid;
 	const char *old_param = werkzeug_t::general_tool[tool]->get_default_param();
 	werkzeug_t::general_tool[tool]->set_default_param(param);
-	const char * err = werkzeug_t::general_tool[tool]->work( welt, this, pos );
+	const char * err = werkzeug_t::general_tool[tool]->work( this, pos );
 	if(err) {
 		if(*err) {
 			dbg->message("ai_t::call_general_tool()","failed for tool %i at (%s) because of \"%s\"", tool, pos.get_str(), err );
@@ -140,28 +140,40 @@ bool ai_t::call_general_tool( int tool, koord k, const char *param )
 /* returns ok, of there is a suitable space found
  * only check into two directions, the ones given by dir
  */
-bool ai_t::suche_platz(koord pos, koord &size, koord *dirs) const
+bool ai_t::suche_platz(koord pos, koord &size, koord *dirs)
 {
 	sint16 length = abs( size.x + size.y );
 
 	const grund_t *gr = welt->lookup_kartenboden(pos);
-	if(gr==NULL) {
+	if(  gr==NULL  ) {
 		return false;
 	}
 
 	sint8 start_z = gr->get_hoehe();
 	int max_dir = length==0 ? 1 : 2;
+	bool place_ok;
+
 	// two rotations
 	for(  int dir=0;  dir<max_dir;  dir++  ) {
-		for( sint16 i=0;  i<=length;  i++  ) {
+		place_ok = true;
+		for(  sint16 i=0;  i<=length;  i++  ) {
 			grund_t *gr = welt->lookup_kartenboden(  pos + (dirs[dir]*i)  );
-			if(  gr == NULL  ||  gr->get_halt().is_bound()  ||  !welt->can_ebne_planquadrat( pos, start_z )  ||  !gr->ist_natur()  ||  gr->kann_alle_obj_entfernen(this) != NULL  ||  gr->get_hoehe() < welt->get_water_hgt( pos + (dirs[dir] * i) )  ) {
-				return false;
+			if(  gr == NULL
+				||  gr->get_halt().is_bound()
+				||  !welt->can_ebne_planquadrat(this, pos, start_z )
+				||  !gr->ist_natur()
+				||  gr->kann_alle_obj_entfernen(this) != NULL
+				||  gr->get_hoehe() < welt->get_water_hgt( pos + (dirs[dir] * i) )  ) {
+					// something is blocking construction, try next rotation
+					place_ok = false;
+					break;
 			}
 		}
-		// aparently we can built this rotation here
-		size = dirs[dir]*length;
-		return true;
+		if(  place_ok  ) {
+			// apparently we can build this rotation here
+			size = dirs[dir]*length;
+			return true;
+		}
 	}
 	return false;
 }
@@ -300,7 +312,7 @@ void ai_t::set_marker( koord place, koord size )
 	for(  pos.y=place.y;  pos.y<=place.y+size.y;  pos.y++  ) {
 		for(  pos.x=place.x;  pos.x<=place.x+size.x;  pos.x++  ) {
 			grund_t *gr = welt->lookup_kartenboden(pos);
-			zeiger_t *z = new zeiger_t(welt, gr->get_pos(), this);
+			zeiger_t *z = new zeiger_t(gr->get_pos(), this);
 			z->set_bild( skinverwaltung_t::belegtzeiger->get_bild_nr(0) );
 			gr->obj_add( z );
 		}
@@ -338,7 +350,7 @@ bool ai_t::built_update_headquarter()
 			// needs new place?
 			if(place==koord::invalid) {
 				stadt_t *st = NULL;
-				FOR(slist_tpl<halthandle_t>, const halt, haltestelle_t::get_alle_haltestellen()) {
+				FOR(vector_tpl<halthandle_t>, const halt, haltestelle_t::get_alle_haltestellen()) {
 					if(  halt->get_besitzer()==this  ) {
 						st = welt->suche_naechste_stadt(halt->get_basis_pos());
 						break;
@@ -351,7 +363,7 @@ bool ai_t::built_update_headquarter()
 			}
 			const char *err="No suitable ground!";
 			if(  place!=koord::invalid  ) {
-				err = werkzeug_t::general_tool[WKZ_HEADQUARTER]->work( welt, this, welt->lookup_kartenboden(place)->get_pos() );
+				err = werkzeug_t::general_tool[WKZ_HEADQUARTER]->work( this, welt->lookup_kartenboden(place)->get_pos() );
 				// success
 				if(  err==NULL  ) {
 					return true;
@@ -466,7 +478,7 @@ bool ai_t::create_simple_road_transport(koord platz1, koord size1, koord platz2,
 	// get a default vehikel
 	vehikel_besch_t test_besch(road_wt, 25, vehikel_besch_t::diesel );
 	vehikel_t* test_driver = vehikelbauer_t::baue(welt->lookup_kartenboden(platz1)->get_pos(), this, NULL, &test_besch);
-	test_driver->set_flag( ding_t::not_on_map );
+	test_driver->set_flag( obj_t::not_on_map );
 	route_t verbindung;
 	if(  verbindung.calc_route(welt, welt->lookup_kartenboden(platz1)->get_pos(), welt->lookup_kartenboden(platz2)->get_pos(), test_driver, 0, 0)  &&
 		 verbindung.get_count() < 2u*koord_distance(platz1,platz2))  {
@@ -478,7 +490,7 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 	delete test_driver;
 
 	// no connection => built one!
-	wegbauer_t bauigel(welt, this);
+	wegbauer_t bauigel(this);
 	bauigel.route_fuer( wegbauer_t::strasse, road_weg, tunnelbauer_t::find_tunnel(road_wt,road_weg->get_topspeed(),welt->get_timeline_year_month()), brueckenbauer_t::find_bridge(road_wt,road_weg->get_topspeed(),welt->get_timeline_year_month()) );
 
 	// we won't destroy cities (and save the money)
@@ -495,7 +507,7 @@ DBG_MESSAGE("ai_passenger_t::create_simple_road_transport()","Already connection
 	}
 
 	// now try route with terraforming
-	wegbauer_t baumaulwurf(welt, this);
+	wegbauer_t baumaulwurf(this);
 	baumaulwurf.route_fuer( wegbauer_t::strasse|wegbauer_t::terraform_flag, road_weg, tunnelbauer_t::find_tunnel(road_wt,road_weg->get_topspeed(),welt->get_timeline_year_month()), brueckenbauer_t::find_bridge(road_wt,road_weg->get_topspeed(),welt->get_timeline_year_month()) );
 	baumaulwurf.set_keep_existing_faster_ways(true);
 	baumaulwurf.set_keep_city_roads(true);

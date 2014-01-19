@@ -10,7 +10,7 @@
 #define gui_components_gui_divider_h
 
 #include "gui_komponente.h"
-#include "../../simgraph.h"
+#include "../../display/simgraph.h"
 #include "../../simskin.h"
 
 class skinverwaltung_t;
@@ -24,49 +24,21 @@ class skinverwaltung_t;
 class gui_divider_t : public gui_komponente_t
 {
 public:
-	/**
-	 * Pre-defined divider line styles
-	 * Values > 2 creates an lowered bevel
-	 * @author Max Kielland
-	*/
-	enum divider_style_t {
-		DIVIDER_RAISED  = 0, //@< 2px divider raised etched
-		DIVIDER_LINE    = 1, //@< 1px divider line (SYS_COL_HIGHLIGHT)
-		DIVIDER_LOWERED = 2  //@< 2px divider lowered etched
-	};
+	gui_divider_t() { size.h = D_DIVIDER_HEIGHT; }
 
-	gui_divider_t(void) { groesse.y = DIVIDER_LOWERED; }
-
-	void init( koord xy, KOORD_VAL width, KOORD_VAL height = DIVIDER_LOWERED ) {
+	void init( scr_coord xy, scr_coord_val width, scr_coord_val height = D_DIVIDER_HEIGHT ) {
 		set_pos( xy );
-		set_groesse( koord( width, height ) );
+		set_size( scr_size( width, height ) );
 	};
 
-	/**
-	*/
-	void set_width(KOORD_VAL width) { set_groesse(koord(width,groesse.y)); }
+	void set_width(scr_coord_val width) { set_size(scr_size(width, size.h)); }
 
-	virtual koord get_groesse() const { return koord(groesse.x,max(groesse.y,D_DIVIDER_HEIGHT)); }
+	scr_size get_size() const { return scr_size(size.w,max(size.h, D_DIVIDER_HEIGHT)); }
 
-	/**
-	 * Paint method
-	 * @author Markus Weber
-	 */
-	void zeichnen(koord offset) {
-
-		KOORD_VAL h = (groesse.y == DIVIDER_LINE) ? 1 : ( (groesse.y == DIVIDER_RAISED) ? 2 : groesse.y );
-		KOORD_VAL align_y = D_GET_CENTER_ALIGN_OFFSET(h,D_DIVIDER_HEIGHT);
-
-		display_ddd_box_clip(
-			pos.x + offset.x,
-			pos.y + offset.y + align_y,
-			groesse.x,
-			groesse.y,
-			SYSCOL_SHADOW,
-			SYSCOL_HIGHLIGHT
-		);
+	void draw(scr_coord offset)
+	{
+		display_img_stretch( gui_theme_t::divider, scr_rect( get_pos()+offset, get_size() ) );
 	}
-
 };
 
 #endif

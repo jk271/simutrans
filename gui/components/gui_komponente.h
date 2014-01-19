@@ -8,16 +8,17 @@
 #ifndef ifc_gui_komponente_h
 #define ifc_gui_komponente_h
 
-#include "../../dataobj/koord.h"
+#include "../../display/scr_coord.h"
 #include "../../simevent.h"
-#include "../../simgraph.h"
+#include "../../display/simgraph.h"
 
 struct event_t;
+class karte_ptr_t;
 
 /**
  * Base class for all GUI components.
  *
- * @autor Hj. Malthaner
+ * @author Hj. Malthaner
  */
 class gui_komponente_t
 {
@@ -41,23 +42,23 @@ protected:
 	 * Component's bounding box position.
 	 * @author Hj. Malthaner
 	 */
-	koord pos;
+	scr_coord pos;
 
 	/**
 	* Component's bounding box size.
 	* @author Hj. Malthaner
 	*/
-	koord groesse;
+	scr_size size;
 
 public:
 	/**
-	* Basic contructor, initialises member variables
+	* Basic constructor, initialises member variables
 	* @author Hj. Malthaner
 	*/
 	gui_komponente_t(bool _focusable = false) : visible(true), focusable(_focusable) {}
 
 	/**
-	* Virtual destructor so all decendent classes are destructed right
+	* Virtual destructor so all descendant classes are destructed right
 	* @author Hj. Malthaner
 	*/
 	virtual ~gui_komponente_t() {}
@@ -66,9 +67,9 @@ public:
 	* Initialises the component's position and size.
 	* @author Max Kielland
 	*/
-	virtual void init(koord pos_par, koord size_par=koord(0,0)) {
+	virtual void init(scr_coord pos_par, scr_size size_par=scr_size(0,0)) {
 		set_pos(pos_par);
-		set_groesse(size_par);
+		set_size(size_par);
 	}
 
 	/**
@@ -104,7 +105,7 @@ public:
 	* Set this component's position.
 	* @author Hj. Malthaner
 	*/
-	virtual void set_pos(koord pos_par) {
+	virtual void set_pos(scr_coord pos_par) {
 		pos = pos_par;
 	}
 
@@ -112,7 +113,7 @@ public:
 	* Get this component's bounding box position.
 	* @author Hj. Malthaner
 	*/
-	virtual koord get_pos() const {
+	virtual scr_coord get_pos() const {
 		return pos;
 	}
 
@@ -120,16 +121,16 @@ public:
 	* Set this component's bounding box size.
 	* @author Hj. Malthaner
 	*/
-	virtual void set_groesse(koord size_par) {
-		groesse = size_par;
+	virtual void set_size(scr_size size_par) {
+		size = size_par;
 	}
 
 	/**
 	* Get this component's bounding box size.
 	* @author Hj. Malthaner
 	*/
-	virtual koord get_groesse() const {
-		return groesse;
+	virtual scr_size get_size() const {
+		return size;
 	}
 
 	/**
@@ -137,7 +138,7 @@ public:
 	* @author Max Kielland
 	*/
 	virtual void set_width(scr_coord_val width_par) {
-		set_groesse(koord(width_par,groesse.y));
+		set_size(scr_size(width_par,size.h));
 	}
 
 	/**
@@ -145,7 +146,7 @@ public:
 	* @author Max Kielland
 	*/
 	virtual void set_height(scr_coord_val height_par) {
-		set_groesse(koord(groesse.x,height_par));
+		set_size(scr_size(size.w,height_par));
 	}
 
 	/**
@@ -154,7 +155,7 @@ public:
 	* @author Hj. Malthaner
 	*/
 	virtual bool getroffen(int x, int y) {
-		return ( pos.x <= x && pos.y <= y && (pos.x+groesse.x) > x && (pos.y+groesse.y) > y );
+		return ( pos.x <= x && pos.y <= y && (pos.x+size.w) > x && (pos.y+size.h) > y );
 	}
 
 	/**
@@ -162,7 +163,7 @@ public:
 	* - component has focus
 	* - mouse is over this component
 	* - event for all components
-	* @return: true for swalloing this event
+	* @return: true for swallowing this event
 	* @author Hj. Malthaner
 	* prissi: default -> do nothing
 	*/
@@ -174,11 +175,11 @@ public:
 	* Pure virtual paint method
 	* @author Hj. Malthaner
 	*/
-	virtual void zeichnen(koord offset) = 0;
+	virtual void draw(scr_coord offset) = 0;
 
 	/**
-	 * returns the element that has focus
-	 * other derivates like scrolld list of tabs will
+	 * returns the element that has focus.
+	 * child classes like scrolled list of tabs should
 	 * return a child component.
 	 */
 	virtual gui_komponente_t *get_focus() {
@@ -190,19 +191,38 @@ public:
 	 * Used for auto-scrolling inside a scroll pane.
 	 * @author Knightly
 	 */
-	virtual koord get_focus_pos() {
+	virtual scr_coord get_focus_pos() {
 		return pos;
 	}
 
 	/**
 	 * Align this component against a target component
 	 * @param component_par the component to align against
-	 * @param alignment_par the requested alignmnent
+	 * @param alignment_par the requested alignment
 	 * @param offset_par Offset added to final alignment
 	 * @author Max Kielland
 	 */
-	void align_to(gui_komponente_t* component_par, control_alignment_t alignment_par, koord offset_par = koord(0,0) );
+	void align_to(gui_komponente_t* component_par, control_alignment_t alignment_par, scr_coord offset_par = scr_coord(0,0) );
 
+	/**
+	 * Align this component against a target component
+	 * @param component_par the component to align against
+	 * @param alignment_par the requested alignment
+	 * @param offset_par Offset added to final alignment
+	 * @author Max Kielland
+	 */
+	virtual scr_rect get_client( void ) { return scr_rect( pos, size ); }
+
+};
+
+
+/**
+ * Base class for all GUI components that need access to the world.
+ */
+class gui_world_component_t: public gui_komponente_t
+{
+protected:
+	static karte_ptr_t welt;
 };
 
 #endif

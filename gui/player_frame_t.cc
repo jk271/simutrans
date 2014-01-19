@@ -16,12 +16,12 @@
 #include "../simcolor.h"
 #include "../simworld.h"
 #include "../simmenu.h"
-#include "../dataobj/network_cmd_ingame.h"
-#include "../dataobj/umgebung.h"
+#include "../network/network_cmd_ingame.h"
+#include "../dataobj/environment.h"
 #include "../dataobj/scenario.h"
 #include "../dataobj/translator.h"
 
-#include "../simwin.h"
+#include "../gui/simwin.h"
 #include "../utils/simstring.h"
 
 #include "money_frame.h" // for the finances
@@ -30,22 +30,20 @@
 
 /* Max Kielland
  * Until gui_label_t has been modified we don't know the size
- * of the fractionpart in a localised currency.
+ * of the fraction part in a localised currency.
  * This is for now hard coded.
  */
 #define L_FRACTION_WIDTH (25)
-
-#define DIALOG_WIDTH (295)
-
-karte_t *ki_kontroll_t::welt = NULL;
+#define L_FINANCE_WIDTH  (max( D_BUTTON_WIDTH, 125 ))
+#define L_DIALOG_WIDTH   (300)
 
 
-ki_kontroll_t::ki_kontroll_t(karte_t *wl) :
+
+ki_kontroll_t::ki_kontroll_t() :
 	gui_frame_t( translator::translate("Spielerliste") )
 {
 
-	koord cursor = koord ( D_MARGIN_LEFT, D_MARGIN_TOP );
-	this->welt = wl;
+	scr_coord cursor = scr_coord ( D_MARGIN_LEFT, D_MARGIN_TOP );
 
 	// switching active player allowed?
 	bool player_change_allowed = welt->get_settings().get_allow_player_change() || !welt->get_spieler(1)->is_locked();
@@ -67,37 +65,38 @@ ki_kontroll_t::ki_kontroll_t(karte_t *wl) :
 		if(  i >= 2  ) {
 			// AI button (small square)
 			player_active[i-2].init(button_t::square_state, "", cursor);
+			player_active[i-2].align_to( &player_get_finances[i], ALIGN_CENTER_V );
 			player_active[i-2].add_listener(this);
 			if(sp  &&  sp->get_ai_id()!=spieler_t::HUMAN  &&  player_tools_allowed) {
 				add_komponente( player_active+i-2 );
 			}
 		}
-		cursor.x += D_BUTTON_SQUARE + D_H_SPACE;
+		cursor.x += D_CHECKBOX_HEIGHT + D_H_SPACE;
 
 		// Player select button (arrow)
-		player_change_to[i].init(button_t::arrowright_state, " ", cursor);
+		player_change_to[i].init(button_t::arrowright_state, "", cursor);
 		player_change_to[i].add_listener(this);
 
 		// Allow player change to human and public only (no AI)
 		if (sp  &&  player_change_allowed) {
 			add_komponente(player_change_to+i);
 		}
-		cursor.x += button_t::gui_arrow_right_size.x + D_H_SPACE;
+		cursor.x += D_ARROW_RIGHT_WIDTH + D_H_SPACE;
 
 		// Prepare finances button
-		player_get_finances[i].init(button_t::box, "", cursor, koord(D_BUTTON_WIDTH,D_EDIT_HEIGHT));
-		player_get_finances[i].background = PLAYER_FLAG|((sp ? sp->get_player_color1():i*8)+4);
+		player_get_finances[i].init( button_t::box, "", cursor, scr_size( L_FINANCE_WIDTH, D_EDIT_HEIGHT ) );
+		player_get_finances[i].background_color = PLAYER_FLAG | ((sp ? sp->get_player_color1():i*8)+4);
 		player_get_finances[i].add_listener(this);
 
 		// Player type selector, Combobox
-		player_select[i].set_pos(cursor);
-		player_select[i].set_groesse( koord(D_BUTTON_WIDTH,D_EDIT_HEIGHT) );
+		player_select[i].set_pos( cursor );
+		player_select[i].set_size( scr_size( L_FINANCE_WIDTH, D_EDIT_HEIGHT ) );
 		player_select[i].set_focusable( false );
 
 		// Create combobox list data
 		player_select[i].append_element( new gui_scrolled_list_t::const_text_scrollitem_t( translator::translate("slot empty"), COL_BLACK ) );
 		player_select[i].append_element( new gui_scrolled_list_t::const_text_scrollitem_t( translator::translate("Manual (Human)"), COL_BLACK ) );
-		if(  !welt->get_spieler(1)->is_locked()  ||  !umgebung_t::networkmode  ) {
+		if(  !welt->get_spieler(1)->is_locked()  ||  !env_t::networkmode  ) {
 			player_select[i].append_element( new gui_scrolled_list_t::const_text_scrollitem_t( translator::translate("Goods AI"), COL_BLACK ) );
 			player_select[i].append_element( new gui_scrolled_list_t::const_text_scrollitem_t( translator::translate("Passenger AI"), COL_BLACK ) );
 		}
@@ -118,11 +117,12 @@ ki_kontroll_t::ki_kontroll_t(karte_t *wl) :
 			}
 			player_get_finances[i].set_visible(false);
 		}
-		cursor.x += D_BUTTON_WIDTH + D_H_SPACE;
+		cursor.x += L_FINANCE_WIDTH + D_H_SPACE;
 
 		// password/locked button
-		player_lock[i].init(button_t::box, "", cursor, koord(D_EDIT_HEIGHT,D_EDIT_HEIGHT));
-		player_lock[i].background = (sp && sp->is_locked()) ? (sp->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN;
+		player_lock[i].init(button_t::box, "", cursor, scr_size(D_EDIT_HEIGHT,D_EDIT_HEIGHT));
+		player_lock[i].background_color = (sp && sp->is_locked()) ? (sp->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN;
+		player_lock[i].enable( welt->get_spieler(i) );
 		player_lock[i].add_listener(this);
 		if (player_tools_allowed) {
 			add_komponente( player_lock+i );
@@ -134,6 +134,11 @@ ki_kontroll_t::ki_kontroll_t(karte_t *wl) :
 		ai_income[i] = new gui_label_t(account_str[i], MONEY_PLUS, gui_label_t::money);
 		ai_income[i]->align_to(&player_select[i],ALIGN_CENTER_V);
 		add_komponente( ai_income[i] );
+
+		player_change_to[i].align_to( &player_lock[i], ALIGN_CENTER_V );
+		if(  i >= 2  ) {
+			player_active[i-2].align_to( &player_lock[i], ALIGN_CENTER_V );
+		}
 
 		cursor.y += D_EDIT_HEIGHT + D_V_SPACE;
 		cursor.x  = D_MARGIN_LEFT;
@@ -147,9 +152,9 @@ ki_kontroll_t::ki_kontroll_t(karte_t *wl) :
 	}
 	freeplay.pressed = welt->get_settings().is_freeplay();
 	add_komponente( &freeplay );
-	cursor.y += D_BUTTON_SQUARE;
+	cursor.y += D_CHECKBOX_HEIGHT;
 
-	set_fenstergroesse(koord(DIALOG_WIDTH, D_TITLEBAR_HEIGHT + cursor.y + D_MARGIN_BOTTOM));
+	set_windowsize( scr_size( L_DIALOG_WIDTH, D_TITLEBAR_HEIGHT + cursor.y + D_MARGIN_BOTTOM ) );
 	update_data();
 }
 
@@ -178,13 +183,12 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *komp,value_t p )
 
 	// Check the GUI list of buttons
 	for(int i=0; i<MAX_PLAYER_COUNT-1; i++) {
-
 		if(i>=2  &&  komp==(player_active+i-2)) {
-
 			// switch AI on/off
 			if(  welt->get_spieler(i)==NULL  ) {
 				// create new AI
 				welt->call_change_player_tool(karte_t::new_player, i, player_select[i].get_selection());
+				player_lock[i].enable( welt->get_spieler(i) );
 			}
 			else {
 				// Current AI on/off
@@ -210,7 +214,7 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *komp,value_t p )
 			break;
 		}
 
-		// Change player name and/or pasword
+		// Change player name and/or password
 		if(komp==(player_lock+i)  &&  welt->get_spieler(i)) {
 			if (!welt->get_spieler(i)->is_unlock_pending()) {
 				// set password
@@ -219,7 +223,7 @@ bool ki_kontroll_t::action_triggered( gui_action_creator_t *komp,value_t p )
 			}
 		}
 
-		// New player asigned in an empty slot
+		// New player assigned in an empty slot
 		if(komp==(player_select+i)) {
 
 			// make active player
@@ -258,8 +262,8 @@ void ki_kontroll_t::update_data()
 			}
 
 			// always update locking status
-			player_get_finances[i].background = PLAYER_FLAG | (sp->get_player_color1()+4);
-			player_lock[i].background = sp->is_locked() ? (sp->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN;
+			player_get_finances[i].background_color = PLAYER_FLAG | (sp->get_player_color1()+4);
+			player_lock[i].background_color = sp->is_locked() ? (sp->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN;
 
 			// human players cannot be deactivated
 			if (i>1) {
@@ -287,7 +291,7 @@ void ki_kontroll_t::update_data()
 				}
 			}
 
-			if(  umgebung_t::networkmode  ) {
+			if(  env_t::networkmode  ) {
 
 				// change available selection of AIs
 				if(  !welt->get_spieler(1)->is_locked()  ) {
@@ -314,10 +318,8 @@ void ki_kontroll_t::update_data()
  * Draw the component
  * @author Hj. Malthaner
  */
-void ki_kontroll_t::zeichnen(koord pos, koord gr)
+void ki_kontroll_t::draw(scr_coord pos, scr_size size)
 {
-	koord cursor = koord( D_MARGIN_LEFT, D_MARGIN_TOP );
-
 	// Update free play
 	freeplay.pressed = welt->get_settings().is_freeplay();
 	if (welt->get_spieler(1)->is_locked() || !welt->get_settings().get_allow_player_change()) {
@@ -336,7 +338,7 @@ void ki_kontroll_t::zeichnen(koord pos, koord gr)
 		}
 
 		spieler_t *sp = welt->get_spieler(i);
-		player_lock[i].background = sp  &&  sp->is_locked() ? (sp->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN;
+		player_lock[i].background_color = sp  &&  sp->is_locked() ? (sp->is_unlock_pending() ? COL_YELLOW : COL_RED) : COL_GREEN;
 
 		if(  sp != NULL  ) {
 			if (i != 1 && !welt->get_settings().is_freeplay() && sp->get_finance()->get_history_com_year(0, ATC_NETWEALTH) < 0) {
@@ -348,7 +350,7 @@ void ki_kontroll_t::zeichnen(koord pos, koord gr)
 				money_to_string(account_str[i], account );
 				ai_income[i]->set_color( account>=0.0 ? MONEY_PLUS : MONEY_MINUS );
 			}
-			ai_income[i]->set_pos( koord( gr.x-D_MARGIN_RIGHT-L_FRACTION_WIDTH, ai_income[i]->get_pos().y ) );
+			ai_income[i]->set_pos( scr_coord( size.w-D_MARGIN_RIGHT-L_FRACTION_WIDTH, ai_income[i]->get_pos().y ) );
 		}
 		else {
 			account_str[i][0] = 0;
@@ -358,5 +360,5 @@ void ki_kontroll_t::zeichnen(koord pos, koord gr)
 	player_change_to[welt->get_active_player_nr()].pressed = true;
 
 	// All controls updated, draw them...
-	gui_frame_t::zeichnen(pos, gr);
+	gui_frame_t::draw(pos, size);
 }

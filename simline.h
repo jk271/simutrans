@@ -15,7 +15,6 @@
 #include "utils/plainstring.h"
 
 #define MAX_MONTHS     12 // Max history
-#define MAX_NON_MONEY_TYPES 2 // number of non money types in line's financial statistic
 
 #define LINE_CAPACITY   0 // the amount of ware that could be transported, theoretically
 #define LINE_TRANSPORTED_GOODS 1 // the amount of ware that has been transported
@@ -28,7 +27,7 @@
 #define LINE_WAYTOLL        8 // way toll paid by vehicles of line
 #define MAX_LINE_COST   9 // Total number of cost items
 
-class karte_t;
+class karte_ptr_t;
 class loadsave_t;
 class spieler_t;
 class schedule_t;
@@ -46,7 +45,7 @@ protected:
 	bool withdraw;
 
 private:
-	static karte_t * welt;
+	static karte_ptr_t welt;
 	plainstring name;
 
 	/**
@@ -89,8 +88,8 @@ private:
 	void recalc_status();
 
 public:
-	simline_t(karte_t* welt, spieler_t *sp, linetype type);
-	simline_t(karte_t* welt, spieler_t *sp, linetype type, loadsave_t *file);
+	simline_t(spieler_t *sp, linetype type);
+	simline_t(spieler_t *sp, linetype type, loadsave_t *file);
 
 	~simline_t();
 

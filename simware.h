@@ -53,7 +53,7 @@ private:
 	/**
 	 * Update target (zielpos) for factory-going goods (after loading or rotating)
 	 */
-	void update_factory_target(karte_t *welt);
+	void update_factory_target();
 
 public:
 	const halthandle_t &get_ziel() const { return ziel; }
@@ -68,7 +68,7 @@ public:
 
 	ware_t();
 	ware_t(const ware_besch_t *typ);
-	ware_t(karte_t *welt,loadsave_t *file);
+	ware_t(loadsave_t *file);
 
 	/**
 	 * gibt den nicht-uebersetzten warennamen zurück
@@ -83,9 +83,9 @@ public:
 	const ware_besch_t* get_besch() const { return index_to_besch[index]; }
 	void set_besch(const ware_besch_t* type);
 
-	void rdwr(karte_t *welt,loadsave_t *file);
+	void rdwr(loadsave_t *file);
 
-	void laden_abschliessen(karte_t *welt,spieler_t *sp);
+	void laden_abschliessen(karte_t *welt);
 
 	// find out the category ...
 	bool is_passenger() const {  return index==0; }
@@ -113,7 +113,7 @@ public:
 	 * Adjust target coordinates.
 	 * Must be called after factories have been rotated!
 	 */
-	void rotate90( karte_t *welt, sint16 y_size );
+	void rotate90( sint16 y_size );
 };
 
 #endif

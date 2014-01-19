@@ -2,7 +2,22 @@
 
 /** @page changelog Changelog
  *
- * @section post-112-2 Current trunk
+ * @section api-trunk Current trunk
+ *
+ * - Added building_x::is_same_building.
+ * - Added attraction_list_x, world::get_attraction_list
+ * - Added ::new_month, ::new_year
+ * - Added halt_list_x
+ * - Added possibility to attach scenario to an already running game, set map.file to "<attach>".
+ * - Added building_desc_x::get_type, convoy_x::get_distance_traveled_total, obj_desc_time_x::is_available
+ * - Added obj_desc_time_x, obj_desc_transport_x, building_desc_x, tree_desc_x, way_desc_x
+ * - Added time_x
+ * - Added @ref way_system_types
+ * - Added square_x::get_player_halt
+ * - Added way_x::get_dirs,way_x::get_dirs_masked
+ * - Deprecated square_x::get_halt, use square_x::get_player_halt or tile_x::get_halt instead!
+ *
+ * @section api-112-3 Release 112.3
  *
  * - Added good_desc_list_x
  * - Added tile_x::is_bridge, tile_x::is_empty, tile_x::is_ground, tile_x::is_tunnel, tile_x::is_water

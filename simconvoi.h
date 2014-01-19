@@ -25,7 +25,7 @@
 
 class weg_t;
 class depot_t;
-class karte_t;
+class karte_ptr_t;
 class spieler_t;
 class vehikel_t;
 class vehikel_besch_t;
@@ -150,7 +150,7 @@ private:
 	* Current map
 	* @author Hj. Malthaner
 	*/
-	static karte_t *welt;
+	static karte_ptr_t welt;
 
 	/**
 	* the convoi is being withdrawn from service
@@ -310,7 +310,7 @@ private:
 	* Each constructor must call this method first!
 	* @author Hj. Malthaner
 	*/
-	void init(karte_t *welt, spieler_t *sp);
+	void init(spieler_t *sp);
 
 	/**
 	* Berechne route von Start- zu Zielkoordinate
@@ -402,7 +402,7 @@ private:
 	 */
 	void unregister_stops();
 
-	uint32 move_to(karte_t const&, koord3d const& k, uint16 start_index);
+	uint32 move_to(koord3d const& k, uint16 start_index);
 
 public:
 	/**
@@ -477,6 +477,11 @@ public:
 	const sint64 & get_total_distance_traveled() const { return total_distance_traveled; }
 
 	/**
+	 * @return the total monthly fix cost for all vehicles in convoi
+	 */
+	sint32 get_fix_cost() const;
+
+	/**
 	 * returns the total running cost for all vehicles in convoi
 	 * @author hsiegeln
 	 */
@@ -491,7 +496,7 @@ public:
 	* Constructor for loading from file,
 	* @author Hj. Malthaner
 	*/
-	convoi_t(karte_t *welt, loadsave_t *file);
+	convoi_t(loadsave_t *file);
 
 	convoi_t(spieler_t* sp);
 
@@ -517,12 +522,6 @@ public:
 	* @author Hanjsörg Malthaner
 	*/
 	void betrete_depot(depot_t *dep);
-
-	/**
-	* @return Current map.
-	* @author Hj. Malthaner
-	*/
-	karte_t* get_welt() { return welt; }
 
 	/**
 	* Gibt Namen des Convois zurück.

@@ -8,8 +8,8 @@
 #ifndef simcity_h
 #define simcity_h
 
-#include "simdings.h"
-#include "dings/gebaeude.h"
+#include "simobj.h"
+#include "obj/gebaeude.h"
 
 #include "tpl/vector_tpl.h"
 #include "tpl/weighted_vector_tpl.h"
@@ -18,7 +18,7 @@
 
 #include <string>
 
-class karte_t;
+class karte_ptr_t;
 class spieler_t;
 class rule_t;
 
@@ -98,7 +98,7 @@ public:
 	static uint32 get_cluster_factor() { return stadt_t::cluster_factor; }
 
 private:
-	static karte_t *welt;
+	static karte_ptr_t welt;
 	spieler_t *besitzer_p;
 	plainstring name;
 
@@ -153,11 +153,11 @@ private:
 	sint32 won;	// davon mit Wohnung
 
 	/**
-	 * Modifier for city growth
-	 * transient data, not saved
-	 * @author Hj. Malthaner
+	 * Unsupplied city growth needs
+	 * A value of 2^32 means 1 new resident
+	 * @author Nathanael Nerode (neroden)
 	 */
-	sint32 wachstum;
+	sint64 unsupplied_city_growth;
 
 	/**
 	* City history
@@ -169,7 +169,7 @@ private:
 	/* updates the city history
 	* @author prissi
 	*/
-	void roll_history(void);
+	void roll_history();
 
 public:
 	/**
@@ -178,9 +178,6 @@ public:
 	 */
 	sint64* get_city_history_year() { return *city_history_year; }
 	sint64* get_city_history_month() { return *city_history_month; }
-
-	// just needed by stadt_info.cc
-	static inline karte_t* get_welt() { return welt; }
 
 	uint32 stadtinfo_options;
 
@@ -268,7 +265,7 @@ private:
 	 * Build new buildings when growing city
 	 * @author Hj. Malthaner
 	 */
-	void step_grow_city();
+	void step_grow_city(bool new_town = false);
 
 	enum pax_return_type { no_return, factory_return, tourist_return, city_return };
 
@@ -448,7 +445,7 @@ public:
 	 * @see stadt_t::speichern()
 	 * @author Hj. Malthaner
 	 */
-	stadt_t(karte_t *welt, loadsave_t *file);
+	stadt_t(loadsave_t *file);
 
 	// closes window and that stuff
 	~stadt_t();
@@ -475,7 +472,7 @@ public:
 
 	/* change size of city
 	* @author prissi */
-	void change_size( sint32 delta_citizens );
+	void change_size( sint64 delta_citizens, bool new_town = false );
 
 	// when ng is false, no town growth any more
 	void set_citygrowth_yesno( bool ng ) { allow_citygrowth = ng; }
@@ -543,10 +540,10 @@ public:
 	 * @param old_x, old_y: Generate no cities in (0,0) - (old_x, old_y)
 	 * @author Gerd Wachsmuth
 	 */
-	static vector_tpl<koord> *random_place(const karte_t *wl, sint32 anzahl, sint16 old_x, sint16 old_y);
+	static vector_tpl<koord> *random_place(sint32 anzahl, sint16 old_x, sint16 old_y);
 	// geeigneten platz zur Stadtgruendung durch Zufall ermitteln
 
-	void zeige_info(void);
+	void zeige_info();
 };
 
 #endif

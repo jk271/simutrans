@@ -12,9 +12,9 @@
 #include "boden/grund.h"
 
 
-class karte_t;
+class karte_ptr_t;
 class grund_t;
-class ding_t;
+class obj_t;
 
 class planquadrat_t;
 void swap(planquadrat_t& a, planquadrat_t& b);
@@ -27,6 +27,7 @@ void swap(planquadrat_t& a, planquadrat_t& b);
  */
 class planquadrat_t
 {
+	static karte_ptr_t welt;
 private:
 	/* list of stations that are reaching to this tile (saves lots of time for lookup) */
 	halthandle_t *halt_list;
@@ -35,9 +36,6 @@ private:
 
 	// stores climate related settings
 	uint8 climate_data;
-
-	/* only one station per ground xy tile */
-	halthandle_t this_halt;
 
 	union DATA {
 		grund_t ** some;    // valid if capacity > 1
@@ -118,7 +116,7 @@ public:
 	* @return grund_t * with thing or NULL
 	* @author V. Meyer
 	*/
-	grund_t *get_boden_von_obj(ding_t *obj) const;
+	grund_t *get_boden_von_obj(obj_t *obj) const;
 
 	/**
 	* ground saved at index position idx (zero would be normal ground)
@@ -185,32 +183,26 @@ public:
 	* converts boden to correct type, land or water
 	* @author Kieron Green
 	*/
-	void correct_water(karte_t *welt);
+	void correct_water();
 
 	/**
 	* konvertiert Land zu Wasser wenn unter Grundwasserniveau abgesenkt
 	* @author Hj. Malthaner
 	*/
-	void abgesenkt(karte_t *welt);
+	void abgesenkt();
 
 	/**
 	* Converts water to land when raised above the ground water level
 	* @author Hj. Malthaner
 	*/
-	void angehoben(karte_t *welt);
+	void angehoben();
 
 	/**
-	* since stops may be multilevel, but waren uses pos, we mirror here any halt that is on this square
-	* @author Hj. Malthaner
+	* returns halthandle belonging to player sp if present
+	* @return NULL if no halt present
+	* @author Kieron Green
 	*/
-	void set_halt(halthandle_t halt);
-
-	/**
-	* returns a halthandle, if some ground here has a stop
-	* @return NULL wenn keine Haltestelle, sonst Zeiger auf Haltestelle
-	* @author Hj. Malthaner
-	*/
-	halthandle_t get_halt() const {return this_halt;}
+	halthandle_t get_halt(spieler_t *sp) const;
 
 private:
 	// these functions are private helper functions for halt_list corrections
@@ -229,7 +221,7 @@ public:
 	* however this funtion check, whether there is really no other part still reachable
 	* @author prissi
 	*/
-	void remove_from_haltlist(karte_t *welt, halthandle_t halt);
+	void remove_from_haltlist(halthandle_t halt);
 
 	bool is_connected(halthandle_t halt) const;
 
@@ -240,16 +232,20 @@ public:
 	const halthandle_t *get_haltlist() const { return halt_list; }
 	uint8 get_haltlist_count() const { return halt_list_count; }
 
-	void rdwr(karte_t *welt, loadsave_t *file, koord pos );
+	void rdwr(loadsave_t *file, koord pos );
 
 	// will toggle the seasons ...
 	void check_season(const long month);
 
-	void display_dinge(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const bool is_global, const sint8 hmin, const sint8 hmax) const;
+#ifdef MULTI_THREAD
+	void display_obj(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const bool is_global, const sint8 hmin, const sint8 hmax, const sint8 clip_num) const;
+#else
+	void display_obj(const sint16 xpos, const sint16 ypos, const sint16 raster_tile_width, const bool is_global, const sint8 hmin, const sint8 hmax) const;
+#endif
 
 	void display_tileoverlay(sint16 xpos, sint16 ypos, const sint8 hmin, const sint8 hmax) const;
 
-	void display_overlay(sint16 xpos, sint16 ypos, const sint8 hmin, const sint8 hmax) const;
+	void display_overlay(sint16 xpos, sint16 ypos) const;
 };
 
 #endif

@@ -8,9 +8,9 @@
 #ifndef boden_wege_weg_h
 #define boden_wege_weg_h
 
-#include "../../simimg.h"
+#include "../../display/simimg.h"
 #include "../../simtypes.h"
-#include "../../simdings.h"
+#include "../../simobj.h"
 #include "../../besch/weg_besch.h"
 #include "../../dataobj/koord3d.h"
 
@@ -47,7 +47,7 @@ enum way_statistics {
  *
  * @author Hj. Malthaner
  */
-class weg_t : public ding_no_info_t
+class weg_t : public obj_no_info_t
 {
 public:
 	/**
@@ -67,7 +67,12 @@ public:
 		IS_SNOW = 0x80	// marker, if above snowline currently
 	};
 
-	enum system_type { type_flat=0, type_elevated=1, type_tram=7, type_underground=64, type_all=255 };
+	enum system_type {
+		type_flat     = 0,	///< flat track
+		type_elevated = 1,	///< flag for elevated ways
+		type_tram     = 7,	///< tram track (waytype = track_wt), hardcoded values everywhere ...
+		type_all      = 255
+	};
 
 private:
 	/**
@@ -135,15 +140,15 @@ protected:
 	void set_images(image_type typ, uint8 ribi, bool snow, bool switch_nw=false);
 
 public:
-	weg_t(karte_t* const welt, loadsave_t*) : ding_no_info_t(welt) { init(); }
-	weg_t(karte_t* const welt) : ding_no_info_t(welt) { init(); }
+	weg_t(loadsave_t*) : obj_no_info_t() { init(); }
+	weg_t() : obj_no_info_t() { init(); }
 
 	virtual ~weg_t();
 
 	/* seasonal image recalculation */
 	bool check_season(const long /*month*/);
 
-#if MULTI_THREAD>1
+#ifdef MULTI_THREAD
 	void lock_mutex();
 	void unlock_mutex();
 #endif
@@ -201,7 +206,7 @@ public:
 	* @return Gibt den typ des Objekts zurück.
 	* @author Hj. Malthaner
 	*/
-	typ get_typ() const { return ding_t::way; }
+	typ get_typ() const { return obj_t::way; }
 
 	/**
 	* Die Bezeichnung des Wegs
@@ -302,6 +307,12 @@ public:
 
 	// this is needed during a change from crossing to tram track
 	void clear_crossing() { flags &= ~HAS_CROSSING; }
+
+	/**
+	 * Clear the has-sign flag when roadsign or signal got deleted.
+	 * As there is only one of signal or roadsign on the way we can safely clear both flags.
+	 */
+	void clear_sign_flag() { flags &= ~(HAS_SIGN | HAS_SIGNAL); }
 
 	inline void set_bild( image_id b ) { bild = b; }
 	image_id get_bild() const {return bild;}

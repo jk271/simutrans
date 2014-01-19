@@ -13,8 +13,7 @@
 #define gui_map_frame_h
 
 #include "gui_frame.h"
-//#include "karte.h"
-#include "../simwin.h"
+#include "../gui/simwin.h"
 #include "components/gui_scrollpane.h"
 #include "components/action_listener.h"
 #include "components/gui_button.h"
@@ -22,7 +21,7 @@
 #include "../besch/fabrik_besch.h"
 #include "../tpl/stringhashtable_tpl.h"
 
-class karte_t;
+class karte_ptr_t;
 
 #define MAP_MAX_BUTTONS (22)
 
@@ -37,7 +36,7 @@ class map_frame_t :
 	public action_listener_t
 {
 private:
-	static karte_t *welt;
+	static karte_ptr_t welt;
 
 	/**
 	 * This is kind of hack: we know there can only be one map frame
@@ -45,8 +44,8 @@ private:
 	 * so we use a static variable here.
 	 * @author Hj. Malthaner
 	 */
-	static koord window_size;
-	static koord screenpos;
+	static scr_size window_size;
+	static scr_coord screenpos;
 
 	static bool legend_visible;
 	static bool scale_visible;
@@ -120,7 +119,7 @@ public:
 	 * Constructor. Adds all necessary Subcomponents.
 	 * @author Hj. Malthaner
 	 */
-	map_frame_t( karte_t *welt );
+	map_frame_t();
 
 	void rdwr( loadsave_t *file );
 
@@ -133,14 +132,14 @@ public:
 	 * @author (Mathew Hounsell)
 	 * @date   11-Mar-2003
 	 */
-	void set_fenstergroesse(koord groesse);
+	void set_windowsize(scr_size size);
 
 	/**
 	 * resize window in response to a resize event
 	 * @author Hj. Malthaner
 	 * @date   01-Jun-2002
 	 */
-	void resize(const koord delta=koord(0,0));
+	void resize(const scr_coord delta=scr_coord(0,0));
 
 	/**
 	 * Draw new component. The values to be passed refer to the window
@@ -148,7 +147,7 @@ public:
 	 * component is displayed.
 	 * @author Hj. Malthaner
 	 */
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 };

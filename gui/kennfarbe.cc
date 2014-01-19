@@ -11,7 +11,7 @@
 #include "kennfarbe.h"
 #include "../simdebug.h"
 #include "../simevent.h"
-#include "../simimg.h"
+#include "../display/simimg.h"
 #include "../simworld.h"
 #include "../besch/skin_besch.h"
 #include "../simskin.h"
@@ -25,7 +25,7 @@ farbengui_t::farbengui_t(spieler_t *sp) :
 	c2( "Your secondary color:" ),
 	bild( skinverwaltung_t::color_options->get_bild_nr(0), sp->get_player_nr() )
 {
-	koord cursor = koord (D_MARGIN_TOP, D_MARGIN_LEFT);
+	scr_coord cursor = scr_coord (D_MARGIN_TOP, D_MARGIN_LEFT);
 
 	this->sp = sp;
 	buf.clear();
@@ -40,7 +40,7 @@ farbengui_t::farbengui_t(spieler_t *sp) :
 	bild.set_pos(cursor);
 	bild.enable_offset_removal(true);
 	add_komponente( &bild );
-	cursor.y += max( txt.get_groesse().y, bild.get_groesse().y );
+	cursor.y += max( txt.get_size().h, bild.get_size().h );
 
 	// Player's primary color label
 	c1.set_pos( cursor );
@@ -51,16 +51,16 @@ farbengui_t::farbengui_t(spieler_t *sp) :
 	uint32 used_colors1 = 0;
 	uint32 used_colors2 = 0;
 	for(  int i=0;  i<MAX_PLAYER_COUNT;  i++  ) {
-		if(  i!=sp->get_player_nr()  &&  sp->get_welt()->get_spieler(i)  ) {
-			used_colors1 |= 1 << (sp->get_welt()->get_spieler(i)->get_player_color1() / 8);
-			used_colors2 |= 1 << (sp->get_welt()->get_spieler(i)->get_player_color2() / 8);
+		if(  i!=sp->get_player_nr()  &&  welt->get_spieler(i)  ) {
+			used_colors1 |= 1 << (welt->get_spieler(i)->get_player_color1() / 8);
+			used_colors2 |= 1 << (welt->get_spieler(i)->get_player_color2() / 8);
 		}
 	}
 
 	// Primary color buttons
 	for(unsigned i=0;  i<28;  i++) {
-		player_color_1[i].init( button_t::box_state, (used_colors1 & (1<<(i+1)) ? "X" : ""), koord( cursor.x+(i%14)*(D_BUTTON_HEIGHT+D_H_SPACE), cursor.y+(i/14)*(D_BUTTON_HEIGHT+D_V_SPACE) ) , koord(D_BUTTON_HEIGHT,D_BUTTON_HEIGHT) );
-		player_color_1[i].background = i*8+4;
+		player_color_1[i].init( button_t::box_state, (used_colors1 & (1<<(i+1)) ? "X" : ""), scr_coord( cursor.x+(i%14)*(D_BUTTON_HEIGHT+D_H_SPACE), cursor.y+(i/14)*(D_BUTTON_HEIGHT+D_V_SPACE) ) , scr_size(D_BUTTON_HEIGHT,D_BUTTON_HEIGHT) );
+		player_color_1[i].background_color = i*8+4;
 		player_color_1[i].add_listener(this);
 		add_komponente( player_color_1+i );
 	}
@@ -68,14 +68,14 @@ farbengui_t::farbengui_t(spieler_t *sp) :
 	cursor.y += 2*(D_BUTTON_HEIGHT+D_H_SPACE)+LINESPACE;
 
 	// Player's secondary color label
-	c2.set_pos( koord(D_MARGIN_LEFT,cursor.y) );
+	c2.set_pos( scr_coord(D_MARGIN_LEFT,cursor.y) );
 	add_komponente( &c2 );
 	cursor.y += LINESPACE+D_V_SPACE;
 
 	// Secondary color buttons
 	for(unsigned i=0;  i<28;  i++) {
-		player_color_2[i].init( button_t::box_state, (used_colors2 & (1<<(i+1)) ? "X" : ""), koord( cursor.x+(i%14)*(D_BUTTON_HEIGHT+D_H_SPACE), cursor.y+(i/14)*(D_BUTTON_HEIGHT+D_V_SPACE) ), koord(D_BUTTON_HEIGHT,D_BUTTON_HEIGHT) );
-		player_color_2[i].background = i*8+4;
+		player_color_2[i].init( button_t::box_state, (used_colors2 & (1<<(i+1)) ? "X" : ""), scr_coord( cursor.x+(i%14)*(D_BUTTON_HEIGHT+D_H_SPACE), cursor.y+(i/14)*(D_BUTTON_HEIGHT+D_V_SPACE) ), scr_size(D_BUTTON_HEIGHT,D_BUTTON_HEIGHT) );
+		player_color_2[i].background_color = i*8+4;
 		player_color_2[i].add_listener(this);
 		add_komponente( player_color_2+i );
 	}
@@ -85,7 +85,7 @@ farbengui_t::farbengui_t(spieler_t *sp) :
 	// Put picture in place
 	bild.align_to(&player_color_1[13],ALIGN_RIGHT);
 
-	set_fenstergroesse( koord( D_MARGIN_LEFT + 14*D_BUTTON_HEIGHT + 13*D_H_SPACE + D_MARGIN_RIGHT, D_TITLEBAR_HEIGHT + cursor.y + D_MARGIN_BOTTOM ) );
+	set_windowsize( scr_size( D_MARGIN_LEFT + 14*D_BUTTON_HEIGHT + 13*D_H_SPACE + D_MARGIN_RIGHT, D_TITLEBAR_HEIGHT + cursor.y + D_MARGIN_BOTTOM ) );
 }
 
 

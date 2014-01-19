@@ -12,7 +12,6 @@
 #include "components/gui_image.h"
 #include "gui_frame.h"
 
-class karte_t;
 
 /*
  * Class to generates the welcome screen with the scrolling
@@ -34,10 +33,9 @@ private:
 
 	gui_image_t logo;
 
-	karte_t *welt;
 
 public:
-	banner_t( karte_t *w );
+	banner_t();
 
 	bool has_sticky() const { return false; }
 
@@ -66,7 +64,7 @@ public:
 	* component is displayed.
 	* @author Hj. Malthaner
 	*/
-	void zeichnen(koord pos, koord gr);
+	void draw(scr_coord pos, scr_size size);
 
 	bool action_triggered(gui_action_creator_t*, value_t) OVERRIDE;
 };

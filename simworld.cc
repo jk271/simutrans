@@ -1170,8 +1170,9 @@ void karte_t::create_valleys()
 	time_t time_valley_end;
 	loadingscreen_t ls( translator::translate("creating valleys - copying world"), 4);
 	coord3d_t * tmp_world = new coord3d_t[size_x*size_y];
+	printf("size_x %i size_y%i\n", size_x, size_y);
 	sint8 above_sea = get_grundwasser() + 1;
-	const int levels = 64;
+	const int levels = 64; // ?? why 64
 	
 	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
 	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
@@ -1281,13 +1282,13 @@ void karte_t::create_valleys()
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nsow[direction];
 					// next height level; && do not duplicate
-					if(lookup_hgt(next_k) > height
+					if( is_within_limits(next_k) && lookup_hgt(next_k) > height
 					&&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 1) // dig !!
 					){
 						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 1);
 						current_step[i+1].append(next_k);
 					}
-					else if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next) {
+					else if( is_within_limits(next_k) && lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next) {
 						tmp_world[next_k.y*size_x+next_k.x].setZ(z_detailed_next);
 						next_step[i].append(next_k);
 //						char tmp_string[20];
@@ -1295,7 +1296,7 @@ void karte_t::create_valleys()
 //						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig a valley
-					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
+					else if( is_within_limits(next_k) && lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
 						koord dig_k = k;
@@ -1315,7 +1316,7 @@ void karte_t::create_valleys()
 							printf(" %i (lcount %i)\n", lookup_hgt(dig_k), lower_count);
 							for(int j=0; j<4; ++j) {
 								koord tmp = dig_k+koord::nsow[j];
-								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*size_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
+								if( is_within_limits(tmp) && ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*size_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
 									next_dig_k = tmp;
 									break;
 								}

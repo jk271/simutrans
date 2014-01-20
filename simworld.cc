@@ -1220,7 +1220,7 @@ void karte_t::create_valleys()
 	time_t time_valley_end;
 	loadingscreen_t ls( translator::translate("creating valleys - copying world"), 4);
 	coord3d_t * tmp_world = new coord3d_t[size_x*size_y];
-	printf("size_x %i size_y%i\n", size_x, size_y);
+	printf("size_x %i size_y %i, grundwasser %i\n", size_x, size_y, get_grundwasser());
 	sint8 above_sea = get_grundwasser() + 1;
 	const int levels = 64; // ?? why 64
 	
@@ -1235,6 +1235,7 @@ void karte_t::create_valleys()
 //			tmp_world[(i*size_x)+j].z = lookup_hgt(koord(j,i));
 
 			// detecting land above sea having sea as a neighbour
+			// todo: double ground
 			if(lookup_hgt(k) == above_sea){
 				//left
 				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) == get_grundwasser()){
@@ -1332,13 +1333,18 @@ void karte_t::create_valleys()
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nsow[direction];
 					// next height level; && do not duplicate
-					if( is_within_limits(next_k) && lookup_hgt(next_k) > height
+					if ( ! is_within_limits( next_k ) )
+					{
+						continue;
+					}
+
+					if( lookup_hgt(next_k) > height
 					&&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 1) // dig !!
 					){
 						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 1);
 						current_step[i+1].append(next_k);
 					}
-					else if( is_within_limits(next_k) && lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next) {
+					else if( lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next) {
 						tmp_world[next_k.y*size_x+next_k.x].setZ(z_detailed_next);
 						next_step[i].append(next_k);
 //						char tmp_string[20];
@@ -1346,7 +1352,7 @@ void karte_t::create_valleys()
 //						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig a valley
-					else if( is_within_limits(next_k) && lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
+					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
 						koord dig_k = k;
@@ -1361,12 +1367,21 @@ void karte_t::create_valleys()
 							tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
 //							lookup_kartenboden(next_k)->set_text(NULL);
 							//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
+							if(lookup_hgt(dig_k) >= height)
+							{
+								const char *c;
+								grid_lower(NULL, dig_k, c);
+							}
 							int lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
 							//set_grid_hgt(dig_k, height-1);
 							printf(" %i (lcount %i)\n", lookup_hgt(dig_k), lower_count);
 							for(int j=0; j<4; ++j) {
 								koord tmp = dig_k+koord::nsow[j];
-								if( is_within_limits(tmp) && ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*size_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
+								if ( ! is_within_limits(tmp))
+								{
+									continue;
+								}
+								if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*size_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
 									next_dig_k = tmp;
 									break;
 								}
@@ -1387,6 +1402,15 @@ void karte_t::create_valleys()
 						}while(lookup_hgt(dig_k) == height);
 						current_step[i-1].append(next_dig_k);
 						FOR(vector_tpl<koord>, const valley_coordinate, valley_coord ){
+							const char * c;
+							if(lookup_hgt(valley_coordinate) >= height)
+							{
+								grid_lower(NULL, valley_coordinate, c);
+							}
+							if(lookup_hgt(valley_coordinate+koord(1,1)) >= height)
+							{
+								grid_lower(NULL, valley_coordinate+koord(1,1), c);
+							}
 							int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
 						}
 						i -=2;
@@ -2428,6 +2452,12 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 		ls.set_progress(4);
 	}
 
+	// valleys begin
+	if( (old_x == 0)  &&  (old_y == 0) ) {
+		create_valleys();
+	}
+	// valleys end
+
 	if(  sets->get_lake()  ) {
 		create_lakes( old_x, old_y );
 	}
@@ -2495,14 +2525,6 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 		}
 	}
 
-	// Resize marker_t:
-	//marker.init( new_groesse_x, new_groesse_y );
-
-	// valleys begin
-	if( (old_x == 0)  &&  (old_y == 0) ) {
-		create_valleys();
-	}
-	// valleys end
 
 	distribute_groundobjs_cities( sets->get_anzahl_staedte(), sets->get_mittlere_einwohnerzahl(), old_x, old_y );
 

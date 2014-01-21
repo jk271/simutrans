@@ -1221,7 +1221,6 @@ void karte_t::create_valleys()
 	loadingscreen_t ls( translator::translate("creating valleys - copying world"), 4);
 	coord3d_t * tmp_world = new coord3d_t[size_x*size_y];
 	printf("size_x %i size_y %i, grundwasser %i\n", size_x, size_y, get_grundwasser());
-	sint8 above_sea = get_grundwasser() + 1;
 	const int levels = 64; // ?? why 64
 	
 	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
@@ -1236,51 +1235,70 @@ void karte_t::create_valleys()
 
 			// detecting land above sea having sea as a neighbour
 			// todo: double ground
-			if(lookup_hgt(k) == above_sea){
+			int height_difference = lookup_hgt( k ) - get_grundwasser() - 1;
+			if( 0 <= height_difference && height_difference < 2 ){ // todo distinguish between double and single ground
 				//left
 				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) == get_grundwasser()){
-					current_step[0].append(k);
+					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,1);
+					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 				//top
 				if((k.y > 1)  && lookup_hgt(koord(k.x,k.y-1)) == get_grundwasser()){
-					current_step[0].append(k);
+					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,1);
+					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 				//right
 				if(((k.x+1)<size_x )  && lookup_hgt(koord(k.x+1,k.y)) == get_grundwasser()){
-					current_step[0].append(k);
+					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,1);
+					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 				// bottom
 				if(((k.y+1)<size_y )  && lookup_hgt(koord(k.x,k.y+1)) == get_grundwasser()){
-					current_step[0].append(k);
+					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,1);
+					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 			}
 			// sea tiles
-			else if( lookup_hgt(k) == get_grundwasser()){
+			else if( lookup_hgt(k) <= get_grundwasser()){
 				// get rid of single vertex or several vertices holes reaching sea level
 				// valley could lead to it 
 				if((lookup_hgt(k+koord::nord)+lookup_hgt(k+koord::sued)+lookup_hgt(k+koord::west)+lookup_hgt(k+koord::ost)-(get_grundwasser()<<2)) >= 3) {
-					raise_to(k.x, k.y, get_grundwasser(), get_grundwasser(), get_grundwasser(), get_grundwasser()+1);
-					current_step[0].remove(k+koord::nord);
-					current_step[0].remove(k+koord::sued);
-					current_step[0].remove(k+koord::ost);
-					current_step[0].remove(k+koord::west);
-					tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
+					const char * c;
+					grid_raise(NULL, k, c);
+
+					// remove neighbours of the hole
+					for(int l = 0; l < 4; ++l)
+					{
+						koord next_k = k+koord::nsow[l];
+						int neighbour_gw_fields = 0;
+						for(int m = 0; m < 4; ++m) // remove then iff there is no other see netxt to the neighbours
+						{
+							if(lookup_hgt(next_k+koord::nsow[m]) <= get_grundwasser())
+							{
+								++neighbour_gw_fields;
+								break;
+							}
+						}
+						if ( neighbour_gw_fields == 0)
+						{
+							current_step[0].remove(next_k);
+							tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
+						}
+					}
 					printf("hole was at %i, %i\n", k.x, k.y);
+					--j; // the hole has been removed, process the field once more
+					continue;
 				}
-				else if( max_hgt(k) == get_grundwasser() ) {
-					tmp_world[(i*size_x)+j].setZDetailed(0,1);
+				else if( max_hgt(k) <= get_grundwasser() ) {
+					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 				}
 				else {
 					tmp_world[(i*size_x)+j].setZDetailed(0,2);
@@ -1304,19 +1322,19 @@ void karte_t::create_valleys()
 		bool nobreak2 = true; //escape from cycle
 
 		// front
-		for(int z_detailed = 1; (current_step[i].get_count() > 0)  &&  nobreak2; ++z_detailed) {
+		for(int z_detailed = 2; (current_step[i].get_count() > 0 || next_step[i].get_count() > 0)  &&  nobreak2; ++z_detailed) {
 			z_detailed_next = z_detailed + 2;
 			bool dig = false; // used for escaping fron cycle
 			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
 			
-			sint8 height = i + get_grundwasser() + 1;
+			sint8 height = i + get_grundwasser() + 1; // height of land in current level
 //			FOR(vector_tpl<koord>, const k, current_step[i]) {
 			// stack simulated by vector
 			while(current_step[i].get_count()>0) {
 				koord k = current_step[i].back();
 				current_step[i].pop_back();
 				if(  lookup_hgt(k) < height ){
-					continue;
+					continue; // the grid vertex has been changed, skip it
 				}
 				z_detailed = tmp_world[k.y*size_x+k.x].getZ();
 				// diagonal
@@ -1338,13 +1356,15 @@ void karte_t::create_valleys()
 						continue;
 					}
 
-					if( lookup_hgt(next_k) > height
-					&&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 1) // dig !!
+					/* height difference between current height level and new point to be tested */
+					int height_difference = lookup_hgt( next_k ) - height;
+					if( height_difference > 0 
+					&&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 2) // dig !!
 					){
-						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 1);
-						current_step[i+1].append(next_k);
+						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 2);
+						current_step[i+height_difference].append(next_k);
 					}
-					else if( lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next) {
+					else if( height_difference == 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next ) {
 						tmp_world[next_k.y*size_x+next_k.x].setZ(z_detailed_next);
 						next_step[i].append(next_k);
 //						char tmp_string[20];
@@ -1352,7 +1372,7 @@ void karte_t::create_valleys()
 //						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
 					// dig a valley
-					else if( lookup_hgt(next_k) < lookup_hgt(k)  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
+					else if( height_difference < 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
 						koord dig_k = k;
@@ -1363,16 +1383,17 @@ void karte_t::create_valleys()
 						valley_coord.append(next_k);
 						valley_coord.append(k);
 						do {
-							printf("dig_k    %i %i %i.%i ", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
+							printf("dig_k    [%i %i] %i.%i [%s:%i]", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed(), __FILE__, __LINE__);
 							tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
 //							lookup_kartenboden(next_k)->set_text(NULL);
 							//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
-							if(lookup_hgt(dig_k) >= height)
-							{
-								const char *c;
-								grid_lower(NULL, dig_k, c);
-							}
-							int lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
+//							if(lookup_hgt(dig_k) >= height)
+//							{
+//								const char *c;
+//								grid_lower(NULL, dig_k, c);
+//							}
+							int lower_count = 0;
+//							lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
 							//set_grid_hgt(dig_k, height-1);
 							printf(" %i (lcount %i)\n", lookup_hgt(dig_k), lower_count);
 							for(int j=0; j<4; ++j) {
@@ -1393,8 +1414,13 @@ void karte_t::create_valleys()
 								}
 							}
 						//	assert(dig_k != next_dig_k);
-							if(dig_k == next_dig_k) {
-								i= 63;
+							if(dig_k == next_dig_k) { // something may be wrong
+								if( valley_coord.get_count() != 1) // check it
+								{
+									printf("[%i %i] %i, %x %x\n", dig_k.x, dig_k.y, lookup_hgt(k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
+									printf("assertion failed %s:%i\n", __FILE__, __LINE__); // double ground fails here 20140122
+									i= 63; // avoid enless loops
+								}
 								break;
 							}
 							dig_k = next_dig_k;
@@ -1403,15 +1429,27 @@ void karte_t::create_valleys()
 						current_step[i-1].append(next_dig_k);
 						FOR(vector_tpl<koord>, const valley_coordinate, valley_coord ){
 							const char * c;
-							if(lookup_hgt(valley_coordinate) >= height)
+							while(lookup_hgt(valley_coordinate) >= height)
 							{
 								grid_lower(NULL, valley_coordinate, c);
 							}
-							if(lookup_hgt(valley_coordinate+koord(1,1)) >= height)
+
+							while(lookup_hgt(valley_coordinate+koord(0,1)) >= height)
+							{
+								grid_lower(NULL, valley_coordinate+koord(0,1), c);
+							}
+
+							while(lookup_hgt(valley_coordinate+koord(1,1)) >= height)
 							{
 								grid_lower(NULL, valley_coordinate+koord(1,1), c);
 							}
-							int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
+
+							while(lookup_hgt(valley_coordinate+koord(1,0)) >= height)
+							{
+								grid_lower(NULL, valley_coordinate+koord(1,0), c);
+							}
+
+//							int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
 						}
 						i -=2;
 						break;

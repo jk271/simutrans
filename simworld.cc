@@ -2491,7 +2491,7 @@ void karte_t::enlarge_map(settings_t const* sets, sint8 const* const h_field)
 	}
 
 	// valleys begin
-	if( (old_x == 0)  &&  (old_y == 0) ) {
+	if( sets->get_create_valleys() && (old_x == 0)  &&  (old_y == 0) ) {
 		create_valleys();
 	}
 	// valleys end

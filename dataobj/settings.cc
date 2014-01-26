@@ -66,7 +66,8 @@ settings_t::settings_t() :
 	river_number = 16;
 	min_river_length = 16;
 	max_river_length = 256;
-	meters_between_springs = 16000;
+	create_valleys = false;
+	meters_between_springs = 16000; // average distance between nearest springs of the river
 
 	// since the turning rules are different, driving must now be saved here
 	drive_on_left = false;
@@ -1204,6 +1205,7 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	river_number = contents.get_int("river_number", river_number );
 	min_river_length = contents.get_int("river_min_length", min_river_length );
 	max_river_length = contents.get_int("river_max_length", max_river_length );
+//	create_valleys = contents.get_int("create_valleys", create_valleys );
 	meters_between_springs = contents.get_int("meters_between_springs", meters_between_springs );
 
 	// forest stuff (now part of simuconf.tab)

@@ -138,6 +138,13 @@ climate_gui_t::climate_gui_t(settings_t* const sets_par) :
 	add_komponente( &no_tree );
 	cursor.y += D_CHECKBOX_HEIGHT + D_V_SPACE;
 
+	create_valleys.init( button_t::square_state, "create valleys", cursor );
+	create_valleys.set_width(DIALOG_WIDTH-D_MARGINS_X);
+	create_valleys.pressed = sets->get_create_valleys();
+	create_valleys.add_listener( this );
+	add_komponente( &create_valleys );
+	cursor.y += D_CHECKBOX_HEIGHT + D_V_SPACE;
+
 	lake.init( button_t::square_state, "lake", cursor );
 	lake.set_width(DIALOG_WIDTH-D_MARGINS_X);
 	lake.pressed = sets->get_lake();
@@ -195,6 +202,11 @@ bool climate_gui_t::action_triggered( gui_action_creator_t *komp, value_t v)
 	if(komp==&no_tree) {
 		no_tree.pressed ^= 1;
 		sets->set_no_trees(no_tree.pressed);
+	}
+	else if(komp==&create_valleys)
+	{
+		create_valleys.pressed ^= 1;
+		sets->set_create_valleys(create_valleys.pressed);
 	}
 	else if(komp==&lake) {
 		lake.pressed ^= 1;

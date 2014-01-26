@@ -50,6 +50,7 @@ private:
 		no_tree; // without tree
 
 	button_t
+		create_valleys, // valley for rivers
 		lake; // lake
 
 	gui_numberinput_t

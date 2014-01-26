@@ -119,6 +119,7 @@ private:
 	sint16 river_number;
 	sint16 min_river_length;
 	sint16 max_river_length;
+	bool create_valleys; // enable (1) or disable (0) creation of valleys for rivers
 	sint32 meters_between_springs;  // average distance between two nearest springs; 1000 is 1 tile in standard
 
 	// forest stuff
@@ -521,6 +522,8 @@ public:
 	bool get_no_trees() const { return no_trees; }
 	void set_no_trees(bool b) { no_trees = b; }
 
+	bool get_create_valleys() const { return create_valleys; }
+	void set_create_valleys(bool b) { create_valleys = b; }
 	bool get_lake() const { return lake; }
 	void set_lake(bool b) { lake = b; }
 

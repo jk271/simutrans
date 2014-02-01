@@ -121,6 +121,7 @@ karte_t* karte_t::world = NULL;
 
 stringhashtable_tpl<karte_t::missing_level_t>missing_pak_names;
 
+
 #ifdef MULTI_THREAD
 #include "utils/simthread.h"
 #include <semaphore.h>
@@ -1426,7 +1427,9 @@ void karte_t::create_valleys()
 							dig_k = next_dig_k;
 							valley_coord.append(dig_k);
 						}while(lookup_hgt(dig_k) == height);
-						current_step[i-1].append(next_dig_k);
+
+						int height_difference_valley_mouth = lookup_hgt( k ) - lookup_hgt( next_dig_k );
+						current_step[i - height_difference_valley_mouth].append( next_dig_k ); //!!
 						FOR(vector_tpl<koord>, const valley_coordinate, valley_coord ){
 							const char * c;
 							while(lookup_hgt(valley_coordinate) >= height)
@@ -1451,7 +1454,8 @@ void karte_t::create_valleys()
 
 //							int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
 						}
-						i -=2;
+
+						i -= 1 + height_difference_valley_mouth; // 1 ... compensation of cycle, height_difference_valley_mouth ... jump one or two levels down
 						break;
 					}
 				}

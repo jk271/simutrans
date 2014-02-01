@@ -956,7 +956,6 @@ void vehikel_t::neue_fahrt(uint16 start_route_index, bool recalc)
 		assert(get_pos() == r.position_bei(start_route_index));
 	}
 	else {
-
 		// recalc directions
 		pos_next = r.position_bei(route_index);
 		pos_prev = get_pos();
@@ -974,7 +973,8 @@ void vehikel_t::neue_fahrt(uint16 start_route_index, bool recalc)
 	}
 	if ( ribi_t::ist_einfach(fahrtrichtung) ) {
 		steps_next = VEHICLE_STEPS_PER_TILE - 1;
-	} else {
+	}
+	else {
 		steps_next = diagonal_vehicle_steps_per_tile - 1;
 	}
 }
@@ -1133,6 +1133,21 @@ grund_t* vehikel_t::hop()
 	}
 	alte_fahrtrichtung = fahrtrichtung;
 
+	// check if arrived at waypoint, and update schedule to next destination
+	// route search through the waypoint is already complete
+//	if(  ist_erstes  &&  get_pos()==cnv->get_fpl_target()  ) { // ist_erstes turned off in vorfahren when reversing
+	if(  get_pos()==cnv->get_fpl_target()  ) {
+		if(  route_index+1 >= cnv->get_route()->get_count()  ) {
+			// we end up here after loading a game or when a waypoint is reached which crosses next itself
+			cnv->set_fpl_target( koord3d::invalid );
+		}
+		else {
+			cnv->get_schedule()->advance();
+			const koord3d ziel = cnv->get_schedule()->get_current_eintrag().pos;
+			cnv->set_fpl_target( cnv->is_waypoint(ziel) ? ziel : koord3d::invalid );
+		}
+	}
+
 	// this is a required hack for aircrafts! Aircrafts can turn on a single square, and this confuses the previous calculation!
 	// author: hsiegeln
 	if(!check_for_finish  &&  pos_prev==pos_next) {
@@ -1140,7 +1155,7 @@ grund_t* vehikel_t::hop()
 		steps_next = 0;
 	}
 	else {
-		if(pos_next!=get_pos()) {
+		if(  pos_next!=get_pos()  ) {
 			fahrtrichtung = calc_set_richtung( pos_prev, pos_next );
 		}
 		else if(  (  check_for_finish  &&  welt->lookup(pos_next)  &&  ribi_t::ist_gerade(welt->lookup(pos_next)->get_weg_ribi_unmasked(get_waytype()))  )  ||  welt->lookup(pos_next)->is_halt()) {
@@ -1976,8 +1991,13 @@ void automobil_t::get_screen_offset( int &xoff, int &yoff, const sint16 raster_w
 // chooses a route at a choose sign; returns true on success
 bool automobil_t::choose_route( int &restart_speed, ribi_t::dir richtung, uint16 index )
 {
+	if(  cnv->get_fpl_target()!=koord3d::invalid  ) {
+		// destination is a waypoint!
+		return true;
+	}
+
+	// are we heading to a target?
 	route_t *rt = cnv->access_route();
-	// is our target occupied?
 	target_halt = haltestelle_t::get_halt( rt->back(), get_besitzer() );
 	if(  target_halt.is_bound()  ) {
 
@@ -2622,16 +2642,29 @@ bool waggon_t::is_weg_frei_longblock_signal( signal_t *sig, uint16 next_block, i
 
 bool waggon_t::is_weg_frei_choose_signal( signal_t *sig, const uint16 start_block, int &restart_speed )
 {
+	bool choose_ok = false;
+	target_halt = halthandle_t();
+
 	uint16 next_signal, next_crossing;
 	grund_t const* const target = welt->lookup(cnv->get_route()->back());
+
+	if(  cnv->get_fpl_target()!=koord3d::invalid  ) {
+		// destination is a waypoint!
+		goto skip_choose;
+	}
+
 	if(  target==NULL  ) {
 		cnv->suche_neue_route();
 		return false;
 	}
 
 	// first check, if we are not heading to a waypoint
-	bool choose_ok = target->get_halt().is_bound();
-	target_halt = halthandle_t();
+	if(  !target->get_halt().is_bound()  ) {
+		goto skip_choose;
+	}
+
+	// now we might choose something at least
+	choose_ok = true;
 
 	// check, if there is another choose signal or end_of_choose on the route
 	for(  uint32 idx=start_block+1;  choose_ok  &&  idx<cnv->get_route()->get_count();  idx++  ) {
@@ -2667,6 +2700,7 @@ bool waggon_t::is_weg_frei_choose_signal( signal_t *sig, const uint16 start_bloc
 		}
 	}
 
+skip_choose:
 	if(  !choose_ok  ) {
 		// just act as normal signal
 		if(  block_reserver( cnv->get_route(), start_block+1, next_signal, next_crossing, 0, true, false )  ) {
@@ -3577,7 +3611,7 @@ bool aircraft_t::calc_route(koord3d start, koord3d ziel, sint32 max_speed, route
 	else {
 		// init with current pos (in air ... )
 		route->clear();
-		route->append( get_pos() );
+		route->append( start );
 		state = flying;
 		if(flughoehe==0) {
 			flughoehe = 3*TILE_HEIGHT_STEP;
@@ -3764,7 +3798,7 @@ bool aircraft_t::ist_weg_frei( int & restart_speed, bool )
 		return false;
 	}
 
-	if(route_index<takeoff  &&  route_index>1  &&  takeoff<cnv->get_route()->get_count()-1) {
+	if(  route_index < takeoff  &&  route_index > 1  &&  takeoff<cnv->get_route()->get_count()-1  ) {
 		// check, if tile occupied by a plane on ground
 		if(  route_index > 1  ) {
 			for(  uint8 i = 1;  i<gr->get_top();  i++  ) {
@@ -3793,7 +3827,12 @@ bool aircraft_t::ist_weg_frei( int & restart_speed, bool )
 		return true;
 	}
 
-	if(route_index==takeoff  &&  state==taxiing) {
+	if(  state == taxiing  ) {
+		// enforce on ground for taxiing
+		flughoehe = 0;
+	}
+
+	if(  route_index == takeoff  &&  state == taxiing  ) {
 		// try to reserve the runway if not already done
 		if(route_index==2  &&  !block_reserver(takeoff,takeoff+100,true)) {
 			// runway blocked, wait at start of runway
@@ -4034,12 +4073,8 @@ uint8 aircraft_t::get_approach_ribi( koord3d start, koord3d ziel )
 #endif
 
 
-grund_t* aircraft_t::hop()
+grund_t *aircraft_t::hop()
 {
-	if(  !get_flag(obj_t::dirty)  ) {
-		mark_image_dirty( bild, get_yoff()-flughoehe-hoff-2 );
-	}
-
 	sint32 new_speed_limit = SPEED_UNLIMITED;
 	sint32 new_friction = 0;
 
@@ -4231,7 +4266,7 @@ void aircraft_t::display_overlay(int xpos_org, int ypos_org) const
 }
 
 
-const char * aircraft_t::ist_entfernbar(const spieler_t *sp)
+const char *aircraft_t::ist_entfernbar(const spieler_t *sp)
 {
 	if (is_on_ground()) {
 		return vehikel_t::ist_entfernbar(sp);

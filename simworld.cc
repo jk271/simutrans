@@ -1215,8 +1215,8 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 
 void karte_t::create_valleys()
 {
-	sint16 size_x = settings.get_groesse_x();
-	sint16 size_y = settings.get_groesse_y();
+	sint16 size_x = settings.get_groesse_x() + 1;
+	sint16 size_y = settings.get_groesse_y() + 1;
 	printf("starting valley correction \n");
 	time_t time_valley_begin = time(NULL);
 	time_t time_valley_middle;
@@ -1318,7 +1318,7 @@ void karte_t::create_valleys()
 	loadingscreen_t ls2( translator::translate("creating valleys - btfffa"), 6);
 
 	// height levels
-	for(int i=0; i<levels-10;  ++i){
+	for(int i=0; i<levels-10;  ++i){  // why 10 ??
 		printf("level %i\n", i); // debug
 		int z_detailed_next = -1;
 		int front_count = 0; // debug
@@ -1340,8 +1340,8 @@ void karte_t::create_valleys()
 					continue; // the grid vertex has been changed, skip it
 				}
 				z_detailed = tmp_world[k.y*size_x+k.x].getZ();
+
 				// diagonal
-				z_detailed_next = z_detailed + 3;
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nwneswse[direction];
 					if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() < (z_detailed-3)) { // is diagonal better ??
@@ -1361,10 +1361,8 @@ void karte_t::create_valleys()
 
 					/* height difference between current height level and new point to be tested */
 					int height_difference = lookup_hgt( next_k ) - height;
-					if( height_difference > 0 
-					&&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 2) // dig !!
-					){
-						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 2);
+					if( height_difference > 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 2) ){ // dig !!??
+						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 2);  // edge of next level
 						current_step[i+height_difference].append(next_k);
 					}
 					else if( height_difference == 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next ) {
@@ -1385,6 +1383,7 @@ void karte_t::create_valleys()
 						vector_tpl<koord> valley_coord; // we need wider valley
 						valley_coord.append(next_k);
 						valley_coord.append(k);
+
 						do {
 							printf("dig_k    [%i %i] %i.%i [%s:%i]", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed(), __FILE__, __LINE__);
 							tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);

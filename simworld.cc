@@ -1507,10 +1507,6 @@ DBG_DEBUG("karte_t::distribute_groundobjs_cities()","prepare cities");
 		settings.set_anzahl_staedte(old_anzahl_staedte);
 		int old_progress = 16;
 
-		// Ansicht auf erste Stadt zentrieren
-		if(  old_x+old_y == 0  ) {
-			viewport->change_world_position( koord3d((*pos)[0], min_hgt((*pos)[0])) );
-		}
 		loadingscreen_t ls( translator::translate( "distributing cities" ), 16 + 2 * (old_anzahl_staedte + new_anzahl_staedte) + 2 * new_anzahl_staedte + (old_x == 0 ? settings.get_factory_count() : 0), true, true );
 
 		{
@@ -1521,7 +1517,16 @@ DBG_DEBUG("karte_t::distribute_groundobjs_cities()","prepare cities");
 			for(  int i=0;  i<new_anzahl_staedte;  i++  ) {
 				stadt_t* s = new stadt_t(spieler[1], (*pos)[i], 1 );
 				DBG_DEBUG("karte_t::distribute_groundobjs_cities()","Erzeuge stadt %i with %ld inhabitants",i,(s->get_city_history_month())[HIST_CITICENS] );
-				add_stadt(s);
+				if (s->get_buildings() > 0) {
+					add_stadt(s);
+				}
+				else {
+					delete(s);
+				}
+			}
+			// center on first city
+			if(  old_x+old_y == 0  &&  stadt.get_count()>0) {
+				viewport->change_world_position( stadt[0]->get_pos() );
 			}
 
 			delete pos;
@@ -6360,6 +6365,10 @@ DBG_MESSAGE("karte_t::laden()", "%d factories loaded", fab_list.get_count());
 
 	file->set_buffered(false);
 	clear_random_mode(LOAD_RANDOM);
+
+	// loading finished, reset savegame version to current
+	load_version = loadsave_t::int_version( env_t::savegame_version_str, NULL, NULL );;
+
 	dbg->warning("karte_t::laden()","loaded savegame from %i/%i, next month=%i, ticks=%i (per month=1<<%i)",last_month,last_year,next_month_ticks,ticks,karte_t::ticks_per_world_month_shift);
 }
 

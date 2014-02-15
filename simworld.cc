@@ -1241,28 +1241,28 @@ void karte_t::create_valleys()
 			int height_difference = lookup_hgt( k ) - get_grundwasser() - 1;
 			if( 0 <= height_difference && height_difference < 2 ){ // todo distinguish between double and single ground
 				//left
-				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) == get_grundwasser()){
+				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
 					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 				//top
-				if((k.y > 1)  && lookup_hgt(koord(k.x,k.y-1)) == get_grundwasser()){
+				if((k.y > 1)  && lookup_hgt(koord(k.x,k.y-1)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
 					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 				//right
-				if(((k.x+1)<size_x )  && lookup_hgt(koord(k.x+1,k.y)) == get_grundwasser()){
+				if(((k.x + 1)<size_x )  && lookup_hgt(koord(k.x+1,k.y)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
 					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 					continue;
 				} 
 				// bottom
-				if(((k.y+1)<size_y )  && lookup_hgt(koord(k.x,k.y+1)) == get_grundwasser()){
+				if(((k.y + 1)<size_y )  && lookup_hgt(koord(k.x,k.y+1)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
 					tmp_world[(i*size_x)+j].setZDetailed(0,2);
@@ -1272,7 +1272,7 @@ void karte_t::create_valleys()
 			// sea tiles
 			else if( lookup_hgt(k) <= get_grundwasser()){
 				// get rid of single vertex or several vertices holes reaching sea level
-				// valley could lead to it 
+				// valley could lead to it and wee need to avoid this
 				if((lookup_hgt(k+koord::nord)+lookup_hgt(k+koord::sued)+lookup_hgt(k+koord::west)+lookup_hgt(k+koord::ost)-(get_grundwasser()<<2)) >= 3) {
 					const char * c;
 					grid_raise(NULL, k, c);
@@ -1281,6 +1281,10 @@ void karte_t::create_valleys()
 					for(int l = 0; l < 4; ++l)
 					{
 						koord next_k = k+koord::nsow[l];
+						if (lookup_hgt(next_k) <= get_grundwasser()) // ... except sea tiles
+						{
+							break;
+						}
 						int neighbour_gw_fields = 0;
 						for(int m = 0; m < 4; ++m) // remove then iff there is no other see netxt to the neighbours
 						{
@@ -1293,9 +1297,11 @@ void karte_t::create_valleys()
 						if ( neighbour_gw_fields == 0)
 						{
 							current_step[0].remove(next_k);
-							tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
+							current_step[1].remove(next_k); // double ground
+							tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
 						}
 					}
+					tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
 					printf("hole was at %i, %i\n", k.x, k.y);
 					--j; // the hole has been removed, process the field once more
 					continue;

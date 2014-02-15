@@ -1213,8 +1213,34 @@ void karte_t::create_rivers(coord3d_t * tmp_world)
 
 
 
+void karte_t::remove_landscape_holes(koord limit_k)
+{
+	sint16 size_x = settings.get_groesse_x();
+	sint16 size_y = settings.get_groesse_y();
+	koord k;
+	for(int i=0;  i < size_y; ++i) {
+		k.y = i;
+		for(int j=0; j < size_x; ++j) {
+			k.x = j;
+			if( lookup_hgt(k) <= get_grundwasser() && (lookup_hgt(k+koord::nord)+lookup_hgt(k+koord::sued)+lookup_hgt(k+koord::west)+lookup_hgt(k+koord::ost)-(get_grundwasser()<<2)) >= 3) {
+				const char * c;
+				while (lookup_hgt(k) <= get_grundwasser()) // it might be necessary to do it twice in double ground
+				{
+					grid_raise(NULL, k, c);
+				}
+				printf("hole was at %i, %i\n", k.x, k.y);
+			}
+		}
+	}
+}
+
+
 void karte_t::create_valleys()
 {
+	// get rid of single vertex or several vertices holes reaching sea level
+	// valley could lead to it and wee need to avoid this
+	remove_landscape_holes(koord(0, 0));
+
 	sint16 size_x = settings.get_groesse_x() + 1;
 	sint16 size_y = settings.get_groesse_y() + 1;
 	printf("starting valley correction \n");
@@ -1271,42 +1297,9 @@ void karte_t::create_valleys()
 			}
 			// sea tiles
 			else if( lookup_hgt(k) <= get_grundwasser()){
-				// get rid of single vertex or several vertices holes reaching sea level
-				// valley could lead to it and wee need to avoid this
-				if((lookup_hgt(k+koord::nord)+lookup_hgt(k+koord::sued)+lookup_hgt(k+koord::west)+lookup_hgt(k+koord::ost)-(get_grundwasser()<<2)) >= 3) {
-					const char * c;
-					grid_raise(NULL, k, c);
-
-					// remove neighbours of the hole
-					for(int l = 0; l < 4; ++l)
-					{
-						koord next_k = k+koord::nsow[l];
-						if (lookup_hgt(next_k) <= get_grundwasser()) // ... except sea tiles
-						{
-							break;
-						}
-						int neighbour_gw_fields = 0;
-						for(int m = 0; m < 4; ++m) // remove then iff there is no other see netxt to the neighbours
-						{
-							if(lookup_hgt(next_k+koord::nsow[m]) <= get_grundwasser())
-							{
-								++neighbour_gw_fields;
-								break;
-							}
-						}
-						if ( neighbour_gw_fields == 0)
-						{
-							current_step[0].remove(next_k);
-							current_step[1].remove(next_k); // double ground
-							tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
-						}
-					}
-					tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
-					printf("hole was at %i, %i\n", k.x, k.y);
-					--j; // the hole has been removed, process the field once more
-					continue;
-				}
-				else if( max_hgt(k) <= get_grundwasser() ) {
+/*
+*/
+				if( max_hgt(k) <= get_grundwasser() ) {
 					tmp_world[(i*size_x)+j].setZDetailed(0,2);
 				}
 				else {

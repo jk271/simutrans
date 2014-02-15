@@ -734,6 +734,11 @@ private:
 	 */
 	void create_rivers(coord3d_t * detailed_heights);
 
+	/* 
+	 * Removes small landscape holes at see level 
+	 */
+	void remove_landscape_holes(koord limit_k);
+
 	/*
 	 * creates valley using current lanscape without any object on it
 	 */

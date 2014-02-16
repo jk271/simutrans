@@ -1297,14 +1297,7 @@ void karte_t::create_valleys()
 			}
 			// sea tiles
 			else if( lookup_hgt(k) <= get_grundwasser()){
-/*
-*/
-				if( max_hgt(k) <= get_grundwasser() ) {
-					tmp_world[(i*size_x)+j].setZDetailed(0,2);
-				}
-				else {
-					tmp_world[(i*size_x)+j].setZDetailed(0,2);
-				}
+				tmp_world[(i*size_x)+j].setZDetailed(0,2);
 				continue;
 			}
 			// other tiles

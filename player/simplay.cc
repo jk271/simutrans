@@ -91,10 +91,8 @@ spieler_t::~spieler_t()
 		delete messages.remove_first();
 	}
 	destroy_win(magic_finances_t + get_player_nr());
-	if( finance !=NULL) {
-		delete finance;
-		finance = NULL;
-	}
+	delete finance;
+	finance = NULL;
 }
 
 
@@ -255,7 +253,7 @@ void spieler_t::display_messages()
  * Age messages (move them upwards), delete too old ones
  * @author prissi
  */
-void spieler_t::age_messages(long /*delta_t*/)
+void spieler_t::age_messages(uint32 /*delta_t*/)
 {
 	for(slist_tpl<income_message_t *>::iterator iter = messages.begin(); iter != messages.end(); ) {
 		income_message_t *m = *iter;

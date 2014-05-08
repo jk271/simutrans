@@ -35,6 +35,8 @@ public:
 	/// name of the directory to the pak-set
 	static std::string objfilename;
 
+	/// this the the preferred GUI theme at startup
+	static plainstring default_theme;
 
 	/**
 	 * @name Network-related settings
@@ -281,6 +283,7 @@ public:
 	static sint8 pak_tile_height_step;
 
 	/// new height for old slopes after conversion - 1=single height, 2=double height
+	/// Only use during loading of old games!
 	static sint8 pak_height_conversion_factor;
 
 	/// use the faster drawing routine (and allow for clipping errors)

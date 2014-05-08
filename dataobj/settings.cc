@@ -180,6 +180,9 @@ settings_t::settings_t() :
 	 */
 	pak_diagonal_multiplier = 724;
 
+	// assume ´sinble level is enough
+	way_height_clearance = 1;
+
 	strcpy( language_code_names, "en" );
 
 	// default AIs active
@@ -444,6 +447,7 @@ void settings_t::rdwr(loadsave_t *file)
 				climate_borders[i] *= env_t::pak_height_conversion_factor;
 			}
 			winter_snowline *= env_t::pak_height_conversion_factor;
+			way_height_clearance = env_t::pak_height_conversion_factor;
 		}
 
 		// since vehicle will need realignment afterwards!
@@ -452,7 +456,7 @@ void settings_t::rdwr(loadsave_t *file)
 		}
 		else {
 			uint16 old_multiplier = pak_diagonal_multiplier;
-			file->rdwr_short(old_multiplier );
+			file->rdwr_short( old_multiplier );
 			vehikel_basis_t::set_diagonal_multiplier( pak_diagonal_multiplier, old_multiplier );
 			// since vehicle will need realignment afterwards!
 		}
@@ -757,6 +761,7 @@ void settings_t::rdwr(loadsave_t *file)
 		}
 		if(  file->get_version()>=112008  ) {
 			file->rdwr_longlong( cst_alter_climate );
+			file->rdwr_byte( way_height_clearance );
 		}
 		// otherwise the default values of the last one will be used
 	}
@@ -1227,7 +1232,17 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	// the height in z-direction will only cause pixel errors but not a different behaviour
 	env_t::pak_tile_height_step = contents.get_int("tile_height", env_t::pak_tile_height_step );
 	// new height for old slopes after conversion - 1=single height, 2=double height
+	// Must be only overwrite when reading from pak dir ...
 	env_t::pak_height_conversion_factor = contents.get_int("height_conversion_factor", env_t::pak_height_conversion_factor );
+
+	// minimum clearance under under bridges: 1 or 2? (HACK: value only zero during loading of pak set config)
+	bool bounds = way_height_clearance!=0;
+	way_height_clearance  = contents.get_int("way_height_clearance", way_height_clearance );
+	if(  way_height_clearance > 2  &&  way_height_clearance < bounds  ) {
+		sint8 new_whc = clamp( way_height_clearance, bounds, 2 );
+		dbg->warning( "settings_t::parse_simuconf()", "Illegal way_height_clearance of %i set to %i", way_height_clearance, new_whc );
+		way_height_clearance = new_whc;
+	}
 
 	min_factory_spacing = contents.get_int("factory_spacing", min_factory_spacing );
 	min_factory_spacing = contents.get_int("min_factory_spacing", min_factory_spacing );
@@ -1287,15 +1302,20 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	while (*str == ' ') str++;
 	if (strcmp(str, "binary") == 0) {
 		loadsave_t::set_savemode(loadsave_t::binary );
-	} else if(strcmp(str, "zipped") == 0) {
+	}
+	else if(strcmp(str, "zipped") == 0) {
 		loadsave_t::set_savemode(loadsave_t::zipped );
-	} else if(strcmp(str, "xml") == 0) {
+	}
+	else if(strcmp(str, "xml") == 0) {
 		loadsave_t::set_savemode(loadsave_t::xml );
-	} else if(strcmp(str, "xml_zipped") == 0) {
+	}
+	else if(strcmp(str, "xml_zipped") == 0) {
 		loadsave_t::set_savemode(loadsave_t::xml_zipped );
-	} else if(strcmp(str, "bzip2") == 0) {
+	}
+	else if(strcmp(str, "bzip2") == 0) {
 		loadsave_t::set_savemode(loadsave_t::bzip2 );
-	} else if(strcmp(str, "xml_bzip2") == 0) {
+	}
+	else if(strcmp(str, "xml_bzip2") == 0) {
 		loadsave_t::set_savemode(loadsave_t::xml_bzip2 );
 	}
 
@@ -1303,15 +1323,20 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	while (*str == ' ') str++;
 	if (strcmp(str, "binary") == 0) {
 		loadsave_t::set_autosavemode(loadsave_t::binary );
-	} else if(strcmp(str, "zipped") == 0) {
+	}
+	else if(strcmp(str, "zipped") == 0) {
 		loadsave_t::set_autosavemode(loadsave_t::zipped );
-	} else if(strcmp(str, "xml") == 0) {
+	}
+	else if(strcmp(str, "xml") == 0) {
 		loadsave_t::set_autosavemode(loadsave_t::xml );
-	} else if(strcmp(str, "xml_zipped") == 0) {
+	}
+	else if(strcmp(str, "xml_zipped") == 0) {
 		loadsave_t::set_autosavemode(loadsave_t::xml_zipped );
-	} else if(strcmp(str, "bzip2") == 0) {
+	}
+	else if(strcmp(str, "bzip2") == 0) {
 		loadsave_t::set_autosavemode(loadsave_t::bzip2 );
-	} else if(strcmp(str, "xml_bzip2") == 0) {
+	}
+	else if(strcmp(str, "xml_bzip2") == 0) {
 		loadsave_t::set_autosavemode(loadsave_t::xml_bzip2 );
 	}
 

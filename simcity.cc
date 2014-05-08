@@ -615,10 +615,14 @@ void stadt_t::add_gebaeude_to_stadt(const gebaeude_t* gb, bool ordered)
 				}
 			}
 		}
-		// check borders
-		pruefe_grenzen(pos);
-		if(size!=koord(1,1)) {
-			pruefe_grenzen(pos+size-koord(1,1));
+		// no update of city limits
+		// as has_low_density may depend on the order the buildings list is filled
+		if (!ordered) {
+			// check borders
+			pruefe_grenzen(pos);
+			if(size!=koord(1,1)) {
+				pruefe_grenzen(pos+size-koord(1,1));
+			}
 		}
 	}
 }
@@ -643,6 +647,8 @@ void stadt_t::update_gebaeude_from_stadt(gebaeude_t* gb)
 
 void stadt_t::pruefe_grenzen(koord k)
 {
+	// WARNING: do not call this during multithreaded loading,
+	// as has_low_density may depend on the order the buildings list is filled
 	if(  has_low_density  ) {
 		// has extra wide borders => change density calculation
 		has_low_density = (buildings.get_count()<10  ||  (buildings.get_count()*100l)/(abs(ur.x-lo.x-4)*abs(ur.y-lo.y-4)+1) > min_building_density);
@@ -680,6 +686,8 @@ void stadt_t::pruefe_grenzen(koord k)
 // will be updated also after house deletion
 void stadt_t::recalc_city_size()
 {
+	// WARNING: do not call this during multithreaded loading,
+	// as has_low_density may depend on the order the buildings list is filled
 	lo = pos;
 	ur = pos;
 	FOR(weighted_vector_tpl<gebaeude_t*>, const i, buildings) {
@@ -1404,7 +1412,7 @@ void stadt_t::change_size( sint64 delta_citizen, bool new_town)
 }
 
 
-void stadt_t::step(long delta_t)
+void stadt_t::step(uint32 delta_t)
 {
 	settings_t const& s = welt->get_settings();
 	// recalculate factory going ratios where necessary
@@ -1616,17 +1624,9 @@ void stadt_t::calc_growth()
 
 	// OK.  Now we must adjust for the steps per month.
 	// Cities were growing way too fast without this adjustment.
-	// The original value was based on 18 bit months.
-	const sint64 tpm = welt->ticks_per_world_month;
-	const sint64 old_ticks_per_world_month = (1ll << 18);
-	if(  tpm > old_ticks_per_world_month  ) {
-		new_unsupplied_city_growth *= (tpm / old_ticks_per_world_month);
-	}
-	else {
-		new_unsupplied_city_growth /= (old_ticks_per_world_month / tpm);
-	}
-	// on may add another multiplier here for further slowdown/speed up
+	new_unsupplied_city_growth = welt->inverse_scale_with_month_length( new_unsupplied_city_growth );
 
+	// on may add another multiplier here for further slowdown/speed up
 	unsupplied_city_growth += new_unsupplied_city_growth;
 }
 

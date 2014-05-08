@@ -7,8 +7,6 @@
 #include <SDL.h>
 
 #ifdef _WIN32
-// windows.h defines min and max macros which we don't want
-#define NOMINMAX 1
 #include <windows.h>
 #endif
 
@@ -128,7 +126,6 @@ static int num_SDL_Rects = 0;
 static SDL_Rect SDL_Rects[MAX_SDL_RECTS];
 #endif
 
-
 /*
  * Hier sind die Basisfunktionen zur Initialisierung der
  * Schnittstelle untergebracht
@@ -231,11 +228,11 @@ int dr_os_open(int w, int const h, int const fullscreen)
 	else {
 		const SDL_VideoInfo* vi = SDL_GetVideoInfo();
 		char driver_name[128];
-		SDL_VideoDriverName( driver_name, 128);
+		SDL_VideoDriverName(driver_name, lengthof(driver_name));
 		fprintf(stderr, "SDL_driver=%s, hw_available=%i, video_mem=%i, blit_sw=%i, bpp=%i, bytes=%i\n", driver_name, vi->hw_available, vi->video_mem, vi->blit_sw, vi->vfmt->BitsPerPixel, vi->vfmt->BytesPerPixel );
 		fprintf(stderr, "Screen Flags: requested=%x, actual=%x\n", flags, screen->flags );
 	}
-	printf("dr_os_open(SDL): SDL realized screen size width=%d, height=%d (requested w=%d, h=%d)", screen->w, screen->h, w, h );
+	printf("dr_os_open(SDL): SDL realized screen size width=%d, height=%d (requested w=%d, h=%d)\n", screen->w, screen->h, w, h );
 
 	SDL_EnableUNICODE(true);
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
@@ -671,8 +668,7 @@ void ex_ord_update_mx_my()
 	SDL_PumpEvents();
 }
 
-
-unsigned long dr_time()
+uint32 dr_time()
 {
 	return SDL_GetTicks();
 }

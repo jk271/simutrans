@@ -263,10 +263,10 @@ private:
 	sint32 wait_lock;
 
 	/**
-	* time, when a convoi waiting for full load will drive on
-	* @author prissi
-	*/
-	uint32 go_on_ticks;
+	 * Time when convoi arrived at the current stop
+	 * Used to calculate when it should depart due to the 'month wait time'
+	 */
+	uint32 arrived_time;
 
 	/**
 	* akkumulierter gewinn über ein jahr hinweg
@@ -362,7 +362,7 @@ private:
 	/* Calculates (and sets) akt_speed
 	 * needed for driving, entering and leaving a depot)
 	 */
-	void calc_acceleration(long delta_t);
+	void calc_acceleration(uint32 delta_t);
 
 	/*
 	* struct holds new financial history for convoi
@@ -605,7 +605,7 @@ public:
 	 * all other stuff => convoi_t::step()
 	 * @author Hj. Malthaner
 	 */
-	bool sync_step(long delta_t);
+	bool sync_step(uint32 delta_t);
 
 	/**
 	 * All things like route search or laoding, that may take a little

@@ -8,14 +8,9 @@
 #error "Only Windows has GDI!"
 #endif
 
-// windows Bibliotheken DirectDraw 5.x (must be defined before any includes!)
-#define UNICODE 1
-
 #include <stdio.h>
 #include <stdlib.h>
 
-// windows.h defines min and max macros which we don't want
-#define NOMINMAX 1
 #include <windows.h>
 #include <winreg.h>
 #include <wingdi.h>
@@ -98,6 +93,7 @@ static void create_window(DWORD const ex_style, DWORD const style, int const x, 
 	AdjustWindowRectEx(&r, style, false, ex_style);
 	hwnd = CreateWindowExA(ex_style, "Simu", SIM_TITLE, style, x, y, r.right - r.left, r.bottom - r.top, 0, 0, hInstance, 0);
 	ShowWindow(hwnd, SW_SHOW);
+	SetTimer( hwnd, 0, 1111, NULL );	// HACK: so windows thinks we are not dead when processing a timer every 1111 ms ...
 }
 
 
@@ -397,6 +393,9 @@ LRESULT WINAPI WindowProc(HWND this_hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	static int last_mb = 0;	// last mouse button state
 	switch (msg) {
 
+		case WM_TIMER:	// dummy timer even to keep windows thinking we are still active
+			return 0;
+
 		case WM_ACTIVATE: // may check, if we have to restore color depth
 			if(is_fullscreen) {
 				// avoid double calls
@@ -629,7 +628,8 @@ static void internal_GetEvents(bool const wait)
 		GetMessage(&msg, NULL, 0, 0);
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-	} while (wait && sys_event.type == SIM_NOEVENT);
+	} while(wait && sys_event.type == SIM_NOEVENT);
+
 }
 
 
@@ -668,7 +668,7 @@ void ex_ord_update_mx_my()
 
 
 
-unsigned long dr_time()
+uint32 dr_time()
 {
 	return timeGetTime();
 }
@@ -707,8 +707,7 @@ int CALLBACK WinMain(HINSTANCE const hInstance, HINSTANCE, LPSTR, int)
 	wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wc.hbrBackground = (HBRUSH) (COLOR_BACKGROUND + 1);
 	wc.lpszMenuName = NULL;
-
-	RegisterClass(&wc);
+	RegisterClassW(&wc);
 
 	GetWindowRect(GetDesktopWindow(), &MaxSize);
 

@@ -1807,15 +1807,14 @@ void display_fit_img_to_width( const image_id n, sint16 new_w )
 {
 	if(  n < anz_images  &&  images[n].base_h > 0  &&  images[n].w != new_w  ) {
 		int old_zoom_factor = zoom_factor;
-		sint16 start_w = 32767;
 		for(  int i=0;  i<=MAX_ZOOM_FACTOR;  i++  ) {
 			int zoom_w = (images[n].base_w * zoom_num[i]) / zoom_den[i];
-			if(  start_w > new_w  &&  zoom_w <= new_w  ) {
+			if(  zoom_w <= new_w  ) {
 				uint8 old_zoom_flag = images[n].recode_flags & FLAG_ZOOMABLE;
-				images[n].recode_flags &= ~FLAG_ZOOMABLE;
 				images[n].recode_flags |= FLAG_REZOOM | FLAG_ZOOMABLE;
 				zoom_factor = i;
 				rezoom_img(n);
+				images[n].recode_flags &= ~FLAG_ZOOMABLE;
 				images[n].recode_flags |= old_zoom_flag;
 				zoom_factor = old_zoom_factor;
 				return;
@@ -2583,7 +2582,7 @@ static void display_three_image_row( image_id i1, image_id i2, image_id i3, scr_
 			row.x += w;
 			row.w -= w;
 		}
-		// for the rest we have to clip the retange
+		// for the rest we have to clip the rectangle
 		if(  row.w > 0  ) {
 			clip_dimension const cl = display_get_clip_wh();
 			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
@@ -2669,7 +2668,7 @@ static void display_three_blend_row( image_id i1, image_id i2, image_id i3, scr_
 			row.x += w;
 			row.w -= w;
 		}
-		// for the rest we have to clip the retange
+		// for the rest we have to clip the rectangle
 		if(  row.w > 0  ) {
 			clip_dimension const cl = display_get_clip_wh();
 			display_set_clip_wh( cl.x, cl.y, max(0,min(row.get_right(),cl.xx)-cl.x), cl.h );
@@ -2835,7 +2834,7 @@ void display_color_img(const unsigned n, KOORD_VAL xp, KOORD_VAL yp, sint8 playe
 			activate_player_color( player_nr, daynight );
 
 			// color replacement needs the original data => sp points to non-cached data
-			const PIXVAL *sp = (tile_raster_width != base_tile_raster_width  &&  images[n].zoom_data != NULL) ? images[n].zoom_data : images[n].base_data;
+			const PIXVAL *sp = images[n].zoom_data != NULL ? images[n].zoom_data : images[n].base_data;
 
 			// clip top/bottom
 #ifdef MULTI_THREAD
@@ -4661,6 +4660,8 @@ KOORD_VAL display_proportional_ellipse_rgb( scr_rect r, const char *text, int al
 		current_offset += pixel_width;
 		max_idx += byte_length;
 	}
+	size_t max_idx_before_ellipse = max_idx;
+	scr_coord_val max_offset_before_ellipse = current_offset;
 
 	// now check if the text would fit completely
 	if(  eclipse_width  &&  pixel_width > 0  ) {
@@ -4674,8 +4675,10 @@ KOORD_VAL display_proportional_ellipse_rgb( scr_rect r, const char *text, int al
 		}
 		if(  max_screen_width <= (current_offset+pixel_width)  ) {
 			// this fits not!
-			KOORD_VAL w = display_text_proportional_len_clip_rgb( r.x, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, max_idx );
-			w += display_text_proportional_len_clip_rgb( r.x+w, r.y, translator::translate("..."), ALIGN_LEFT | DT_CLIP, color, dirty, max_idx );
+			// since we know the length already, we try to center the text with the remaining pixels of the last character
+			KOORD_VAL w = (max_screen_width-max_offset_before_ellipse-eclipse_width+1)/2;
+			w = display_text_proportional_len_clip_rgb( r.x+w, r.y, text, ALIGN_LEFT | DT_CLIP, color, dirty, max_idx_before_ellipse );
+			w += display_text_proportional_len_clip_rgb( r.x+w, r.y, translator::translate("..."), ALIGN_LEFT | DT_CLIP, color, dirty, -1 );
 			return w;
 		}
 		else {

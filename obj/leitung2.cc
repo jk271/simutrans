@@ -123,7 +123,6 @@ leitung_t::~leitung_t()
 		gr->obj_remove(this);
 		set_flag( obj_t::not_on_map );
 
-		powernet_t *new_net = NULL;
 		if(neighbours>1) {
 			// only reconnect if two connections ...
 			bool first = true;
@@ -131,7 +130,7 @@ leitung_t::~leitung_t()
 				if(conn[i]!=NULL) {
 					if(!first) {
 						// replace both nets
-						new_net = new powernet_t();
+						powernet_t *new_net = new powernet_t();
 						conn[i]->replace(new_net);
 					}
 					first = false;
@@ -442,7 +441,7 @@ void pumpe_t::neue_karte()
 }
 
 
-void pumpe_t::step_all(long delta_t)
+void pumpe_t::step_all(uint32 delta_t)
 {
 	FOR(slist_tpl<pumpe_t*>, const p, pumpe_list) {
 		p->step(delta_t);
@@ -477,7 +476,7 @@ pumpe_t::~pumpe_t()
 }
 
 
-void pumpe_t::step(long delta_t)
+void pumpe_t::step(uint32 delta_t)
 {
 	if(fab==NULL) {
 		return;
@@ -568,7 +567,7 @@ void senke_t::neue_karte()
 }
 
 
-void senke_t::step_all(long delta_t)
+void senke_t::step_all(uint32 delta_t)
 {
 	FOR(slist_tpl<senke_t*>, const s, senke_list) {
 		s->step(delta_t);
@@ -616,7 +615,7 @@ senke_t::~senke_t()
 }
 
 
-void senke_t::step(long delta_t)
+void senke_t::step(uint32 delta_t)
 {
 	if(fab==NULL) {
 		return;
@@ -661,7 +660,7 @@ void senke_t::step(long delta_t)
 }
 
 
-bool senke_t::sync_step(long delta_t)
+bool senke_t::sync_step(uint32 delta_t)
 {
 	if(fab==NULL) {
 		return false;

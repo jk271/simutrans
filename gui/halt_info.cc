@@ -99,7 +99,7 @@ halt_info_t::halt_info_t(halthandle_t halt) :
 	this->halt = halt;
 	halt->set_sortby( env_t::default_sortmode );
 
-	const sint16 offset_below_viewport = 21 + view.get_size().h;
+	const sint16 offset_below_viewport = D_MARGIN_TOP + D_BUTTON_HEIGHT + D_V_SPACE + view.get_size().h;
 	const sint16 total_width = D_MARGIN_LEFT + 3*(D_BUTTON_WIDTH + D_H_SPACE) + max( D_BUTTON_WIDTH, view.get_size().w ) + D_MARGIN_RIGHT;
 
 	input.set_pos(scr_coord(10,4));
@@ -116,10 +116,12 @@ halt_info_t::halt_info_t(halthandle_t halt) :
 	chart.set_dimension(12, 10000);
 	chart.set_visible(false);
 	chart.set_background(MN_GREY1);
+	const sint16 offset_below_chart = chart.get_pos().y + 100 +
+	                                  +6+LINESPACE+D_V_SPACE; // chart x-axis labels plus space
 	for (int cost = 0; cost<MAX_HALT_COST; cost++) {
 		chart.add_curve(cost_type_color[cost], halt->get_finance_history(), MAX_HALT_COST, index_of_haltinfo[cost], MAX_MONTHS, 0, false, true, 0);
 		filterButtons[cost].init(button_t::box_state, cost_type[cost],
-			scr_coord(BUTTON1_X+(D_BUTTON_WIDTH+D_H_SPACE)*(cost%4), view.get_size().h+141+(D_BUTTON_HEIGHT+2)*(cost/4) ),
+			scr_coord(BUTTON1_X+(D_BUTTON_WIDTH+D_H_SPACE)*(cost%4), offset_below_chart+(D_BUTTON_HEIGHT+2)*(cost/4) ),
 			scr_size(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
 		filterButtons[cost].add_listener(this);
 		filterButtons[cost].background_color = cost_type_color[cost];
@@ -128,10 +130,11 @@ halt_info_t::halt_info_t(halthandle_t halt) :
 		add_komponente(filterButtons + cost);
 	}
 	add_komponente(&chart);
+	chart_total_size = filterButtons[MAX_HALT_COST-1].get_pos().y + D_BUTTON_HEIGHT + D_V_SPACE - (chart.get_pos().y - 13);
 
 	add_komponente(&sort_label);
 
-	const sint16 yoff = offset_below_viewport+D_BUTTON_HEIGHT+1-D_BUTTON_HEIGHT-2;
+	const sint16 yoff = offset_below_viewport + D_V_SPACE;
 
 	// hsiegeln: added sort_button
 	sort_button.init(button_t::roundbox, sort_text[env_t::default_sortmode],scr_coord(BUTTON1_X, yoff), scr_size(D_BUTTON_WIDTH, D_BUTTON_HEIGHT));
@@ -154,7 +157,7 @@ halt_info_t::halt_info_t(halthandle_t halt) :
 	button.add_listener(this);
 	add_komponente(&button);
 
-	scrolly.set_pos(scr_coord(0, offset_below_viewport+D_BUTTON_HEIGHT+3));
+	scrolly.set_pos(scr_coord(D_MARGIN_LEFT, yoff + D_BUTTON_HEIGHT + D_V_SPACE ));
 	scrolly.set_show_scroll_x(true);
 	add_komponente(&scrolly);
 
@@ -317,7 +320,7 @@ void halt_info_t::draw(scr_coord pos, scr_size size)
 void halt_info_t::show_hide_statistics( bool show )
 {
 	toggler.pressed = show;
-	const scr_coord offset = show ? scr_coord(0, 165) : scr_coord(0, -165);
+	const scr_coord offset = show ? scr_coord(0, chart_total_size) : scr_coord(0, -chart_total_size);
 	set_min_windowsize(get_min_windowsize() + offset);
 	scrolly.set_pos(scrolly.get_pos() + offset);
 	chart.set_visible(show);
@@ -563,12 +566,12 @@ void halt_info_t::set_windowsize(scr_size size)
 
 	scrolly.set_size(get_client_windowsize()-scrolly.get_pos());
 
-	const sint16 yoff = scrolly.get_pos().y-D_BUTTON_HEIGHT-3;
+	const sint16 yoff = scrolly.get_pos().y-D_BUTTON_HEIGHT-D_V_SPACE;
 	sort_button.set_pos(scr_coord(BUTTON1_X,yoff));
 	toggler_departures.set_pos(scr_coord(BUTTON2_X,yoff));
 	toggler.set_pos(scr_coord(BUTTON3_X,yoff));
 	button.set_pos(scr_coord(BUTTON4_X,yoff));
-	sort_label.set_pos(scr_coord(10,yoff-LINESPACE-1));
+	sort_label.set_pos(scr_coord(10,yoff-LINESPACE-D_V_SPACE));
 }
 
 

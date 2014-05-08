@@ -93,7 +93,7 @@ class bild_besch_t;
 #define D_TITLEBAR_HEIGHT      (gui_theme_t::gui_titlebar_height)
 #define D_DIVIDER_HEIGHT       (gui_theme_t::gui_divider_size.h)
 #define D_STATUSBAR_HEIGHT     (max(16,LINESPACE))                    // statusbar bottom of screen
-#define TAB_HEADER_V_SIZE      (gui_tab_panel_t::header_vsize)        // Tab page params (replace with real values from the skin images)
+#define D_TAB_HEADER_HEIGHT      (gui_tab_panel_t::header_vsize)        // Tab page params (replace with real values from the skin images)
 
 // Dialog borders
 #define D_MARGIN_LEFT          (gui_theme_t::gui_frame_left)
@@ -222,7 +222,8 @@ public:
 	/// @{
 	static scr_size gui_divider_size;
 	static scr_size gui_button_size;
-	static scr_coord gui_button_text_offset;	// extra offset for the text (in case of asymmetric or buttons with color on the left)
+	static scr_size gui_color_button_text_offset; // extra offset for the text (in case of asymmetric or buttons with color on the left)
+	static scr_size gui_button_text_offset;       // extra offset for the text (in case of asymmetric or buttons with checkmark on the left)
 	static scr_size gui_color_button_size;
 	static scr_size gui_checkbox_size;
 	static scr_size gui_pos_button_size;
@@ -245,8 +246,6 @@ public:
 	static KOORD_VAL gui_frame_bottom;
 	static KOORD_VAL gui_hspace;
 	static KOORD_VAL gui_vspace;
-
-	static scr_coord_val gui_color_button_text_offset;
 	/// @}
 
 	// those are the 3x3 images which are used for stretching
@@ -281,9 +280,6 @@ public:
 
 	// init the skin dimensions form file
 	static void init_gui_from_images();
-
-	// returns the current theme name
-	static const char *get_current_theme();
 
 	/**
 	 * Reads theme configuration data, still not final

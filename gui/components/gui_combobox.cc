@@ -215,8 +215,9 @@ void gui_combobox_t::set_selection(int s)
 	// try to finish renaming first
 	rename_selected_item();
 
-	if (droplist.is_visible()) {
-		// visible? change also offset of scrollbar
+	if (droplist.is_visible()  &&  !finish) {
+		// visible and not closing
+		// change also offset of scrollbar
 		droplist.show_selection( s );
 	}
 	else {
@@ -269,7 +270,6 @@ void gui_combobox_t::reset_selected_item_name()
 void gui_combobox_t::close_box()
 {
 	if(finish) {
-//DBG_MESSAGE("gui_combobox_t::infowin_event()","prepare selected %i for %d listerners",get_selection(),listeners.get_count());
 		value_t p;
 		p.i = droplist.get_selection();
 		call_listeners(p);

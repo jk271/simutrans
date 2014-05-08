@@ -83,7 +83,7 @@ public:
 	bool is_init_network_save() const OVERRIDE { return true; }
 	/**
 	 * work() is only called when not dragging
-	 * if work() is called with is_dragging==true then is_dragging is reseted
+	 * if work() is called with is_dragging==true then is_dragging is reset
 	 */
 	bool is_work_network_save() const OVERRIDE { return is_dragging;}
 
@@ -368,7 +368,7 @@ private:
 	static char toolstring[256];
 	const char *wkz_station_building_aux(spieler_t *, bool, koord3d, const haus_besch_t *, sint8 rotation );
 	const char *wkz_station_dock_aux(spieler_t *, koord3d, const haus_besch_t * );
-	const char *wkz_station_aux(spieler_t *, koord3d, const haus_besch_t *, waytype_t, sint64 cost, const char *halt_suffix );
+	const char *wkz_station_aux(spieler_t *, koord3d, const haus_besch_t *, waytype_t, const char *halt_suffix );
 	const haus_besch_t *get_besch( sint8 &rotation ) const;
 
 public:

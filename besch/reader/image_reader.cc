@@ -9,8 +9,6 @@
 #include "image_reader.h"
 #include "../obj_node_info.h"
 
-// no windows macros please ...
-#define NOMINMAX 1
 #include <zlib.h>
 #include "../../tpl/inthashtable_tpl.h"
 
@@ -128,7 +126,7 @@ adjust_image:
 		besch->pic.w = 1;
 	}
 	if(  besch->pic.len > 0  ) {
-		besch->pic.len = 1;
+		besch->pic.len = 4;
 	}
 	besch->pic.x = 0;
 	besch->pic.y = 0;

@@ -9,6 +9,7 @@
 #include "dataobj/translator.h"
 #include "dataobj/loadsave.h"
 #include "player/simplay.h"
+#include "player/finance.h" // convert_money
 #include "vehicle/simvehikel.h"
 #include "simconvoi.h"
 #include "convoihandle_t.h"
@@ -74,6 +75,22 @@ simline_t::~simline_t()
 	delete fpl;
 	self.detach();
 	DBG_MESSAGE("simline_t::~simline_t()", "line %d (%p) destroyed", self.get_id(), this);
+}
+
+
+simline_t::linetype simline_t::get_linetype(const waytype_t wt)
+{
+	switch (wt) {
+		case road_wt: return simline_t::truckline;
+		case track_wt: return simline_t::trainline;
+		case water_wt: return simline_t::shipline;
+		case monorail_wt: return simline_t::monorailline;
+		case maglev_wt: return simline_t::maglevline;
+		case tram_wt: return simline_t::tramline;
+		case narrowgauge_wt: return simline_t::narrowgaugeline;
+		case air_wt: return simline_t::airline;
+		default: return simline_t::MAX_LINE_TYPE;
+	}
 }
 
 
@@ -448,4 +465,20 @@ void simline_t::set_withdraw( bool yes_no )
 		line_managed_convoys[i]->set_no_load(yes_no);	// must be first, since set withdraw might destroy convoi if in depot!
 		line_managed_convoys[i]->set_withdraw(yes_no);
 	}
+}
+
+
+sint64 simline_t::get_stat_converted(int month, int cost_type) const
+{
+	sint64 value = financial_history[month][cost_type];
+	switch(cost_type) {
+		case LINE_REVENUE:
+		case LINE_OPERATIONS:
+		case LINE_PROFIT:
+		case LINE_WAYTOLL:
+			value = convert_money(value);
+			break;
+		default: ;
+	}
+	return value;
 }

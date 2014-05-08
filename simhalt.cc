@@ -327,10 +327,8 @@ void haltestelle_t::destroy_all()
 		halthandle_t halt = alle_haltestellen.back();
 		destroy(halt);
 	}
-	if (all_koords) {
-		delete all_koords;
-		all_koords = NULL;
-	}
+	delete all_koords;
+	all_koords = NULL;
 	status_step = 0;
 }
 
@@ -1564,6 +1562,7 @@ void haltestelle_t::search_route_resumable(  ware_t &ware   )
 	if (!resume_search) {
 		last_search_origin = self;
 		last_search_ware_catg_idx = ware_catg_idx;
+		open_list.clear();
 		// set current marker
 		++current_marker;
 		if(  current_marker==0  ) {
@@ -1653,8 +1652,6 @@ void haltestelle_t::search_route_resumable(  ware_t &ware   )
 
 	static uint16 allocation_pointer;
 	if (!resume_search) {
-		open_list.clear();
-
 		// initialise the origin node
 		allocation_pointer = 1u;
 		open_list.insert( route_node_t(self, 0) );
@@ -2588,9 +2585,9 @@ void haltestelle_t::rdwr(loadsave_t *file)
 		k.rdwr( file );
 	}
 
-	const char *s;
 	init_pos = tiles.empty() ? koord::invalid : tiles.front().grund->get_pos().get_2d();
 	if(file->is_saving()) {
+		const char *s;
 		for(unsigned i=0; i<warenbauer_t::get_max_catg_index(); i++) {
 			vector_tpl<ware_t> *warray = waren[i];
 			if(warray) {
@@ -2632,11 +2629,8 @@ void haltestelle_t::rdwr(loadsave_t *file)
 					ware_t ware(file);
 					if(  ware.menge>0  &&  welt->is_within_limits(ware.get_zielpos())  ) {
 						add_ware_to_halt(ware);
-#ifdef CACHE_TRANSIT
-						if(  file->get_version() <= 112000  )
-#endif
-							// restore intransit information
-							fabrik_t::update_transit( &ware, true );
+						// restore in-transit information
+						fabrik_t::update_transit( &ware, true );
 					}
 					else if(  ware.menge>0  ) {
 						dbg->error( "haltestelle_t::rdwr()", "%i of %s to %s ignored!", ware.menge, ware.get_name(), ware.get_zielpos().get_str() );
@@ -3073,9 +3067,7 @@ bool haltestelle_t::rem_grund(grund_t *gr)
 	// re-add name
 	if (station_name_to_transfer != NULL  &&  !tiles.empty()) {
 		label_t *lb = tiles.front().grund->find<label_t>();
-		if(lb) {
-			delete lb;
-		}
+		delete lb;
 		set_name( station_name_to_transfer );
 	}
 

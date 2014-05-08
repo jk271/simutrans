@@ -537,7 +537,7 @@ DBG_MESSAGE("wkz_remover()", "bound=%i",halt.is_bound());
 DBG_MESSAGE("wkz_remover()", "check tunnel/bridge");
 
 	// beginning/end of bridge?
-	if(gr->ist_bruecke()  &&  gr->ist_karten_boden()) {
+	if(  brueckenbauer_t::is_start_of_bridge(gr)  ) {
 DBG_MESSAGE("wkz_remover()",  "removing bridge from %d,%d,%d",gr->get_pos().x, gr->get_pos().y, gr->get_pos().z);
 		bruecke_t* br = gr->find<bruecke_t>();
 		msg = brueckenbauer_t::remove(sp, gr->get_pos(), br->get_besch()->get_waytype());
@@ -1133,7 +1133,7 @@ const char *wkz_setslope_t::wkz_set_slope_work( spieler_t *sp, koord3d pos, int 
 			}
 
 			// now prevent being lowered below neighbouring water
-			sint8 water_table = (water_hgt >= (gr1->get_hoehe() + gr1->get_grund_hang() ? 1 : 0)) ? water_hgt : welt->get_grundwasser() - 4;
+			sint8 water_table = (water_hgt >= (gr1->get_hoehe() + (gr1->get_grund_hang() ? 1 : 0))) ? water_hgt : welt->get_grundwasser() - 4;
 			sint8 min_neighbour_height = gr1->get_hoehe();
 
 			for(  sint16 i = 0 ;  i < 8 ;  i++  ) {
@@ -1173,11 +1173,11 @@ const char *wkz_setslope_t::wkz_set_slope_work( spieler_t *sp, koord3d pos, int 
 			if(  !gr2  ) {
 				gr2 = welt->lookup( new_pos + koord3d(0, 0, 2) );
 			}
-			if(  !gr2  &&  env_t::pak_height_conversion_factor  ==  2  &&  (gr1->hat_wege()  ||  gr1->get_leitung())  ) {
+			if(  !gr2  &&  welt->get_settings().get_way_height_clearance()==2  &&  (gr1->hat_wege()  ||  gr1->get_leitung())  ) {
 				gr2 = welt->lookup( new_pos + koord3d(0, 0, 3) );
 			}
 			// slope may alter amount of clearance required
-			if(  gr2  &&  gr2->get_pos().z - new_pos.z + hang_t::min_diff( gr2->get_weg_hang(), new_slope ) < env_t::pak_height_conversion_factor  ) {
+			if(  gr2  &&  gr2->get_pos().z - new_pos.z + hang_t::min_diff( gr2->get_weg_hang(), new_slope ) < welt->get_settings().get_way_height_clearance()  ) {
 				return "Tile not empty.";
 			}
 		}
@@ -1186,11 +1186,11 @@ const char *wkz_setslope_t::wkz_set_slope_work( spieler_t *sp, koord3d pos, int 
 			if(  !gr2  ) {
 				gr2 = welt->lookup( new_pos + koord3d(0, 0, -2) );
 			}
-			if(  !gr2  &&  env_t::pak_height_conversion_factor == 2  ) {
+			if(  !gr2  &&  welt->get_settings().get_way_height_clearance()==2  ) {
 				gr2 = welt->lookup( new_pos + koord3d(0, 0, -3) );
 			}
 			// slope may alter amount of clearance required
-			if(  gr2  &&  new_pos.z - gr2->get_pos().z + hang_t::min_diff( new_slope, gr2->get_weg_hang() ) < env_t::pak_height_conversion_factor  ) {
+			if(  gr2  &&  new_pos.z - gr2->get_pos().z + hang_t::min_diff( new_slope, gr2->get_weg_hang() ) < welt->get_settings().get_way_height_clearance()  ) {
 				return "Tile not empty.";
 			}
 		}
@@ -1452,14 +1452,14 @@ const char *wkz_transformer_t::work( spieler_t *sp, koord3d pos )
 	// full underground mode: coordinate is on ground, adjust it to one level below ground
 	// not possible in network mode!
 	if (!env_t::networkmode  &&  grund_t::underground_mode == grund_t::ugm_all) {
-		pos = gr->get_pos() - koord3d(0,0,1);
+		pos = gr->get_pos() - koord3d( 0, 0, welt->get_settings().get_way_height_clearance() );
 	}
 	// search for factory
 	// must be independent of network mode
 	if (gr->get_pos().z <= pos.z) {
 		fab = leitung_t::suche_fab_4(k);
 	}
-	else if (gr->get_pos().z == pos.z+1) {
+	else if(  gr->get_pos().z == pos.z+welt->get_settings().get_way_height_clearance()  ) {
 		fab = fabrik_t::get_fab( k);
 		underground = true;
 	}
@@ -1478,6 +1478,10 @@ const char *wkz_transformer_t::work( spieler_t *sp, koord3d pos )
 		}
 
 		if(welt->lookup(pos)) {
+			return "Tile not empty.";
+		}
+
+		if(  welt->get_settings().get_way_height_clearance()==2  &&  welt->lookup(pos + koord3d( 0, 0, 1 ))  ) {
 			return "Tile not empty.";
 		}
 
@@ -2182,7 +2186,7 @@ uint8 wkz_wegebau_t::is_valid_pos(  spieler_t *sp, const koord3d &pos, const cha
 		}
 		// elevated ways have to check tile above
 		if(  elevated  ) {
-			gr = welt->lookup( pos + koord3d( 0, 0, env_t::pak_height_conversion_factor ) );
+			gr = welt->lookup( pos + koord3d( 0, 0, welt->get_settings().get_way_height_clearance() ) );
 			if(  gr == NULL  ) {
 				return 2;
 			}
@@ -2265,7 +2269,7 @@ void wkz_wegebau_t::mark_tiles(  spieler_t *sp, const koord3d &start, const koor
 	wegbauer_t bauigel(sp);
 	calc_route( bauigel, start, end );
 
-	uint8 offset = (besch->get_styp() == 1  &&  besch->get_wtyp() != air_wt) ? env_t::pak_height_conversion_factor : 0;
+	uint8 offset = (besch->get_styp() == 1  &&  besch->get_wtyp() != air_wt) ? welt->get_settings().get_way_height_clearance() : 0;
 
 	if(  bauigel.get_count()>1  ) {
 		// Set tooltip first (no dummygrounds, if bauigel.calc_casts() is called).
@@ -2349,7 +2353,7 @@ const char *wkz_brueckenbau_t::do_work( spieler_t *sp, const koord3d &start, con
 {
 	const bruecke_besch_t *besch = brueckenbauer_t::get_besch(default_param);
 	if (end==koord3d::invalid) {
-		return brueckenbauer_t::baue( sp, start.get_2d(), besch );
+		return brueckenbauer_t::baue( sp, start, besch );
 	}
 	else {
 		const koord zv(ribi_typ(end-start));
@@ -2487,7 +2491,7 @@ uint8 wkz_brueckenbau_t::is_valid_pos(  spieler_t *sp, const koord3d &pos, const
 		return 0;
 	}
 
-	if(  welt->lookup( pos + koord3d(0, 0, 1))  ||  (env_t::pak_height_conversion_factor == 2  &&  welt->lookup( pos + koord3d(0, 0, 2) ))  ) {
+	if(  welt->lookup( pos + koord3d(0, 0, 1))  ||  (welt->get_settings().get_way_height_clearance()==2  &&  welt->lookup( pos + koord3d(0, 0, 2) ))  ) {
 		return 0;
 	}
 
@@ -2546,9 +2550,9 @@ uint8 wkz_brueckenbau_t::is_valid_pos(  spieler_t *sp, const koord3d &pos, const
 		// single height -> height is 1
 		// double height -> height is 2
 		const hang_t::typ slope = gr->get_grund_hang();
-		const uint8 max_height = slope ? ((slope & 7) ? 1 : 2) : env_t::pak_height_conversion_factor;
+		const uint8 max_height = slope ? ((slope & 7) ? 1 : 2) : welt->get_settings().get_way_height_clearance();
 		const hang_t::typ start_slope = welt->lookup(start)->get_grund_hang();
-		const uint8 start_max_height = start_slope ? ((start_slope & 7) ? 1 : 2) : env_t::pak_height_conversion_factor;
+		const uint8 start_max_height = start_slope ? ((start_slope & 7) ? 1 : 2) : welt->get_settings().get_way_height_clearance();
 		const uint8 height_difference = abs( start.z + start_max_height - pos.z - max_height );
 		if(  height_difference>1  &&  besch->get_hintergrund(bruecke_besch_t::N_Start2, 0) == IMG_LEER  ) {
 			return 0;
@@ -2956,13 +2960,17 @@ const char *wkz_wayremover_t::do_work( spieler_t *sp, const koord3d &start, cons
 
 			if(gr->ist_bruecke()) {
 				if(gr->find<bruecke_t>()->get_besch()->get_waytype()==wt) {
-					if(gr->ist_karten_boden()) {
+					if(  brueckenbauer_t::is_start_of_bridge(gr)  ) {
 						const char *err = NULL;
 						err = brueckenbauer_t::remove(sp,verbindung.position_bei(i),wt);
 						if(err) {
 							return err;
 						}
 						gr = welt->lookup(verbindung.position_bei(i));
+						if(  !gr  ) {
+							// happens with bridges without ramps
+							continue;
+						}
 					}
 					else {
 						// do not remove asphalt from a bridge ...
@@ -3651,7 +3659,7 @@ DBG_MESSAGE("wkz_dockbau()","building dock from square (%d,%d) to (%d,%d)", k.x,
 }
 
 // build all types of stops but sea harbours
-const char *wkz_station_t::wkz_station_aux(spieler_t *sp, koord3d pos, const haus_besch_t *besch, waytype_t wegtype, sint64 cost, const char *type_name )
+const char *wkz_station_t::wkz_station_aux(spieler_t *sp, koord3d pos, const haus_besch_t *besch, waytype_t wegtype, const char *type_name )
 {
 	koord k = pos.get_2d();
 DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besch->get_name(), k.x, k.y, wegtype);
@@ -3800,21 +3808,21 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 	}
 
 	halthandle_t old_halt = bd->get_halt();
-	uint16 old_level = 0;
+	sint64 old_cost = 0;
 
 	halthandle_t halt;
 
 	if(  old_halt.is_bound()  ) {
 		gebaeude_t* gb = bd->find<gebaeude_t>();
 		const haus_besch_t *old_besch = gb->get_tile()->get_besch();
-		old_level = old_besch->get_level();
 		if(  old_besch == besch  ) {
 			// already has the same station
 			return NULL;
 		}
-		if(  old_besch->get_level() >= besch->get_level()  &&  !is_ctrl_pressed()  ) {
+		if(  old_besch->get_capacity() >= besch->get_capacity()  &&  !is_ctrl_pressed()  ) {
 			return "Upgrade must have\na higher level";
 		}
+		old_cost = old_besch->get_price(welt)*old_besch->get_b()*old_besch->get_h();
 		gb->entferne( NULL );
 		delete gb;
 		halt = old_halt;
@@ -3841,8 +3849,9 @@ DBG_MESSAGE("wkz_halt_aux()", "building %s on square %d,%d for waytype %x", besc
 		free(name);
 	}
 
-	sint64 old_cost = old_level * cost;
-	cost *= besch->get_b()*besch->get_h();
+	// cost to build new station
+	sint64 cost = -besch->get_price(welt)*besch->get_b()*besch->get_h();
+	// discount for existing station
 	cost += old_cost/2;
 	if(  sp!=halt->get_besitzer() && sp != welt->get_spieler(1)  ) {
 		// public stops are expensive!
@@ -4077,23 +4086,22 @@ const char *wkz_station_t::work( spieler_t *sp, koord3d pos )
 			}
 			break;
 		case haus_besch_t::generic_stop: {
-			sint64 cost = -besch->get_price(welt);
 			switch(besch->get_extra()) {
 				case road_wt:
-					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, road_wt, cost, "H");
+					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, road_wt, "H");
 					break;
 				case track_wt:
 				case monorail_wt:
 				case maglev_wt:
 				case narrowgauge_wt:
 				case tram_wt:
-					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, (waytype_t)besch->get_extra(), cost, "BF");
+					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, (waytype_t)besch->get_extra(), "BF");
 					break;
 				case water_wt:
-					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, water_wt, cost, "Dock");
+					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, water_wt, "Dock");
 					break;
 				case air_wt:
-					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, air_wt, cost, "Airport");
+					msg = wkz_station_t::wkz_station_aux(sp, pos, besch, air_wt, "Airport");
 					break;
 			}
 			break;

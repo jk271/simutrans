@@ -7,8 +7,6 @@
 #include <SDL.h>
 
 #ifdef _WIN32
-// windows.h defines min and max macros which we don't want
-#define NOMINMAX 1
 #include <windows.h>
 #endif
 
@@ -623,7 +621,7 @@ void ex_ord_update_mx_my()
 }
 
 
-unsigned long dr_time()
+uint32 dr_time()
 {
 	return SDL_GetTicks();
 }

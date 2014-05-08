@@ -44,8 +44,9 @@ COLOR_VAL gui_theme_t::button_color_focus;
  * are overridden by the PAK file if a new image is defined.
  */
 scr_size gui_theme_t::gui_button_size;
-scr_coord gui_theme_t::gui_button_text_offset;
+scr_size gui_theme_t::gui_button_text_offset;
 scr_size gui_theme_t::gui_color_button_size;
+scr_size gui_theme_t::gui_color_button_text_offset;
 scr_size gui_theme_t::gui_divider_size;
 scr_size gui_theme_t::gui_checkbox_size;
 scr_size gui_theme_t::gui_pos_button_size;
@@ -68,8 +69,6 @@ KOORD_VAL gui_theme_t::gui_frame_right;
 KOORD_VAL gui_theme_t::gui_frame_bottom;
 KOORD_VAL gui_theme_t::gui_hspace;
 KOORD_VAL gui_theme_t::gui_vspace;
-
-scr_coord_val gui_theme_t::gui_color_button_text_offset;
 
 /* those are the 3x3 images which are used for stretching
  * also 1x3 and 3x1 subsets are possible
@@ -124,7 +123,8 @@ void gui_theme_t::init_gui_defaults()
 
 	gui_button_size        = scr_size(92,14);
 	gui_color_button_size  = scr_size(92,16);
-	gui_button_text_offset = scr_coord(0,0);
+	gui_button_text_offset = scr_size(0,0);
+	gui_color_button_text_offset = scr_size(0,0);
 	gui_divider_size       = scr_size(92,2+D_V_SPACE*2);
 	gui_checkbox_size      = scr_size(10,10);
 	gui_pos_button_size    = scr_size(14,LINESPACE);
@@ -140,7 +140,6 @@ void gui_theme_t::init_gui_defaults()
 	gui_indicator_size     = scr_size(20,4);
 	gui_focus_offset       = scr_coord(1,1);
 
-	gui_color_button_text_offset = 0;
 	gui_titlebar_height  = 16;
 	gui_frame_left       = 10;
 	gui_frame_top        = 10;
@@ -225,7 +224,7 @@ void gui_theme_t::init_gui_from_images()
 		windowback[j%3][j/3] = skinverwaltung_t::back->get_bild_nr( j );
 	}
 
-	// Divider (vspace will be added later on
+	// Divider (vspace will be added later on)
 	init_size_from_bild( skinverwaltung_t::divider->get_bild(1), gui_divider_size );
 	for(  int i=0;  i<3;  i++  ) {
 		divider[i][0] = skinverwaltung_t::divider->get_bild_nr( i );
@@ -244,6 +243,13 @@ void gui_theme_t::init_gui_from_images()
 		arrow_button_up_img[i] = skinverwaltung_t::scrollbar->get_bild_nr( SKIN_BUTTON_ARROW_UP+i );
 		arrow_button_down_img[i] = skinverwaltung_t::scrollbar->get_bild_nr( SKIN_BUTTON_ARROW_DOWN+i );
 	}
+	if(  gui_theme_t::gui_arrow_right_size != gui_theme_t::gui_arrow_left_size  ) {
+		dbg->warning( "gui_theme_t::themes_init()", "Size of left and right arrows differ" );
+	}
+	if(  gui_theme_t::gui_arrow_up_size != gui_theme_t::gui_arrow_down_size  ) {
+		dbg->warning( "gui_theme_t::themes_init()", "Size of up and down arrows differ" );
+	}
+
 	// now init this button dependent size here too
 	gui_edit_size = scr_size(92,max(LINESPACE+2, max(D_ARROW_LEFT_HEIGHT, D_ARROW_RIGHT_HEIGHT) ));
 
@@ -277,7 +283,7 @@ void gui_theme_t::init_gui_from_images()
 		// Calculate H scrollbar size
 		init_size_from_bild( skinverwaltung_t::scrollbar->get_bild( SKIN_SCROLLBAR_H_BACKGROUND ), back );
 		init_size_from_bild( skinverwaltung_t::scrollbar->get_bild( SKIN_SCROLLBAR_H_KNOB_BODY ), front );
-		gui_scrollbar_size.w = max(front.h, back.h);
+		gui_scrollbar_size.h = max(front.h, back.h);
 
 		// calculate minimum width
 		init_size_from_bild( skinverwaltung_t::scrollbar->get_bild( SKIN_SCROLLBAR_H_KNOB_LEFT ), back );
@@ -292,14 +298,6 @@ void gui_theme_t::init_gui_from_images()
 
 	// gadgets
 	init_size_from_bild( skinverwaltung_t::gadget->get_bild( SKIN_GADGET_CLOSE ), gui_gadget_size );
-}
-
-
-static std::string theme_name;
-
-const char *gui_theme_t::get_current_theme()
-{
-	return theme_name.c_str();
 }
 
 
@@ -331,7 +329,7 @@ bool gui_theme_t::themes_init(const char *file_name)
 	themesconf.read(contents);
 
 	// theme name to find out current theme
-	theme_name = contents.get( "name" );
+	std::string theme_name = contents.get( "name" );
 
 	// first get the images ( to be able to overload default sizes)
 	const std::string buttonpak = contents.get("themeimages");
@@ -367,10 +365,27 @@ bool gui_theme_t::themes_init(const char *file_name)
 	gui_theme_t::gui_button_size.h = (uint32)contents.get_int("gui_button_height", gui_theme_t::gui_button_size.h );
 	gui_theme_t::gui_edit_size.h = (uint32)contents.get_int("gui_edit_height", gui_theme_t::gui_edit_size.h );
 
+	// since the arrows are used in scrollbars, the need similar sizes
+	gui_theme_t::gui_arrow_left_size.w = (uint32)contents.get_int("gui_horizontal_arrow_width",  gui_theme_t::gui_arrow_left_size.w );
+	gui_theme_t::gui_arrow_left_size.h = (uint32)contents.get_int("gui_horizontal_arrow_height", gui_theme_t::gui_arrow_left_size.h );
+	gui_theme_t::gui_arrow_right_size = gui_theme_t::gui_arrow_left_size;
+
+	gui_theme_t::gui_arrow_up_size.w = (uint32)contents.get_int("gui_vertical_arrow_width",  gui_theme_t::gui_arrow_up_size.w );
+	gui_theme_t::gui_arrow_up_size.h = (uint32)contents.get_int("gui_vertical_arrow_height", gui_theme_t::gui_arrow_up_size.h );
+	gui_theme_t::gui_arrow_down_size = gui_theme_t::gui_arrow_up_size;
+
+	// since scrollbar must have a certain size
+	gui_theme_t::gui_scrollbar_size.w = max( gui_min_scrollbar_size.w, (uint32)contents.get_int("gui_scrollbar_width",  gui_theme_t::gui_scrollbar_size.w ) );
+	gui_theme_t::gui_scrollbar_size.h = max( gui_min_scrollbar_size.h, (uint32)contents.get_int("gui_scrollbar_height", gui_theme_t::gui_scrollbar_size.h ) );
+
+	// in practice, posbutton min height beeter is LINESPACE
+	gui_theme_t::gui_pos_button_size.w = (uint32)contents.get_int("gui_posbutton_width",  gui_theme_t::gui_pos_button_size.w );
+	gui_theme_t::gui_pos_button_size.h = (uint32)contents.get_int("gui_posbutton_height", gui_theme_t::gui_pos_button_size.h );
+
 	gui_theme_t::button_color_text = (uint32)contents.get_color("gui_button_color_text", gui_theme_t::button_color_text );
 	gui_theme_t::button_color_disabled_text = (uint32)contents.get_color("gui_button_color_disabled_text", gui_theme_t::button_color_disabled_text );
-	koord dummy = contents.get_koord("gui_button_text_offset",  koord(gui_theme_t::gui_button_text_offset.x, gui_theme_t::gui_button_text_offset.y) );
-	gui_theme_t::gui_button_text_offset = scr_coord(dummy.x, dummy.y);
+	gui_theme_t::gui_color_button_text_offset = contents.get_scr_size("gui_color_button_text_offset", gui_theme_t::gui_color_button_text_offset );
+	gui_theme_t::gui_button_text_offset = contents.get_scr_size("gui_button_text_offset", gui_theme_t::gui_button_text_offset );
 
 	// default iconsize (square for now)
 	env_t::iconsize.h = env_t::iconsize.w = contents.get_int("icon_width",env_t::iconsize.w );
@@ -386,8 +401,7 @@ bool gui_theme_t::themes_init(const char *file_name)
 	gui_theme_t::gui_color_button_text =   (COLOR_VAL)contents.get_color("gui_button_text_color",   SYSCOL_BUTTON_TEXT);
 
 	// those two may be rather an own control later on?
-	dummy = contents.get_koord("gui_indicator_size",  koord(gui_theme_t::gui_indicator_size.w, gui_theme_t::gui_indicator_size.h) );
-	gui_theme_t::gui_indicator_size = scr_size(dummy.x, dummy.y);
+	gui_theme_t::gui_indicator_size = contents.get_scr_size("gui_indicator_size",  gui_theme_t::gui_indicator_size );
 
 	gui_tab_panel_t::header_vsize = (uint32)contents.get_int("gui_tab_header_vsize", gui_tab_panel_t::header_vsize );
 
@@ -415,6 +429,7 @@ bool gui_theme_t::themes_init(const char *file_name)
 	env_t::cursor_overlay_color = contents.get_color("cursor_overlay_color",     env_t::cursor_overlay_color );
 
 	werkzeug_t::update_toolbars();
+	env_t::default_theme = theme_name.c_str();
 
 	return true;
 }

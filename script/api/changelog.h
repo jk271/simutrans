@@ -4,6 +4,13 @@
  *
  * @section api-trunk Current trunk
  *
+ * @section api-120-0 Release 120.0
+ *
+ * - Added line_x, line_list_x
+ * - Deprecated get_convoy_list()
+ * - Added world::get_convoy_list, halt_x::get_convoy_list
+ * - Added @ref scenario.api to manage backward compatibility of scripts with the changing api
+ * - Added ::include
  * - Changed return type of world::get_time to time_ticks_x
  * - Added building_x::is_same_building.
  * - Added attraction_list_x, world::get_attraction_list

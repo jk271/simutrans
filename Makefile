@@ -19,52 +19,26 @@ ifeq ($(findstring $(OSTYPE), $(OSTYPES)),)
 endif
 
 ifeq ($(OSTYPE),amiga)
-  STD_LIBS ?= -lz -lbz2 -lunix -lSDL_mixer -lsmpeg -lvorbisfile -lvorbis -logg
+  STD_LIBS ?= -lunix -lSDL_mixer -lsmpeg -lvorbisfile -lvorbis -logg
   CFLAGS += -mcrt=newlib -DUSE_C -DBIG_ENDIAN -gstabs+
   LDFLAGS += -Bstatic -non_shared
-endif
-
-ifeq ($(OSTYPE),beos)
-  LIBS += -lz -lnet -lbz2
-endif
-
-ifeq ($(OSTYPE),haiku)
-  LIBS += -lz -lnetwork -lbz2 -lbe -llocale
-endif
-
-ifeq ($(OSTYPE),freebsd)
-  LIBS += -lz -lbz2
-endif
-
-ifeq ($(OSTYPE),mac)
-  CCFLAGS += -Os -fast
-  LIBS    += -lz -lbz2
-endif
-
-ifeq ($(OSTYPE),linux)
-  LIBS += -lz -lbz2
-endif
-
-ifeq ($(OSTYPE),cygwin)
-  SOURCES += simsys_w32_png.cc
-  CFLAGS += -I/usr/include/mingw -mwin32 -DNOMINMAX=1
-  CCFLAGS += -I/usr/include/mingw -mwin32 -DNOMINMAX=1
-  LDFLAGS += -mno-cygwin
-  LIBS   += -lgdi32 -lwinmm -lwsock32 -lz -lbz2
-endif
-
-ifeq ($(OSTYPE),mingw)
-  CC ?= gcc
-  SOURCES += simsys_w32_png.cc
-  CFLAGS  += -DPNG_STATIC -DZLIB_STATIC -DNOMINMAX=1
-  ifeq ($(BACKEND),gdi)
-    LIBS += -lunicows
+else ifeq ($(OSTYPE),beos)
+  LIBS += -lnet
+else ifneq ($(findstring $(OSTYPE), cygwin mingw),)
+  ifeq ($(OSTYPE),cygwin)
+    CFLAGS  += -I/usr/include/mingw -mwin32
+    LDFLAGS += -mno-cygwin
+  else ifeq ($(OSTYPE),mingw)
+    CFLAGS  += -DPNG_STATIC -DZLIB_STATIC
+    ifeq ($(BACKEND),gdi)
+      LIBS += -lunicows
+    endif
+    LDFLAGS += -static-libgcc -static-libstdc++
+    LIBS    += -lmingw32
   endif
-  LDFLAGS += -static-libgcc -static-libstdc++
-  LIBS += -lmingw32 -lgdi32 -lwinmm -lwsock32 -lz -lbz2
-endif
-
-ifneq ($(findstring $(OSTYPE), cygwin mingw),)
+  SOURCES += simsys_w32_png.cc
+  CFLAGS  += -DNOMINMAX -DWIN32_LEAN_AND_MEAN -DWINVER=_WIN32_WINNT_WINXP
+  LIBS    += -lgdi32 -lwinmm -lws2_32
   # Disable the console on Windows unless WIN32_CONSOLE is set or graphics are disabled
   ifneq ($(WIN32_CONSOLE),)
     LDFLAGS += -mconsole
@@ -73,6 +47,8 @@ ifneq ($(findstring $(OSTYPE), cygwin mingw),)
   else
     LDFLAGS += -mwindows
   endif
+else ifeq ($(OSTYPE),haiku)
+  LIBS += -lnetwork -lbe -llocale
 endif
 
 ifeq ($(OSTYPE),mingw)
@@ -81,18 +57,16 @@ else
   SOURCES += clipboard_internal.cc
 endif
 
+LIBS += -lbz2 -lz
+
 ALLEGRO_CONFIG ?= allegro-config
 SDL_CONFIG     ?= sdl-config
 SDL2_CONFIG    ?= sdl2-config
 
 ifneq ($(OPTIMISE),)
     CFLAGS += -O3
-  ifneq ($(OSTYPE),mac)
-    ifneq ($(OSTYPE),haiku)
-      ifneq ($(OSTYPE),amiga)
-        CFLAGS += -minline-all-stringops
-      endif
-    endif
+  ifeq ($(findstring $(OSTYPE), amiga haiku mac),)
+    CFLAGS += -minline-all-stringops
   endif
 else
   CFLAGS += -O
@@ -245,6 +219,7 @@ SOURCES += freight_list_sorter.cc
 SOURCES += gui/ai_option_t.cc
 SOURCES += gui/banner.cc
 SOURCES += gui/baum_edit.cc
+SOURCES += gui/base_info.cc
 SOURCES += gui/citybuilding_edit.cc
 SOURCES += gui/citylist_frame_t.cc
 SOURCES += gui/citylist_stats_t.cc
@@ -367,6 +342,8 @@ SOURCES += script/api/api_convoy.cc
 SOURCES += script/api/api_gui.cc
 SOURCES += script/api/api_factory.cc
 SOURCES += script/api/api_halt.cc
+SOURCES += script/api/api_include.cc
+SOURCES += script/api/api_line.cc
 SOURCES += script/api/api_map_objects.cc
 SOURCES += script/api/api_obj_desc.cc
 SOURCES += script/api/api_obj_desc_base.cc

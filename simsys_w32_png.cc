@@ -3,15 +3,15 @@
 #include "simsys_w32_png.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #ifndef _WIN32
 #error "Only Windows has GDI+!"
 #endif
 
 // windows Bibliotheken DirectDraw 5.x
-// windows.h defines min and max macros which we don't want
-#define NOMINMAX 1
 #include <windows.h>
+#include <basetyps.h>
 
 // structures, since we use the C-interface
 struct ImageCodecInfo

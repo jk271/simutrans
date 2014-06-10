@@ -29,10 +29,6 @@
 #include "../dataobj/scenario.h"
 #include "../dataobj/translator.h"
 
-#ifdef _MSC_VER
-#include <direct.h>
-#endif
-
 enum BUTTONS {
 	BUTTON_LANGUAGE = 0,
 	BUTTON_PLAYERS,
@@ -47,18 +43,12 @@ enum BUTTONS {
 	BUTTON_QUIT
 };
 
-const char *option_buttons_text[] =
+static char const *const option_buttons_text[] =
 {
 	"Sprache", "Spieler(mz)", "Farbe", "Helligk.", "Sound",
 	"Neue Karte", "Load game", "Speichern", "Load scenario", "Scenario", "Beenden"
 };
 
-
-/* currently not used yet
-const char *option_buttons_tooltip[6] =
-{
-	"Sprache", "Farbe", "Helligk. u. Farben", "Sound settings", "Spielerliste", "Scenario information"
-};*/
 
 optionen_gui_t::optionen_gui_t() :
 	gui_frame_t( translator::translate("Einstellungen aendern"))

@@ -73,8 +73,6 @@ obj_besch_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		}
 	}
 	else if(version<=2) {
-		besch->node_info = new obj_besch_t*[node.children];
-
 		besch->pic.x = decode_sint16(p);
 		besch->pic.y = decode_sint16(p);
 		besch->pic.w = decode_uint8(p);
@@ -93,8 +91,6 @@ obj_besch_t *image_reader_t::read_node(FILE *fp, obj_node_info_t &node)
 		}
 	}
 	else if(version==3) {
-		besch->node_info = new obj_besch_t*[node.children];
-
 		besch->pic.x = decode_sint16(p);
 		besch->pic.y = decode_sint16(p);
 		besch->pic.w = decode_sint16(p);
@@ -196,7 +192,7 @@ adjust_image:
 		}
 		else {
 			// no need to load doubles ...
-			delete_node(besch);
+			delete besch;
 			besch = same;
 		}
 	}

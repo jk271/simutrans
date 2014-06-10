@@ -20,10 +20,6 @@
 
 #include <assert.h>
 
-
-
-#ifdef __cplusplus
-
 #include "utils/log.h"
 
 /**
@@ -53,14 +49,6 @@ void init_logging(const char *logname, bool force_flush, bool log_debug, const c
 #define DBG_MESSAGE dbg->message
 #define DBG_DEBUG dbg->message
 #define DBG_DEBUG4 dbg->debug
-
-#ifdef _MSC_VER
-	#define LOCATION __FILE__ "(" STR(__LINE__) ") " __FUNCTION__ "() "
-#else
-	#define LOCATION
-#endif
-
-#endif
 
 #endif
 

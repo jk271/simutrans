@@ -60,7 +60,7 @@ vector_tpl<const haus_besch_t *> hausbauer_t::station_building;
 vector_tpl<const haus_besch_t *> hausbauer_t::headquarter;
 
 /// special objects directly needed by the program
-static spezial_obj_tpl<haus_besch_t> spezial_objekte[] = {
+static spezial_obj_tpl<haus_besch_t> const spezial_objekte[] = {
 	{ &hausbauer_t::elevated_foundation_besch,   "MonorailGround" },
 	{ NULL, NULL }
 };
@@ -194,7 +194,7 @@ bool hausbauer_t::alles_geladen()
 	}
 
 	// now sort them according level
-	warne_ungeladene(spezial_objekte, 1);
+	warne_ungeladene(spezial_objekte);
 	return true;
 }
 

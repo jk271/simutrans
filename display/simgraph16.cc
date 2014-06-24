@@ -21,6 +21,7 @@
 #include "../dataobj/translator.h"
 #include "../unicode.h"
 #include "../simticker.h"
+#include "../utils/simstring.h"
 #include "simgraph.h"
 
 
@@ -278,7 +279,7 @@ static xrange      xranges[MAX_POLY_CLIPS];
  */
 static bool has_unicode = false;
 
-static font_type large_font = { 0, 0, 0, NULL, NULL };
+static font_type large_font;
 
 // needed for resizing gui
 int large_font_ascent = 9;
@@ -4183,7 +4184,14 @@ int display_set_unicode(int use_unicode)
 bool display_load_font(const char* fname)
 {
 	font_type fnt;
-	if (load_font(&fnt, fname)) {
+
+	// skip reloading if already in memory
+	if(  strcmp( large_font.fname, fname ) == 0  ) {
+		return true;
+	}
+	tstrncpy( large_font.fname, fname, lengthof(large_font.fname) );
+
+	if(  load_font(&fnt, fname)  ) {
 		free(large_font.screen_width);
 		free(large_font.char_data);
 		large_font = fnt;
@@ -4487,7 +4495,9 @@ int display_text_proportional_len_clip_rgb(KOORD_VAL x, KOORD_VAL y, const char*
 		cB = disp_height;
 	}
 	// don't know len yet ...
-	if (len < 0) len = 0x7FFF;
+	if (len < 0) {
+		len = 0x7FFF;
+	}
 
 	// adapt x-coordinate for alignment
 	switch (flags & ( ALIGN_LEFT | ALIGN_CENTER_H | ALIGN_RIGHT) ) {
@@ -4552,8 +4562,8 @@ int display_text_proportional_len_clip_rgb(KOORD_VAL x, KOORD_VAL y, const char*
 			mask1 = get_h_mask(x, x + 8, cL, cR);
 			// we need to double mask 2, since only 2 Bits are used
 			mask2 = get_h_mask(x + 8, x + char_width_1, cL, cR);
-			mask2 &= 0xF0;
-		} else {
+		}
+		else {
 			// char_width_1<= 8: call directly
 			mask1 = get_h_mask(x, x + char_width_1, cL, cR);
 			mask2 = 0;
@@ -4563,59 +4573,33 @@ int display_text_proportional_len_clip_rgb(KOORD_VAL x, KOORD_VAL y, const char*
 		if(  y_offset>char_yoffset  ) {
 			char_yoffset = (uint8)y_offset;
 		}
-		screen_pos = (y+char_yoffset) * disp_width + x;
 
-		p = char_data + char_yoffset;
-		for (h = char_yoffset; h < char_height; h++) {
-			unsigned int dat = *p++ & mask1;
-			PIXVAL* dst = textur + screen_pos;
-
+		for(  int i=0;  i<2;  i++  ) {
+			p = char_data + char_yoffset + i*CHARACTER_HEIGHT;
+			const uint8 m =  i ? mask2 : mask1;
+			if(  m  ) {
+				screen_pos = (y+char_yoffset) * disp_width + x + i*8;
+				for (h = char_yoffset; h < char_height; h++) {
+					unsigned int dat = *p++ & m;
+					PIXVAL* dst = textur + screen_pos;
 #ifdef USE_C
-			if (dat != 0) {
-				if (dat & 0x80) dst[0] = color;
-				if (dat & 0x40) dst[1] = color;
-				if (dat & 0x20) dst[2] = color;
-				if (dat & 0x10) dst[3] = color;
-				if (dat & 0x08) dst[4] = color;
-				if (dat & 0x04) dst[5] = color;
-				if (dat & 0x02) dst[6] = color;
-				if (dat & 0x01) dst[7] = color;
-			}
+					if (dat != 0) {
+						if (dat & 0x80) dst[0] = color;
+						if (dat & 0x40) dst[1] = color;
+						if (dat & 0x20) dst[2] = color;
+						if (dat & 0x10) dst[3] = color;
+						if (dat & 0x08) dst[4] = color;
+						if (dat & 0x04) dst[5] = color;
+						if (dat & 0x02) dst[6] = color;
+						if (dat & 0x01) dst[7] = color;
+					}
 #else
-			// assemble variant of the above, using table and string instructions:
-			// optimized for long pipelines ...
-#			include "text_pixel.c"
+					// assemble variant of the above, using table and string instructions:
+					// optimized for long pipelines ...
+#					include "text_pixel.c"
 #endif
-			screen_pos += disp_width;
-		}
-
-		// extra four bits for over-width characters (up to 12 pixel supported for unicode)
-		if (char_width_1 > 8 && mask2 != 0) {
-			p = char_data + char_yoffset/2+12;
-			screen_pos = (y+char_yoffset) * disp_width + x + 8;
-			for (h = char_yoffset; h < char_height; h++) {
-				unsigned int char_dat = *p;
-				PIXVAL* dst = textur + screen_pos;
-				if(h&1) {
-					uint8 dat = (char_dat<<4) & mask2;
-					if (dat != 0) {
-						if (dat & 0x80) dst[0] = color;
-						if (dat & 0x40) dst[1] = color;
-						if (dat & 0x20) dst[2] = color;
-						if (dat & 0x10) dst[3] = color;
-					}
-					p++;
+					screen_pos += disp_width;
 				}
-				else {
-					uint8 dat = char_dat & mask2;
-					if (dat != 0) {
-						if (dat & 0x80) dst[0] = color;
-						if (dat & 0x40) dst[1] = color;
-						if (dat & 0x20) dst[2] = color;
-						if (dat & 0x10) dst[3] = color;
-					}
-				}
-				screen_pos += disp_width;
 			}
 		}
 		// next char: screen width

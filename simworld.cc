@@ -192,10 +192,8 @@ void *karte_t::world_xy_loop_thread(void *ptr)
 // jk valleys
 class coord3d_t {
 public:
-	uint16 x;
-	uint16 y;
 private:
-	uint32 z_detailed;
+	sint32 z_detailed;
 public:
 	uint8 flags;
 	enum flags_e {
@@ -205,29 +203,20 @@ public:
 		SOUTH=8,
 		FLOODED=16
 	};
-/*
-	coord3d_t(const uint16 x, const uint16 y, const sint8 z):
-		x(x), 
-		y(y), 
-		z_detailed(SHRT_MAX) 
-	{}
-*/
 
 	coord3d_t(): 
-		x(0),
-		y(0),
 		z_detailed(SHRT_MAX)
 	{}
 	inline sint32 getZ() { return z_detailed; }
 	inline uint16 getZDetailed() { return z_detailed&0xFFFF; }
-	inline bool has_flag(flags_e flag) {
-		return (flags & flag) == flag;
-	}
+//	inline bool has_flag(flags_e flag) {
+//		return (flags & flag) == flag;
+//	}
 	/**returns true if argument is <= than vertex */
 	inline bool isLowerOrEqual(sint8 level, uint16 detailed) { return ((level<<16)+detailed) <= z_detailed; }
 	inline void setZ(sint32 z_det) { z_detailed = z_det; }
-	inline void setZDetailed(uint16 detailed) { z_detailed = (z_detailed &0xFFFF0000)+detailed; }
-	inline void setZDetailed(sint8 level, uint16 detailed) { z_detailed = (level<<16)+detailed; }
+	inline void setZDetailed(uint16 detailed) { z_detailed = (sint32)(z_detailed &0xFFFF0000)+detailed; }
+	inline void setZDetailed(sint8 level, uint16 detailed) { z_detailed = (sint32) (level<<16)+detailed; }
 };
 // jk valleys end
 
@@ -1242,7 +1231,7 @@ void karte_t::create_valleys()
 	loadingscreen_t ls( translator::translate("creating valleys - copying world"), 4);
 	coord3d_t * tmp_world = new coord3d_t[size_x*size_y];
 	printf("size_x %i size_y %i, grundwasser %i\n", size_x, size_y, get_grundwasser());
-	const int levels = 64; // ?? why 64
+	const int levels = 256; // ?? why 64
 	
 	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
 	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
@@ -1250,9 +1239,8 @@ void karte_t::create_valleys()
 	for(int i=0;  i < size_y; ++i) {
 		for(int j=0; j < size_x; ++j) {
 			koord k;
-			tmp_world[(i*size_x)+j].x = k.x = j;
-			tmp_world[(i*size_x)+j].y = k.y = i;
-//			tmp_world[(i*size_x)+j].z = lookup_hgt(koord(j,i));
+			k.x = j;
+			k.y = i;
 
 			// detecting land above sea having sea as a neighbour
 			// todo: double ground
@@ -1458,7 +1446,7 @@ void karte_t::create_valleys()
 
 	loadingscreen_t( translator::translate("creating valleys - creating rivers"), 8);
 
-	// crate rivers
+	// create rivers
 	create_rivers(tmp_world);
 
 	delete [] current_step;

@@ -1271,11 +1271,10 @@ void karte_t::init_temp_map(coord3d_t * tmp_world, const sint16 size_x, const si
 }
 
 
-bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, vector_tpl<koord> & valley_coord, koord k, const sint8 height)
+bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, vector_tpl<koord> & valley_coord, koord dig_k, const sint8 height)
 {
-	koord dig_k = k;
-	koord next_dig_k = k;
-	valley_coord.append(k);
+	koord next_dig_k = dig_k;
+	valley_coord.append(dig_k);
 
 	do {
 		printf("dig_k    [%i %i] %i.%i [%s:%i]", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed(), __FILE__, __LINE__);
@@ -1312,7 +1311,7 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 		if(dig_k == next_dig_k) { // something may be wrong
 			if( valley_coord.get_count() != 1) // check it
 			{
-				printf("[%i %i] %i, %x %x\n", dig_k.x, dig_k.y, lookup_hgt(k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
+				printf("[%i %i] %i, %x %x\n", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
 				printf("assertion failed %s:%i\n", __FILE__, __LINE__); // double ground fails here 20140122
 				return false; // avoid enless loops
 			}

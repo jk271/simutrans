@@ -734,6 +734,7 @@ private:
 	 * lowers terrain on defined coordinates to level 'height'
 	 */
 	void dig_valley(vector_tpl<koord> & valley_coord, sint8 height );
+	void init_temp_map(coord3d_t * tmp_world, const sint16 size_x, const sint16 size_y, vector_tpl<koord> * current_step);
 
 	/**
 	 * Will create lakes.

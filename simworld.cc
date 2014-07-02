@@ -1216,25 +1216,8 @@ void karte_t::remove_landscape_holes(koord limit_k)
 }
 
 
-void karte_t::create_valleys()
+void karte_t::init_temp_map(coord3d_t * tmp_world, const sint16 size_x, const sint16 size_y, vector_tpl<koord> * current_step)
 {
-	// get rid of single vertex or several vertices holes reaching sea level
-	// valley could lead to it and wee need to avoid this
-	remove_landscape_holes(koord(0, 0));
-
-	sint16 size_x = settings.get_groesse_x() + 1;
-	sint16 size_y = settings.get_groesse_y() + 1;
-	printf("starting valley correction \n");
-	time_t time_valley_begin = time(NULL);
-	time_t time_valley_middle;
-	time_t time_valley_end;
-	loadingscreen_t ls( translator::translate("creating valleys - copying world"), 4);
-	coord3d_t * tmp_world = new coord3d_t[size_x*size_y];
-	printf("size_x %i size_y %i, grundwasser %i\n", size_x, size_y, get_grundwasser());
-	const int levels = 256; // ?? why 64
-	
-	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
-	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
 	int count=0; // debug
 	for(int i=0;  i < size_y; ++i) {
 		for(int j=0; j < size_x; ++j) {
@@ -1284,8 +1267,34 @@ void karte_t::create_valleys()
 			tmp_world[(i*size_x)+j].setZDetailed(SCHAR_MAX, SHRT_MAX); // constant SHRT_MAX means vertex has not known way to the sea
 		}
 	}
+	printf("valleys ones %i", count);
+}
+
+
+void karte_t::create_valleys()
+{
+	// get rid of single vertex or several vertices holes reaching sea level
+	// valley could lead to it and wee need to avoid this
+	remove_landscape_holes(koord(0, 0));
+
+	sint16 size_x = settings.get_groesse_x() + 1;
+	sint16 size_y = settings.get_groesse_y() + 1;
+	printf("starting valley correction \n");
+	time_t time_valley_begin = time(NULL);
+	time_t time_valley_middle;
+	time_t time_valley_end;
+	loadingscreen_t ls( translator::translate("creating valleys - copying world"), 4);
+	coord3d_t * tmp_world = new coord3d_t[size_x*size_y];
+	printf("size_x %i size_y %i, grundwasser %i\n", size_x, size_y, get_grundwasser());
+	const int levels = 256; // ?? why 64
+	
+	vector_tpl<koord> *  current_step = new vector_tpl<koord>[levels];
+	vector_tpl<koord> *  next_step    = new vector_tpl<koord>[levels];
+
+	init_temp_map(tmp_world, size_x, size_y, current_step);
+
 	time_valley_middle = time(NULL); // debug - performance
-	printf("valleys ones %i, time: %f\n", count, difftime(time_valley_middle, time_valley_begin));
+	printf(", time: %f\n", difftime(time_valley_middle, time_valley_begin));
 
 	loadingscreen_t ls2( translator::translate("creating valleys - btfffa"), 6);
 
@@ -1344,7 +1353,7 @@ void karte_t::create_valleys()
 //						sprintf(tmp_string, "%x", z_detailed_next);
 //						lookup_kartenboden(next_k)->set_text(tmp_string);
 					}
-					// dig a valley
+					// dig a valley / plan a valley
 					else if( height_difference < 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
@@ -1409,6 +1418,7 @@ void karte_t::create_valleys()
 						i -= 1 + height_difference_valley_mouth; // 1 ... compensation of cycle, height_difference_valley_mouth ... jump one or two levels down
 						break;
 					}
+					// end of plan a valley
 				}
 				if(dig) {
 					break;

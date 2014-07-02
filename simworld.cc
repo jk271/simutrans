@@ -1403,30 +1403,8 @@ void karte_t::create_valleys()
 
 						int height_difference_valley_mouth = lookup_hgt( k ) - lookup_hgt( next_dig_k );
 						current_step[i - height_difference_valley_mouth].append( next_dig_k ); //!!
-						FOR(vector_tpl<koord>, const valley_coordinate, valley_coord ){
-							const char * c;
-							while(lookup_hgt(valley_coordinate) >= height)
-							{
-								grid_lower(NULL, valley_coordinate, c);
-							}
 
-							while(lookup_hgt(valley_coordinate+koord(0,1)) >= height)
-							{
-								grid_lower(NULL, valley_coordinate+koord(0,1), c);
-							}
-
-							while(lookup_hgt(valley_coordinate+koord(1,1)) >= height)
-							{
-								grid_lower(NULL, valley_coordinate+koord(1,1), c);
-							}
-
-							while(lookup_hgt(valley_coordinate+koord(1,0)) >= height)
-							{
-								grid_lower(NULL, valley_coordinate+koord(1,0), c);
-							}
-
-//							int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
-						}
+						dig_valley( valley_coord, height );
 
 						i -= 1 + height_difference_valley_mouth; // 1 ... compensation of cycle, height_difference_valley_mouth ... jump one or two levels down
 						break;
@@ -1454,6 +1432,34 @@ void karte_t::create_valleys()
 	delete [] tmp_world;
 	time_valley_end = time(NULL);
 	printf("time: %f s\n", difftime(time_valley_end, time_valley_middle));
+}
+
+
+void karte_t::dig_valley(vector_tpl<koord> & valley_coord, sint8 height ){
+	FOR(vector_tpl<koord>, const valley_coordinate, valley_coord ){
+		const char * c;
+		while(lookup_hgt(valley_coordinate) >= height)
+		{
+			grid_lower(NULL, valley_coordinate, c);
+		}
+
+		while(lookup_hgt(valley_coordinate+koord(0,1)) >= height)
+		{
+			grid_lower(NULL, valley_coordinate+koord(0,1), c);
+		}
+
+		while(lookup_hgt(valley_coordinate+koord(1,1)) >= height)
+		{
+			grid_lower(NULL, valley_coordinate+koord(1,1), c);
+		}
+
+		while(lookup_hgt(valley_coordinate+koord(1,0)) >= height)
+		{
+			grid_lower(NULL, valley_coordinate+koord(1,0), c);
+		}
+
+//		int lower_count = lower_to(valley_coordinate.x, valley_coordinate.y, height-1, height-1, height-1, height-1);
+	}
 }
 
 

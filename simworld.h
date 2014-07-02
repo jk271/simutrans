@@ -730,6 +730,10 @@ private:
 	 * creates valley using current lanscape without any object on it
 	 */
 	void create_valleys();
+	/**
+	 * lowers terrain on defined coordinates to level 'height'
+	 */
+	void dig_valley(vector_tpl<koord> & valley_coord, sint8 height );
 
 	/**
 	 * Will create lakes.

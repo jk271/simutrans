@@ -1270,7 +1270,9 @@ void karte_t::init_temp_map(coord3d_t * tmp_world, const sint16 size_x, const si
 	printf("valleys ones %i", count);
 }
 
-
+/**
+ * dig_k - upper bound of valley; will be lowered
+ */
 bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, vector_tpl<koord> & valley_coord, koord dig_k, const sint8 height)
 {
 	koord next_dig_k = dig_k;
@@ -1278,18 +1280,16 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 
 	do {
 		printf("dig_k    [%i %i] %i.%i [%s:%i]", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed(), __FILE__, __LINE__);
+		sint32 dig_k_z = tmp_world[dig_k.y*size_x+dig_k.x].getZ();
 		tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
 //		lookup_kartenboden(next_k)->set_text(NULL);
-		//int lower_count = lower_to(dig_k.x, dig_k.y, height-1, false);
 //		if(lookup_hgt(dig_k) >= height)
 //		{
 //			const char *c;
 //			grid_lower(NULL, dig_k, c);
 //		}
-		int lower_count = 0;
-//		lower_count = lower_to(dig_k.x, dig_k.y, height, height, height, height-1);
 		//set_grid_hgt(dig_k, height-1);
-		printf(" %i (lcount %i)\n", lookup_hgt(dig_k), lower_count);
+		printf(" %i \n", lookup_hgt(dig_k));
 		for(int j=0; j<4; ++j) {
 			koord tmp = dig_k+koord::nsow[j];
 			if ( ! is_within_limits(tmp))
@@ -1302,7 +1302,7 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 			}
 			// hledam smer
 			if( (lookup_hgt(tmp) == height) 
-			&&  (tmp_world[(tmp.y*size_x)+tmp.x].getZ() < tmp_world[(dig_k.y*size_x)+dig_k.x].getZ())
+			&&  (tmp_world[(tmp.y*size_x)+tmp.x].getZ() < dig_k_z)
 			&&  (tmp_world[(tmp.y*size_x)+tmp.x].getZ() <= tmp_world[(next_dig_k.y*size_x)+next_dig_k.x].getZ()) ){
 				next_dig_k = tmp;
 			}

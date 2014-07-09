@@ -1279,9 +1279,9 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 	valley_coord.append(dig_k);
 
 	do {
-		printf("dig_k    [%i %i] %i.%i [%s:%i]", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed(), __FILE__, __LINE__);
+		printf(" through    [%i %i] %i (%x) [%s:%i]\n", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), __FILE__, __LINE__);
 		sint32 dig_k_z = tmp_world[dig_k.y*size_x+dig_k.x].getZ();
-		tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
+//		tmp_world[dig_k.y*size_x+dig_k.x].setZDetailed(SCHAR_MAX, SHRT_MAX);
 //		lookup_kartenboden(next_k)->set_text(NULL);
 //		if(lookup_hgt(dig_k) >= height)
 //		{
@@ -1289,7 +1289,6 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 //			grid_lower(NULL, dig_k, c);
 //		}
 		//set_grid_hgt(dig_k, height-1);
-		printf(" %i \n", lookup_hgt(dig_k));
 		for(int j=0; j<4; ++j) {
 			koord tmp = dig_k+koord::nsow[j];
 			if ( ! is_within_limits(tmp))
@@ -1298,6 +1297,7 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 			}
 			if( ( lookup_hgt(tmp) < height )  &&  tmp_world[tmp.y*size_x+tmp.x].getZDetailed() != SHRT_MAX  ){ // digging is over
 				next_dig_k = tmp;
+				printf(" valley mouth [%i %i] %i, (%x)\n", tmp.x, tmp.y, lookup_hgt(tmp), tmp_world[tmp.y*size_x+tmp.x].getZ());
 				break;
 			}
 			// hledam smer
@@ -1313,6 +1313,14 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 			{
 				printf("[%i %i] %i, %x %x\n", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
 				printf("assertion failed %s:%i\n", __FILE__, __LINE__); // double ground fails here 20140122
+				koord assert_tmp = dig_k + koord::nsow[0];
+				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
+				assert_tmp = dig_k + koord::nsow[1];
+				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
+				assert_tmp = dig_k + koord::nsow[2];
+				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
+				assert_tmp = dig_k + koord::nsow[3];
+				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
 				return false; // avoid enless loops
 			}
 			break;
@@ -1411,8 +1419,8 @@ void karte_t::create_valleys()
 					else if( height_difference < 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZDetailed() == SHRT_MAX ) {
 						dig = true;
 						nobreak2 = false;
-						printf("dig_k (%i %i %i)\n", next_k.x, next_k.y, lookup_hgt(next_k));
-//						current_step[i].remove(k);
+						printf("planning valley to (%i %i %i)\n", next_k.x, next_k.y, lookup_hgt(next_k));
+
 						vector_tpl<koord> valley_coord; // we need wider valley
 						valley_coord.append(next_k);
 
@@ -1420,11 +1428,16 @@ void karte_t::create_valleys()
 						{
 							koord next_dig_k = valley_coord.back();
 							int height_difference_valley_mouth = lookup_hgt( k ) - lookup_hgt( next_dig_k );
-							current_step[i - height_difference_valley_mouth].append( next_dig_k ); //!!
+							int index = i -height_difference_valley_mouth;
+							current_step[index >= 0 ? index : 0].append( next_dig_k ); //!!
 	
 							dig_valley( valley_coord, height );
 	
 							i -= 1 + height_difference_valley_mouth; // 1 ... compensation of cycle, height_difference_valley_mouth ... jump one or two levels down
+							if (i < -1)
+							{
+								i = -1;
+							}
 						}
 						else {
 							i= 63; // avoid enless loops

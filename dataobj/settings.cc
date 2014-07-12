@@ -1214,7 +1214,7 @@ void settings_t::parse_simuconf(tabfile_t& simuconf, sint16& disp_width, sint16&
 	river_number = contents.get_int("river_number", river_number );
 	min_river_length = contents.get_int("river_min_length", min_river_length );
 	max_river_length = contents.get_int("river_max_length", max_river_length );
-//	create_valleys = contents.get_int("create_valleys", create_valleys );
+	create_valleys = contents.get_int("create_valleys", create_valleys ) != 0;
 	meters_between_springs = contents.get_int("meters_between_springs", meters_between_springs );
 
 	// forest stuff (now part of simuconf.tab)

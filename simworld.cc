@@ -1233,28 +1233,28 @@ void karte_t::init_temp_map(coord3d_t * tmp_world, const sint16 size_x, const si
 				if((k.x > 1)  && lookup_hgt(koord(k.x-1,k.y)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,2);
+					tmp_world[(i*size_x)+j].setZDetailed(height_difference + 1, 2);
 					continue;
 				} 
 				//top
 				if((k.y > 1)  && lookup_hgt(koord(k.x,k.y-1)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,2);
+					tmp_world[(i*size_x)+j].setZDetailed(height_difference + 1, 2);
 					continue;
 				} 
 				//right
 				if(((k.x + 1)<size_x )  && lookup_hgt(koord(k.x+1,k.y)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,2);
+					tmp_world[(i*size_x)+j].setZDetailed(height_difference + 1, 2);
 					continue;
 				} 
 				// bottom
 				if(((k.y + 1)<size_y )  && lookup_hgt(koord(k.x,k.y+1)) <= get_grundwasser()){
 					current_step[height_difference].append(k);
 					count++;
-					tmp_world[(i*size_x)+j].setZDetailed(0,2);
+					tmp_world[(i*size_x)+j].setZDetailed(height_difference + 1, 2);
 					continue;
 				} 
 			}
@@ -1405,7 +1405,7 @@ void karte_t::create_valleys()
 					/* height difference between current height level and new point to be tested */
 					int height_difference = lookup_hgt( next_k ) - height;
 					if( height_difference > 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].isLowerOrEqual(i, 2) ){ // dig !!??
-						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i, 2);  // edge of next level
+						tmp_world[(next_k.y*size_x)+next_k.x].setZDetailed(i+1+height_difference, 2);  // edge of next level
 						current_step[i+height_difference].append(next_k);
 					}
 					else if( height_difference == 0  &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() > z_detailed_next ) {
@@ -1430,9 +1430,9 @@ void karte_t::create_valleys()
 							int height_difference_valley_mouth = lookup_hgt( k ) - lookup_hgt( next_dig_k );
 							int index = i -height_difference_valley_mouth;
 							current_step[index >= 0 ? index : 0].append( next_dig_k ); //!!
-	
+
 							dig_valley( valley_coord, height );
-	
+
 							i -= 1 + height_difference_valley_mouth; // 1 ... compensation of cycle, height_difference_valley_mouth ... jump one or two levels down
 							if (i < -1)
 							{
@@ -1440,7 +1440,7 @@ void karte_t::create_valleys()
 							}
 						}
 						else {
-							i= 63; // avoid enless loops
+							i = levels; // avoid enless loops
 						}
 						break;
 					}

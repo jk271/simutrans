@@ -1312,7 +1312,7 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 			if( valley_coord.get_count() != 1) // check it
 			{
 				printf("[%i %i] %i, %x %x\n", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
-				printf("assertion failed; map=%i %s:%i\n", settings.get_karte_nummer(), __FILE__, __LINE__); // double ground fails here 20140122
+				printf("assertion failed; map=%i; wg=%i; mh=%f; %s:%i\n", settings.get_karte_nummer(), settings.get_grundwasser(), settings.get_max_mountain_height(), __FILE__, __LINE__); // double ground fails here 20140122
 				koord assert_tmp = dig_k + koord::nsow[0];
 				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
 				assert_tmp = dig_k + koord::nsow[1];

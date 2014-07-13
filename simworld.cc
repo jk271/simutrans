@@ -1312,7 +1312,7 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 			if( valley_coord.get_count() != 1) // check it
 			{
 				printf("[%i %i] %i, %x %x\n", dig_k.x, dig_k.y, lookup_hgt(dig_k), tmp_world[dig_k.y*size_x+dig_k.x].getZ(), tmp_world[dig_k.y*size_x+dig_k.x].getZDetailed());
-				printf("assertion failed %s:%i\n", __FILE__, __LINE__); // double ground fails here 20140122
+				printf("assertion failed; map=%i %s:%i\n", settings.get_karte_nummer(), __FILE__, __LINE__); // double ground fails here 20140122
 				koord assert_tmp = dig_k + koord::nsow[0];
 				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
 				assert_tmp = dig_k + koord::nsow[1];
@@ -1321,6 +1321,7 @@ bool karte_t::lookup_valley_koords(coord3d_t * tmp_world, const sint16 size_x, v
 				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
 				assert_tmp = dig_k + koord::nsow[3];
 				printf("[%i %i] %i, (%x)\n", assert_tmp.x, assert_tmp.y, lookup_hgt(assert_tmp), tmp_world[assert_tmp.y*size_x+assert_tmp.x].getZ());
+				fflush(NULL);
 				return false; // avoid enless loops
 			}
 			break;
@@ -1341,7 +1342,7 @@ void karte_t::create_valleys()
 
 	sint16 size_x = settings.get_groesse_x() + 1;
 	sint16 size_y = settings.get_groesse_y() + 1;
-	printf("starting valley correction \n");
+	printf("starting valley correction, map %i \n", settings.get_karte_nummer());
 	time_t time_valley_begin = time(NULL);
 	time_t time_valley_middle;
 	time_t time_valley_end;

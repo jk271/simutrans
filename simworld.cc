@@ -1364,13 +1364,11 @@ void karte_t::create_valleys()
 	// height levels
 	for(int i=0; i<levels-10;  ++i){  // why 10 ??
 		printf("level %i\n", i); // debug
-		int z_detailed_next = -1;
 		int front_count = 0; // debug
 		bool nobreak2 = true; //escape from cycle
 
 		// front
-		for(int z_detailed = 2; (current_step[i].get_count() > 0 || next_step[i].get_count() > 0)  &&  nobreak2; ++z_detailed) {
-			z_detailed_next = z_detailed + 2;
+		while ( (current_step[i].get_count() > 0 || next_step[i].get_count() > 0)  &&  nobreak2 ) {
 			bool dig = false; // used for escaping fron cycle
 			printf("level %i, front count %i, %i\n", i, front_count++, current_step[i].get_count());
 			
@@ -1383,18 +1381,30 @@ void karte_t::create_valleys()
 				if(  lookup_hgt(k) < height ){
 					continue; // the grid vertex has been changed, skip it
 				}
-				z_detailed = tmp_world[k.y*size_x+k.x].getZ();
 
+				int z_detailed = tmp_world[k.y*size_x+k.x].getZ();
+
+				bool continue_flag = false;
 				// diagonal
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nwneswse[direction];
 					if(lookup_hgt(next_k) == height &&  tmp_world[(next_k.y*size_x)+next_k.x].getZ() < (z_detailed-3)) { // is diagonal better ??
-						tmp_world[k.y*size_x+k.x].setZ(--z_detailed); // correct CURRENT vertex z_detailed
+						if ( tmp_world[(next_k.y*size_x)+next_k.x].getZ() == (z_detailed-4)) {
+							tmp_world[k.y*size_x+k.x].setZ(--z_detailed); // correct CURRENT vertex z_detailed
+						}
+						else {
+							next_step[i].append(next_k);
+							continue_flag = true;
+						}
 						break;
 					}
 				}
+				if ( continue_flag ) {
+					continue;
+				}
+
 				// nswe
-				z_detailed_next = z_detailed + 2;
+				int z_detailed_next = z_detailed + 2;
 				for(int direction=0; direction < 4; ++direction) {
 					koord next_k = k+koord::nsow[direction];
 					// next height level; && do not duplicate
